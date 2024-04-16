@@ -28,7 +28,8 @@
 			"@type/*": ["src/types/*"],
 			"@styles/*": ["src/styles/*"],
 			"@components/*": ["src/components/*"],
-			"@pages/*": ["src/pages/*"]
+			"@pages/*": ["src/pages/*"],
+			"@constants/*": ["src/constants/*"]
 		}
 	},
 	"include": ["src", "**/*.ts", "**/*.tsx"],

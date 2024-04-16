@@ -55,6 +55,11 @@ module.exports = {
 						position: 'after',
 					},
 					{
+						pattern: '@constants/*',
+						group: 'internal',
+						position: 'after',
+					},
+					{
 						pattern: '@styles/*',
 						group: 'internal',
 						position: 'after',

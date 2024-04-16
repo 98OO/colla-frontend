@@ -6,7 +6,7 @@ import { ThemeProvider } from 'styled-components';
 import { worker } from '@mocks/browser';
 import GlobalStyle from '@styles/GlobalStyle.ts';
 import theme from '@styles/theme.ts';
-import App from './App';
+import AppRouter from './AppRouter';
 import './index.css';
 
 if (process.env.NODE_ENV === 'development') {
@@ -20,7 +20,7 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
 		<ThemeProvider theme={theme}>
 			<QueryClientProvider client={queryClient}>
 				<GlobalStyle />
-				<App />
+				<AppRouter />
 				<ReactQueryDevtools />
 			</QueryClientProvider>
 		</ThemeProvider>
