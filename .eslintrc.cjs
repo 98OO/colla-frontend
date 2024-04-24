@@ -32,11 +32,11 @@ module.exports = {
 					'builtin',
 					'external',
 					'internal',
+					'type',
 					'parent',
 					'sibling',
 					'index',
 					'object',
-					'type',
 				],
 				pathGroups: [
 					{
