@@ -6,7 +6,7 @@ const fontSize = {
 		md: '28px',
 		sm: '24px',
 		xs: '20px',
-		xss: '18px',
+		xxs: '18px',
 	},
 	body: {
 		lg: '16px',
