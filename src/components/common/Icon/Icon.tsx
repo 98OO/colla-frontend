@@ -1,10 +1,10 @@
 import * as Icons from '@assets/svg/index';
 import { iconSize } from '@type/size';
-import { iconColor } from '@type/tokens';
+import { iconColor, iconName } from '@type/tokens';
 import theme from '@styles/theme';
 
 export interface IconProps {
-	name: keyof typeof Icons;
+	name: iconName;
 	color?: iconColor;
 	size?: iconSize;
 }
