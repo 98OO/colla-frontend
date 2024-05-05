@@ -28,7 +28,7 @@ const meta = {
 		variant: {
 			control: {
 				type: 'radio',
-				options: ['primary', 'secondary', 'destructive'],
+				options: ['primary', 'secondary', 'destructive', 'text'],
 				description: 'Button의 varaint를 지정합니다.',
 			},
 		},

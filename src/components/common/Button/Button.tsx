@@ -3,7 +3,7 @@ import type { buttonSize } from '@type/size';
 import type { iconName } from '@type/tokens';
 import * as S from './Button.styled';
 
-type buttonVariant = 'primary' | 'secondary' | 'destructive';
+type buttonVariant = 'primary' | 'secondary' | 'destructive' | 'text';
 
 export interface ButtonProps {
 	label: string;
@@ -17,7 +17,7 @@ export interface ButtonProps {
 
 const getIconColor = (variant: buttonVariant, disabled: boolean) => {
 	if (disabled) return 'disabled';
-	if (variant === 'secondary') return 'iSecondary';
+	if (variant === 'secondary' || variant === 'text') return 'iSecondary';
 	return 'iInverse';
 };
 

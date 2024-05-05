@@ -45,6 +45,18 @@ const variantStyle = {
 			background-color: ${theme.color.bg.iDestructiveHover};
 		}
 	`,
+	text: css`
+		color: ${theme.color.text.iSecondary};
+		background-color: transparent;
+		border: none;
+		&:hover {
+			color: ${theme.color.text.iSecondaryHover};
+			svg {
+				stroke: ${theme.color.icon.iSecondaryHover};
+				color: ${theme.color.icon.iSecondaryHover};
+			}
+		}
+	`,
 };
 
 const disabledStyle = {
@@ -54,11 +66,14 @@ const disabledStyle = {
 	`,
 	secondary: css`
 		background-color: transparent;
-		color: ${theme.color.text.disabled};
 		border: 2px solid ${theme.color.border.disabled};
 	`,
 	destructive: css`
 		background-color: ${theme.color.bg.disabled};
+		border: none;
+	`,
+	text: css`
+		background-color: transparent;
 		border: none;
 	`,
 };
