@@ -4,3 +4,4 @@ export { ReactComponent as EyeOff } from './eye-off.svg';
 export { ReactComponent as KakaoLogin } from './KakaoLogin.svg';
 export { ReactComponent as GoogleLogin } from './GoogleLogin.svg';
 export { ReactComponent as NaverLogin } from './NaverLogin.svg';
+export { ReactComponent as Colla } from './colla.svg';
