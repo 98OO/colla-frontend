@@ -1,11 +1,10 @@
-import './App.css';
-import Team from '@components/Team/Team';
+import { Outlet } from 'react-router-dom';
 
 function App() {
 	return (
-		<div>
-			<Team />
-		</div>
+		<main>
+			<Outlet />
+		</main>
 	);
 }
 
