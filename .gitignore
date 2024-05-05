@@ -24,3 +24,6 @@ dist-ssr
 *.sw?
 
 .eslintcache
+
+.env
+.env.development.local
