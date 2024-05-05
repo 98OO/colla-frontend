@@ -2,10 +2,11 @@ import styled from 'styled-components';
 
 export const OauthButtonWrapper = styled.button`
 	width: 392px;
-	height: 48px;
+	height: 40px;
 	position: relative;
 	border-radius: 6px;
 	border: none;
+	background-color: none;
 
 	svg {
 		position: absolute;
