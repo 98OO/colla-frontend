@@ -50,6 +50,16 @@ module.exports = {
 						position: 'after',
 					},
 					{
+						pattern: '@apis/*',
+						group: 'internal',
+						position: 'after',
+					},
+					{
+						pattern: '@hooks/*',
+						group: 'internal',
+						position: 'after',
+					},
+					{
 						pattern: '@types/*',
 						group: 'internal',
 						position: 'after',

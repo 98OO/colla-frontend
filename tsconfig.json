@@ -26,6 +26,8 @@
 			"@/*": ["src/*"],
 			"@mocks/*": ["src/mocks/*"],
 			"@type/*": ["src/types/*"],
+			"@apis/*": ["src/apis/*"],
+			"@hooks/*": ["src/hooks/*"],
 			"@assets/*": ["src/assets/*"],
 			"@styles/*": ["src/styles/*"],
 			"@components/*": ["src/components/*"],
