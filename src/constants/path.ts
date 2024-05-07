@@ -4,4 +4,6 @@ export const PATH = {
 	SIGNUP: '/signup',
 	SCHEDULE: '/schedule',
 	CHAT: '/chat',
+	FEED: '/feed',
+	ENTRY: '/entry',
 } as const;
