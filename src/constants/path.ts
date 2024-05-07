@@ -6,4 +6,5 @@ export const PATH = {
 	CHAT: '/chat',
 	FEED: '/feed',
 	ENTRY: '/entry',
+	REDIRECT: '/redirect',
 } as const;
