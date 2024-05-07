@@ -26,7 +26,8 @@
 		"styled-components": "^6.1.8",
 		"styled-reset": "^4.5.2",
 		"vite": "^5.2.0",
-		"vite-tsconfig-paths": "^4.3.2"
+		"vite-tsconfig-paths": "^4.3.2",
+		"zustand": "^4.5.2"
 	},
 	"devDependencies": {
 		"@chromatic-com/storybook": "^1.2.26",
