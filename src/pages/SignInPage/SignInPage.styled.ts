@@ -7,7 +7,7 @@ export const Container = styled.div`
 	width: 400px;
 	align-items: center;
 	padding: 0 ${theme.units.spacing.space4};
-	gap: ${theme.units.spacing.space12};
+	gap: ${theme.units.spacing.space16};
 
 	@media (min-width: 1441px) {
 		gap: ${theme.units.spacing.space20};
@@ -15,14 +15,13 @@ export const Container = styled.div`
 `;
 
 export const ImageWrapper = styled.div`
-	padding: ${theme.units.spacing.space20} 0;
+	padding-bottom: ${theme.units.spacing.space20};
 `;
 
-export const FormContainer = styled.div`
+export const FormContainer = styled.form`
 	display: flex;
 	flex-direction: column;
 	width: 100%;
-	gap: ${theme.units.spacing.space20};
 `;
 
 export const InputWrapper = styled.div`
@@ -37,6 +36,12 @@ export const ButtonContainer = styled.div`
 	padding: ${theme.units.spacing.space4} 0;
 `;
 
+export const WarningTextWrapper = styled.div`
+	display: flex;
+	align-items: center;
+	height: 36px;
+`;
+
 export const TextWrapper = styled.div`
 	display: flex;
 	justify-content: center;
@@ -48,6 +53,7 @@ export const DividerContainer = styled.div`
 	align-items: center;
 	width: 100%;
 	gap: ${theme.units.spacing.space6};
+	margin-bottom: ${theme.units.spacing.space4};
 `;
 
 export const Divider = styled.div`

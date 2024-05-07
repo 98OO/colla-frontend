@@ -1,9 +1,10 @@
-import { useState, ChangeEvent } from 'react';
+import { useState, useRef, ChangeEvent, MouseEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@components/common/Button/Button';
 import Input from '@components/common/Input/Input';
 import { OauthButton } from '@components/common/OauthButton/OauthButton';
 import Text from '@components/common/Text/Text';
+import useLoginMutation from '@hooks/queries/useLoginMutation';
 import { PATH } from '@constants/path';
 import { KakaoLogin, GoogleLogin, NaverLogin, Colla } from '@assets/svg';
 import * as S from './SignInPage.styled';
@@ -13,7 +14,11 @@ const SignInPage = () => {
 		email: '',
 		password: '',
 	});
+	const [errorText, setErrorText] = useState('');
 	const navigate = useNavigate();
+	const emailRef = useRef<HTMLInputElement>(null);
+	const passwordRef = useRef<HTMLInputElement>(null);
+	const { mutatePostLogin } = useLoginMutation();
 
 	const handleChange = (
 		e: ChangeEvent<HTMLInputElement>,
@@ -26,45 +31,79 @@ const SignInPage = () => {
 		});
 	};
 
+	const checkFormData = () => {
+		if (!formData.email) {
+			setErrorText('이메일을 입력해 주세요.');
+			emailRef.current?.focus();
+			return true;
+		}
+
+		if (!formData.password) {
+			setErrorText('비밀번호를 입력해 주세요.');
+			passwordRef.current?.focus();
+			return true;
+		}
+		return false;
+	};
+
+	const handleLogin = async (e: MouseEvent<HTMLFormElement>) => {
+		e.preventDefault();
+		if (checkFormData()) return;
+		try {
+			await mutatePostLogin(formData);
+		} catch (error) {
+			setErrorText('이메일 또는 비밀번호가 일치하지 않습니다.');
+		}
+	};
+
 	return (
 		<S.Container>
 			<S.ImageWrapper>
 				<Colla />
 			</S.ImageWrapper>
-			<S.FormContainer>
+			<S.FormContainer onSubmit={handleLogin}>
 				<S.InputWrapper>
 					<Input
-						size='md'
+						size='lg'
 						placeholder='이메일'
 						isError={false}
 						value={formData.email}
+						maxLength={40}
 						onChange={(e) => handleChange(e, 'email')}
+						ref={emailRef}
 					/>
 					<Input
-						size='md'
+						size='lg'
 						placeholder='비밀번호'
 						isError={false}
 						type='password'
 						value={formData.password}
+						maxLength={20}
 						onChange={(e) => handleChange(e, 'password')}
+						ref={passwordRef}
 					/>
 				</S.InputWrapper>
 				<S.ButtonContainer>
+					<S.WarningTextWrapper>
+						<Text size='md' weight='regular' color='danger'>
+							{errorText}
+						</Text>
+					</S.WarningTextWrapper>
 					<Button
+						type='submit'
 						label='로그인'
 						variant='primary'
-						size='md'
+						size='lg'
 						isFull
-						onClick={() => {}}
 					/>
 					<S.TextWrapper>
-						<Text size='sm' weight='regular'>
+						<Text size='md' weight='regular'>
 							계정이 없나요?
 						</Text>
 						<Button
 							label='가입하기'
 							variant='text'
-							size='sm'
+							size='md'
 							isFull={false}
 							onClick={() => {
 								navigate(PATH.SIGNUP);

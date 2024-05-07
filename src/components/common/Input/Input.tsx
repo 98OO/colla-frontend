@@ -16,6 +16,7 @@ export interface InputWrapperProps {
 	placeholder?: string;
 	type?: 'text' | 'password';
 	value: string;
+	maxLength?: number;
 	onChange: React.ChangeEventHandler<HTMLInputElement>;
 }
 

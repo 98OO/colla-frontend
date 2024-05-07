@@ -1,8 +1,9 @@
 import styled from 'styled-components';
+import theme from '@styles/theme';
 
 export const OauthButtonWrapper = styled.button`
 	width: 392px;
-	height: 40px;
+	height: ${theme.units.spacing.space44};
 	position: relative;
 	border-radius: 6px;
 	border: none;

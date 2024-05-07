@@ -11,7 +11,11 @@ const GlobalStyle = createGlobalStyle`
     height: 100vh;
   }
 
-  body{
+  body,
+  input,
+  select,
+  textarea,
+  button {
     font-family: 'Pretendard', system-ui, -apple-system, BlinkMacSystemFont, 'Open Sans', 'Helvetica Neue', sans-serif;
   }
 

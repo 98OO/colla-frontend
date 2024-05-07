@@ -10,9 +10,10 @@ export interface ButtonProps {
 	variant: buttonVariant;
 	size: buttonSize;
 	isFull?: boolean;
+	type?: 'button' | 'reset' | 'submit';
 	disabled?: boolean;
 	leadingIcon?: iconName;
-	onClick: React.MouseEventHandler<HTMLButtonElement>;
+	onClick?: React.MouseEventHandler<HTMLButtonElement>;
 }
 
 const getIconColor = (variant: buttonVariant, disabled: boolean) => {
@@ -27,6 +28,7 @@ export const Button = (props: ButtonProps) => {
 		variant,
 		size,
 		isFull = false,
+		type = 'button',
 		disabled = false,
 		leadingIcon,
 		onClick,
@@ -37,6 +39,7 @@ export const Button = (props: ButtonProps) => {
 			variant={variant}
 			size={size}
 			isFull={isFull}
+			type={type}
 			disabled={disabled}
 			onClick={onClick}>
 			{leadingIcon && (
