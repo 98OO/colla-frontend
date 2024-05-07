@@ -1,5 +1,6 @@
 import { RouterProvider, createBrowserRouter } from 'react-router-dom';
 import LandingPage from '@pages/LandingPage/LandingPage';
+import RedirectPage from '@pages/RedirectPage/RedirectPage';
 import SignInPage from '@pages/SignInPage/SignInPage';
 import { PATH } from '@constants/path';
 import App from './App';
@@ -17,6 +18,10 @@ const AppRouter = () => {
 				{
 					path: PATH.SIGNIN,
 					element: <SignInPage />,
+				},
+				{
+					path: `${PATH.REDIRECT}/:provider`,
+					element: <RedirectPage />,
 				},
 			],
 		},
