@@ -7,6 +7,7 @@ export const BASE_URL = PROD
 export const END_POINTS = {
 	SIGNIN: 'auth/login',
 	NEWTOKEN: 'auth/refresh',
+	OAUTHSIGNIN: `auth/oauth`,
 } as const;
 
 export const AUTH_ERROR_CODE = {
