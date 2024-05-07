@@ -26,9 +26,14 @@
 			"@/*": ["src/*"],
 			"@mocks/*": ["src/mocks/*"],
 			"@type/*": ["src/types/*"],
+			"@stores/*": ["src/stores/*"],
+			"@apis/*": ["src/apis/*"],
+			"@hooks/*": ["src/hooks/*"],
+			"@assets/*": ["src/assets/*"],
 			"@styles/*": ["src/styles/*"],
 			"@components/*": ["src/components/*"],
-			"@pages/*": ["src/pages/*"]
+			"@pages/*": ["src/pages/*"],
+			"@constants/*": ["src/constants/*"]
 		}
 	},
 	"include": ["src", "**/*.ts", "**/*.tsx"],

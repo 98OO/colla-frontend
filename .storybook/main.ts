@@ -18,8 +18,9 @@ const config: StorybookConfig = {
 	docs: {
 		autodocs: 'tag',
 	},
-	core: {
-		builder: '@storybook/builder-vite',
+	core: {},
+	typescript: {
+		reactDocgen: 'react-docgen-typescript',
 	},
 };
 export default config;

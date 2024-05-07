@@ -32,11 +32,11 @@ module.exports = {
 					'builtin',
 					'external',
 					'internal',
+					'type',
 					'parent',
 					'sibling',
 					'index',
 					'object',
-					'type',
 				],
 				pathGroups: [
 					{
@@ -50,7 +50,32 @@ module.exports = {
 						position: 'after',
 					},
 					{
+						pattern: '@stores/*',
+						group: 'internal',
+						position: 'after',
+					},
+					{
+						pattern: '@apis/*',
+						group: 'internal',
+						position: 'after',
+					},
+					{
+						pattern: '@hooks/*',
+						group: 'internal',
+						position: 'after',
+					},
+					{
 						pattern: '@types/*',
+						group: 'internal',
+						position: 'after',
+					},
+					{
+						pattern: '@constants/*',
+						group: 'internal',
+						position: 'after',
+					},
+					{
+						pattern: '@assets/*',
 						group: 'internal',
 						position: 'after',
 					},
