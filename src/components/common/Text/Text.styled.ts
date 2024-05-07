@@ -1,7 +1,9 @@
 import { styled } from 'styled-components';
 import type { TextProps } from './Text';
 
-export const TextWrapper = styled.p<TextProps>`
+export const TextWrapper = styled.p.withConfig({
+	shouldForwardProp: (prop) => !['weight'].includes(prop),
+})<TextProps>`
 	p&,
 	span&,
 	strong&,

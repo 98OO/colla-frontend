@@ -8,7 +8,9 @@ const inputSizeMap = {
 	sm: '32px',
 };
 
-export const InputContainer = styled.div<InputContainerProps>`
+export const InputContainer = styled.div.withConfig({
+	shouldForwardProp: (prop) => !['isError', 'border'].includes(prop),
+})<InputContainerProps>`
 	display: flex;
 	align-items: center;
 	gap: ${(props) => props.theme.units.spacing.space16};
@@ -21,13 +23,14 @@ export const InputContainer = styled.div<InputContainerProps>`
 	${(props) =>
 		props.border === 'default'
 			? css({
-					border: '2px solid',
+					border: '1px solid',
 					borderRadius: `${theme.units.radius.radius6}`,
 				})
-			: css({ borderBottom: '2px solid' })}
-
+			: css({ borderBottom: '1px solid' })}
 	border-color: ${theme.color.border.primary};
+
 	&:focus-within {
+		border-width: 2px;
 		border-color: ${theme.color.border.focusRing};
 	}
 	${(props) =>
@@ -39,7 +42,6 @@ export const InputWrapper = styled.input<InputWrapperProps>`
 	border: none;
 	outline: none;
 	padding: 0;
-
 	color: ${theme.color.text.primary};
 	&::placeholder {
 		color: ${theme.color.text.placeholder};
