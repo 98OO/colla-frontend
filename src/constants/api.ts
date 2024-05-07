@@ -1,7 +1,7 @@
-export const PROD = import.meta.env.NODE_ENV === 'production';
+export const PROD = import.meta.env.VITE_NODE_ENV === 'production';
 
 export const BASE_URL = PROD
-	? `${window.location.protocol}//${import.meta.env.BASE_URL}`
+	? `${window.location.protocol}//${import.meta.env.VITE_BASE_URL}`
 	: 'http://localhost:3000';
 
 export const END_POINTS = {
