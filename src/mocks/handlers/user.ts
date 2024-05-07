@@ -32,4 +32,32 @@ export const userHandlers = [
 			})
 		);
 	}),
+
+	rest.post(`/auth/oauth/:provider`, (req, res, ctx) => {
+		const code = req.body as string | null;
+		if (code) {
+			return res(
+				ctx.status(200),
+				ctx.cookie('refreshToken', 'refreshtoken'),
+				ctx.json({
+					code: 20000,
+					content: {
+						accessToken: 'accessToken',
+						userId: 1,
+						hasTeam: false,
+					},
+					message: null,
+				})
+			);
+		}
+
+		return res(
+			ctx.status(404),
+			ctx.json({
+				code: 40105,
+				content: null,
+				message: '지원하지 않는 OAuth 공급자 입니다.',
+			})
+		);
+	}),
 ];
