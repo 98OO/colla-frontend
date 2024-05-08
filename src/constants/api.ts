@@ -8,6 +8,9 @@ export const END_POINTS = {
 	SIGNIN: 'auth/login',
 	NEWTOKEN: 'auth/refresh',
 	OAUTHSIGNIN: `auth/oauth`,
+	AUTHMAILSEND: 'auth/mail/send',
+	AUTHMAILVERIFICATION: 'auth/mail/verification',
+	AUTHREGISTER: 'auth/register',
 } as const;
 
 export const AUTH_ERROR_CODE = {

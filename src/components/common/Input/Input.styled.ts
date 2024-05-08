@@ -12,6 +12,7 @@ export const InputContainer = styled.div.withConfig({
 	shouldForwardProp: (prop) => !['isError', 'border'].includes(prop),
 })<InputContainerProps>`
 	display: flex;
+	flex-grow: 1;
 	align-items: center;
 	gap: ${(props) => props.theme.units.spacing.space16};
 	height: ${(props) => inputSizeMap[props.size]};
