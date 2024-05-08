@@ -12,8 +12,8 @@ const useLoginMutation = () => {
 	const postLoginMutation = useMutation({
 		mutationFn: postLogin,
 		onSuccess: (content) => {
+			localStorage.setItem(ACCESS_TOKEN, content.accessToken);
 			if (content.hasTeam) {
-				localStorage.setItem(ACCESS_TOKEN, content.accessToken);
 				setUserInfo({
 					...userInfo!,
 					userId: content.userId,
