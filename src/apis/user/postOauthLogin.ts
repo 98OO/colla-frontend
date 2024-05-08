@@ -8,7 +8,7 @@ type OauthLoginData = {
 
 const postOauthLogin = async (props: OauthLoginData) => {
 	const response = await axiosInstance.post(
-		`${END_POINTS.OAUTHSIGNIN}/${props.provider}`,
+		`${END_POINTS.OAUTHSIGNIN}/${props.provider}/code`,
 		{
 			code: props.code,
 		},
