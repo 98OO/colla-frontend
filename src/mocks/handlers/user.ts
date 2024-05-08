@@ -33,7 +33,7 @@ export const userHandlers = [
 		);
 	}),
 
-	rest.post(`/auth/oauth/:provider`, (req, res, ctx) => {
+	rest.post(`/auth/oauth/:provider/code`, (req, res, ctx) => {
 		const code = req.body as string | null;
 		if (code) {
 			return res(
