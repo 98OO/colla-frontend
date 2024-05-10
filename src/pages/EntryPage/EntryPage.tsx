@@ -1,17 +1,27 @@
 import { useState, ChangeEvent } from 'react';
+import { useNavigate } from 'react-router-dom';
+import getTeamSpaceInformation from '@apis/teamspace/getTeamSpaceInformation';
+import postParticipateTeamSpace from '@apis/teamspace/postParticipateTeamSpace';
 import { Button } from '@components/common/Button/Button';
 import Flex from '@components/common/Flex/Flex';
 import Heading from '@components/common/Heading/Heading';
 import Input from '@components/common/Input/Input';
 import Text from '@components/common/Text/Text';
+import useCreateTeamSpaceMutation from '@hooks/queries/useCreateTeamSpaceMutation';
+import { AxiosError } from 'axios';
+import { HTTPError } from '@apis/HTTPError';
+import { PATH } from '@constants/path';
 import { teamCreation, teamParticipation } from '@assets/png';
 import * as S from './EntryPage.styled';
 
 const EntryPage = () => {
 	const [entryData, setEntryData] = useState({
 		teamName: '',
-		teamLink: '',
+		teamCode: '',
 	});
+	const [errorText, setErrorText] = useState('');
+	const navigate = useNavigate();
+	const { mutatePostCreateTeamSpace } = useCreateTeamSpaceMutation();
 
 	const handleChange = (
 		e: ChangeEvent<HTMLInputElement>,
@@ -22,6 +32,26 @@ const EntryPage = () => {
 			...entryData,
 			[fieldName]: value,
 		});
+	};
+
+	const handleCreateTeamSpace = () => {
+		mutatePostCreateTeamSpace(entryData.teamName);
+	};
+
+	const handleParticipateTeamSpace = async () => {
+		try {
+			const response = await getTeamSpaceInformation(entryData.teamCode);
+			if (!response.isParticipated) {
+				await postParticipateTeamSpace(
+					response.teamspaceId,
+					entryData.teamCode
+				);
+			}
+			navigate(PATH.FEED);
+		} catch (error) {
+			const httpError = error as AxiosError<HTTPError>;
+			setErrorText(httpError.message);
+		}
 	};
 
 	return (
@@ -43,7 +73,9 @@ const EntryPage = () => {
 							팀스페이스를 만들고 협업을 시작하세요
 						</Text>
 					</Flex>
-					<img alt='collaBear' src={teamCreation} />
+					<S.ImageWrapper>
+						<img alt='teamCreation' src={teamCreation} />
+					</S.ImageWrapper>
 					<S.InputWrapper>
 						<Text size='md' weight='medium'>
 							팀스페이스 이름
@@ -57,12 +89,16 @@ const EntryPage = () => {
 							onChange={(e) => handleChange(e, 'teamName')}
 						/>
 					</S.InputWrapper>
-					<Button
-						label='생성하기'
-						variant='primary'
-						size='lg'
-						onClick={() => {}}
-					/>
+					<Flex direction='column'>
+						<Flex height='28' align='center' />
+						<Button
+							label='생성하기'
+							variant='primary'
+							size='lg'
+							disabled={entryData.teamName.length < 2}
+							onClick={handleCreateTeamSpace}
+						/>
+					</Flex>
 				</S.EntryOptionContainer>
 				<S.EntryOptionContainer>
 					<Flex direction='column' gap='4'>
@@ -71,7 +107,9 @@ const EntryPage = () => {
 							초대링크를 입력하여 팀스페이스에 참가하세요
 						</Text>
 					</Flex>
-					<img alt='collaBear' src={teamParticipation} />
+					<S.ImageWrapper>
+						<img alt='teamParticipation' src={teamParticipation} />
+					</S.ImageWrapper>
 					<S.InputWrapper>
 						<Text size='md' weight='medium'>
 							초대링크
@@ -80,16 +118,24 @@ const EntryPage = () => {
 							size='lg'
 							placeholder='초대링크 입력'
 							isError={false}
-							value={entryData.teamLink}
-							onChange={(e) => handleChange(e, 'teamLink')}
+							value={entryData.teamCode}
+							onChange={(e) => handleChange(e, 'teamCode')}
 						/>
 					</S.InputWrapper>
-					<Button
-						label='참가하기'
-						variant='primary'
-						size='lg'
-						onClick={() => {}}
-					/>
+					<Flex direction='column'>
+						<Flex height='28' align='center'>
+							<Text size='md' weight='regular' color='danger'>
+								{errorText}
+							</Text>
+						</Flex>
+						<Button
+							label='참가하기'
+							variant='primary'
+							size='lg'
+							disabled={entryData.teamCode.length === 0}
+							onClick={handleParticipateTeamSpace}
+						/>
+					</Flex>
 				</S.EntryOptionContainer>
 			</Flex>
 		</Flex>
