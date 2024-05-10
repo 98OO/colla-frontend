@@ -5,12 +5,9 @@ const postParticipateTeamSpace = async (
 	teamSpaceId: string,
 	teamCode: string
 ) => {
-	await axiosInstance.post(
-		`${END_POINTS.PARTICIPATETEAMSPACE}/${teamSpaceId}/users`,
-		{
-			inviteCode: teamCode,
-		}
-	);
+	await axiosInstance.post(`${END_POINTS.TEAMSPACE}/${teamSpaceId}/users`, {
+		inviteCode: teamCode,
+	});
 };
 
 export default postParticipateTeamSpace;

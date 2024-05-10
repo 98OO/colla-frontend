@@ -3,7 +3,7 @@ import { END_POINTS } from '@constants/api';
 
 const getTeamSpaceInformation = async (teamCode: string) => {
 	const response = await axiosInstance.get(
-		`${END_POINTS.PARTICIPATETEAMSPACE}?code=${teamCode}`
+		`${END_POINTS.TEAMSPACE}?code=${teamCode}`
 	);
 
 	return response.data.content;
