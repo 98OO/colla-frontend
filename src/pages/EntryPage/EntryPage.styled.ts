@@ -21,3 +21,11 @@ export const InputWrapper = styled.div`
 		width: 100%;
 	}
 `;
+
+export const ImageWrapper = styled.div`
+	width: 100%;
+
+	img {
+		width: 274px;
+	}
+`;
