@@ -1,16 +1,13 @@
 import { useState, ChangeEvent } from 'react';
-import { useNavigate } from 'react-router-dom';
-import getTeamSpaceInformation from '@apis/teamspace/getTeamSpaceInformation';
-import postParticipateTeamSpace from '@apis/teamspace/postParticipateTeamSpace';
 import { Button } from '@components/common/Button/Button';
 import Flex from '@components/common/Flex/Flex';
 import Heading from '@components/common/Heading/Heading';
 import Input from '@components/common/Input/Input';
 import Text from '@components/common/Text/Text';
 import useCreateTeamSpaceMutation from '@hooks/queries/useCreateTeamSpaceMutation';
+import useParticipateTeamSpaceMutation from '@hooks/queries/useParticipateTeamSpaceMutation';
 import { AxiosError } from 'axios';
 import { HTTPError } from '@apis/HTTPError';
-import { PATH } from '@constants/path';
 import { teamCreation, teamParticipation } from '@assets/png';
 import * as S from './EntryPage.styled';
 
@@ -20,8 +17,10 @@ const EntryPage = () => {
 		teamCode: '',
 	});
 	const [errorText, setErrorText] = useState('');
-	const navigate = useNavigate();
 	const { mutatePostCreateTeamSpace } = useCreateTeamSpaceMutation();
+	const { mutateParticipateTeamSpace } = useParticipateTeamSpaceMutation(
+		entryData.teamCode
+	);
 
 	const handleChange = (
 		e: ChangeEvent<HTMLInputElement>,
@@ -40,14 +39,7 @@ const EntryPage = () => {
 
 	const handleParticipateTeamSpace = async () => {
 		try {
-			const response = await getTeamSpaceInformation(entryData.teamCode);
-			if (!response.isParticipated) {
-				await postParticipateTeamSpace(
-					response.teamspaceId,
-					entryData.teamCode
-				);
-			}
-			navigate(PATH.FEED);
+			await mutateParticipateTeamSpace();
 		} catch (error) {
 			const httpError = error as AxiosError<HTTPError>;
 			setErrorText(httpError.message);
