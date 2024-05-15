@@ -54,7 +54,9 @@ export interface FlexStyleProps {
 	position?: 'static' | 'absolute' | 'relative' | 'fixed' | 'inherit';
 }
 
-export const FlexWrapper = styled.div<FlexStyleProps>`
+export const FlexWrapper = styled.div.withConfig({
+	shouldForwardProp: (prop) => !['gap', 'align'].includes(prop),
+})<FlexStyleProps>`
 	display: flex;
 	flex-direction: ${({ direction }) => direction || 'row'};
 	flex-wrap: ${({ wrap }) => wrap || 'nowrap'};
