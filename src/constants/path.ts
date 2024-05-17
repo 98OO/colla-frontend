@@ -7,4 +7,5 @@ export const PATH = {
 	FEED: '/feed',
 	ENTRY: '/entry',
 	REDIRECT: '/redirect',
+	INVITE: '/invite',
 } as const;

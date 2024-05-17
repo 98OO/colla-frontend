@@ -1,5 +1,6 @@
 import { RouterProvider, createBrowserRouter } from 'react-router-dom';
 import EntryPage from '@pages/EntryPage/EntryPage';
+import InvitePage from '@pages/InvitePage/InvitePage';
 import LandingPage from '@pages/LandingPage/LandingPage';
 import RedirectPage from '@pages/RedirectPage/RedirectPage';
 import SignInPage from '@pages/SignInPage/SignInPage';
@@ -32,6 +33,10 @@ const AppRouter = () => {
 				{
 					path: PATH.ENTRY,
 					element: <EntryPage />,
+				},
+				{
+					path: PATH.INVITE,
+					element: <InvitePage />,
 				},
 			],
 		},
