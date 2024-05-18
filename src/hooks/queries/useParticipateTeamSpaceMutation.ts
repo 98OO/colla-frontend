@@ -5,13 +5,13 @@ import postUserLastSeen from '@apis/user/postUserLastSeen';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { PATH } from '@constants/path';
 
-const useParticipateTeamSpaceMutation = (teamCode: string) => {
+const useParticipateTeamSpaceMutation = () => {
 	const navigate = useNavigate();
 	const queryClient = useQueryClient();
 
 	const postParticipateTeamSpaceMutation = useMutation({
-		mutationFn: () => getTeamSpaceInformation(teamCode),
-		onSuccess: async (content) => {
+		mutationFn: (teamCode: string) => getTeamSpaceInformation(teamCode),
+		onSuccess: async (content, teamCode) => {
 			if (!content.isParticipated) {
 				await postParticipateTeamSpace(content.teamspaceId, teamCode);
 			}
