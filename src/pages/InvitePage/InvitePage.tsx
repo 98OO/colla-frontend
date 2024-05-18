@@ -11,7 +11,6 @@ import { Colla } from '@assets/svg';
 const InvitePage = () => {
 	const navigate = useNavigate();
 	const { search } = useLocation();
-	const [inviteCode, setInviteCode] = useState('');
 	const [isCodeError, setIsCodeError] = useState(false);
 	const { mutateParticipateTeamSpace } = useParticipateTeamSpaceMutation();
 
@@ -23,7 +22,7 @@ const InvitePage = () => {
 		}
 	};
 
-	const participateTeampSpace = async () => {
+	const participateTeampSpace = async (inviteCode: string) => {
 		try {
 			await mutateParticipateTeamSpace(inviteCode);
 		} catch (error) {
@@ -38,15 +37,9 @@ const InvitePage = () => {
 	useEffect(() => {
 		const code = new URL(window.location.href).searchParams.get('code');
 		if (code) {
-			setInviteCode(code);
+			participateTeampSpace(code);
 		}
 	}, []);
-
-	useEffect(() => {
-		if (inviteCode) {
-			participateTeampSpace();
-		}
-	}, [inviteCode]);
 
 	return (
 		<Flex>
