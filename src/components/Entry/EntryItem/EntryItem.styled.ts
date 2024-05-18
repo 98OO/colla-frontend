@@ -1,7 +1,7 @@
 import { styled } from 'styled-components';
 import theme from '@styles/theme';
 
-export const EntryOptionContainer = styled.div`
+export const FormContainer = styled.form`
 	display: flex;
 	flex-direction: column;
 	width: 50%;
