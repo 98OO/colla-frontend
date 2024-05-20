@@ -1,23 +1,21 @@
 import { useNavigate } from 'react-router-dom';
 import postOauthLogin from '@apis/user/postOauthLogin';
 import { useMutation } from '@tanstack/react-query';
-import useUserStore from '@stores/userStore';
-import { ACCESS_TOKEN } from '@constants/api';
+import { ACCESS_TOKEN, INVITE_URL } from '@constants/api';
 import { PATH } from '@constants/path';
 
 const useOauthLoginMutation = () => {
-	const { userInfo, setUserInfo } = useUserStore();
 	const navigate = useNavigate();
+	const inviteUrl = window.sessionStorage.getItem(INVITE_URL);
 
 	const postOauthLoginMutation = useMutation({
 		mutationFn: postOauthLogin,
 		onSuccess: (content) => {
-			if (content.hasTeam) {
-				localStorage.setItem(ACCESS_TOKEN, content.accessToken);
-				setUserInfo({
-					...userInfo!,
-					userId: content.userId,
-				});
+			localStorage.setItem(ACCESS_TOKEN, content.accessToken);
+			if (inviteUrl) {
+				window.sessionStorage.removeItem(INVITE_URL);
+				navigate(`${PATH.INVITE}${inviteUrl}`);
+			} else if (content.hasTeam) {
 				navigate(PATH.FEED);
 			} else {
 				navigate(PATH.ENTRY);

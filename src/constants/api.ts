@@ -47,6 +47,8 @@ export const NETWORK_TIMEOUT = 100000;
 
 export const ACCESS_TOKEN = 'ACCESS_TOKEN';
 
+export const INVITE_URL = 'INVITE_URL';
+
 export const AUTH_API_URL = {
 	KAKAO: `https://kauth.kakao.com/oauth/authorize?client_id=${import.meta.env.VITE_KAKAO_REST_API_KEY}&redirect_uri=${import.meta.env.VITE_KAKAO_REDIRECT_URL}&response_type=code`,
 	GOOGLE: `https://accounts.google.com/o/oauth2/v2/auth?client_id=${import.meta.env.VITE_GOOGLE_CLIENT_ID}&redirect_uri=${import.meta.env.VITE_GOOGLE_REDIRECT_URL}&response_type=code&scope=email+profile`,
