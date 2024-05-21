@@ -29,11 +29,11 @@ const MenuItem = (props: MenuItemProps) => {
 					</Text>
 				</S.MenuItemTextWrapper>
 			)}
-			<Badge
-				type={type === 'default' ? 'number' : 'dot'}
-				status='info'
-				{...(type === 'default' && { number })}
-			/>
+			{type === 'default' && number != null ? (
+				<Badge type='number' status='info' number={number} />
+			) : (
+				type === 'iconOnly' && <Badge type='dot' status='info' />
+			)}
 		</S.MenuItemContainer>
 	);
 };
