@@ -9,12 +9,19 @@ export interface MenuItemProps {
 	title?: string;
 	selected: boolean;
 	number?: number;
-	type: 'default' | 'iconOnly';
+	type?: 'default' | 'iconOnly';
 	onClick: React.MouseEventHandler<HTMLButtonElement>;
 }
 
 const MenuItem = (props: MenuItemProps) => {
-	const { leadingIcon, title, selected, number, type, onClick } = props;
+	const {
+		leadingIcon,
+		title,
+		selected,
+		number,
+		type = 'default',
+		onClick,
+	} = props;
 
 	return (
 		<S.MenuItemContainer type={type} selected={selected} onClick={onClick}>
