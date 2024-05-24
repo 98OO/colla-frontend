@@ -23,7 +23,10 @@ export const InputWrapper = styled.div`
 `;
 
 export const ImageWrapper = styled.div`
+	display: flex;
+	justify-content: center;
 	width: 100%;
+	height: 216px;
 
 	img {
 		width: 274px;
