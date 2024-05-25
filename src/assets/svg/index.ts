@@ -13,3 +13,5 @@ export { ReactComponent as Mic } from './mic.svg';
 export { ReactComponent as Settings } from './settings.svg';
 export { ReactComponent as Help } from './help-circle.svg';
 export { ReactComponent as PlusBox } from './plus-square.svg';
+export { ReactComponent as Warning } from './warning-circle.svg';
+export { ReactComponent as Success } from './check-circle.svg';
