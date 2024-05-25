@@ -1,6 +1,7 @@
 import { Outlet, useLocation } from 'react-router-dom';
 import SNBFull from '@components/common/SideNavigationBar/SNBFull/SNBFull';
 import SNBIcon from '@components/common/SideNavigationBar/SNBIcon/SNBIcon';
+import ToastContainer from '@components/common/ToastContainer/ToastContainer';
 import useWindowWidth from '@hooks/window/useWindowWidth';
 import { PATH } from '@constants/path';
 
@@ -22,6 +23,7 @@ function App() {
 			<main>
 				<Outlet />
 			</main>
+			<ToastContainer />
 		</>
 	);
 }
