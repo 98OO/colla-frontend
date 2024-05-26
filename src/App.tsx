@@ -1,4 +1,6 @@
 import { Outlet, useLocation } from 'react-router-dom';
+import Flex from '@components/common/Flex/Flex';
+import GNB from '@components/common/GNB/GNB';
 import SNBFull from '@components/common/SideNavigationBar/SNBFull/SNBFull';
 import SNBIcon from '@components/common/SideNavigationBar/SNBIcon/SNBIcon';
 import ToastContainer from '@components/common/ToastContainer/ToastContainer';
@@ -17,14 +19,18 @@ function App() {
 	].some((path) => location.pathname.includes(path));
 
 	return (
-		<>
-			{isSideNavigationBarVisible && (isMobileView ? <SNBIcon /> : <SNBFull />)}
-			{isChatPage && <SNBIcon />}
-			<main>
-				<Outlet />
-			</main>
-			<ToastContainer />
-		</>
+		<Flex direction='column'>
+			{isSideNavigationBarVisible && <GNB />}
+			<Flex>
+				{isSideNavigationBarVisible &&
+					(isMobileView ? <SNBIcon /> : <SNBFull />)}
+				{isChatPage && <SNBIcon />}
+				<main>
+					<Outlet />
+				</main>
+				<ToastContainer />
+			</Flex>
+		</Flex>
 	);
 }
 
