@@ -28,32 +28,36 @@ const Profile = (props: ProfileProps) => {
 
 	return (
 		<S.ProfileContainer>
-			<Avatar profile={profile} initial={initial} size='md' shape='circle' />
-			<Flex direction='column' justify='center' gap='2'>
-				<Flex align='center' gap='6'>
-					<Text
-						size={text ? 'sm' : 'lg'}
-						weight={text || subTitle ? 'semiBold' : 'regular'}>
-						{title}
-					</Text>
-					{subTitle && (
-						<Text size='sm' weight='regular' color='tertiary'>
-							{subTitle}
+			<Flex gap='8' align='center'>
+				<Avatar profile={profile} initial={initial} size='md' shape='circle' />
+				<Flex direction='column' gap='2'>
+					<Flex align='center' gap='6'>
+						<Text
+							size={text ? 'sm' : 'lg'}
+							weight={text || subTitle ? 'semiBold' : 'regular'}>
+							{title}
+						</Text>
+						{subTitle && (
+							<Text size='sm' weight='regular' color='tertiary'>
+								{subTitle}
+							</Text>
+						)}
+					</Flex>
+					{text && (
+						<Text size='sm' weight='regular' color='secondary'>
+							{text}
 						</Text>
 					)}
 				</Flex>
-				{text && (
+			</Flex>
+			<Flex gap='8' align='center'>
+				{trailingIcon && <Icon name={trailingIcon} />}
+				{trailingText && (
 					<Text size='sm' weight='regular' color='secondary'>
-						{text}
+						{trailingText}
 					</Text>
 				)}
 			</Flex>
-			{trailingIcon && <Icon name={trailingIcon} />}
-			{trailingText && (
-				<Text size='sm' weight='regular' color='secondary'>
-					{trailingText}
-				</Text>
-			)}
 		</S.ProfileContainer>
 	);
 };

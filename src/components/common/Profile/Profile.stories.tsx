@@ -9,6 +9,14 @@ const meta = {
 		componentSubtitle:
 			'Profile 컴포넌트는 사용자 정보를 표시하는 공용 컴포넌트입니다.',
 	},
+	decorators: [
+		(Story) => (
+			<div
+				style={{ width: '300px', display: 'flex', justifyContent: 'center' }}>
+				<Story />
+			</div>
+		),
+	],
 	tags: ['autodocs'],
 	argTypes: {
 		profile: {
