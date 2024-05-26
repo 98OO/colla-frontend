@@ -7,7 +7,7 @@ export const Container = styled.div`
 	width: 240px;
 	padding: ${theme.units.spacing.space24} ${theme.units.spacing.space16};
 	gap: ${theme.units.spacing.space24};
-	height: 100vh;
+	height: calc(100vh - 64px);
 	border-right: 1px solid ${theme.color.border.tertiary};
 `;
 
@@ -26,9 +26,6 @@ export const ButtonWrapper = styled.button`
 	background: none;
 	border: none;
 	border-radius: ${theme.units.radius.radius4};
-	font-size: ${theme.typography.fontSize.body.md};
-	font-weight: ${theme.typography.fontWeight.medium};
-	color: ${theme.color.text.tertiary};
 	padding: 0 ${theme.units.spacing.space12};
 
 	&:hover {
