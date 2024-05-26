@@ -49,6 +49,18 @@ export const ACCESS_TOKEN = 'ACCESS_TOKEN';
 
 export const INVITE_URL = 'INVITE_URL';
 
+export const HTTP_ERROR_MESSAGE = {
+	[HTTP_STATUS_CODE.NOT_FOUND]: {
+		HEADING: '길을 잃으셨나요?',
+		BODY: {
+			firstLine: '페이지를 찾을 수 없습니다',
+			secondLine: '존재하지 않는 주소를 입력하셨거나',
+			thridLine: '요청하신 페이지의 주소가 변경, 삭제되어 찾을 수 없습니다',
+		},
+		BUTTON: '홈으로 이동',
+	},
+};
+
 export const AUTH_API_URL = {
 	KAKAO: `https://kauth.kakao.com/oauth/authorize?client_id=${import.meta.env.VITE_KAKAO_REST_API_KEY}&redirect_uri=${import.meta.env.VITE_KAKAO_REDIRECT_URL}&response_type=code`,
 	GOOGLE: `https://accounts.google.com/o/oauth2/v2/auth?client_id=${import.meta.env.VITE_GOOGLE_CLIENT_ID}&redirect_uri=${import.meta.env.VITE_GOOGLE_REDIRECT_URL}&response_type=code&scope=email+profile`,
