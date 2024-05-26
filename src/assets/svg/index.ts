@@ -15,3 +15,7 @@ export { ReactComponent as Help } from './help-circle.svg';
 export { ReactComponent as PlusBox } from './plus-square.svg';
 export { ReactComponent as Warning } from './warning-circle.svg';
 export { ReactComponent as Success } from './check-circle.svg';
+export { ReactComponent as Bell } from './bell.svg';
+export { ReactComponent as Search } from './search.svg';
+export { ReactComponent as User } from './user-plus.svg';
+export { ReactComponent as Updown } from './chevrons-updown.svg';

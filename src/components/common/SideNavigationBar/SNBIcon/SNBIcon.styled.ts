@@ -5,7 +5,7 @@ export const Container = styled.div`
 	display: flex;
 	flex-direction: column;
 	width: 88px;
-	height: 100vh;
+	height: calc(100vh - 64px);
 
 	padding: ${theme.units.spacing.space24} ${theme.units.spacing.space16};
 	gap: ${theme.units.spacing.space24};
