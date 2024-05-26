@@ -51,7 +51,7 @@ const Profile = (props: ProfileProps) => {
 				</Flex>
 			</Flex>
 			<Flex gap='8' align='center'>
-				{trailingIcon && <Icon name={trailingIcon} />}
+				{trailingIcon && <Icon name={trailingIcon} size='sm' />}
 				{trailingText && (
 					<Text size='sm' weight='regular' color='secondary'>
 						{trailingText}
