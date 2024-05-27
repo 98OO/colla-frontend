@@ -59,6 +59,25 @@ export const HTTP_ERROR_MESSAGE = {
 		},
 		BUTTON: '홈으로 이동',
 	},
+	[HTTP_STATUS_CODE.INTERNAL_SERVER_ERROR]: {
+		HEADING: '앗, 뭔가 문제가 생겼어요..',
+		BODY: {
+			firstLine: '서비스와 연결할 수 없습니다',
+			secondLine: '문제를 해결하기 위해 열심히 노력하고 있습니다',
+			thridLine: '잠시 후 다시 확인해주세요',
+		},
+		BUTTON: '홈으로 이동',
+	},
+	DEFAULT: {
+		HEADING: '앗, 뭔가 문제가 생겼어요..',
+		BODY: {
+			firstLine: '일시적인 오류로 현재 요청사항을 처리하는데 실패했습니다',
+			secondLine: '잠시 후 다시 한 번 시도해주세요',
+			thridLine:
+				'지속적으로 발생할 경우 새로 고침하거나 다른 페이지로 이동해주세요',
+		},
+		BUTTON: '다시 시도',
+	},
 };
 
 export const AUTH_API_URL = {
