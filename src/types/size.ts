@@ -13,3 +13,5 @@ export type buttonSize = Extract<Size, 'lg' | 'md' | 'sm'>;
 export type dividerSize = Extract<Size, 'xl' | 'lg' | 'md' | 'sm'>;
 
 export type AvatarSize = Extract<Size, 'xl' | 'lg' | 'md' | 'sm' | 'xs'>;
+
+export type selectSize = Extract<Size, 'lg' | 'md' | 'sm'>;
