@@ -19,3 +19,6 @@ export { ReactComponent as Bell } from './bell.svg';
 export { ReactComponent as Search } from './search.svg';
 export { ReactComponent as User } from './user-plus.svg';
 export { ReactComponent as Updown } from './chevrons-updown.svg';
+export { ReactComponent as Down } from './chevron-down.svg';
+export { ReactComponent as Up } from './chevron-up.svg';
+export { ReactComponent as Check } from './check.svg';
