@@ -1,5 +1,6 @@
 import { Outlet, useLocation } from 'react-router-dom';
 import Flex from '@components/common/Flex/Flex';
+import GlobalErrorBoundary from '@components/common/GlobalErrorBoundary/GlobalErrorBoundary';
 import GNB from '@components/common/GNB/GNB';
 import SNBFull from '@components/common/SideNavigationBar/SNBFull/SNBFull';
 import SNBIcon from '@components/common/SideNavigationBar/SNBIcon/SNBIcon';
@@ -19,18 +20,20 @@ function App() {
 	].some((path) => location.pathname.includes(path));
 
 	return (
-		<Flex direction='column'>
-			{isSideNavigationBarVisible && <GNB />}
-			<Flex>
-				{isSideNavigationBarVisible &&
-					(isMobileView ? <SNBIcon /> : <SNBFull />)}
-				{isChatPage && <SNBIcon />}
-				<main>
-					<Outlet />
-				</main>
-				<ToastContainer />
+		<GlobalErrorBoundary>
+			<Flex direction='column'>
+				{isSideNavigationBarVisible && <GNB />}
+				<Flex>
+					{isSideNavigationBarVisible &&
+						(isMobileView ? <SNBIcon /> : <SNBFull />)}
+					{isChatPage && <SNBIcon />}
+					<main>
+						<Outlet />
+					</main>
+					<ToastContainer />
+				</Flex>
 			</Flex>
-		</Flex>
+		</GlobalErrorBoundary>
 	);
 }
 

@@ -6,18 +6,17 @@ import { HTTP_STATUS_CODE, HTTP_ERROR_MESSAGE } from '@constants/api';
 import { signPost } from '@assets/png';
 import * as S from './Error.styled';
 
-type ErrorCode = typeof HTTP_STATUS_CODE.NOT_FOUND;
-
 interface ErrorProps {
-	errorCode: ErrorCode;
+	errorCode: number;
 	resetError: () => void;
 }
 
-const Error = ({
-	errorCode = HTTP_STATUS_CODE.NOT_FOUND,
-	resetError,
-}: ErrorProps) => {
-	const errorMessage = HTTP_ERROR_MESSAGE[errorCode];
+const Error = ({ errorCode, resetError }: ErrorProps) => {
+	const errorMessage =
+		errorCode === HTTP_STATUS_CODE.NOT_FOUND ||
+		errorCode === HTTP_STATUS_CODE.INTERNAL_SERVER_ERROR
+			? HTTP_ERROR_MESSAGE[errorCode]
+			: HTTP_ERROR_MESSAGE.DEFAULT;
 
 	return (
 		<Flex gap='72' align='center'>
