@@ -9,6 +9,7 @@ export const END_POINTS = {
 	NEWTOKEN: 'auth/refresh',
 	OAUTHSIGNIN: `auth/oauth`,
 	AUTHMAILSEND: 'auth/mail/send',
+	AUTHDUPLICATION: 'auth/mail/duplication',
 	AUTHMAILVERIFICATION: 'auth/mail/verification',
 	AUTHREGISTER: 'auth/register',
 	USERSTATUS: 'users/status',
