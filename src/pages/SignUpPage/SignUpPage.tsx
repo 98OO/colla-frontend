@@ -1,11 +1,11 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import postAuthMail from '@apis/user/postAuthMail';
-import postMailVerification from '@apis/user/postMailVerification';
 import { Button } from '@components/common/Button/Button';
 import Flex from '@components/common/Flex/Flex';
 import Input from '@components/common/Input/Input';
 import Text from '@components/common/Text/Text';
+import useDuplicationMutation from '@hooks/queries/signup/useDuplicationMutation';
+import useVerificationMutation from '@hooks/queries/signup/useVerificationMutation';
 import useRegisterMutation from '@hooks/queries/useRegisterMutation';
 import useForm from '@hooks/user/useForm';
 import { PATH } from '@constants/path';
@@ -15,12 +15,15 @@ import * as S from './SignUpPage.styled';
 const SignUpPage = () => {
 	const [requested, setRequested] = useState(false);
 	const [verified, setVerified] = useState(false);
-	const { mutatePostRegister } = useRegisterMutation();
 	const navigate = useNavigate();
+	const { mutateDuplication } = useDuplicationMutation();
+	const { mutateVerification } = useVerificationMutation();
+	const { mutateRegister } = useRegisterMutation();
+
 	const { formData, submitting, errors, register, handleSubmit } = useForm({
 		subscribe: [{ fieldName: 'verifyCode', value: verified }],
 		onSubmit: async () => {
-			await mutatePostRegister({
+			await mutateRegister({
 				username: formData.username,
 				password: formData.password,
 				email: formData.email,
@@ -29,17 +32,19 @@ const SignUpPage = () => {
 		},
 	});
 
-	const handleRequest = () => {
-		postAuthMail(formData.email);
-		setRequested(true);
-		alert('인증 메일을 보냈습니다.');
+	const handleRequest = async () => {
+		try {
+			await mutateDuplication(formData.email);
+			setRequested(true);
+		} catch (error) {
+			setRequested(false);
+		}
 	};
 
 	const handleVerification = async () => {
 		try {
-			await postMailVerification(formData.email, formData.verifyCode);
+			mutateVerification(formData.email, formData.verifyCode);
 			setVerified(true);
-			alert('이메일 인증에 성공했습니다.');
 		} catch (error) {
 			setVerified(false);
 		}

@@ -1,14 +1,14 @@
 import { axiosInstance } from '@apis/axiosInstance';
 import { END_POINTS } from '@constants/api';
 
-interface registerData {
+export interface RegisterData {
 	username: string;
 	email: string;
 	password: string;
 	verifyCode: string;
 }
 
-const postRegister = async (props: registerData) => {
+const postRegister = async (props: RegisterData) => {
 	const response = await axiosInstance.post(
 		`${END_POINTS.AUTHREGISTER}`,
 		{
