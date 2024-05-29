@@ -9,11 +9,13 @@ export const END_POINTS = {
 	NEWTOKEN: 'auth/refresh',
 	OAUTHSIGNIN: `auth/oauth`,
 	AUTHMAILSEND: 'auth/mail/send',
+	AUTHDUPLICATION: 'auth/mail/duplication',
 	AUTHMAILVERIFICATION: 'auth/mail/verification',
 	AUTHREGISTER: 'auth/register',
 	USERSTATUS: 'users/status',
 	USERLASTSEEN: 'users/last-seen',
 	TEAMSPACE: 'teamspaces',
+	PRESIGNED: 'presigned',
 } as const;
 
 export const AUTH_ERROR_CODE = {
