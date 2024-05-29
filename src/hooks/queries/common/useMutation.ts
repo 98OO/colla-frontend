@@ -10,10 +10,12 @@ type Props<T> = {
 export const useMutation = <T>({ onSuccess, onError }: Props<T>) => {
 	const [error, setError] = useState<HTTPError | null>(null);
 
+	// eslint-disable-next-line consistent-return
 	const mutate = async (fetchFn: FetchFn<T>) => {
 		try {
 			const data = await fetchFn();
 			if (onSuccess) onSuccess(data);
+			return data;
 		} catch (err) {
 			if (err instanceof HTTPError) {
 				if (!onError) setError(err);
