@@ -53,9 +53,9 @@ const SNBIcon = () => {
 					<Divider size='sm' />
 					<MenuItem
 						leadingIcon='Settings'
-						selected={false}
+						selected={location.pathname === PATH.SETTING}
 						type='iconOnly'
-						onClick={() => ''}
+						onClick={() => navigate(PATH.SETTING)}
 					/>
 					<MenuItem
 						leadingIcon='PlusBox'
