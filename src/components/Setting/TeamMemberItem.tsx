@@ -30,12 +30,12 @@ const TeamMemberItem = (props: TeamMemberItemProps) => {
 					text={email}
 				/>
 			</Flex>
-			<Flex grow='1' paddingRight='8' paddingLeft='8' align='center'>
+			<Flex grow='1' basis='0' paddingRight='8' paddingLeft='8' align='center'>
 				<Text size='md' weight='medium'>
 					{role}
 				</Text>
 			</Flex>
-			<Flex grow='1' paddingRight='8' paddingLeft='8' align='center'>
+			<Flex grow='1' basis='0' paddingRight='8' paddingLeft='8' align='center'>
 				<Select
 					size='sm'
 					options={tagOption}
