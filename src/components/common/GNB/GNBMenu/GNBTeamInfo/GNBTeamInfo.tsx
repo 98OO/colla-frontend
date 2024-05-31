@@ -122,14 +122,14 @@ const GNBTeamInfo = () => {
 					<Divider size='sm' padding={4} />
 					<Flex paddingLeft='16' paddingRight='16' justify='space-between'>
 						<S.FooterWrapper onClick={() => navigate(PATH.SETTING)}>
-							<Icon name='Home' size='sm' color='iSecondary' />
+							<Icon name='Settings' size='sm' color='iSecondary' />
 							<Text size='md' weight='medium' color='secondary'>
 								설정
 							</Text>
 						</S.FooterWrapper>
 						<S.FooterWrapper
 							onClick={() => mutateTeampSpaceCode(lastSeenTeam.teamspaceId)}>
-							<Icon name='Home' size='sm' color='iSecondary' />
+							<Icon name='Link' size='sm' color='iSecondary' />
 							<Text size='md' weight='medium' color='secondary'>
 								초대 코드
 							</Text>

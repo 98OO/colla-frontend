@@ -81,7 +81,7 @@ const GNBTeamSpace = () => {
 					<Divider size='sm' padding={4} />
 					<Flex paddingLeft='16' paddingRight='16'>
 						<S.FooterContainer onClick={() => navigate(PATH.ENTRY)}>
-							<Icon name='Home' size='sm' color='iSecondary' />
+							<Icon name='PlusBox' size='sm' color='iSecondary' />
 							<Text size='md' weight='medium' color='secondary'>
 								새 팀스페이스 생성 또는 참여
 							</Text>

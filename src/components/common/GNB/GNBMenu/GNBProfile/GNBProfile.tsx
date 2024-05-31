@@ -35,13 +35,13 @@ const GNBProfile = () => {
 					<Divider size='sm' padding={4} />
 					<Flex direction='column' gap='4'>
 						<MenuItem
-							leadingIcon='Home'
+							leadingIcon='Profile'
 							title='마이페이지'
 							selected={false}
 							onClick={() => navigate(PATH.MYPAGE)}
 						/>
 						<MenuItem
-							leadingIcon='Home'
+							leadingIcon='Mail'
 							title='문의하기'
 							selected={false}
 							onClick={() => ''}
@@ -49,7 +49,7 @@ const GNBProfile = () => {
 					</Flex>
 					<Divider size='sm' padding={4} />
 					<MenuItem
-						leadingIcon='Home'
+						leadingIcon='LogOut'
 						title='로그아웃'
 						selected={false}
 						onClick={handleLogOut}
