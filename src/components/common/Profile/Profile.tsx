@@ -10,6 +10,7 @@ export interface ProfileProps {
 	profile: string | null;
 	initial: string;
 	avatarSize?: AvatarSize;
+	avatarShape?: 'circle' | 'rect';
 	title: string;
 	titleSize?: fontSize;
 	titleWeight?: 'regular' | 'medium' | 'semiBold' | 'bold';
@@ -17,6 +18,7 @@ export interface ProfileProps {
 	text?: string;
 	trailingIcon?: iconName;
 	trailingText?: string;
+	onClick?: (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => void;
 }
 
 const Profile = (props: ProfileProps) => {
@@ -24,6 +26,7 @@ const Profile = (props: ProfileProps) => {
 		profile,
 		initial,
 		avatarSize = 'md',
+		avatarShape = 'circle',
 		title,
 		titleSize = 'md',
 		titleWeight = 'semiBold',
@@ -31,16 +34,17 @@ const Profile = (props: ProfileProps) => {
 		text,
 		trailingIcon,
 		trailingText,
+		onClick,
 	} = props;
 
 	return (
-		<S.ProfileContainer>
+		<S.ProfileContainer onClick={onClick}>
 			<Flex gap='8' align='center'>
 				<Avatar
 					profile={profile}
 					initial={initial}
 					size={avatarSize}
-					shape='circle'
+					shape={avatarShape}
 				/>
 				<Flex direction='column' gap='4'>
 					<Flex align='center' gap='6'>
