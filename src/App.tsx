@@ -31,9 +31,9 @@ function App() {
 					<main>
 						<Outlet />
 					</main>
-					<ToastContainer />
 				</Flex>
 			</Flex>
+			<ToastContainer />
 		</GlobalErrorBoundary>
 	);
 }

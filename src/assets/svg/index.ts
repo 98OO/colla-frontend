@@ -22,3 +22,7 @@ export { ReactComponent as Updown } from './chevrons-updown.svg';
 export { ReactComponent as Down } from './chevron-down.svg';
 export { ReactComponent as Up } from './chevron-up.svg';
 export { ReactComponent as Check } from './check.svg';
+export { ReactComponent as Link } from './link.svg';
+export { ReactComponent as LogOut } from './log-out.svg';
+export { ReactComponent as Mail } from './mail.svg';
+export { ReactComponent as Profile } from './user.svg';

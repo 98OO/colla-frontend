@@ -80,7 +80,7 @@ const SNBFull = () => {
 					)}
 					<S.ButtonWrapper onClick={() => navigate(PATH.ENTRY)}>
 						<Text size='md' weight='medium' color='tertiary'>
-							새팀스페이스 생성
+							새 팀스페이스 생성
 						</Text>
 					</S.ButtonWrapper>
 					<S.ButtonWrapper>

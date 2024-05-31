@@ -9,9 +9,12 @@ const dividerSizeMap = {
 	sm: '1px',
 };
 
-export const DividerContainer = styled.div<DividerProps>`
+export const DividerContainer = styled.div<Omit<DividerProps, 'size'>>`
+	padding: ${(props) => (props.padding ? `${props.padding}px 0` : '0')};
+`;
+
+export const DividerWrapper = styled.div<DividerProps>`
 	border-bottom: ${(props) => dividerSizeMap[props.size]} solid
 		${theme.color.border.tertiary};
-	width: 100%;
 	height: ${(props) => dividerSizeMap[props.size]};
 `;
