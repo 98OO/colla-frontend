@@ -10,8 +10,8 @@ export interface SelectContainerProps {
 
 interface SelectProps extends SelectContainerProps {
 	options?: string[] | null;
-	select: string;
-	setSelect: (value: string) => void;
+	select: string | null;
+	setSelect: (index: number) => void;
 }
 
 const Select = (props: SelectProps) => {
@@ -32,8 +32,8 @@ const Select = (props: SelectProps) => {
 		setIsOpen((prevIsOpen) => !prevIsOpen);
 	};
 
-	const handleSelect = (value: string) => {
-		setSelect(value);
+	const handleSelect = (index: number) => {
+		setSelect(index);
 		setIsOpen(false);
 	};
 
@@ -54,10 +54,10 @@ const Select = (props: SelectProps) => {
 			</S.ButtonWrapper>
 			{isOpen && options && (
 				<S.SelectOptionContainer>
-					{options?.map((option) => (
+					{options?.map((option, index) => (
 						<S.SelectOptionWrapper
 							key={option}
-							onClick={() => handleSelect(option)}>
+							onClick={() => handleSelect(index + 1)}>
 							<Text size='md' weight='medium'>
 								{option}
 							</Text>

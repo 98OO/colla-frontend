@@ -2,13 +2,17 @@ import Avatar from '@components/common/Avatar/Avatar';
 import Flex from '@components/common/Flex/Flex';
 import Icon from '@components/common/Icon/Icon';
 import Text from '@components/common/Text/Text';
+import { AvatarSize, fontSize } from '@type/size';
 import { iconName } from '@type/tokens';
 import * as S from './Profile.styled';
 
 export interface ProfileProps {
 	profile: string | null;
 	initial: string;
+	avatarSize?: AvatarSize;
 	title: string;
+	titleSize?: fontSize;
+	titleWeight?: 'regular' | 'medium' | 'semiBold' | 'bold';
 	subTitle?: string;
 	text?: string;
 	trailingIcon?: iconName;
@@ -19,7 +23,10 @@ const Profile = (props: ProfileProps) => {
 	const {
 		profile,
 		initial,
+		avatarSize = 'md',
 		title,
+		titleSize = 'md',
+		titleWeight = 'semiBold',
 		subTitle,
 		text,
 		trailingIcon,
@@ -29,12 +36,15 @@ const Profile = (props: ProfileProps) => {
 	return (
 		<S.ProfileContainer>
 			<Flex gap='8' align='center'>
-				<Avatar profile={profile} initial={initial} size='md' shape='circle' />
-				<Flex direction='column' gap='2'>
+				<Avatar
+					profile={profile}
+					initial={initial}
+					size={avatarSize}
+					shape='circle'
+				/>
+				<Flex direction='column' gap='4'>
 					<Flex align='center' gap='6'>
-						<Text
-							size={text ? 'sm' : 'lg'}
-							weight={text || subTitle ? 'semiBold' : 'regular'}>
+						<Text size={titleSize} weight={titleWeight}>
 							{title}
 						</Text>
 						{subTitle && (

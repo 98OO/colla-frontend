@@ -10,4 +10,5 @@ export const PATH = {
 	INVITE: '/invite',
 	DOCUMENT: '/document',
 	PRESENTATION: '/presentation',
+	SETTING: '/setting',
 } as const;

@@ -4,6 +4,7 @@ import InvitePage from '@pages/InvitePage/InvitePage';
 import LandingPage from '@pages/LandingPage/LandingPage';
 import NotFoundPage from '@pages/NotFoundPage/NotFoundPage';
 import RedirectPage from '@pages/RedirectPage/RedirectPage';
+import SettingPage from '@pages/SettingPage/SettingPage';
 import SignInPage from '@pages/SignInPage/SignInPage';
 import SignUpPage from '@pages/SignUpPage/SignUpPage';
 import { PATH } from '@constants/path';
@@ -39,6 +40,10 @@ const AppRouter = () => {
 				{
 					path: PATH.INVITE,
 					element: <InvitePage />,
+				},
+				{
+					path: PATH.SETTING,
+					element: <SettingPage />,
 				},
 			],
 		},

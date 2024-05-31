@@ -35,7 +35,7 @@ export const SelectOptionContainer = styled.ul`
 	flex-direction: column;
 	position: absolute;
 	top: 110%;
-	z-index: 1;
+	z-index: ${theme.elevation.zIndex.MENU};
 	gap: ${theme.units.spacing.space4};
 	border: 1px solid ${theme.color.border.tertiary};
 	background-color: ${theme.color.bg.primary};

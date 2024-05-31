@@ -23,7 +23,7 @@ const GNB = () => {
 							size='lg'
 							shape='rect'
 						/>
-						<Heading size='md'>팀이름</Heading>
+						<Heading size='md'>{lastSeenTeam.name}</Heading>
 						<IconButton icon='Updown' ariaLabel='Updown' onClick={() => ''} />
 					</S.LeftContainer>
 					<S.RightContainer>

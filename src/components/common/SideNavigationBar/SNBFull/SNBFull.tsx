@@ -4,12 +4,20 @@ import Divider from '@components/common/Divider/Divider';
 import Flex from '@components/common/Flex/Flex';
 import Heading from '@components/common/Heading/Heading';
 import MenuItem from '@components/common/SideNavigationBar/MenuItem/MenuItem';
+import Text from '@components/common/Text/Text';
+import useUserStatusQuery from '@hooks/queries/useUserStatusQuery';
 import { PATH } from '@constants/path';
 import * as S from './SNBFull.styled';
 
 const SNBFull = () => {
 	const navigate = useNavigate();
 	const location = useLocation();
+	const { userStatus } = useUserStatusQuery();
+	const lastSeenTeamspaceId = userStatus?.profile.lastSeenTeamspaceId;
+	const teamspaces = userStatus?.participatedTeamspaces;
+	const teamRole = teamspaces?.find(
+		(teamspace) => teamspace.teamspaceId === lastSeenTeamspaceId
+	)?.teamspaceRole;
 
 	return (
 		<S.Container>
@@ -58,11 +66,28 @@ const SNBFull = () => {
 				</Flex>
 				<Flex direction='column' gap='8'>
 					<Divider size='sm' />
-					<S.ButtonWrapper>팀스페이스 설정</S.ButtonWrapper>
+					{teamRole === 'LEADER' && (
+						<S.ButtonWrapper onClick={() => navigate(PATH.SETTING)}>
+							<Text
+								size='md'
+								weight='medium'
+								color={
+									location.pathname === PATH.SETTING ? 'info' : 'tertiary'
+								}>
+								팀스페이스 설정
+							</Text>
+						</S.ButtonWrapper>
+					)}
 					<S.ButtonWrapper onClick={() => navigate(PATH.ENTRY)}>
-						새 팀스페이스 생성
+						<Text size='md' weight='medium' color='tertiary'>
+							새팀스페이스 생성
+						</Text>
 					</S.ButtonWrapper>
-					<S.ButtonWrapper>도움말</S.ButtonWrapper>
+					<S.ButtonWrapper>
+						<Text size='md' weight='medium' color='tertiary'>
+							도움말
+						</Text>
+					</S.ButtonWrapper>
 				</Flex>
 			</Flex>
 		</S.Container>
