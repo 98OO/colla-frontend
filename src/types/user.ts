@@ -17,10 +17,28 @@ interface ParticipatedTeamspace {
 	name: string;
 	profileImageUrl: string;
 	teamspaceRole: string;
-	numOfParticipant: number;
+	numOfParticipants: number;
 }
 
 export interface UserInformation {
 	profile: UserProfile;
 	participatedTeamspaces: ParticipatedTeamspace[];
+}
+
+export interface Tag {
+	id: number;
+	name: string;
+}
+
+export interface TeamSpaceUser {
+	id: number;
+	profileImageUrl: string;
+	username: string;
+	email: string;
+	role: 'LEADER' | 'MEMBER';
+	tag: Tag | null;
+}
+
+export interface TeamSpaceUserList {
+	users: TeamSpaceUser[];
 }
