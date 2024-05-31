@@ -15,14 +15,6 @@ export const GNBTeamSpaceContainer = styled.div`
 	padding: ${theme.units.spacing.space8} 0;
 `;
 
-export const TeamSpacesContainer = styled.div`
-	display: flex;
-	flex-direction: column;
-
-	padding: ${theme.units.spacing.space8} ${theme.units.spacing.space16};
-	gap: ${theme.units.spacing.space8};
-`;
-
 export const TeamSpacesWrapper = styled.div`
 	display: flex;
 	flex-direction: column;

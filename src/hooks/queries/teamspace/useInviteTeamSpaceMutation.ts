@@ -9,11 +9,9 @@ const useInviteTeamSpace = () => {
 	const { showBoundary } = useErrorBoundary();
 
 	const handleInviteError = (error: Error) => {
-		if (error instanceof HTTPError) {
-			if (error.code === 30001) {
-				makeToast('이메일을 입력해주세요.', 'Warning');
-			}
-		} else showBoundary(error);
+		if (error instanceof HTTPError)
+			if (error.code === 30001) makeToast('이메일을 입력해주세요.', 'Warning');
+			else showBoundary(error);
 	};
 
 	const { mutate } = useMutation({

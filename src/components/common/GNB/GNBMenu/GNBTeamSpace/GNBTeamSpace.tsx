@@ -4,7 +4,7 @@ import Flex from '@components/common/Flex/Flex';
 import Icon from '@components/common/Icon/Icon';
 import Profile from '@components/common/Profile/Profile';
 import Text from '@components/common/Text/Text';
-import useRecordTeamSpace from '@hooks/queries/teamspace/useRecorTeamSpace';
+import useRecordTeamSpace from '@hooks/queries/teamspace/useRecordTeamSpace';
 import useUserStatusQuery from '@hooks/queries/useUserStatusQuery';
 import { PATH } from '@constants/path';
 import * as S from './GNBTeamSpace.syled';
@@ -40,7 +40,13 @@ const GNBTeamSpace = () => {
 						</Flex>
 						<Divider size='sm' />
 					</Flex>
-					<S.TeamSpacesContainer>
+					<Flex
+						direction='column'
+						paddingTop='8'
+						paddingBottom='8'
+						paddingLeft='16'
+						paddingRight='16'
+						gap='8'>
 						<S.TeamSpacesWrapper>
 							<Profile
 								key={lastSeenTeam.teamspaceId}
@@ -77,7 +83,7 @@ const GNBTeamSpace = () => {
 								/>
 							))}
 						</S.TeamSpacesWrapper>
-					</S.TeamSpacesContainer>
+					</Flex>
 					<Divider size='sm' padding={4} />
 					<Flex paddingLeft='16' paddingRight='16'>
 						<S.FooterContainer onClick={() => navigate(PATH.ENTRY)}>
