@@ -2,10 +2,10 @@ export interface AccessToken {
 	accessToken: string;
 }
 
-interface UserProfile {
+export interface UserProfile {
 	userId: number;
 	username: string;
-	profileImageUrl: string;
+	profileImageUrl: string | null;
 	email: string;
 	emailSubscription: boolean;
 	commentNotification: string;
@@ -41,4 +41,11 @@ export interface TeamSpaceUser {
 
 export interface TeamSpaceUserList {
 	users: TeamSpaceUser[];
+}
+
+export interface MySettingResult {
+	username: string;
+	profileImageUrl: string | null;
+	emailSubscription: boolean;
+	commentNotification: string;
 }

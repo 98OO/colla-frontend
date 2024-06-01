@@ -2,6 +2,7 @@ import { RouterProvider, createBrowserRouter } from 'react-router-dom';
 import EntryPage from '@pages/EntryPage/EntryPage';
 import InvitePage from '@pages/InvitePage/InvitePage';
 import LandingPage from '@pages/LandingPage/LandingPage';
+import MyPage from '@pages/MyPage/MyPage';
 import NotFoundPage from '@pages/NotFoundPage/NotFoundPage';
 import RedirectPage from '@pages/RedirectPage/RedirectPage';
 import SettingPage from '@pages/SettingPage/SettingPage';
@@ -44,6 +45,10 @@ const AppRouter = () => {
 				{
 					path: PATH.SETTING,
 					element: <SettingPage />,
+				},
+				{
+					path: PATH.MYPAGE,
+					element: <MyPage />,
 				},
 			],
 		},

@@ -11,4 +11,5 @@ export const PATH = {
 	DOCUMENT: '/document',
 	PRESENTATION: '/presentation',
 	SETTING: '/setting',
+	MYPAGE: '/mypage',
 } as const;

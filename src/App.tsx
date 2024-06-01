@@ -18,6 +18,7 @@ function App() {
 		PATH.DOCUMENT,
 		PATH.PRESENTATION,
 		PATH.SETTING,
+		PATH.MYPAGE,
 	].some((path) => location.pathname.includes(path));
 
 	return (
