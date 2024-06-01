@@ -176,10 +176,10 @@ const SettingPage = () => {
 						</Flex>
 						<Flex
 							gap='12'
-							paddingTop='5'
-							paddingBottom='5'
-							paddingLeft='11'
-							paddingRight='11'>
+							paddingTop='6'
+							paddingBottom='6'
+							paddingLeft='12'
+							paddingRight='12'>
 							<Flex direction='column'>
 								<Avatar
 									profile={teamInfo.profileImageUrl}

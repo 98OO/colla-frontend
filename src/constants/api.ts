@@ -16,6 +16,7 @@ export const END_POINTS = {
 	USERLASTSEEN: 'users/last-seen',
 	TEAMSPACE: 'teamspaces',
 	PRESIGNED: 'presigned',
+	USERSETTING: 'users/settings',
 } as const;
 
 export const AUTH_ERROR_CODE = {
