@@ -220,11 +220,11 @@ const SettingPage = () => {
 							</Flex>
 							<Flex
 								direction='column'
-								gap='17'
+								gap='16'
 								paddingLeft='36'
-								paddingRight='15'
-								paddingTop='3'
-								paddingBottom='3'
+								paddingRight='16'
+								paddingTop='4'
+								paddingBottom='4'
 								grow='1'>
 								<Text size='md' weight='semiBold'>
 									팀스페이스 이름
