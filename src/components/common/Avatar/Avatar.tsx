@@ -8,6 +8,7 @@ export interface AvatarProps {
 	initial: string;
 	size: AvatarSize;
 	shape: 'circle' | 'rect';
+	onClick?: React.MouseEventHandler<HTMLDivElement>;
 }
 
 const sizeMap = {
@@ -35,11 +36,15 @@ const textMap = {
 };
 
 const Avatar = (props: AvatarProps) => {
-	const { profile, initial, size, shape } = props;
+	const { profile, initial, size, shape, onClick } = props;
 	const avatarText = size === 'xl' || size === 'lg' ? 'heading' : 'text';
 
 	return (
-		<S.AvatarContainer profile={profile} size={size} shape={shape}>
+		<S.AvatarContainer
+			profile={profile}
+			size={size}
+			shape={shape}
+			onClick={onClick}>
 			{profile ? (
 				<img src={profile} alt='profile' />
 			) : (

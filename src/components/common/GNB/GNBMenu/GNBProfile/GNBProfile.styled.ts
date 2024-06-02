@@ -1,10 +1,11 @@
 import styled from 'styled-components';
+import { GNB_PROFILE_WIDTH } from '@styles/layout';
 import theme from '@styles/theme';
 
 export const GNBProfileContainer = styled.div`
 	display: flex;
 	flex-direction: column;
-	width: 240px;
+	width: ${GNB_PROFILE_WIDTH}px;
 	height: 234px;
 
 	background-color: ${theme.color.bg.primary};
