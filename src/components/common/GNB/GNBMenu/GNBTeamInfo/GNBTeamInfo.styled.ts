@@ -1,11 +1,11 @@
 import styled from 'styled-components';
-import { MENU_HEIGHT } from '@styles/layout';
+import { MENU_HEIGHT, GNB_TEAM_INFO_WIDTH } from '@styles/layout';
 import theme from '@styles/theme';
 
 export const GNBTeamInfoContainer = styled.div`
 	display: flex;
 	flex-direction: column;
-	width: 320px;
+	width: ${GNB_TEAM_INFO_WIDTH}px;
 
 	background-color: ${theme.color.bg.primary};
 	border-radius: ${theme.units.radius.radius8};
