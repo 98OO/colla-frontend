@@ -304,7 +304,11 @@ const SettingPage = () => {
 												...teamInfo,
 												users: teamInfo.users.map((info) => ({
 													id: info.id,
-													tagId: info.id === user.id ? value : info.tagId,
+													tagId:
+														info.id === user.id
+															? teamSetting.tags[value - 1].id
+															: info.tagId,
+													// value-1로 해서 배열에서 찾도록
 												})),
 											})
 										}

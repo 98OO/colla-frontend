@@ -1,27 +1,30 @@
-import { Stomp, CompatClient } from '@stomp/stompjs';
-import SockJS from 'sockjs-client';
+import { CompatClient } from '@stomp/stompjs';
 import { create } from 'zustand';
 
-interface SocketStore {
-	client: CompatClient | null;
-	connect: () => void;
+interface ChatChannel {
+	id: number;
+	name: string;
+	lastChatMessage: string;
+	lastChatCreatedAt: string;
+	unreadMessageCount: number;
 }
 
-const socketStore = create<SocketStore>((set) => ({
-	client: null,
-	connect: () => {
-		const accessToken = localStorage.getItem('ACCESS_TOKEN');
-		if (!accessToken) {
-			return;
-		}
-		const socket = new SockJS(
-			`http://localhost:8080/ws-stomp?accessToken=${accessToken}`
-		);
-		const client = Stomp.over(socket);
-		client.connect({}, () => {
-			set({ client });
-		});
-	},
+type socketStore = {
+	stompClient: CompatClient | null;
+	setStompClient: (client: CompatClient | null) => void;
+	chatMessageCount: number;
+	increaseChatMessageCount: (number: number) => void;
+	chatChannelList: ChatChannel[];
+	setChatChannelList: (channels: ChatChannel[]) => void;
+};
+
+const useSocketStore = create<socketStore>((set) => ({
+	stompClient: null,
+	setStompClient: (client) => set({ stompClient: client }),
+	chatMessageCount: 0,
+	increaseChatMessageCount: (count) => set({ chatMessageCount: count }),
+	chatChannelList: [],
+	setChatChannelList: (channels) => set({ chatChannelList: channels }),
 }));
 
-export default socketStore;
+export default useSocketStore;

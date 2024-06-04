@@ -1,5 +1,6 @@
 import { createGlobalStyle } from 'styled-components';
 import reset from 'styled-reset';
+import { GNB_HEIGHT } from '@styles/layout';
 
 const GlobalStyle = createGlobalStyle`
   ${reset}
@@ -24,7 +25,11 @@ const GlobalStyle = createGlobalStyle`
   }
 
   main {
+    display: flex;
+    justify-content: center;
+    align-items: center;
     width: 100%;
+    height : calc(100vh - ${GNB_HEIGHT});
   }
 `;
 
