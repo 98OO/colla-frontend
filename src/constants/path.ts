@@ -7,4 +7,9 @@ export const PATH = {
 	FEED: '/feed',
 	ENTRY: '/entry',
 	REDIRECT: '/redirect',
+	INVITE: '/invite',
+	DOCUMENT: '/document',
+	PRESENTATION: '/presentation',
+	SETTING: '/setting',
+	MYPAGE: '/mypage',
 } as const;

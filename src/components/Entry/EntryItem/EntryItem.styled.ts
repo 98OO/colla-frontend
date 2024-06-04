@@ -1,7 +1,7 @@
 import { styled } from 'styled-components';
 import theme from '@styles/theme';
 
-export const EntryOptionContainer = styled.div`
+export const FormContainer = styled.form`
 	display: flex;
 	flex-direction: column;
 	width: 50%;
@@ -19,5 +19,16 @@ export const InputWrapper = styled.div`
 
 	div {
 		width: 100%;
+	}
+`;
+
+export const ImageWrapper = styled.div`
+	display: flex;
+	justify-content: center;
+	width: 100%;
+	height: 216px;
+
+	img {
+		width: 274px;
 	}
 `;

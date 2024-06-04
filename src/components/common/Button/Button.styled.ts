@@ -14,6 +14,12 @@ const btnIconSizeMap = {
 	sm: '16px',
 };
 
+const btnPaddingSizeMap = {
+	lg: '16px',
+	md: '12px',
+	sm: '8px',
+};
+
 const variantStyle = {
 	primary: css`
 		background-color: ${theme.color.bg.iPrimary};
@@ -90,7 +96,7 @@ export const ButtonWrapper = styled.button.withConfig({
 	font-size: ${(props) => props.theme.typography.fontSize.body[props.size]};
 	font-weight: ${theme.typography.fontWeight.semiBold};
 	padding: ${(props) =>
-		`${props.theme.units.spacing.space8} ${props.theme.units.spacing.space16}`};
+		`${props.theme.units.spacing.space8} ${btnPaddingSizeMap[props.size]}`};
 	gap: ${(props) => props.theme.units.spacing.space4};
 
 	svg {
