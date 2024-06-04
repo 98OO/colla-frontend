@@ -47,11 +47,13 @@ const ChatRoom = (props: ChatRoomProps) => {
 				</Flex>
 				{count !== 0 && count && (
 					<Flex justify='flex-end'>
-						<S.ChatCountWrapper>
-							<Text size='md' weight='medium' color='iInverse'>
-								{count > 99 ? '99+' : count.toString()}
-							</Text>
-						</S.ChatCountWrapper>
+						{!(id === selectedChat) && (
+							<S.ChatCountWrapper>
+								<Text size='md' weight='medium' color='iInverse'>
+									{count > 99 ? '99+' : count.toString()}
+								</Text>
+							</S.ChatCountWrapper>
+						)}
 					</Flex>
 				)}
 			</Flex>

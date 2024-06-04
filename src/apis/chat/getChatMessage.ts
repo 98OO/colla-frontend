@@ -1,16 +1,27 @@
 import { axiosInstance } from '@apis/axiosInstance';
 import { END_POINTS } from '@constants/api';
 
-const getChatMessage = async (
-	teamspaceId: number,
-	chatChannelId: number,
-	before?: number
-) => {
-	const url = before
-		? `${END_POINTS.TEAMSPACE}/${teamspaceId}/chat-channels/${chatChannelId}/messages?before=${before}&limit=50`
-		: `${END_POINTS.TEAMSPACE}/${teamspaceId}/chat-channels/${chatChannelId}/messages?limit=50`;
+export interface GetChatsParams {
+	teamspaceId: number | undefined;
+	chatChannelId: number;
+	before?: number;
+	limit?: number;
+}
 
-	const response = await axiosInstance.get(url);
+const getChatMessage = async ({
+	teamspaceId,
+	chatChannelId,
+	limit = 50,
+	before,
+}: GetChatsParams) => {
+	const url = END_POINTS.CHATS(teamspaceId!, chatChannelId);
+	const params: { before?: number; limit?: number } = { limit };
+
+	if (before) {
+		params.before = before;
+	}
+
+	const response = await axiosInstance.get(url, { params });
 	return response.data.content;
 };
 

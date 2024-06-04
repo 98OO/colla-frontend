@@ -1,4 +1,5 @@
 import { ChangeEvent, useRef, useState, useEffect, KeyboardEvent } from 'react';
+import InfiniteScroll from 'react-infinite-scroller';
 import MyMessageBox from '@components/Chat/MyMessageBox/MyMessageBox';
 import OtherMessageBox from '@components/Chat/OtherMessageBox/OtherMessageBox';
 import { Button } from '@components/common/Button/Button';
@@ -8,112 +9,84 @@ import Text from '@components/common/Text/Text';
 import useFileUpload from '@hooks/common/useFileUpload';
 import useChatMessageQuery from '@hooks/queries/chat/useChatMesaageQuery';
 import useUserStatusQuery from '@hooks/queries/useUserStatusQuery';
-import { CompatClient } from '@stomp/stompjs';
+import useSocketStore from '@stores/socketStore';
 import useToastStore from '@stores/toastStore';
 import type { ChatData } from '@type/chat';
 import * as S from './Chatting.styled';
 
 export interface ChattingProps {
 	selectedChat: number;
-	stompClient: CompatClient;
 }
 
 const Chatting = (props: ChattingProps) => {
 	const { userStatus } = useUserStatusQuery();
-	const { selectedChat, stompClient } = props;
+	const teamspaceId = userStatus?.profile.lastSeenTeamspaceId;
+	const { selectedChat } = props;
+	const { stompClient } = useSocketStore();
+	const { messages, fetchNextPage, hasNextPage, isFetching } =
+		useChatMessageQuery(selectedChat, teamspaceId);
 
-	const [before, setBefore] = useState(0);
-	const { chatMessage, refetch } = useChatMessageQuery(
-		selectedChat,
-		userStatus?.profile.lastSeenTeamspaceId,
-		before
-	);
-	const { makeToast } = useToastStore();
-	const [message, setMessage] = useState('');
-	const chatContainerRef = useRef<HTMLDivElement>(null);
 	const [chatHistory, setChatHistory] = useState<ChatData | null>(null);
+
+	const { makeToast } = useToastStore();
+	const [chatMessage, setChatMessage] = useState('');
+	const chatContainerRef = useRef<HTMLDivElement>(null);
 
 	const handleMessageChange = (e: ChangeEvent<HTMLTextAreaElement>) => {
 		const { value } = e.target;
-		if (value.length <= 1000) setMessage(value);
-	};
-
-	const scrollToBottom = () => {
-		if (chatContainerRef.current) {
-			chatContainerRef.current.scrollTop =
-				chatContainerRef.current.scrollHeight;
-		}
+		if (value.length <= 1000) setChatMessage(value);
 	};
 
 	useEffect(() => {
 		if (selectedChat) {
-			setBefore(0);
-			stompClient.subscribe(
+			stompClient?.subscribe(
 				`/topic/teamspaces/${userStatus?.profile.lastSeenTeamspaceId}/chat-channels/${selectedChat}/messages`,
-				(messages) => {
+				(message) => {
+					stompClient?.send(
+						`/app/teamspaces/${userStatus?.profile.lastSeenTeamspaceId}/chat-channels/${selectedChat}/messages/${JSON.parse(message.body).id}/read`
+					);
 					setChatHistory((prevChatHistory) => ({
 						chatChannelMessages: [
-							JSON.parse(messages.body),
+							JSON.parse(message.body),
 							...(prevChatHistory?.chatChannelMessages ?? []),
 						],
 					}));
 				}
 			);
 		}
-	}, [selectedChat]);
+	}, [selectedChat, stompClient]);
+
+	useEffect(() => {
+		if (
+			messages &&
+			messages.pages.length < 2 &&
+			messages.pages[0].chatChannelMessages[0].id
+		) {
+			stompClient?.send(
+				`/app/teamspaces/${userStatus?.profile.lastSeenTeamspaceId}/chat-channels/${selectedChat}/messages/${messages.pages[0].chatChannelMessages[0].id}/read`
+			);
+		}
+		setChatHistory(messages?.pages[0]);
+		console.log('1', messages?.pages);
+	}, [messages?.pages]);
 
 	const handleText = () => {
-		stompClient.send(
+		stompClient?.send(
 			`/app/teamspaces/${userStatus?.profile.lastSeenTeamspaceId}/chat-channels/${selectedChat}/messages`,
 			{},
 			JSON.stringify({
 				chatType: 'TEXT',
-				content: message,
+				content: chatMessage,
 				images: [],
 				attachments: [],
 			})
 		);
-		setMessage('');
-	};
+		setChatMessage('');
 
-	useEffect(() => {
-		refetch();
-	}, [before]);
-
-	useEffect(() => {
-		if (chatMessage && before < 50) {
-			setChatHistory(chatMessage);
-		} else if (chatMessage && before >= 50) {
-			setChatHistory((prevChatHistory) => ({
-				chatChannelMessages: [
-					...(prevChatHistory?.chatChannelMessages ?? []),
-					...chatMessage.chatChannelMessages,
-				],
-			}));
-		}
-	}, [chatMessage]);
-
-	useEffect(() => {
-		if (chatHistory && before === 0) {
-			scrollToBottom();
-		} else if (chatHistory && before > 0) {
-			if (chatContainerRef.current) {
-				chatContainerRef.current.scrollTop =
-					chatContainerRef.current.scrollHeight / (before / 50 + 1);
-			}
-		}
-	}, [chatHistory]);
-
-	const handleScroll = () => {
-		if (
-			chatContainerRef.current &&
-			chatContainerRef.current.scrollTop === 0 &&
-			chatContainerRef.current.scrollHeight !== 0 &&
-			chatMessage &&
-			chatMessage.chatChannelMessages.length > 0
-		) {
-			setBefore(before + 50);
-		}
+		// if (chatContainerRef.current) {
+		// 	chatContainerRef.current.scrollTop =
+		// 		chatContainerRef.current.scrollHeight;
+		// }
 	};
 
 	const formatDate = (dateString: string) => {
@@ -169,7 +142,7 @@ const Chatting = (props: ChattingProps) => {
 		if (event.key === 'Enter') {
 			if (!event.shiftKey) {
 				event.preventDefault();
-				if (message.length !== 0) {
+				if (chatMessage.length !== 0) {
 					handleText();
 				}
 			}
@@ -178,94 +151,103 @@ const Chatting = (props: ChattingProps) => {
 
 	return (
 		<S.ChattingContainer>
-			<S.ChattingListContainer ref={chatContainerRef} onScroll={handleScroll}>
-				{chatHistory &&
-					chatHistory.chatChannelMessages
-						.slice()
-						.reverse()
-						.map((msg, index, array) => {
-							const previousMsg = index > 0 ? array[index - 1] : null;
-							const nextMsg =
-								index < array.length - 1 ? array[index + 1] : null;
+			<S.ChattingListContainer ref={chatContainerRef}>
+				<InfiniteScroll
+					loadMore={() => {
+						if (!isFetching) fetchNextPage();
+					}}
+					isReverse
+					hasMore={hasNextPage}
+					useWindow={false}>
+					{chatHistory &&
+						chatHistory.chatChannelMessages
+							.slice()
+							.reverse()
+							.map((msg, index, array) => {
+								const previousMsg = index > 0 ? array[index - 1] : null;
+								const nextMsg =
+									index < array.length - 1 ? array[index + 1] : null;
 
-							return (
-								<Flex direction='column' key={msg.id}>
-									{previousMsg &&
-										formatDate(msg.createdAt) !==
-											formatDate(previousMsg?.createdAt) && (
-											<Flex justify='center' height='28'>
-												<S.ChattingDateWrapper>
-													<Text size='sm' weight='medium' color='secondary'>
-														{formatDate(msg.createdAt)}
-													</Text>
-												</S.ChattingDateWrapper>
-											</Flex>
+								return (
+									<Flex direction='column' key={msg.id}>
+										{previousMsg &&
+											formatDate(msg.createdAt) !==
+												formatDate(previousMsg?.createdAt) && (
+												<Flex justify='center' height='28'>
+													<S.ChattingDateWrapper>
+														<Text size='sm' weight='medium' color='secondary'>
+															{formatDate(msg.createdAt)}
+														</Text>
+													</S.ChattingDateWrapper>
+												</Flex>
+											)}
+										{msg.author.id === userStatus?.profile.userId ? (
+											<MyMessageBox
+												key={msg.id}
+												type={msg.type}
+												content={msg.content}
+												date={
+													(index < array.length - 1 &&
+														(nextMsg?.author.id !== msg.author.id ||
+															(nextMsg?.author.id === msg.author.id &&
+																nextMsg?.createdAt !== msg.createdAt))) ||
+													index === array.length - 1
+														? formatTime(msg.createdAt)
+														: null
+												}
+												file={
+													msg.attachments.length > 0
+														? msg.attachments.map((attachment) => ({
+																filename: attachment.filename,
+																url: attachment.url,
+															}))
+														: []
+												}
+												state={
+													previousMsg?.author.id !== msg.author.id ||
+													(previousMsg?.author.id === msg.author.id &&
+														previousMsg.createdAt !== msg.createdAt)
+												}
+											/>
+										) : (
+											<OtherMessageBox
+												name={msg.author.username}
+												profile={msg.author.profileImageUrl}
+												type={msg.type}
+												content={msg.content}
+												date={
+													(index < array.length - 1 &&
+														(nextMsg?.author.id !== msg.author.id ||
+															(nextMsg?.author.id === msg.author.id &&
+																nextMsg?.createdAt !== msg.createdAt))) ||
+													index === array.length - 1
+														? formatTime(msg.createdAt)
+														: null
+												}
+												file={
+													msg.attachments.length > 0
+														? msg.attachments.map((attachment) => ({
+																filename: attachment.filename,
+																url: attachment.url,
+															}))
+														: []
+												}
+												state={
+													previousMsg?.author.id !== msg.author.id ||
+													(previousMsg?.author.id === msg.author.id &&
+														previousMsg.createdAt !== msg.createdAt)
+												}
+											/>
 										)}
-									{msg.author.id === userStatus?.profile.userId ? (
-										<MyMessageBox
-											key={msg.id}
-											type={msg.type}
-											content={msg.content}
-											date={
-												(index < array.length - 1 &&
-													(nextMsg?.author.id !== msg.author.id ||
-														(nextMsg?.author.id === msg.author.id &&
-															nextMsg?.createdAt !== msg.createdAt))) ||
-												index === array.length - 1
-													? formatTime(msg.createdAt)
-													: null
-											}
-											file={
-												msg.attachments.length > 0
-													? msg.attachments.map((attachment) => ({
-															filename: attachment.filename,
-															url: attachment.url,
-														}))
-													: []
-											}
-											state={
-												previousMsg?.author.id !== msg.author.id ||
-												(previousMsg?.author.id === msg.author.id &&
-													previousMsg.createdAt !== msg.createdAt)
-											}
-										/>
-									) : (
-										<OtherMessageBox
-											name={msg.author.username}
-											profile={msg.author.profileImageUrl}
-											type={msg.type}
-											content={msg.content}
-											date={
-												(index < array.length - 1 &&
-													(nextMsg?.author.id !== msg.author.id ||
-														(nextMsg?.author.id === msg.author.id &&
-															nextMsg?.createdAt !== msg.createdAt))) ||
-												index === array.length - 1
-													? formatTime(msg.createdAt)
-													: null
-											}
-											file={
-												msg.attachments.length > 0
-													? msg.attachments.map((attachment) => ({
-															filename: attachment.filename,
-															url: attachment.url,
-														}))
-													: []
-											}
-											state={
-												previousMsg?.author.id !== msg.author.id ||
-												(previousMsg?.author.id === msg.author.id &&
-													previousMsg.createdAt !== msg.createdAt)
-											}
-										/>
-									)}
-								</Flex>
-							);
-						})}
+									</Flex>
+								);
+							})}
+				</InfiniteScroll>
 			</S.ChattingListContainer>
+
 			<S.ChattingInputContainer>
 				<S.ChattingInputWrapper
-					value={message}
+					value={chatMessage}
 					onChange={handleMessageChange}
 					onKeyDown={handleKeyDown}
 					maxLength={1000}
@@ -306,7 +288,7 @@ const Chatting = (props: ChattingProps) => {
 					</Flex>
 					<Flex paddingLeft='4' paddingRight='4' gap='10' align='center'>
 						<Text size='sm' weight='semiBold' color='tertiary'>
-							{`${message.length}/1000`}
+							{`${chatMessage.length}/1000`}
 						</Text>
 						<Flex width='48'>
 							<Button
@@ -314,7 +296,7 @@ const Chatting = (props: ChattingProps) => {
 								variant='primary'
 								size='sm'
 								isFull
-								disabled={message.length === 0}
+								disabled={chatMessage.length === 0}
 								onClick={handleText}
 							/>
 						</Flex>

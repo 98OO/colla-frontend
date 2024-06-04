@@ -6,6 +6,7 @@ import Heading from '@components/common/Heading/Heading';
 import MenuItem from '@components/common/SideNavigationBar/MenuItem/MenuItem';
 import Text from '@components/common/Text/Text';
 import useUserStatusQuery from '@hooks/queries/useUserStatusQuery';
+import useSocketStore from '@stores/socketStore';
 import { PATH } from '@constants/path';
 import * as S from './SNBFull.styled';
 
@@ -19,6 +20,7 @@ const SNBFull = () => {
 		(teamspace) => teamspace.teamspaceId === lastSeenTeamspaceId
 	)?.teamspaceRole;
 
+	const { chatMessageCount } = useSocketStore();
 	return (
 		<S.Container>
 			<Button
@@ -48,7 +50,7 @@ const SNBFull = () => {
 						leadingIcon='Message'
 						title='채팅'
 						selected={location.pathname === PATH.CHAT}
-						number={20}
+						number={chatMessageCount}
 						onClick={() => navigate(PATH.CHAT)}
 					/>
 					<MenuItem
