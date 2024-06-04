@@ -49,7 +49,9 @@ const GNB = () => {
 					(message) => {
 						const { chatChannelsResponse } = JSON.parse(message.body);
 						const totalUnreadMessageCount = chatChannelsResponse.reduce(
-							(sum, channel) => sum + channel.unreadMessageCount,
+							// eslint-disable-next-line @typescript-eslint/no-explicit-any
+							(sum: any, channel: { unreadMessageCount: any }) =>
+								sum + channel.unreadMessageCount,
 							0
 						);
 						increaseChatMessageCount(totalUnreadMessageCount);
@@ -63,7 +65,7 @@ const GNB = () => {
 				status2: stompClient?.subscribe(
 					`/topic/teamspaces/${lastSeenTeamspaceId}/receive-message`,
 					// eslint-disable-next-line @typescript-eslint/no-unused-vars
-					(message) => {
+					(_message) => {
 						stompClient.send(
 							`/app/teamspaces/${lastSeenTeamspaceId}/users/${userStatus.profile.userId}/chat-channels/status`
 						);
