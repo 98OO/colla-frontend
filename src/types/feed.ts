@@ -1,4 +1,8 @@
-export type FeedType = 'NORMAL' | 'COLLECT' | 'VOTE' | 'SCHEDULING';
+import { FEED_SELECT_MAP } from '@constants/feed';
+
+export type FeedType = 'ALL' | 'NORMAL' | 'COLLECT' | 'VOTE' | 'SCHEDULING';
+
+export type SelectType = keyof typeof FEED_SELECT_MAP;
 
 interface Author {
 	id: number;
