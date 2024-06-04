@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import type { Meta, StoryObj } from '@storybook/react';
 import Select from './Select';
 
@@ -57,16 +56,5 @@ export const SelectExample: Story = {
 		options: ['Option 1', 'Option 2', 'Option 3'],
 		select: '',
 		setSelect: () => {},
-	},
-	render: (args) => {
-		const [select, setSelect] = useState('');
-
-		return (
-			<Select
-				{...args}
-				select={select}
-				setSelect={(value) => setSelect(value)}
-			/>
-		);
 	},
 };
