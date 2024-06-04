@@ -26,3 +26,5 @@ export { ReactComponent as Link } from './link.svg';
 export { ReactComponent as LogOut } from './log-out.svg';
 export { ReactComponent as Mail } from './mail.svg';
 export { ReactComponent as Profile } from './user.svg';
+export { ReactComponent as Image } from './image.svg';
+export { ReactComponent as File } from './file.svg';
