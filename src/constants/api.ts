@@ -18,6 +18,8 @@ export const END_POINTS = {
 	PRESIGNED: 'presigned',
 	USERSETTING: 'users/settings',
 	FEEDS: (teamspaceId: number) => `teamspaces/${teamspaceId}/feeds`,
+	CHATS: (teamspaceId: number, chatChannelId: number) =>
+		`${END_POINTS.TEAMSPACE}/${teamspaceId}/chat-channels/${chatChannelId}/messages`,
 } as const;
 
 export const AUTH_ERROR_CODE = {

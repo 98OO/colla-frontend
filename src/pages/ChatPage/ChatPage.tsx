@@ -1,4 +1,4 @@
-import { useState, ChangeEvent, useEffect } from 'react';
+import { useState, ChangeEvent } from 'react';
 import ChatRoom from '@components/Chat/ChatRoom/ChatRoom';
 import Chatting from '@components/Chat/Chatting/Chatting';
 import { Button } from '@components/common/Button/Button';
@@ -9,9 +9,7 @@ import Text from '@components/common/Text/Text';
 import useChatChannelQuery from '@hooks/queries/chat/useChatChannelQuery';
 import useCreateChatChannelMutation from '@hooks/queries/chat/useCreateChatChannelMutation';
 import useUserStatusQuery from '@hooks/queries/useUserStatusQuery';
-import { CompatClient, Stomp } from '@stomp/stompjs';
-import SockJS from 'sockjs-client';
-import { ACCESS_TOKEN } from '@constants/api';
+import useSocketStore from '@stores/socketStore';
 import * as S from './ChatPage.styled';
 
 const ChatPage = () => {
@@ -24,7 +22,7 @@ const ChatPage = () => {
 		userStatus?.profile.lastSeenTeamspaceId
 	);
 	const { mutateCreateChatChannel } = useCreateChatChannelMutation();
-
+	const { chatChannelList } = useSocketStore();
 	const handleNameChange = (e: ChangeEvent<HTMLInputElement>) => {
 		const { value } = e.target;
 		setTeamspaceName(value);
@@ -57,26 +55,8 @@ const ChatPage = () => {
 		setTeamspaceModal(false);
 	};
 
-	const [stompClient, setStompClient] = useState<CompatClient | null>(null);
-
-	const onConnected = () => {
-		const client = Stomp.over(function () {
-			return new SockJS(
-				`http://52.78.169.30/ws-stomp?accessToken=${localStorage.getItem(ACCESS_TOKEN)}`
-			);
-		});
-
-		client.connect({}, () => {
-			setStompClient(client);
-		});
-	};
-
-	useEffect(() => {
-		onConnected();
-	}, []);
-
 	return (
-		<Flex>
+		<Flex grow='1'>
 			<S.ChatRoomListContainer>
 				{teamspaceModal && (
 					<S.ChatRoomModal>
@@ -121,20 +101,35 @@ const ChatPage = () => {
 					</S.ChatRoomModal>
 				)}
 				<S.ChatRoomListWrapper>
-					{chatChannel &&
-						chatChannel.chatChannels &&
-						chatChannel.chatChannels.map((chat) => (
-							<ChatRoom
-								key={chat.id}
-								id={chat.id}
-								title={chat.name}
-								message={chat.lastChatMessage}
-								date={chat.lastChatCreatedAt}
-								count={chat.unreadMessageCount}
-								selectedChat={selectedChat}
-								setSelectedChat={setSelectedChat}
-							/>
-						))}
+					{chatChannelList.length > 0
+						? chatChannelList.map((chat) => (
+								<ChatRoom
+									key={chat.id}
+									id={chat.id}
+									title={chat.name}
+									message={chat.lastChatMessage}
+									date={chat.lastChatCreatedAt}
+									count={chat.unreadMessageCount}
+									selectedChat={selectedChat}
+									setSelectedChat={setSelectedChat}
+								/>
+							))
+						: chatChannel &&
+							chatChannel.chatChannels &&
+							chatChannel.chatChannels.map((chat) => {
+								return (
+									<ChatRoom
+										key={chat.id}
+										id={chat.id}
+										title={chat.name}
+										message={chat.lastChatMessage}
+										date={chat.lastChatCreatedAt}
+										count={chat.unreadMessageCount}
+										selectedChat={selectedChat}
+										setSelectedChat={setSelectedChat}
+									/>
+								);
+							})}
 				</S.ChatRoomListWrapper>
 				<Flex
 					paddingBottom='24'
@@ -142,7 +137,7 @@ const ChatPage = () => {
 					paddingLeft='10'
 					paddingRight='10'>
 					<Button
-						label='팀스페이스 생성'
+						label='채팅방 생성'
 						variant='primary'
 						size='lg'
 						isFull
@@ -150,9 +145,7 @@ const ChatPage = () => {
 					/>
 				</Flex>
 			</S.ChatRoomListContainer>
-			{selectedChat && stompClient && (
-				<Chatting selectedChat={selectedChat} stompClient={stompClient} />
-			)}
+			{selectedChat !== 0 && <Chatting selectedChat={selectedChat} />}
 		</Flex>
 	);
 };

@@ -1,4 +1,4 @@
-import { useLayoutEffect, useRef, useState } from 'react';
+import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import Avatar from '@components/common/Avatar/Avatar';
 import { Button } from '@components/common/Button/Button';
 import GNBProfile from '@components/common/GNB/GNBMenu/GNBProfile/GNBProfile';
@@ -9,6 +9,8 @@ import Icon from '@components/common/Icon/Icon';
 import IconButton from '@components/common/IconButton/IconButton';
 import useMenu from '@hooks/common/useMenu';
 import useUserStatusQuery from '@hooks/queries/useUserStatusQuery';
+import { StompSubscription } from '@stomp/stompjs';
+import useSocketStore from '@stores/socketStore';
 import { GNB_PROFILE_WIDTH, GNB_TEAM_INFO_WIDTH } from '@styles/layout';
 import * as S from './GNB.styled';
 
@@ -23,7 +25,8 @@ const GNB = () => {
 	const { toggleMenu: handleTeamInfo, showMenu: showTeamInfo } = useMenu();
 	const { toggleMenu: handleProfile, showMenu: showProfile } = useMenu();
 	const baseRef = useRef<HTMLDivElement>(null);
-
+	const { stompClient, increaseChatMessageCount, setChatChannelList } =
+		useSocketStore();
 	const [position, setPosition] = useState(0);
 
 	const updatePosition = () => {
@@ -31,6 +34,44 @@ const GNB = () => {
 			setPosition(baseRef.current.offsetWidth);
 		}
 	};
+
+	const [chatChannelsStatus, setChatChannelsStatus] = useState<{
+		status1?: StompSubscription;
+		status2?: StompSubscription;
+	}>({});
+
+	useEffect(() => {
+		if (userStatus) {
+			setChatChannelsStatus((prevState) => ({
+				...prevState,
+				status1: stompClient?.subscribe(
+					`/topic/teamspaces/${lastSeenTeamspaceId}/users/${userStatus.profile.userId}/chat-channels/status`,
+					(message) => {
+						const { chatChannelsResponse } = JSON.parse(message.body);
+						const totalUnreadMessageCount = chatChannelsResponse.reduce(
+							(sum, channel) => sum + channel.unreadMessageCount,
+							0
+						);
+						increaseChatMessageCount(totalUnreadMessageCount);
+						setChatChannelList(chatChannelsResponse);
+					}
+				),
+			}));
+
+			setChatChannelsStatus((prevState) => ({
+				...prevState,
+				status2: stompClient?.subscribe(
+					`/topic/teamspaces/${lastSeenTeamspaceId}/receive-message`,
+					// eslint-disable-next-line @typescript-eslint/no-unused-vars
+					(message) => {
+						stompClient.send(
+							`/app/teamspaces/${lastSeenTeamspaceId}/users/${userStatus.profile.userId}/chat-channels/status`
+						);
+					}
+				),
+			}));
+		}
+	}, [userStatus, stompClient]);
 
 	useLayoutEffect(() => {
 		updatePosition();
@@ -54,10 +95,15 @@ const GNB = () => {
 						<Heading size='md'>{lastSeenTeam.name}</Heading>
 						<Icon name='Updown' />
 					</S.LeftContainer>
-					{showTeamSpace(baseRef, <GNBTeamSpace />, {
-						top: 70,
-						left: 10,
-					})}
+					{chatChannelsStatus &&
+						showTeamSpace(
+							baseRef,
+							<GNBTeamSpace chatChannelsStatus={chatChannelsStatus} />,
+							{
+								top: 70,
+								left: 10,
+							}
+						)}
 					<S.RightContainer>
 						<IconButton
 							icon='Bell'
