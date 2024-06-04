@@ -3,6 +3,7 @@ import Divider from '@components/common/Divider/Divider';
 import Flex from '@components/common/Flex/Flex';
 import Profile from '@components/common/Profile/Profile';
 import MenuItem from '@components/common/SideNavigationBar/MenuItem/MenuItem';
+import { queryClient } from '@hooks/queries/common/queryClient';
 import useUserStatusQuery from '@hooks/queries/useUserStatusQuery';
 import { ACCESS_TOKEN } from '@constants/api';
 import { PATH } from '@constants/path';
@@ -15,6 +16,7 @@ const GNBProfile = () => {
 	const handleLogOut = () => {
 		localStorage.removeItem(ACCESS_TOKEN);
 		navigate(PATH.SIGNIN);
+		queryClient.invalidateQueries({ queryKey: ['userStatus'] });
 	};
 
 	return (
