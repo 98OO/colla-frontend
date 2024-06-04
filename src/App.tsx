@@ -12,23 +12,23 @@ function App() {
 	const location = useLocation();
 	const isMobileView = useWindowWidth();
 	const isChatPage = location.pathname.includes(PATH.CHAT);
-	const isSideNavigationBarVisible = [
+	const isNavigationBarVisible = [
 		PATH.SCHEDULE,
 		PATH.FEED,
 		PATH.DOCUMENT,
 		PATH.PRESENTATION,
 		PATH.SETTING,
 		PATH.MYPAGE,
+		PATH.CHAT,
 	].some((path) => location.pathname.includes(path));
 
 	return (
 		<GlobalErrorBoundary>
 			<Flex direction='column'>
-				{isSideNavigationBarVisible && <GNB />}
+				{isNavigationBarVisible && <GNB />}
 				<Flex>
-					{isSideNavigationBarVisible &&
-						(isMobileView ? <SNBIcon /> : <SNBFull />)}
-					{isChatPage && <SNBIcon />}
+					{isNavigationBarVisible &&
+						(isMobileView || isChatPage ? <SNBIcon /> : <SNBFull />)}
 					<main>
 						<Outlet />
 					</main>
