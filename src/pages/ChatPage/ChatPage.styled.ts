@@ -44,6 +44,7 @@ export const ChatRoomModal = styled.div`
 	gap: ${theme.units.spacing.space12};
 	justify-content: center;
 	align-items: center;
+	background-color: ${theme.color.bg.primary};
 
 	box-shadow: ${theme.elevation.shadow.shadow16};
 `;

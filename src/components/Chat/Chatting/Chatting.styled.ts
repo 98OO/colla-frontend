@@ -35,7 +35,7 @@ export const ChattingInputContainer = styled.div`
 	border-radius: ${theme.units.radius.radius12};
 	display: flex;
 	flex-direction: column;
-	padding: ${theme.units.spacing.space6};
+	padding: ${theme.units.spacing.space12};
 `;
 
 export const ChattingInputWrapper = styled.textarea`
@@ -45,6 +45,7 @@ export const ChattingInputWrapper = styled.textarea`
 	resize: none;
 	word-wrap: break-word;
 	white-space: pre-wrap;
+	font-size: ${theme.typography.fontSize.body.lg};
 
 	&::-webkit-scrollbar {
 		width: 4px;

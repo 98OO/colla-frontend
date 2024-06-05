@@ -30,5 +30,6 @@ export const ButtonWrapper = styled.button`
 
 	&:hover {
 		background: ${theme.color.bg.iSecondaryHover};
+		cursor: pointer;
 	}
 `;

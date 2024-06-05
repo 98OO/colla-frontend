@@ -1,5 +1,6 @@
 import Flex from '@components/common/Flex/Flex';
 import Text from '@components/common/Text/Text';
+import Attachments from '@components/Feed/Attachments/Attachments';
 import type { Attachment } from '@type/chat';
 import * as S from './MyMessageBox.styled';
 
@@ -7,7 +8,7 @@ export interface MyMessageBoxProps {
 	type: string;
 	content: string;
 	date: string | null;
-	file: Pick<Attachment, 'filename' | 'url'>[];
+	file: Pick<Attachment, 'filename' | 'url' | 'id' | 'size'>[];
 	state: boolean;
 }
 
@@ -23,26 +24,31 @@ const MyMessageBox = (props: MyMessageBoxProps) => {
 					</Text>
 				</Flex>
 			)}
-			<S.MyMessageBoxWrapper state={state}>
+			<S.MyMessageBoxWrapper state={state} type={type}>
 				{/* eslint-disable-next-line no-nested-ternary */}
 				{type === 'TEXT' ? (
 					<Text size='lg' weight='semiBold' color='iInverse'>
 						{content}
 					</Text>
 				) : type === 'IMAGE' ? (
-					<Flex gap='10'>
+					<S.ImageWrapper>
 						{file?.map((img) => (
 							<a href={img.url} target='_blank' rel='noopener noreferrer'>
 								<img src={img.url} alt={img.filename} />
 							</a>
 						))}
-					</Flex>
+					</S.ImageWrapper>
 				) : (
 					<Flex gap='10'>
 						{file?.map((files) => (
-							<a href={files.url} download>
-								{files.filename}
-							</a>
+							<Attachments
+								attachment={{
+									id: files.id,
+									name: files.filename,
+									fileUrl: files.url,
+									size: files.size,
+								}}
+							/>
 						))}
 					</Flex>
 				)}

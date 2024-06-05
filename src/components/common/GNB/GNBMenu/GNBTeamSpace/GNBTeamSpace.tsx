@@ -27,7 +27,7 @@ const GNBTeamSpace = ({
 	const otherProfiles = userStatus?.participatedTeamspaces.filter(
 		(teamSpace) => teamSpace.name !== lastSeenTeam?.name
 	);
-
+	// const queryClient = useQueryClient();
 	const handleTeamChangeClick = (teamSpaceId: number) => {
 		mutateRecordTeamSpace(teamSpaceId);
 		if (chatChannelsStatus.status1) {
@@ -36,6 +36,7 @@ const GNBTeamSpace = ({
 		if (chatChannelsStatus.status2) {
 			chatChannelsStatus.status2.unsubscribe();
 		}
+		// queryClient.invalidateQueries({ queryKey: ['chatChannel'] });
 		navigate(PATH.FEED);
 	};
 

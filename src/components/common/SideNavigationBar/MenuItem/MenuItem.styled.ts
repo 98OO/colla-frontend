@@ -33,6 +33,7 @@ export const MenuItemContainer = styled.button<
 
 	&:hover {
 		background-color: ${theme.color.bg.iSecondaryHover};
+		cursor: pointer;
 	}
 `;
 
