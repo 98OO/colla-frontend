@@ -2,9 +2,12 @@ import { Button } from '@components/common/Button/Button';
 import Divider from '@components/common/Divider/Divider';
 import Flex from '@components/common/Flex/Flex';
 import Heading from '@components/common/Heading/Heading';
+import Modal from '@components/common/Modal/Modal';
 import Profile from '@components/common/Profile/Profile';
 import Attachments from '@components/Feed/Attachments/Attachments';
 import Comment from '@components/Feed/Comments/Comment';
+import NormalDetail from '@components/Feed/Detail/Normal/NormalDetail';
+import { useOverlay } from '@hooks/common/useOverlay';
 import type { FeedData } from '@type/feed';
 import * as S from './Feed.styled';
 
@@ -15,6 +18,7 @@ interface FeedProps {
 const Feed = ({ feedData }: FeedProps) => {
 	const { author, title, createdAt, details, attachments, comments, images } =
 		feedData;
+	const { open, close, isOpen } = useOverlay();
 
 	return (
 		<S.FeedContainer>
@@ -42,7 +46,7 @@ const Feed = ({ feedData }: FeedProps) => {
 											<img alt={image.name} src={image.fileUrl} />
 										</S.ImgWrapper>
 										{images.length >= 3 && index === 1 && (
-											<S.MoreButton>+ 더보기</S.MoreButton>
+											<S.MoreButton onClick={open}>+ 더보기</S.MoreButton>
 										)}
 									</S.ImgContainer>
 								);
@@ -66,7 +70,7 @@ const Feed = ({ feedData }: FeedProps) => {
 								size='md'
 								variant='text'
 								label={`댓글 ${comments.length}개 모두 보기`}
-								onClick={() => {}}
+								onClick={open}
 							/>
 						</Flex>
 						<Divider size='sm' />
@@ -81,6 +85,11 @@ const Feed = ({ feedData }: FeedProps) => {
 					</S.CommentContainer>
 				)}
 			</Flex>
+			<Modal isOpen={isOpen} onClose={close}>
+				<S.FeedDetailContainer>
+					<NormalDetail feedData={feedData} />
+				</S.FeedDetailContainer>
+			</Modal>
 		</S.FeedContainer>
 	);
 };
