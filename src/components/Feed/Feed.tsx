@@ -13,7 +13,8 @@ interface FeedProps {
 }
 
 const Feed = ({ feedData }: FeedProps) => {
-	const { author, title, createdAt, details, attachments, comments } = feedData;
+	const { author, title, createdAt, details, attachments, comments, images } =
+		feedData;
 
 	return (
 		<S.FeedContainer>
@@ -31,13 +32,31 @@ const Feed = ({ feedData }: FeedProps) => {
 			<Flex direction='column' gap='12'>
 				<Heading size='xs'>{title}</Heading>
 				<Divider size='sm' />
-				{details && <S.DetailWrapper>{details.content}</S.DetailWrapper>}
+				{images.length !== 0 && (
+					<Flex justify='center'>
+						<S.ImageGrid count={images.length}>
+							{images.slice(0, 2).map((image, index) => {
+								return (
+									<S.ImgContainer count={images.length} index={index}>
+										<S.ImgWrapper count={images.length} index={index}>
+											<img alt={image.name} src={image.fileUrl} />
+										</S.ImgWrapper>
+										{images.length >= 3 && index === 1 && (
+											<S.MoreButton>+ 더보기</S.MoreButton>
+										)}
+									</S.ImgContainer>
+								);
+							})}
+						</S.ImageGrid>
+					</Flex>
+				)}
+				{details && <S.DetailWrapper>{`${details.content}`}</S.DetailWrapper>}
 				{attachments.length !== 0 && (
-					<Flex direction='column' gap='12'>
-						{attachments.map((attachment) => {
+					<S.AttachmentWrapper>
+						{attachments.slice(0, 3).map((attachment) => {
 							return <Attachments attachment={attachment} />;
 						})}
-					</Flex>
+					</S.AttachmentWrapper>
 				)}
 				{comments.length !== 0 && (
 					<S.CommentContainer>
