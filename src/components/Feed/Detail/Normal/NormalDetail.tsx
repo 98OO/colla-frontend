@@ -1,15 +1,12 @@
-import { Button } from '@components/common/Button/Button';
 import Divider from '@components/common/Divider/Divider';
 import Flex from '@components/common/Flex/Flex';
 import Heading from '@components/common/Heading/Heading';
-import Modal from '@components/common/Modal/Modal';
 import Profile from '@components/common/Profile/Profile';
+import Text from '@components/common/Text/Text';
 import Attachments from '@components/Feed/Attachments/Attachments';
 import Comment from '@components/Feed/Comments/Comment';
-import NormalDetail from '@components/Feed/Detail/Normal/NormalDetail';
-import { useOverlay } from '@hooks/common/useOverlay';
 import type { FeedData } from '@type/feed';
-import * as S from './Feed.styled';
+import * as S from './NormalDetail.styled';
 
 interface FeedProps {
 	feedData: FeedData;
@@ -18,7 +15,6 @@ interface FeedProps {
 const Feed = ({ feedData }: FeedProps) => {
 	const { author, title, createdAt, details, attachments, comments, images } =
 		feedData;
-	const { open, close, isOpen } = useOverlay();
 
 	return (
 		<S.FeedContainer>
@@ -38,18 +34,9 @@ const Feed = ({ feedData }: FeedProps) => {
 				<Divider size='sm' />
 				{images.length !== 0 && (
 					<Flex justify='center'>
-						<S.ImageGrid count={images.length}>
-							{images.slice(0, 2).map((image, index) => {
-								return (
-									<S.ImgContainer count={images.length} index={index}>
-										<S.ImgWrapper count={images.length} index={index}>
-											<img alt={image.name} src={image.fileUrl} />
-										</S.ImgWrapper>
-										{images.length >= 3 && index === 1 && (
-											<S.MoreButton onClick={open}>+ 더보기</S.MoreButton>
-										)}
-									</S.ImgContainer>
-								);
+						<S.ImageGrid>
+							{images.map((image) => {
+								return <img alt={image.name} src={image.fileUrl} />;
 							})}
 						</S.ImageGrid>
 					</Flex>
@@ -57,7 +44,7 @@ const Feed = ({ feedData }: FeedProps) => {
 				{details && <S.DetailWrapper>{`${details.content}`}</S.DetailWrapper>}
 				{attachments.length !== 0 && (
 					<S.AttachmentWrapper>
-						{attachments.slice(0, 3).map((attachment) => {
+						{attachments.map((attachment) => {
 							return <Attachments attachment={attachment} />;
 						})}
 					</S.AttachmentWrapper>
@@ -65,16 +52,13 @@ const Feed = ({ feedData }: FeedProps) => {
 				{comments.length !== 0 && (
 					<S.CommentContainer>
 						<Flex direction='column' align='flex-start'>
-							<Button
-								type='button'
+							<Text
 								size='md'
-								variant='text'
-								label={`댓글 ${comments.length}개 모두 보기`}
-								onClick={open}
-							/>
+								weight='medium'
+								color='tertiary'>{`댓글 ${comments.length}개`}</Text>
 						</Flex>
 						<Divider size='sm' />
-						{comments.slice(0, 2).map((comment) => {
+						{comments.map((comment) => {
 							return (
 								<Flex direction='column' gap='8'>
 									<Comment comment={comment} />
@@ -85,11 +69,6 @@ const Feed = ({ feedData }: FeedProps) => {
 					</S.CommentContainer>
 				)}
 			</Flex>
-			<Modal isOpen={isOpen} onClose={close}>
-				<S.FeedDetailContainer>
-					<NormalDetail feedData={feedData} />
-				</S.FeedDetailContainer>
-			</Modal>
 		</S.FeedContainer>
 	);
 };

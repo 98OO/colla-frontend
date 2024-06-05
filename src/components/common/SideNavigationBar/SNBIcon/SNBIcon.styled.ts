@@ -19,5 +19,8 @@ export const ButtonWrapper = styled.div`
 
 	button {
 		padding: ${theme.units.spacing.space8};
+		&:hover {
+			cursor: pointer;
+		}
 	}
 `;

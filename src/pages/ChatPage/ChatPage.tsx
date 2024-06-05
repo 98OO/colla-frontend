@@ -60,7 +60,7 @@ const ChatPage = () => {
 			<S.ChatRoomListContainer>
 				{teamspaceModal && (
 					<S.ChatRoomModal>
-						<Heading size='xxs'>팀스페이스 이름을 작성해주세요.</Heading>
+						<Heading size='xxs'>채팅방 이름을 작성해주세요.</Heading>
 						<Flex direction='column' gap='6'>
 							<Input
 								size='md'
@@ -138,7 +138,7 @@ const ChatPage = () => {
 					paddingRight='10'>
 					<Button
 						label='채팅방 생성'
-						variant='primary'
+						variant='secondary'
 						size='lg'
 						isFull
 						onClick={() => setTeamspaceModal(true)}

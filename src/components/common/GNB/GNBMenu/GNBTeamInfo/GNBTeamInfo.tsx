@@ -75,7 +75,7 @@ const GNBTeamInfo = () => {
 									<Input
 										size='md'
 										placeholder='사용자, 이메일 추가'
-										maxLength={20}
+										maxLength={255}
 										isError={errors?.email?.isError}
 										{...register('email', validationRules.email, false)}
 									/>

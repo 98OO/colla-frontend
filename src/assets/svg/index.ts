@@ -29,3 +29,4 @@ export { ReactComponent as Profile } from './user.svg';
 export { ReactComponent as Image } from './image.svg';
 export { ReactComponent as File } from './file.svg';
 export { ReactComponent as Kebab } from './kebab.svg';
+export { ReactComponent as Download } from './download.svg';

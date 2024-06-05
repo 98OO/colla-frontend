@@ -120,7 +120,7 @@ const SignUpPage = () => {
 						<Input
 							size='lg'
 							placeholder='이메일'
-							maxLength={20}
+							maxLength={255}
 							isError={errors?.email?.isError}
 							{...register('email', validationRules.email)}
 						/>
