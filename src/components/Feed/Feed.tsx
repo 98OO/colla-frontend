@@ -1,7 +1,10 @@
+import { Button } from '@components/common/Button/Button';
 import Divider from '@components/common/Divider/Divider';
 import Flex from '@components/common/Flex/Flex';
 import Heading from '@components/common/Heading/Heading';
 import Profile from '@components/common/Profile/Profile';
+import Attachments from '@components/Feed/Attachments/Attachments';
+import Comment from '@components/Feed/Comments/Comment';
 import type { FeedData } from '@type/feed';
 import * as S from './Feed.styled';
 
@@ -10,7 +13,8 @@ interface FeedProps {
 }
 
 const Feed = ({ feedData }: FeedProps) => {
-	const { author, title, createdAt, details } = feedData;
+	const { author, title, createdAt, details, attachments, comments, images } =
+		feedData;
 
 	return (
 		<S.FeedContainer>
@@ -28,7 +32,54 @@ const Feed = ({ feedData }: FeedProps) => {
 			<Flex direction='column' gap='12'>
 				<Heading size='xs'>{title}</Heading>
 				<Divider size='sm' />
-				{details && <p>{details.content}</p>}
+				{images.length !== 0 && (
+					<Flex justify='center'>
+						<S.ImageGrid count={images.length}>
+							{images.slice(0, 2).map((image, index) => {
+								return (
+									<S.ImgContainer count={images.length} index={index}>
+										<S.ImgWrapper count={images.length} index={index}>
+											<img alt={image.name} src={image.fileUrl} />
+										</S.ImgWrapper>
+										{images.length >= 3 && index === 1 && (
+											<S.MoreButton>+ 더보기</S.MoreButton>
+										)}
+									</S.ImgContainer>
+								);
+							})}
+						</S.ImageGrid>
+					</Flex>
+				)}
+				{details && <S.DetailWrapper>{`${details.content}`}</S.DetailWrapper>}
+				{attachments.length !== 0 && (
+					<S.AttachmentWrapper>
+						{attachments.slice(0, 3).map((attachment) => {
+							return <Attachments attachment={attachment} />;
+						})}
+					</S.AttachmentWrapper>
+				)}
+				{comments.length !== 0 && (
+					<S.CommentContainer>
+						<Flex direction='column' align='flex-start'>
+							<Button
+								type='button'
+								size='md'
+								variant='text'
+								label={`댓글 ${comments.length}개 모두 보기`}
+								onClick={() => {}}
+							/>
+						</Flex>
+						<Divider size='sm' />
+						{comments.slice(0, 2).map((comment) => {
+							return (
+								<Flex direction='column' gap='8'>
+									<Comment comment={comment} />
+									<Divider size='sm' />
+								</Flex>
+							);
+						})}
+					</S.CommentContainer>
+				)}
 			</Flex>
 		</S.FeedContainer>
 	);
