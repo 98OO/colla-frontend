@@ -25,6 +25,7 @@ function App() {
 		PATH.SETTING,
 		PATH.MYPAGE,
 		PATH.CHAT,
+		PATH.DOCUMENT,
 	].some((path) => location.pathname.includes(path));
 
 	const { setStompClient } = useSocketStore();
