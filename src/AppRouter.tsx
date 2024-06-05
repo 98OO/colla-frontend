@@ -1,5 +1,6 @@
 import { RouterProvider, createBrowserRouter } from 'react-router-dom';
 import ChatPage from '@pages/ChatPage/ChatPage';
+import DocumentPage from '@pages/DocumentPage/DocumentPage';
 import EntryPage from '@pages/EntryPage/EntryPage';
 import FeedPage from '@pages/FeedPage/FeedPage';
 import InvitePage from '@pages/InvitePage/InvitePage';
@@ -59,6 +60,10 @@ const AppRouter = () => {
 				{
 					path: PATH.CHAT,
 					element: <ChatPage />,
+				},
+				{
+					path: PATH.DOCUMENT,
+					element: <DocumentPage />,
 				},
 			],
 		},
