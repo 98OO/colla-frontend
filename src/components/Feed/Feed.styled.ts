@@ -94,3 +94,23 @@ export const MoreButton = styled.button`
 	font-size: 16px;
 	color: ${theme.color.text.subtle};
 `;
+
+export const FeedDetailContainer = styled.div`
+	display: flex;
+	flex-direction: column;
+	gap: ${theme.units.spacing.space24};
+	width: 100%;
+	max-height: 80vh;
+	padding: ${theme.units.spacing.space24};
+	border-radius: ${theme.units.radius.radius8};
+	overflow-y: scroll;
+
+	&::-webkit-scrollbar {
+		width: 4px;
+	}
+
+	&::-webkit-scrollbar-thumb {
+		border-radius: ${theme.units.radius.radius20};
+		background: ${theme.color.border.secondary};
+	}
+`;
