@@ -117,4 +117,8 @@ export const ButtonWrapper = styled.button.withConfig({
 			${variantStyle[variant]}
 		`;
 	}};
+
+	&:hover {
+		cursor: pointer;
+	}
 `;

@@ -9,6 +9,7 @@ import Text from '@components/common/Text/Text';
 import useFileUpload from '@hooks/common/useFileUpload';
 import useChatMessageQuery from '@hooks/queries/chat/useChatMesaageQuery';
 import useUserStatusQuery from '@hooks/queries/useUserStatusQuery';
+import { StompSubscription } from '@stomp/stompjs';
 import useSocketStore from '@stores/socketStore';
 import useToastStore from '@stores/toastStore';
 import type { ChatData } from '@type/chat';
@@ -37,37 +38,53 @@ const Chatting = (props: ChattingProps) => {
 		if (value.length <= 1000) setChatMessage(value);
 	};
 
+	const [chatSubscribe, setChatSubscribe] = useState<StompSubscription | null>(
+		null
+	);
+
 	useEffect(() => {
 		if (selectedChat) {
-			stompClient?.subscribe(
+			if (chatSubscribe) {
+				console.log('전에 구독', chatSubscribe);
+				chatSubscribe?.unsubscribe();
+			}
+			// 새로운 구독 설정
+			const newChatSubscribe = stompClient?.subscribe(
 				`/topic/teamspaces/${userStatus?.profile.lastSeenTeamspaceId}/chat-channels/${selectedChat}/messages`,
 				(message) => {
+					const parsedMessage = JSON.parse(message.body);
 					stompClient?.send(
-						`/app/teamspaces/${userStatus?.profile.lastSeenTeamspaceId}/chat-channels/${selectedChat}/messages/${JSON.parse(message.body).id}/read`
+						`/app/teamspaces/${userStatus?.profile.lastSeenTeamspaceId}/chat-channels/${selectedChat}/messages/${parsedMessage.id}/read`
 					);
 					setChatHistory((prevChatHistory) => ({
 						chatChannelMessages: [
-							JSON.parse(message.body),
+							parsedMessage,
 							...(prevChatHistory?.chatChannelMessages ?? []),
 						],
 					}));
 				}
 			);
+
+			if (newChatSubscribe) {
+				setChatSubscribe(newChatSubscribe);
+			}
+			setChatHistory(null);
 		}
 	}, [selectedChat, stompClient]);
 
 	useEffect(() => {
-		if (
-			messages &&
-			messages.pages.length < 2 &&
-			messages.pages[0].chatChannelMessages[0].id
-		) {
+		if (messages && messages.pages[0].chatChannelMessages.length > 0) {
 			stompClient?.send(
 				`/app/teamspaces/${userStatus?.profile.lastSeenTeamspaceId}/chat-channels/${selectedChat}/messages/${messages.pages[0].chatChannelMessages[0].id}/read`
 			);
 		}
-		setChatHistory(messages?.pages[0]);
-		console.log('1', messages?.pages);
+		const allChatChannelMessages =
+			messages?.pages.map((page) => page.chatChannelMessages) ?? [];
+
+		const mergedChatChannelMessages = allChatChannelMessages.flat();
+
+		const chatData = { chatChannelMessages: mergedChatChannelMessages };
+		setChatHistory(chatData);
 	}, [messages?.pages]);
 
 	const handleText = () => {
@@ -83,10 +100,12 @@ const Chatting = (props: ChattingProps) => {
 		);
 		setChatMessage('');
 
-		// if (chatContainerRef.current) {
-		// 	chatContainerRef.current.scrollTop =
-		// 		chatContainerRef.current.scrollHeight;
-		// }
+		setTimeout(() => {
+			if (chatContainerRef.current) {
+				chatContainerRef.current.scrollTop =
+					chatContainerRef.current.scrollHeight;
+			}
+		}, 150);
 	};
 
 	const formatDate = (dateString: string) => {
@@ -118,25 +137,77 @@ const Chatting = (props: ChattingProps) => {
 	const handleFileUploadClick = () => {
 		inputFileRef.current?.click();
 	};
-	const [file, setFile] = useState('');
-	const { isFileSizeExceedLimit } = useFileUpload();
-	const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+	const { isFileSizeExceedLimit, uploadFiles } = useFileUpload();
+
+	const handleImageChange = async (
+		event: React.ChangeEvent<HTMLInputElement>
+	) => {
 		if (event.target.files && event.target.files[0]) {
 			if (isFileSizeExceedLimit(event.target.files[0])) {
 				makeToast('이미지 크기는 최대 100MB입니다.', 'Warning');
+				return;
 			}
-			setFile(URL.createObjectURL(event.target.files[0]));
-		}
-	};
-	const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-		if (event.target.files && event.target.files[0]) {
-			if (isFileSizeExceedLimit(event.target.files[0])) {
-				makeToast('이미지 크기는 최대 100MB입니다.', 'Warning');
+			if (inputImageRef.current?.files) {
+				const imageUrl = await uploadFiles(
+					inputImageRef.current?.files,
+					'TEAMSPACE',
+					userStatus?.profile.lastSeenTeamspaceId
+				);
+				if (imageUrl) {
+					stompClient?.send(
+						`/app/teamspaces/${userStatus?.profile.lastSeenTeamspaceId}/chat-channels/${selectedChat}/messages`,
+						{},
+						JSON.stringify({
+							chatType: 'IMAGE',
+							content: null,
+							images: [
+								{
+									name: inputImageRef.current?.files[0].name,
+									fileUrl: imageUrl[0],
+									size: inputImageRef.current?.files[0].size,
+								},
+							],
+							attachments: [],
+						})
+					);
+				}
 			}
 		}
 	};
 
-	useEffect(() => {}, [file]);
+	const handleFileChange = async (event: ChangeEvent<HTMLInputElement>) => {
+		if (event.target.files && event.target.files[0]) {
+			if (isFileSizeExceedLimit(event.target.files[0])) {
+				makeToast('파일 크기는 최대 100MB입니다.', 'Warning');
+				return;
+			}
+			if (inputFileRef.current?.files) {
+				const fileUrl = await uploadFiles(
+					inputFileRef.current?.files,
+					'TEAMSPACE',
+					userStatus?.profile.lastSeenTeamspaceId
+				);
+				if (fileUrl) {
+					stompClient?.send(
+						`/app/teamspaces/${userStatus?.profile.lastSeenTeamspaceId}/chat-channels/${selectedChat}/messages`,
+						{},
+						JSON.stringify({
+							chatType: 'FILE',
+							content: null,
+							images: [],
+							attachments: [
+								{
+									name: inputFileRef.current?.files[0].name,
+									fileUrl: fileUrl[0],
+									size: inputFileRef.current?.files[0].size,
+								},
+							],
+						})
+					);
+				}
+			}
+		}
+	};
 
 	const handleKeyDown = (event: KeyboardEvent<HTMLTextAreaElement>) => {
 		if (event.key === 'Enter') {
@@ -200,6 +271,8 @@ const Chatting = (props: ChattingProps) => {
 														? msg.attachments.map((attachment) => ({
 																filename: attachment.filename,
 																url: attachment.url,
+																id: attachment.id,
+																size: attachment.size,
 															}))
 														: []
 												}
@@ -229,6 +302,8 @@ const Chatting = (props: ChattingProps) => {
 														? msg.attachments.map((attachment) => ({
 																filename: attachment.filename,
 																url: attachment.url,
+																id: attachment.id,
+																size: attachment.size,
 															}))
 														: []
 												}
