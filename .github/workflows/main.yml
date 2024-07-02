@@ -10,29 +10,44 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v3
+      - name: Checkout repository
+        uses: actions/checkout@v3
 
-    - name: Setup Node.js
-      uses: actions/setup-node@v3
-      with:
-        node-version: '20'
-        
-    - name: Display node version
-      run: node --version
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '20'
 
-    - name: Install dependencies and build
-      run: |
-        npm install
-        npm run build
+      - name: Display node version
+        run: node --version
 
-    - name: Sync S3 bucket
-      uses: jakejarvis/s3-sync-action@master
-      with:
-        args: --follow-symlinks --delete
-      env:
-        AWS_S3_BUCKET: colla.so
-        AWS_ACCESS_KEY_ID: ${{ secrets.AWS_IAM_MANAGER_KEY_ID }}
-        AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_IAM_MANAGER_SECRET_ACCESS_KEY }}
-        AWS_REGION: ap-northeast-2 
-        SOURCE_DIR: 'dist'
+      - name: Install dependencies and build
+        run: |
+          npm install
+          npm run build
+
+      - name: Sync S3 bucket
+        uses: jakejarvis/s3-sync-action@master
+        with:
+          args: --follow-symlinks --delete
+        env:
+          AWS_S3_BUCKET: colla.so
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_IAM_MANAGER_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_IAM_MANAGER_SECRET_ACCESS_KEY }}
+          AWS_REGION: ap-northeast-2
+          SOURCE_DIR: 'dist'
+
+      - name: .env.production setting
+        run: |
+          echo "VITE_KAKAO_REST_API_KEY=${{ secrets.VITE_KAKAO_REST_API_KEY }}" >> .env.production
+          echo "VITE_KAKAO_REDIRECT_URL=${{ secrets.VITE_KAKAO_REDIRECT_URL }}" >> .env.production
+
+          echo "VITE_GOOGLE_CLIENT_ID=${{ secrets.VITE_GOOGLE_CLIENT_ID }}" >> .env.production
+          echo "VITE_GOOGLE_REDIRECT_URL=${{ secrets.VITE_GOOGLE_REDIRECT_URL }}" >> .env.production
+
+          echo "VITE_NAVER_CLIENT_ID=${{ secrets.VITE_NAVER_CLIENT_ID }}" >> .env.production
+          echo "VITE_NAVER_REDIRECT_URL=${{ secrets.VITE_NAVER_REDIRECT_URL }}" >> .env.production
+          echo "VITE_NAVER_STATE=${{ secrets.VITE_NAVER_STATE }}" >> .env.production
+
+          echo "VITE_NODE_ENV=${{ secrets.VITE_NODE_ENV }}" >> .env.production
+          echo "VITE_BASE_URL=${{ secrets.VITE_BASE_URL }}" >> .env.production
