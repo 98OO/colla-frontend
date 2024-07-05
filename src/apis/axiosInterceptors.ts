@@ -1,4 +1,5 @@
 import { getNewToken } from '@apis/user/getNewToken';
+import { queryClient } from '@hooks/queries/common/queryClient';
 import { axiosInstance } from '@apis/axiosInstance';
 import { HTTPError } from '@apis/HTTPError';
 import {
@@ -44,7 +45,7 @@ export const handleTokenError = async (error: AxiosError<ErrorResponse>) => {
 
 	if (
 		status === HTTP_STATUS_CODE.UNAUTHORIZED &&
-		data.code === AUTH_ERROR_CODE.EXPIRED_TOKEN
+		data.code === AUTH_ERROR_CODE.EXPIRED_ACCESS_TOKEN
 	) {
 		const { accessToken } = await getNewToken();
 		originalRequest.headers.Authorization = `Bearer ${accessToken}`;
@@ -59,12 +60,13 @@ export const handleTokenError = async (error: AxiosError<ErrorResponse>) => {
 			data.code === AUTH_ERROR_CODE.UNAUTHORIZED_OR_EXPIRED_VERIFY_TOKEN ||
 			data.code === AUTH_ERROR_CODE.FORBIDDEN_ACCESS_TOKEN ||
 			data.code === AUTH_ERROR_CODE.EMPTY_ACCESS_TOKEN ||
-			data.code === AUTH_ERROR_CODE.EXPIRED_TOKEN ||
+			data.code === AUTH_ERROR_CODE.EXPIRED_REFRESH_TOKEN ||
 			data.code === AUTH_ERROR_CODE.MALFORMED_TOKEN ||
 			data.code === AUTH_ERROR_CODE.TAMPERED_TOKEN ||
 			data.code === AUTH_ERROR_CODE.UNSUPPORTED_JWT_TOKEN ||
 			data.code === AUTH_ERROR_CODE.TAKEN_AWAY_TOKEN)
 	) {
+		queryClient.invalidateQueries({ queryKey: ['userStatus'] });
 		localStorage.removeItem(ACCESS_TOKEN);
 
 		throw new HTTPError(status, data.code, data.content, data.message);
