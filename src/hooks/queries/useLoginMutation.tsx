@@ -18,7 +18,7 @@ const useLoginMutation = () => {
 			localStorage.setItem(ACCESS_TOKEN, content.accessToken);
 			const client = Stomp.over(function () {
 				return new SockJS(
-					`http://52.78.169.30/ws-stomp?accessToken=${localStorage.getItem(ACCESS_TOKEN)}`
+					`https://api.colla.so/ws-stomp?accessToken=${localStorage.getItem(ACCESS_TOKEN)}`
 				);
 			});
 
