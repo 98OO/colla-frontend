@@ -26,6 +26,7 @@ export const OtherMessageBoxWrapper = styled.div<{
 
 	max-width: 250px;
 	line-height: 18px;
+	word-break: break-all;
 `;
 
 export const ImageWrapper = styled.div`

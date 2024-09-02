@@ -22,6 +22,7 @@ export const MyMessageBoxWrapper = styled.div<{ state: boolean; type: string }>`
 			: theme.units.radius.radius20};
 	max-width: 250px;
 	line-height: 18px;
+	word-break: break-all;
 `;
 
 export const ImageWrapper = styled.div`
