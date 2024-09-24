@@ -36,21 +36,20 @@ const GNB = () => {
 	};
 
 	const [chatChannelsStatus, setChatChannelsStatus] = useState<{
-		status1?: StompSubscription;
-		status2?: StompSubscription;
+		chatChannelListStatus?: StompSubscription;
+		chatMessageStatus?: StompSubscription;
 	}>({});
 
 	useEffect(() => {
 		if (userStatus) {
 			setChatChannelsStatus((prevState) => ({
 				...prevState,
-				status1: stompClient?.subscribe(
+				chatChannelListStatus: stompClient?.subscribe(
 					`/topic/teamspaces/${lastSeenTeamspaceId}/users/${userStatus.profile.userId}/chat-channels/status`,
 					(message) => {
 						const { chatChannelsResponse } = JSON.parse(message.body);
 						const totalUnreadMessageCount = chatChannelsResponse.reduce(
-							// eslint-disable-next-line @typescript-eslint/no-explicit-any
-							(sum: any, channel: { unreadMessageCount: any }) =>
+							(sum: number, channel: { unreadMessageCount: number }) =>
 								sum + channel.unreadMessageCount,
 							0
 						);
@@ -62,10 +61,9 @@ const GNB = () => {
 
 			setChatChannelsStatus((prevState) => ({
 				...prevState,
-				status2: stompClient?.subscribe(
+				chatMessageStatus: stompClient?.subscribe(
 					`/topic/teamspaces/${lastSeenTeamspaceId}/receive-message`,
-					// eslint-disable-next-line @typescript-eslint/no-unused-vars
-					(_message) => {
+					() => {
 						stompClient.send(
 							`/app/teamspaces/${lastSeenTeamspaceId}/users/${userStatus.profile.userId}/chat-channels/status`
 						);
