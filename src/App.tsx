@@ -34,7 +34,7 @@ function App() {
 		if (localStorage.getItem(ACCESS_TOKEN)) {
 			const client = Stomp.over(function () {
 				return new SockJS(
-					`http://52.78.169.30/ws-stomp?accessToken=${localStorage.getItem(ACCESS_TOKEN)}`
+					`${import.meta.env.VITE_SOCKET_URL}?accessToken=${localStorage.getItem(ACCESS_TOKEN)}`
 				);
 			});
 

@@ -16,15 +16,17 @@ const useLoginMutation = () => {
 		mutationFn: postLogin,
 		onSuccess: (content) => {
 			localStorage.setItem(ACCESS_TOKEN, content.accessToken);
+
 			const client = Stomp.over(function () {
 				return new SockJS(
-					`http://52.78.169.30/ws-stomp?accessToken=${localStorage.getItem(ACCESS_TOKEN)}`
+					`${import.meta.env.VITE_SOCKET_URL}?accessToken=${localStorage.getItem(ACCESS_TOKEN)}`
 				);
 			});
 
 			client.connect({}, () => {
 				setStompClient(client);
 			});
+
 			if (inviteUrl) {
 				window.sessionStorage.removeItem(INVITE_URL);
 				navigate(`${PATH.INVITE}${inviteUrl}`);
