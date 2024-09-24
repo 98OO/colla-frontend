@@ -15,7 +15,7 @@ import * as S from './ChatPage.styled';
 const ChatPage = () => {
 	const [selectedChat, setSelectedChat] = useState(0);
 	const { userStatus } = useUserStatusQuery();
-	const [teamspaceModal, setTeamspaceModal] = useState(false);
+	const [chatRoomModal, setChatRoomModal] = useState(false);
 	const [teamspaceName, setTeamspaceName] = useState('');
 	const [nameError, setNameError] = useState('');
 	const { chatChannel } = useChatChannelQuery(
@@ -23,13 +23,14 @@ const ChatPage = () => {
 	);
 	const { mutateCreateChatChannel } = useCreateChatChannelMutation();
 	const { chatChannelList } = useSocketStore();
+
 	const handleNameChange = (e: ChangeEvent<HTMLInputElement>) => {
 		const { value } = e.target;
 		setTeamspaceName(value);
 	};
 
 	const handleCancleClick = () => {
-		setTeamspaceModal(false);
+		setChatRoomModal(false);
 		setTeamspaceName('');
 		setNameError('');
 	};
@@ -52,13 +53,13 @@ const ChatPage = () => {
 			userStatus!.profile.lastSeenTeamspaceId,
 			teamspaceName
 		);
-		setTeamspaceModal(false);
+		setChatRoomModal(false);
 	};
 
 	return (
 		<Flex grow='1'>
 			<S.ChatRoomListContainer>
-				{teamspaceModal && (
+				{chatRoomModal && (
 					<S.ChatRoomModal>
 						<Heading size='xxs'>채팅방 이름을 작성해주세요.</Heading>
 						<Flex direction='column' gap='6'>
@@ -141,7 +142,7 @@ const ChatPage = () => {
 						variant='secondary'
 						size='lg'
 						isFull
-						onClick={() => setTeamspaceModal(true)}
+						onClick={() => setChatRoomModal(true)}
 					/>
 				</Flex>
 			</S.ChatRoomListContainer>

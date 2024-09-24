@@ -32,19 +32,23 @@ export const ChatRoomListWrapper = styled.div`
 
 export const ChatRoomModal = styled.div`
 	position: absolute;
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
 	top: 50%;
 	left: 50%;
 	width: 400px;
 	height: 180px;
 	transform: translate(-50%, -50%);
+
 	border-radius: ${theme.units.radius.radius16};
 	z-index: ${theme.elevation.zIndex.MODAL};
-	display: flex;
-	flex-direction: column;
 	gap: ${theme.units.spacing.space12};
-	justify-content: center;
-	align-items: center;
 	background-color: ${theme.color.bg.primary};
-
 	box-shadow: ${theme.elevation.shadow.shadow16};
+
+	@media (max-width: 1440px) {
+		width: 240px;
+	}
 `;
