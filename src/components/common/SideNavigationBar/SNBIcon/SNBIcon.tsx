@@ -3,12 +3,14 @@ import { Button } from '@components/common/Button/Button';
 import Divider from '@components/common/Divider/Divider';
 import Flex from '@components/common/Flex/Flex';
 import MenuItem from '@components/common/SideNavigationBar/MenuItem/MenuItem';
+import useSocketStore from '@stores/socketStore';
 import { PATH } from '@constants/path';
 import * as S from './SNBIcon.styled';
 
 const SNBIcon = () => {
 	const navigate = useNavigate();
 	const location = useLocation();
+	const { chatMessageCount } = useSocketStore();
 
 	return (
 		<S.Container>
@@ -32,7 +34,7 @@ const SNBIcon = () => {
 					<MenuItem
 						leadingIcon='Message'
 						selected={location.pathname === PATH.CHAT}
-						number={20}
+						number={chatMessageCount}
 						type='iconOnly'
 						onClick={() => navigate(PATH.CHAT)}
 					/>
