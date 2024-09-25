@@ -71,6 +71,8 @@ const GNB = () => {
 				),
 			}));
 		}
+
+		setChatChannelList([]);
 	}, [userStatus, stompClient]);
 
 	useLayoutEffect(() => {
