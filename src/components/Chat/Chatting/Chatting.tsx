@@ -32,7 +32,8 @@ const Chatting = (props: ChattingProps) => {
 
 	const { makeToast } = useToastStore();
 	const [chatMessage, setChatMessage] = useState('');
-	const chatContainerRef = useRef<HTMLDivElement>(null);
+	const [prevHeight, setPrevHeight] = useState(0);
+	const chatRef = useRef<HTMLDivElement>(null);
 	const messageEndRef = useRef<HTMLDivElement | null>(null);
 
 	const handleMessageChange = (e: ChangeEvent<HTMLTextAreaElement>) => {
@@ -87,6 +88,11 @@ const Chatting = (props: ChattingProps) => {
 
 		const chatData = { chatChannelMessages: mergedChatChannelMessages };
 		setChatHistory(chatData);
+
+		if (!isFetching)
+			window.scrollTo({ top: document.body.scrollHeight - prevHeight });
+
+		setPrevHeight(chatRef.current?.scrollHeight ?? 0);
 	}, [messages?.pages]);
 
 	const handleText = () => {
@@ -214,7 +220,7 @@ const Chatting = (props: ChattingProps) => {
 
 	return (
 		<S.ChattingContainer>
-			<S.ChattingListContainer ref={chatContainerRef}>
+			<S.ChattingListContainer ref={chatRef}>
 				<InfiniteScroll
 					loadMore={() => {
 						if (!isFetching) fetchNextPage();
