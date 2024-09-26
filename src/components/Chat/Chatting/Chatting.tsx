@@ -12,6 +12,7 @@ import useUserStatusQuery from '@hooks/queries/useUserStatusQuery';
 import { StompSubscription } from '@stomp/stompjs';
 import useSocketStore from '@stores/socketStore';
 import useToastStore from '@stores/toastStore';
+import { getFormattedDate } from '@utils/getFormattedDate';
 import type { ChatData } from '@type/chat';
 import * as S from './Chatting.styled';
 
@@ -32,6 +33,7 @@ const Chatting = (props: ChattingProps) => {
 	const { makeToast } = useToastStore();
 	const [chatMessage, setChatMessage] = useState('');
 	const chatContainerRef = useRef<HTMLDivElement>(null);
+	const messageEndRef = useRef<HTMLDivElement | null>(null);
 
 	const handleMessageChange = (e: ChangeEvent<HTMLTextAreaElement>) => {
 		const { value } = e.target;
@@ -101,32 +103,8 @@ const Chatting = (props: ChattingProps) => {
 		setChatMessage('');
 
 		setTimeout(() => {
-			if (chatContainerRef.current) {
-				chatContainerRef.current.scrollTop =
-					chatContainerRef.current.scrollHeight;
-			}
-		}, 150);
-	};
-
-	const formatDate = (dateString: string) => {
-		const date = new Date(dateString);
-		const year = date.getFullYear();
-		const month = date.getMonth() + 1;
-		const day = date.getDate();
-
-		return `${year}년 ${month}월 ${day}일`;
-	};
-
-	const formatTime = (dateString: string) => {
-		const date = new Date(dateString);
-		let hours = date.getHours();
-		const minutes = date.getMinutes();
-		const period = hours >= 12 ? '오후' : '오전';
-		hours = hours % 12 || 12;
-
-		const formattedMinutes = minutes !== 0 ? ` ${minutes}분` : '';
-
-		return `${period} ${hours}시${formattedMinutes}`;
+			messageEndRef.current?.scrollIntoView();
+		}, 200);
 	};
 
 	const inputImageRef = useRef<HTMLInputElement | null>(null);
@@ -171,6 +149,10 @@ const Chatting = (props: ChattingProps) => {
 						})
 					);
 				}
+
+				setTimeout(() => {
+					messageEndRef.current?.scrollIntoView();
+				}, 300);
 			}
 		}
 	};
@@ -205,6 +187,10 @@ const Chatting = (props: ChattingProps) => {
 						})
 					);
 				}
+
+				setTimeout(() => {
+					messageEndRef.current?.scrollIntoView();
+				}, 300);
 			}
 		}
 	};
@@ -219,6 +205,12 @@ const Chatting = (props: ChattingProps) => {
 			}
 		}
 	};
+
+	useEffect(() => {
+		if (chatHistory && chatHistory.chatChannelMessages.length <= 100) {
+			messageEndRef.current?.scrollIntoView();
+		}
+	}, [chatHistory]);
 
 	return (
 		<S.ChattingContainer>
@@ -242,12 +234,15 @@ const Chatting = (props: ChattingProps) => {
 								return (
 									<Flex direction='column' key={msg.id}>
 										{previousMsg &&
-											formatDate(msg.createdAt) !==
-												formatDate(previousMsg?.createdAt) && (
+											getFormattedDate(msg.createdAt, 'chatDate') !==
+												getFormattedDate(
+													previousMsg?.createdAt,
+													'chatDate'
+												) && (
 												<Flex justify='center' height='28'>
 													<S.ChattingDateWrapper>
 														<Text size='sm' weight='medium' color='secondary'>
-															{formatDate(msg.createdAt)}
+															{getFormattedDate(msg.createdAt, 'chatDate')}
 														</Text>
 													</S.ChattingDateWrapper>
 												</Flex>
@@ -263,7 +258,7 @@ const Chatting = (props: ChattingProps) => {
 															(nextMsg?.author.id === msg.author.id &&
 																nextMsg?.createdAt !== msg.createdAt))) ||
 													index === array.length - 1
-														? formatTime(msg.createdAt)
+														? getFormattedDate(msg.createdAt, 'chatTime')
 														: null
 												}
 												file={
@@ -294,7 +289,7 @@ const Chatting = (props: ChattingProps) => {
 															(nextMsg?.author.id === msg.author.id &&
 																nextMsg?.createdAt !== msg.createdAt))) ||
 													index === array.length - 1
-														? formatTime(msg.createdAt)
+														? getFormattedDate(msg.createdAt, 'chatTime')
 														: null
 												}
 												file={
@@ -317,6 +312,7 @@ const Chatting = (props: ChattingProps) => {
 									</Flex>
 								);
 							})}
+					<S.messageEndWrapper ref={messageEndRef} />
 				</InfiniteScroll>
 			</S.ChattingListContainer>
 

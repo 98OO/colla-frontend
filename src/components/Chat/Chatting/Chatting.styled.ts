@@ -71,3 +71,7 @@ export const ChattingDateWrapper = styled.div`
 export const ImgUploadWrapper = styled.input`
 	display: none;
 `;
+
+export const messageEndWrapper = styled.div`
+	height: 1px;
+`;
