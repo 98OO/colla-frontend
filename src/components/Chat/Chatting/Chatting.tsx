@@ -8,6 +8,7 @@ import IconButton from '@components/common/IconButton/IconButton';
 import Text from '@components/common/Text/Text';
 import useFileUpload from '@hooks/common/useFileUpload';
 import useChatMessageQuery from '@hooks/queries/chat/useChatMesaageQuery';
+import { queryClient } from '@hooks/queries/common/queryClient';
 import useUserStatusQuery from '@hooks/queries/useUserStatusQuery';
 import { StompSubscription } from '@stomp/stompjs';
 import useSocketStore from '@stores/socketStore';
@@ -25,33 +26,23 @@ const Chatting = (props: ChattingProps) => {
 	const teamspaceId = userStatus?.profile.lastSeenTeamspaceId;
 	const { selectedChat } = props;
 	const { stompClient } = useSocketStore();
+	const { makeToast } = useToastStore();
+
 	const { messages, fetchNextPage, hasNextPage, isFetching } =
 		useChatMessageQuery(selectedChat, teamspaceId);
 
 	const [chatHistory, setChatHistory] = useState<ChatData | null>(null);
-
-	const { makeToast } = useToastStore();
 	const [chatMessage, setChatMessage] = useState('');
 	const [prevHeight, setPrevHeight] = useState(0);
+
 	const chatRef = useRef<HTMLDivElement>(null);
-	const messageEndRef = useRef<HTMLDivElement | null>(null);
-
-	const handleMessageChange = (e: ChangeEvent<HTMLTextAreaElement>) => {
-		const { value } = e.target;
-		if (value.length <= 1000) setChatMessage(value);
-	};
-
-	const [chatSubscribe, setChatSubscribe] = useState<StompSubscription | null>(
-		null
-	);
+	const messageEndRef = useRef<HTMLInputElement | null>(null);
+	const chatSubscribeRef = useRef<StompSubscription | null>(null);
+	const inputImageRef = useRef<HTMLInputElement | null>(null);
+	const inputFileRef = useRef<HTMLInputElement | null>(null);
 
 	useEffect(() => {
 		if (selectedChat) {
-			if (chatSubscribe) {
-				console.log('전에 구독', chatSubscribe);
-				chatSubscribe?.unsubscribe();
-			}
-			// 새로운 구독 설정
 			const newChatSubscribe = stompClient?.subscribe(
 				`/topic/teamspaces/${userStatus?.profile.lastSeenTeamspaceId}/chat-channels/${selectedChat}/messages`,
 				(message) => {
@@ -68,11 +59,19 @@ const Chatting = (props: ChattingProps) => {
 				}
 			);
 
-			if (newChatSubscribe) {
-				setChatSubscribe(newChatSubscribe);
-			}
-			setChatHistory(null);
+			if (newChatSubscribe) chatSubscribeRef.current = newChatSubscribe;
 		}
+
+		return () => {
+			if (chatSubscribeRef.current) {
+				chatSubscribeRef.current.unsubscribe();
+				chatSubscribeRef.current = null;
+			}
+
+			queryClient.removeQueries({
+				queryKey: ['chatMessage', selectedChat],
+			});
+		};
 	}, [selectedChat, stompClient]);
 
 	useEffect(() => {
@@ -81,12 +80,12 @@ const Chatting = (props: ChattingProps) => {
 				`/app/teamspaces/${userStatus?.profile.lastSeenTeamspaceId}/chat-channels/${selectedChat}/messages/${messages.pages[0].chatChannelMessages[0].id}/read`
 			);
 		}
+
 		const allChatChannelMessages =
 			messages?.pages.map((page) => page.chatChannelMessages) ?? [];
-
 		const mergedChatChannelMessages = allChatChannelMessages.flat();
-
 		const chatData = { chatChannelMessages: mergedChatChannelMessages };
+
 		setChatHistory(chatData);
 
 		if (!isFetching)
@@ -94,6 +93,16 @@ const Chatting = (props: ChattingProps) => {
 
 		setPrevHeight(chatRef.current?.scrollHeight ?? 0);
 	}, [messages?.pages]);
+
+	useEffect(() => {
+		if (chatHistory && chatHistory.chatChannelMessages.length <= 100)
+			messageEndRef.current?.scrollIntoView();
+	}, [chatHistory]);
+
+	const handleMessageChange = (e: ChangeEvent<HTMLTextAreaElement>) => {
+		const { value } = e.target;
+		if (value.length <= 1000) setChatMessage(value);
+	};
 
 	const handleText = () => {
 		stompClient?.send(
@@ -113,11 +122,10 @@ const Chatting = (props: ChattingProps) => {
 		}, 200);
 	};
 
-	const inputImageRef = useRef<HTMLInputElement | null>(null);
-	const inputFileRef = useRef<HTMLInputElement | null>(null);
 	const handleImageUploadClick = () => {
 		inputImageRef.current?.click();
 	};
+
 	const handleFileUploadClick = () => {
 		inputFileRef.current?.click();
 	};
@@ -169,6 +177,7 @@ const Chatting = (props: ChattingProps) => {
 				makeToast('파일 크기는 최대 100MB입니다.', 'Warning');
 				return;
 			}
+
 			if (inputFileRef.current?.files) {
 				const fileUrl = await uploadFiles(
 					inputFileRef.current?.files,
@@ -211,12 +220,6 @@ const Chatting = (props: ChattingProps) => {
 			}
 		}
 	};
-
-	useEffect(() => {
-		if (chatHistory && chatHistory.chatChannelMessages.length <= 100) {
-			messageEndRef.current?.scrollIntoView();
-		}
-	}, [chatHistory]);
 
 	return (
 		<S.ChattingContainer>
