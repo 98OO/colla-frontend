@@ -34,6 +34,7 @@ const Chatting = (props: ChattingProps) => {
 	const [chatHistory, setChatHistory] = useState<ChatData | null>(null);
 	const [chatMessage, setChatMessage] = useState('');
 	const [prevHeight, setPrevHeight] = useState(0);
+	const [isInitialLoad, setIsInitialLoad] = useState(true);
 
 	const chatRef = useRef<HTMLDivElement>(null);
 	const messageEndRef = useRef<HTMLInputElement | null>(null);
@@ -95,8 +96,10 @@ const Chatting = (props: ChattingProps) => {
 	}, [messages?.pages]);
 
 	useEffect(() => {
-		if (chatHistory && chatHistory.chatChannelMessages.length <= 100)
+		if (chatHistory && isInitialLoad) {
 			messageEndRef.current?.scrollIntoView();
+			setIsInitialLoad(false);
+		}
 	}, [chatHistory]);
 
 	const handleMessageChange = (e: ChangeEvent<HTMLTextAreaElement>) => {
