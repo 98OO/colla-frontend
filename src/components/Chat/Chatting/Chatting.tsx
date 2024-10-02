@@ -5,6 +5,7 @@ import OtherMessageBox from '@components/Chat/OtherMessageBox/OtherMessageBox';
 import { Button } from '@components/common/Button/Button';
 import Flex from '@components/common/Flex/Flex';
 import IconButton from '@components/common/IconButton/IconButton';
+import Profile from '@components/common/Profile/Profile';
 import Text from '@components/common/Text/Text';
 import useFileUpload from '@hooks/common/useFileUpload';
 import useChatMessageQuery from '@hooks/queries/chat/useChatMesaageQuery';
@@ -35,6 +36,7 @@ const Chatting = (props: ChattingProps) => {
 	const [chatMessage, setChatMessage] = useState('');
 	const [prevHeight, setPrevHeight] = useState(0);
 	const [isInitialLoad, setIsInitialLoad] = useState(true);
+	const [isLatestMessageVisible, setIsLatestMessageVisible] = useState(false);
 
 	const chatRef = useRef<HTMLDivElement>(null);
 	const messageEndRef = useRef<HTMLInputElement | null>(null);
@@ -51,6 +53,17 @@ const Chatting = (props: ChattingProps) => {
 					stompClient?.send(
 						`/app/teamspaces/${userStatus?.profile.lastSeenTeamspaceId}/chat-channels/${selectedChat}/messages/${parsedMessage.id}/read`
 					);
+
+					if (
+						chatRef.current &&
+						chatRef.current.scrollHeight -
+							chatRef.current.clientHeight -
+							chatRef.current.scrollTop <=
+							66
+					)
+						setIsInitialLoad(true);
+					else setIsLatestMessageVisible(true);
+
 					setChatHistory((prevChatHistory) => ({
 						chatChannelMessages: [
 							parsedMessage,
@@ -101,6 +114,28 @@ const Chatting = (props: ChattingProps) => {
 			setIsInitialLoad(false);
 		}
 	}, [chatHistory]);
+
+	useEffect(() => {
+		const chatElement = chatRef.current;
+
+		const handleScroll = () => {
+			if (chatElement) {
+				const isBottom =
+					chatElement.scrollHeight -
+						chatElement.scrollTop -
+						chatElement.clientHeight <=
+					66;
+
+				if (isBottom) setIsLatestMessageVisible(false);
+			}
+		};
+
+		chatElement?.addEventListener('scroll', handleScroll);
+
+		return () => {
+			chatElement?.removeEventListener('scroll', handleScroll);
+		};
+	}, []);
 
 	const handleMessageChange = (e: ChangeEvent<HTMLTextAreaElement>) => {
 		const { value } = e.target;
@@ -224,6 +259,11 @@ const Chatting = (props: ChattingProps) => {
 		}
 	};
 
+	const handleLatestMessageClick = () => {
+		setIsLatestMessageVisible(false);
+		messageEndRef.current?.scrollIntoView();
+	};
+
 	return (
 		<S.ChattingContainer>
 			<S.ChattingListContainer ref={chatRef}>
@@ -324,10 +364,26 @@ const Chatting = (props: ChattingProps) => {
 									</Flex>
 								);
 							})}
-					<S.messageEndWrapper ref={messageEndRef} />
+					<S.MessageEndWrapper ref={messageEndRef} />
 				</InfiniteScroll>
 			</S.ChattingListContainer>
-
+			{isLatestMessageVisible && (
+				<S.LatestMessageContainer>
+					{chatHistory && chatHistory.chatChannelMessages.length > 0 && (
+						<Profile
+							profile={
+								chatHistory.chatChannelMessages[0].author.profileImageUrl
+							}
+							initial={chatHistory.chatChannelMessages[0].author.username}
+							avatarSize='sm'
+							title={chatHistory.chatChannelMessages[0].author.username}
+							subTitle={chatHistory.chatChannelMessages[0].content}
+							trailingIcon='Down'
+							onClick={handleLatestMessageClick}
+						/>
+					)}
+				</S.LatestMessageContainer>
+			)}
 			<S.ChattingInputContainer>
 				<S.ChattingInputWrapper
 					value={chatMessage}
