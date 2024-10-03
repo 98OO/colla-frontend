@@ -117,16 +117,22 @@ const Chatting = (props: ChattingProps) => {
 
 	useEffect(() => {
 		const chatElement = chatRef.current;
+		let ticking = false;
 
 		const handleScroll = () => {
-			if (chatElement) {
-				const isBottom =
-					chatElement.scrollHeight -
-						chatElement.scrollTop -
-						chatElement.clientHeight <=
-					66;
+			if (!ticking && chatElement) {
+				requestAnimationFrame(() => {
+					const isBottom =
+						chatElement.scrollHeight -
+							chatElement.scrollTop -
+							chatElement.clientHeight <=
+						66;
 
-				if (isBottom) setIsLatestMessageVisible(false);
+					if (isBottom) setIsLatestMessageVisible(false);
+					ticking = false;
+				});
+
+				ticking = true;
 			}
 		};
 
