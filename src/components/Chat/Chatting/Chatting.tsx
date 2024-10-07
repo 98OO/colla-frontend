@@ -308,95 +308,93 @@ const Chatting = (props: ChattingProps) => {
 					hasMore={hasNextPage}
 					useWindow={false}>
 					{chatHistory &&
-						chatHistory.chatChannelMessages
-							.slice()
-							.reverse()
-							.map((msg, index, array) => {
-								const previousMsg = index > 0 ? array[index - 1] : null;
-								const nextMsg =
-									index < array.length - 1 ? array[index + 1] : null;
+						chatHistory.chatChannelMessages.map((_, index, array) => {
+							const currentIndex = array.length - 1 - index;
+							const currentMsg = array[currentIndex];
+							const previousMsg =
+								currentIndex < array.length - 1
+									? array[currentIndex + 1]
+									: null;
+							const nextMsg = currentIndex > 0 ? array[currentIndex - 1] : null;
 
-								return (
-									<Flex direction='column' key={msg.id}>
-										{previousMsg &&
-											getFormattedDate(msg.createdAt, 'chatDate') !==
-												getFormattedDate(
-													previousMsg?.createdAt,
-													'chatDate'
-												) && (
-												<Flex justify='center' height='28'>
-													<S.ChattingDateWrapper>
-														<Text size='sm' weight='medium' color='secondary'>
-															{getFormattedDate(msg.createdAt, 'chatDate')}
-														</Text>
-													</S.ChattingDateWrapper>
-												</Flex>
-											)}
-										{msg.author.id === userStatus?.profile.userId ? (
-											<MyMessageBox
-												key={msg.id}
-												type={msg.type}
-												content={msg.content}
-												date={
-													(index < array.length - 1 &&
-														(nextMsg?.author.id !== msg.author.id ||
-															(nextMsg?.author.id === msg.author.id &&
-																nextMsg?.createdAt !== msg.createdAt))) ||
-													index === array.length - 1
-														? getFormattedDate(msg.createdAt, 'chatTime')
-														: null
-												}
-												file={
-													msg.attachments.length > 0
-														? msg.attachments.map((attachment) => ({
-																filename: attachment.filename,
-																url: attachment.url,
-																id: attachment.id,
-																size: attachment.size,
-															}))
-														: []
-												}
-												state={
-													previousMsg?.author.id !== msg.author.id ||
-													(previousMsg?.author.id === msg.author.id &&
-														previousMsg.createdAt !== msg.createdAt)
-												}
-											/>
-										) : (
-											<OtherMessageBox
-												name={msg.author.username}
-												profile={msg.author.profileImageUrl}
-												type={msg.type}
-												content={msg.content}
-												date={
-													(index < array.length - 1 &&
-														(nextMsg?.author.id !== msg.author.id ||
-															(nextMsg?.author.id === msg.author.id &&
-																nextMsg?.createdAt !== msg.createdAt))) ||
-													index === array.length - 1
-														? getFormattedDate(msg.createdAt, 'chatTime')
-														: null
-												}
-												file={
-													msg.attachments.length > 0
-														? msg.attachments.map((attachment) => ({
-																filename: attachment.filename,
-																url: attachment.url,
-																id: attachment.id,
-																size: attachment.size,
-															}))
-														: []
-												}
-												state={
-													previousMsg?.author.id !== msg.author.id ||
-													(previousMsg?.author.id === msg.author.id &&
-														previousMsg.createdAt !== msg.createdAt)
-												}
-											/>
+							return (
+								<Flex direction='column' key={currentMsg.id}>
+									{previousMsg &&
+										getFormattedDate(currentMsg.createdAt, 'chatDate') !==
+											getFormattedDate(previousMsg.createdAt, 'chatDate') && (
+											<Flex justify='center' height='28'>
+												<S.ChattingDateWrapper>
+													<Text size='sm' weight='medium' color='secondary'>
+														{getFormattedDate(currentMsg.createdAt, 'chatDate')}
+													</Text>
+												</S.ChattingDateWrapper>
+											</Flex>
 										)}
-									</Flex>
-								);
-							})}
+									{currentMsg.author.id === userStatus?.profile.userId ? (
+										<MyMessageBox
+											key={currentMsg.id}
+											type={currentMsg.type}
+											content={currentMsg.content}
+											date={
+												(currentIndex > 0 &&
+													(nextMsg?.author.id !== currentMsg.author.id ||
+														(nextMsg?.author.id === currentMsg.author.id &&
+															nextMsg?.createdAt !== currentMsg.createdAt))) ||
+												currentIndex === 0
+													? getFormattedDate(currentMsg.createdAt, 'chatTime')
+													: null
+											}
+											file={
+												currentMsg.attachments.length > 0
+													? currentMsg.attachments.map((attachment) => ({
+															filename: attachment.filename,
+															url: attachment.url,
+															id: attachment.id,
+															size: attachment.size,
+														}))
+													: []
+											}
+											state={
+												previousMsg?.author.id !== currentMsg.author.id ||
+												(previousMsg?.author.id === currentMsg.author.id &&
+													previousMsg.createdAt !== currentMsg.createdAt)
+											}
+										/>
+									) : (
+										<OtherMessageBox
+											name={currentMsg.author.username}
+											profile={currentMsg.author.profileImageUrl}
+											type={currentMsg.type}
+											content={currentMsg.content}
+											date={
+												(currentIndex > 0 &&
+													(nextMsg?.author.id !== currentMsg.author.id ||
+														(nextMsg?.author.id === currentMsg.author.id &&
+															nextMsg?.createdAt !== currentMsg.createdAt))) ||
+												currentIndex === 0
+													? getFormattedDate(currentMsg.createdAt, 'chatTime')
+													: null
+											}
+											file={
+												currentMsg.attachments.length > 0
+													? currentMsg.attachments.map((attachment) => ({
+															filename: attachment.filename,
+															url: attachment.url,
+															id: attachment.id,
+															size: attachment.size,
+														}))
+													: []
+											}
+											state={
+												previousMsg?.author.id !== currentMsg.author.id ||
+												(previousMsg?.author.id === currentMsg.author.id &&
+													previousMsg.createdAt !== currentMsg.createdAt)
+											}
+										/>
+									)}
+								</Flex>
+							);
+						})}
 					<S.MessageEndWrapper ref={messageEndRef} />
 				</InfiniteScroll>
 			</S.ChattingListContainer>
