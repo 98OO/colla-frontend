@@ -11,14 +11,14 @@ import useMenu from '@hooks/common/useMenu';
 import useUserStatusQuery from '@hooks/queries/useUserStatusQuery';
 import { StompSubscription } from '@stomp/stompjs';
 import useSocketStore from '@stores/socketStore';
+import { END_POINTS } from '@constants/api';
 import { GNB_PROFILE_WIDTH, GNB_TEAM_INFO_WIDTH } from '@styles/layout';
 import * as S from './GNB.styled';
 
 const GNB = () => {
 	const { userStatus } = useUserStatusQuery();
-	const lastSeenTeamspaceId = userStatus?.profile.lastSeenTeamspaceId;
 	const lastSeenTeam = userStatus?.participatedTeamspaces.find(
-		(team) => team.teamspaceId === lastSeenTeamspaceId
+		(team) => team.teamspaceId === userStatus?.profile.lastSeenTeamspaceId
 	);
 
 	const { toggleMenu: handleTeamSpace, showMenu: showTeamSpace } = useMenu();
@@ -45,7 +45,10 @@ const GNB = () => {
 			setChatChannelsStatus((prevState) => ({
 				...prevState,
 				chatChannelListStatus: stompClient?.subscribe(
-					`/topic/teamspaces/${lastSeenTeamspaceId}/users/${userStatus.profile.userId}/chat-channels/status`,
+					END_POINTS.CHAT_CHANNEL_LIST(
+						userStatus.profile.lastSeenTeamspaceId,
+						userStatus.profile.userId
+					),
 					(message) => {
 						const { chatChannelsResponse } = JSON.parse(message.body);
 						const totalUnreadMessageCount = chatChannelsResponse.reduce(
@@ -62,10 +65,13 @@ const GNB = () => {
 			setChatChannelsStatus((prevState) => ({
 				...prevState,
 				chatMessageStatus: stompClient?.subscribe(
-					`/topic/teamspaces/${lastSeenTeamspaceId}/receive-message`,
+					END_POINTS.RECEIVE_MESSAGE(userStatus.profile.lastSeenTeamspaceId),
 					() => {
 						stompClient.send(
-							`/app/teamspaces/${lastSeenTeamspaceId}/users/${userStatus.profile.userId}/chat-channels/status`
+							END_POINTS.SEND_CHAT_CHANNEL_LIST(
+								userStatus.profile.lastSeenTeamspaceId,
+								userStatus.profile.userId
+							)
 						);
 					}
 				),

@@ -15,6 +15,7 @@ import { StompSubscription } from '@stomp/stompjs';
 import useSocketStore from '@stores/socketStore';
 import useToastStore from '@stores/toastStore';
 import { getFormattedDate } from '@utils/getFormattedDate';
+import { END_POINTS } from '@constants/api';
 import type { ChatData } from '@type/chat';
 import * as S from './Chatting.styled';
 
@@ -45,13 +46,20 @@ const Chatting = (props: ChattingProps) => {
 	const inputFileRef = useRef<HTMLInputElement | null>(null);
 
 	useEffect(() => {
-		if (selectedChat) {
+		if (selectedChat && userStatus) {
 			const newChatSubscribe = stompClient?.subscribe(
-				`/topic/teamspaces/${userStatus?.profile.lastSeenTeamspaceId}/chat-channels/${selectedChat}/messages`,
+				END_POINTS.SUBSCRIBE(
+					userStatus.profile.lastSeenTeamspaceId,
+					selectedChat
+				),
 				(message) => {
 					const parsedMessage = JSON.parse(message.body);
 					stompClient?.send(
-						`/app/teamspaces/${userStatus?.profile.lastSeenTeamspaceId}/chat-channels/${selectedChat}/messages/${parsedMessage.id}/read`
+						END_POINTS.READ_MESSAGE(
+							userStatus.profile.lastSeenTeamspaceId,
+							selectedChat,
+							parsedMessage.id
+						)
 					);
 
 					if (
@@ -89,9 +97,17 @@ const Chatting = (props: ChattingProps) => {
 	}, [selectedChat, stompClient]);
 
 	useEffect(() => {
-		if (messages && messages.pages[0].chatChannelMessages.length > 0) {
+		if (
+			messages &&
+			messages.pages[0].chatChannelMessages.length > 0 &&
+			userStatus
+		) {
 			stompClient?.send(
-				`/app/teamspaces/${userStatus?.profile.lastSeenTeamspaceId}/chat-channels/${selectedChat}/messages/${messages.pages[0].chatChannelMessages[0].id}/read`
+				END_POINTS.READ_MESSAGE(
+					userStatus.profile.lastSeenTeamspaceId,
+					selectedChat,
+					messages.pages[0].chatChannelMessages[0].id
+				)
 			);
 		}
 
@@ -149,16 +165,21 @@ const Chatting = (props: ChattingProps) => {
 	};
 
 	const handleText = () => {
-		stompClient?.send(
-			`/app/teamspaces/${userStatus?.profile.lastSeenTeamspaceId}/chat-channels/${selectedChat}/messages`,
-			{},
-			JSON.stringify({
-				chatType: 'TEXT',
-				content: chatMessage,
-				images: [],
-				attachments: [],
-			})
-		);
+		if (userStatus) {
+			stompClient?.send(
+				END_POINTS.SEND_MESSAGE(
+					userStatus.profile.lastSeenTeamspaceId,
+					selectedChat
+				),
+				{},
+				JSON.stringify({
+					chatType: 'TEXT',
+					content: chatMessage,
+					images: [],
+					attachments: [],
+				})
+			);
+		}
 		setChatMessage('');
 
 		setTimeout(() => {
@@ -189,9 +210,12 @@ const Chatting = (props: ChattingProps) => {
 					'TEAMSPACE',
 					userStatus?.profile.lastSeenTeamspaceId
 				);
-				if (imageUrl) {
+				if (imageUrl && userStatus) {
 					stompClient?.send(
-						`/app/teamspaces/${userStatus?.profile.lastSeenTeamspaceId}/chat-channels/${selectedChat}/messages`,
+						END_POINTS.SEND_MESSAGE(
+							userStatus.profile.lastSeenTeamspaceId,
+							selectedChat
+						),
 						{},
 						JSON.stringify({
 							chatType: 'IMAGE',
@@ -228,9 +252,12 @@ const Chatting = (props: ChattingProps) => {
 					'TEAMSPACE',
 					userStatus?.profile.lastSeenTeamspaceId
 				);
-				if (fileUrl) {
+				if (fileUrl && userStatus) {
 					stompClient?.send(
-						`/app/teamspaces/${userStatus?.profile.lastSeenTeamspaceId}/chat-channels/${selectedChat}/messages`,
+						END_POINTS.SEND_MESSAGE(
+							userStatus.profile.lastSeenTeamspaceId,
+							selectedChat
+						),
 						{},
 						JSON.stringify({
 							chatType: 'FILE',
