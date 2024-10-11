@@ -11,7 +11,7 @@ export interface GetChatsParams {
 const getChatMessage = async ({
 	teamspaceId,
 	chatChannelId,
-	limit = 50,
+	limit = 15,
 	before,
 }: GetChatsParams) => {
 	const url = END_POINTS.CHATS(teamspaceId!, chatChannelId);
