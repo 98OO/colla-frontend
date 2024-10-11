@@ -14,7 +14,7 @@ export const ChattingContainer = styled.div`
 export const ChattingListContainer = styled.div`
 	flex-grow: 1;
 	gap: ${theme.units.spacing.space4};
-	padding: ${theme.units.spacing.space12};
+	padding: 0 ${theme.units.spacing.space12};
 	display: flex;
 	flex-direction: column;
 	overflow-y: auto;

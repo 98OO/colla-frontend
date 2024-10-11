@@ -16,6 +16,7 @@ import useSocketStore from '@stores/socketStore';
 import useToastStore from '@stores/toastStore';
 import { getFormattedDate } from '@utils/getFormattedDate';
 import { END_POINTS } from '@constants/api';
+import { CHAT_AUTO_SCROLL_LIMIT } from '@constants/size';
 import type { ChatData } from '@type/chat';
 import * as S from './Chatting.styled';
 
@@ -62,15 +63,17 @@ const Chatting = (props: ChattingProps) => {
 						)
 					);
 
-					if (
-						chatRef.current &&
-						chatRef.current.scrollHeight -
-							chatRef.current.clientHeight -
-							chatRef.current.scrollTop <=
-							66
-					)
-						setIsInitialLoad(true);
-					else setIsLatestMessageVisible(true);
+					if (parsedMessage.author.id !== userStatus.profile.userId) {
+						if (
+							chatRef.current &&
+							chatRef.current.scrollHeight -
+								chatRef.current.clientHeight -
+								chatRef.current.scrollTop <=
+								CHAT_AUTO_SCROLL_LIMIT
+						)
+							setIsInitialLoad(true);
+						else setIsLatestMessageVisible(true);
+					}
 
 					setChatHistory((prevChatHistory) => ({
 						chatChannelMessages: [
@@ -142,7 +145,7 @@ const Chatting = (props: ChattingProps) => {
 						chatElement.scrollHeight -
 							chatElement.scrollTop -
 							chatElement.clientHeight <=
-						66;
+						CHAT_AUTO_SCROLL_LIMIT;
 
 					if (isBottom) setIsLatestMessageVisible(false);
 					ticking = false;
@@ -183,8 +186,8 @@ const Chatting = (props: ChattingProps) => {
 		setChatMessage('');
 
 		setTimeout(() => {
-			messageEndRef.current?.scrollIntoView();
-		}, 200);
+			messageEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+		}, 300);
 	};
 
 	const handleImageUploadClick = () => {
@@ -233,8 +236,8 @@ const Chatting = (props: ChattingProps) => {
 				}
 
 				setTimeout(() => {
-					messageEndRef.current?.scrollIntoView();
-				}, 300);
+					messageEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+				}, 700);
 			}
 		}
 	};
@@ -275,8 +278,8 @@ const Chatting = (props: ChattingProps) => {
 				}
 
 				setTimeout(() => {
-					messageEndRef.current?.scrollIntoView();
-				}, 300);
+					messageEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+				}, 700);
 			}
 		}
 	};
