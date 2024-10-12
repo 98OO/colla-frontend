@@ -1,10 +1,10 @@
 import { ChangeEvent, useRef, useState, useEffect, KeyboardEvent } from 'react';
+import LatestMessageBox from '@components/Chat/LatestMessageBox/LatestMessageBox';
 import MyMessageBox from '@components/Chat/MyMessageBox/MyMessageBox';
 import OtherMessageBox from '@components/Chat/OtherMessageBox/OtherMessageBox';
 import { Button } from '@components/common/Button/Button';
 import Flex from '@components/common/Flex/Flex';
 import IconButton from '@components/common/IconButton/IconButton';
-import Profile from '@components/common/Profile/Profile';
 import Text from '@components/common/Text/Text';
 import useFileUpload from '@hooks/common/useFileUpload';
 import useChatMessageQuery from '@hooks/queries/chat/useChatMesaageQuery';
@@ -19,19 +19,18 @@ import { CHAT_AUTO_SCROLL_LIMIT } from '@constants/size';
 import type { ChatData } from '@type/chat';
 import * as S from './Chatting.styled';
 
-export interface ChattingProps {
+interface ChattingProps {
 	selectedChat: number;
 }
 
 const Chatting = (props: ChattingProps) => {
 	const { userStatus } = useUserStatusQuery();
-	const teamspaceId = userStatus?.profile.lastSeenTeamspaceId;
 	const { selectedChat } = props;
 	const { stompClient } = useSocketStore();
 	const { makeToast } = useToastStore();
 
 	const { messages, fetchNextPage, hasNextPage, isFetching } =
-		useChatMessageQuery(selectedChat, teamspaceId);
+		useChatMessageQuery(selectedChat, userStatus?.profile.lastSeenTeamspaceId);
 
 	const [chatHistory, setChatHistory] = useState<ChatData | null>(null);
 	const [chatMessage, setChatMessage] = useState('');
@@ -390,22 +389,11 @@ const Chatting = (props: ChattingProps) => {
 				</S.InfiniteScrollContainer>
 				<S.MessageEndWrapper ref={messageEndRef} />
 			</S.ChattingListContainer>
-			{isLatestMessageVisible && (
-				<S.LatestMessageContainer>
-					{chatHistory && chatHistory.chatChannelMessages.length > 0 && (
-						<Profile
-							profile={
-								chatHistory.chatChannelMessages[0].author.profileImageUrl
-							}
-							initial={chatHistory.chatChannelMessages[0].author.username}
-							avatarSize='sm'
-							title={chatHistory.chatChannelMessages[0].author.username}
-							subTitle={chatHistory.chatChannelMessages[0].content}
-							trailingIcon='Down'
-							onClick={handleLatestMessageClick}
-						/>
-					)}
-				</S.LatestMessageContainer>
+			{isLatestMessageVisible && chatHistory && (
+				<LatestMessageBox
+					latestMessage={chatHistory.chatChannelMessages[0]}
+					onClick={handleLatestMessageClick}
+				/>
 			)}
 			<S.ChattingInputContainer>
 				<S.ChattingInputWrapper
