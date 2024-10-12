@@ -1,5 +1,4 @@
 import { ChangeEvent, useRef, useState, useEffect, KeyboardEvent } from 'react';
-import InfiniteScroll from 'react-infinite-scroller';
 import MyMessageBox from '@components/Chat/MyMessageBox/MyMessageBox';
 import OtherMessageBox from '@components/Chat/OtherMessageBox/OtherMessageBox';
 import { Button } from '@components/common/Button/Button';
@@ -37,7 +36,7 @@ const Chatting = (props: ChattingProps) => {
 	const [chatHistory, setChatHistory] = useState<ChatData | null>(null);
 	const [chatMessage, setChatMessage] = useState('');
 	const [prevHeight, setPrevHeight] = useState(0);
-	const [isInitialLoad, setIsInitialLoad] = useState(true);
+	const [isScrollAtBottom, setIsScrollAtBottom] = useState(true);
 	const [isLatestMessageVisible, setIsLatestMessageVisible] = useState(false);
 
 	const chatRef = useRef<HTMLDivElement>(null);
@@ -71,7 +70,7 @@ const Chatting = (props: ChattingProps) => {
 								chatRef.current.scrollTop <=
 								CHAT_AUTO_SCROLL_LIMIT
 						)
-							setIsInitialLoad(true);
+							setIsScrollAtBottom(true);
 						else setIsLatestMessageVisible(true);
 					}
 
@@ -128,9 +127,9 @@ const Chatting = (props: ChattingProps) => {
 	}, [messages?.pages]);
 
 	useEffect(() => {
-		if (chatHistory && isInitialLoad) {
+		if (chatHistory && isScrollAtBottom) {
 			messageEndRef.current?.scrollIntoView();
-			setIsInitialLoad(false);
+			setIsScrollAtBottom(false);
 		}
 	}, [chatHistory]);
 
@@ -303,7 +302,7 @@ const Chatting = (props: ChattingProps) => {
 	return (
 		<S.ChattingContainer>
 			<S.ChattingListContainer ref={chatRef}>
-				<InfiniteScroll
+				<S.InfiniteScrollContainer
 					loadMore={() => {
 						if (!isFetching) fetchNextPage();
 					}}
@@ -311,45 +310,39 @@ const Chatting = (props: ChattingProps) => {
 					hasMore={hasNextPage}
 					useWindow={false}>
 					{chatHistory &&
-						chatHistory.chatChannelMessages.map((_, index, array) => {
-							const currentIndex = array.length - 1 - index;
-							const currentMsg = array[currentIndex];
+						chatHistory.chatChannelMessages.map((msg, index, array) => {
 							const previousMsg =
-								currentIndex < array.length - 1
-									? array[currentIndex + 1]
-									: null;
-							const nextMsg = currentIndex > 0 ? array[currentIndex - 1] : null;
+								index < array.length - 1 ? array[index + 1] : null;
+							const nextMsg = index > 0 ? array[index - 1] : null;
 
 							return (
-								<Flex direction='column' key={currentMsg.id}>
+								<Flex direction='column' key={msg.id}>
 									{previousMsg &&
-										getFormattedDate(currentMsg.createdAt, 'chatDate') !==
+										getFormattedDate(msg.createdAt, 'chatDate') !==
 											getFormattedDate(previousMsg.createdAt, 'chatDate') && (
 											<Flex justify='center' height='28'>
 												<S.ChattingDateWrapper>
 													<Text size='sm' weight='medium' color='secondary'>
-														{getFormattedDate(currentMsg.createdAt, 'chatDate')}
+														{getFormattedDate(msg.createdAt, 'chatDate')}
 													</Text>
 												</S.ChattingDateWrapper>
 											</Flex>
 										)}
-									{currentMsg.author.id === userStatus?.profile.userId ? (
+									{msg.author.id === userStatus?.profile.userId ? (
 										<MyMessageBox
-											key={currentMsg.id}
-											type={currentMsg.type}
-											content={currentMsg.content}
+											key={msg.id}
+											type={msg.type}
+											content={msg.content}
 											date={
-												(currentIndex > 0 &&
-													(nextMsg?.author.id !== currentMsg.author.id ||
-														(nextMsg?.author.id === currentMsg.author.id &&
-															nextMsg?.createdAt !== currentMsg.createdAt))) ||
-												currentIndex === 0
-													? getFormattedDate(currentMsg.createdAt, 'chatTime')
+												nextMsg?.author.id !== msg.author.id ||
+												(nextMsg?.author.id === msg.author.id &&
+													nextMsg?.createdAt !== msg.createdAt)
+													? getFormattedDate(msg.createdAt, 'chatTime')
 													: null
 											}
 											file={
-												currentMsg.attachments.length > 0
-													? currentMsg.attachments.map((attachment) => ({
+												msg.attachments.length > 0
+													? msg.attachments.map((attachment) => ({
 															filename: attachment.filename,
 															url: attachment.url,
 															id: attachment.id,
@@ -358,29 +351,26 @@ const Chatting = (props: ChattingProps) => {
 													: []
 											}
 											state={
-												previousMsg?.author.id !== currentMsg.author.id ||
-												(previousMsg?.author.id === currentMsg.author.id &&
-													previousMsg.createdAt !== currentMsg.createdAt)
+												previousMsg?.author.id !== msg.author.id ||
+												previousMsg?.createdAt !== msg.createdAt
 											}
 										/>
 									) : (
 										<OtherMessageBox
-											name={currentMsg.author.username}
-											profile={currentMsg.author.profileImageUrl}
-											type={currentMsg.type}
-											content={currentMsg.content}
+											name={msg.author.username}
+											profile={msg.author.profileImageUrl}
+											type={msg.type}
+											content={msg.content}
 											date={
-												(currentIndex > 0 &&
-													(nextMsg?.author.id !== currentMsg.author.id ||
-														(nextMsg?.author.id === currentMsg.author.id &&
-															nextMsg?.createdAt !== currentMsg.createdAt))) ||
-												currentIndex === 0
-													? getFormattedDate(currentMsg.createdAt, 'chatTime')
+												nextMsg?.author.id !== msg.author.id ||
+												(nextMsg?.author.id === msg.author.id &&
+													nextMsg?.createdAt !== msg.createdAt)
+													? getFormattedDate(msg.createdAt, 'chatTime')
 													: null
 											}
 											file={
-												currentMsg.attachments.length > 0
-													? currentMsg.attachments.map((attachment) => ({
+												msg.attachments.length > 0
+													? msg.attachments.map((attachment) => ({
 															filename: attachment.filename,
 															url: attachment.url,
 															id: attachment.id,
@@ -389,17 +379,16 @@ const Chatting = (props: ChattingProps) => {
 													: []
 											}
 											state={
-												previousMsg?.author.id !== currentMsg.author.id ||
-												(previousMsg?.author.id === currentMsg.author.id &&
-													previousMsg.createdAt !== currentMsg.createdAt)
+												previousMsg?.author.id !== msg.author.id ||
+												previousMsg?.createdAt !== msg.createdAt
 											}
 										/>
 									)}
 								</Flex>
 							);
 						})}
-					<S.MessageEndWrapper ref={messageEndRef} />
-				</InfiniteScroll>
+				</S.InfiniteScrollContainer>
+				<S.MessageEndWrapper ref={messageEndRef} />
 			</S.ChattingListContainer>
 			{isLatestMessageVisible && (
 				<S.LatestMessageContainer>

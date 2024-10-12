@@ -1,3 +1,4 @@
+import InfiniteScroll from 'react-infinite-scroller';
 import styled from 'styled-components';
 import theme from '@styles/theme';
 
@@ -28,6 +29,11 @@ export const ChattingListContainer = styled.div`
 		border-radius: ${theme.units.radius.radius20};
 		background: ${theme.color.border.secondary};
 	}
+`;
+
+export const InfiniteScrollContainer = styled(InfiniteScroll)`
+	display: flex;
+	flex-direction: column-reverse;
 `;
 
 export const ChattingInputContainer = styled.div`
