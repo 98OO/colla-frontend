@@ -11,7 +11,9 @@
 		"preview": "vite preview",
 		"storybook": "storybook dev -p 6006",
 		"prepare": "husky install",
-		"chromatic": "chromatic --exit-zero-on-changes"
+		"chromatic": "chromatic --exit-zero-on-changes",
+		"test": "vitest run",
+		"test:watch": "vitest"
 	},
 	"dependencies": {
 		"@stomp/stompjs": "^7.0.0",
@@ -71,7 +73,12 @@
 		"msw-storybook-addon": "^1.10.0",
 		"prettier": "^3.2.5",
 		"storybook": "^8.0.9",
-		"typescript": "^5.4.4"
+		"typescript": "^5.4.4",
+		"@testing-library/jest-dom": "^6.5.0",
+		"@testing-library/react": "^16.0.1",
+		"@testing-library/user-event": "^14.5.2",
+		"@vitest/browser": "^2.1.2",
+		"jsdom": "^25.0.1"
 	},
 	"msw": {
 		"workerDirectory": "public"
