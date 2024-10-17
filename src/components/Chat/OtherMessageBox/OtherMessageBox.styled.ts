@@ -4,7 +4,7 @@ import theme from '@styles/theme';
 export const OtherMessageBoxContainer = styled.div`
 	display: flex;
 	width: 100%;
-	padding: ${theme.units.spacing.space4} 0;
+	padding-top: ${theme.units.spacing.space4};
 	gap: ${theme.units.spacing.space8};
 `;
 
