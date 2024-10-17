@@ -1,10 +1,11 @@
 import styled from 'styled-components';
+import { SNB_FULL_WIDTH } from '@styles/layout';
 import theme from '@styles/theme';
 
 export const Container = styled.div`
 	display: flex;
 	flex-direction: column;
-	width: 240px;
+	width: ${SNB_FULL_WIDTH};
 	padding: ${theme.units.spacing.space24} ${theme.units.spacing.space16};
 	gap: ${theme.units.spacing.space24};
 	height: calc(100vh - 64px);
