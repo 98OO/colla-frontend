@@ -61,16 +61,25 @@ const Chatting = (props: ChattingProps) => {
 						)
 					);
 
+					const isAutoScroll =
+						chatRef.current &&
+						chatRef.current.scrollHeight -
+							chatRef.current.clientHeight -
+							chatRef.current.scrollTop <=
+							CHAT_AUTO_SCROLL_LIMIT;
+
 					if (parsedMessage.author.id !== userStatus.profile.userId) {
-						if (
-							chatRef.current &&
-							chatRef.current.scrollHeight -
-								chatRef.current.clientHeight -
-								chatRef.current.scrollTop <=
-								CHAT_AUTO_SCROLL_LIMIT
-						)
-							setIsScrollAtBottom(true);
-						else setIsLatestMessageVisible(true);
+						if (isAutoScroll) {
+							if (parsedMessage.type === 'TEXT') setIsScrollAtBottom(true);
+							else {
+								setTimeout(() => {
+									messageEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+								}, 500);
+							}
+						} else setIsLatestMessageVisible(true);
+					} else {
+						setIsLatestMessageVisible(false);
+						if (parsedMessage.type === 'TEXT') setIsScrollAtBottom(true);
 					}
 
 					setChatHistory((prevChatHistory) => ({
@@ -112,24 +121,29 @@ const Chatting = (props: ChattingProps) => {
 			);
 		}
 
-		const allChatChannelMessages =
-			messages?.pages.map((page) => page.chatChannelMessages) ?? [];
-		const mergedChatChannelMessages = allChatChannelMessages.flat();
-		const chatData = { chatChannelMessages: mergedChatChannelMessages };
+		if (chatRef.current) setPrevHeight(chatRef.current.scrollHeight);
 
-		setChatHistory(chatData);
+		setChatHistory((prevChatHistory) => {
+			const lastPageMessages =
+				messages?.pages[messages.pages.length - 1]?.chatChannelMessages ?? [];
 
-		if (!isFetching)
-			window.scrollTo({ top: document.body.scrollHeight - prevHeight });
-
-		setPrevHeight(chatRef.current?.scrollHeight ?? 0);
+			return {
+				chatChannelMessages: [
+					...(prevChatHistory?.chatChannelMessages ?? []),
+					...lastPageMessages,
+				],
+			};
+		});
 	}, [messages?.pages]);
 
 	useEffect(() => {
-		if (chatHistory && isScrollAtBottom) {
+		if (!chatHistory || chatHistory.chatChannelMessages.length === 0) return;
+
+		if (isScrollAtBottom) {
 			messageEndRef.current?.scrollIntoView();
 			setIsScrollAtBottom(false);
-		}
+		} else if (chatRef.current)
+			window.scrollTo({ top: chatRef.current.scrollHeight - prevHeight });
 	}, [chatHistory]);
 
 	useEffect(() => {
@@ -181,11 +195,8 @@ const Chatting = (props: ChattingProps) => {
 				})
 			);
 		}
-		setChatMessage('');
 
-		setTimeout(() => {
-			messageEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-		}, 300);
+		setChatMessage('');
 	};
 
 	const handleImageUploadClick = () => {
@@ -235,7 +246,7 @@ const Chatting = (props: ChattingProps) => {
 
 				setTimeout(() => {
 					messageEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-				}, 700);
+				}, 500);
 			}
 		}
 	};
@@ -277,7 +288,7 @@ const Chatting = (props: ChattingProps) => {
 
 				setTimeout(() => {
 					messageEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-				}, 700);
+				}, 500);
 			}
 		}
 	};
@@ -307,7 +318,8 @@ const Chatting = (props: ChattingProps) => {
 					}}
 					isReverse
 					hasMore={hasNextPage}
-					useWindow={false}>
+					useWindow={false}
+					initialLoad={false}>
 					{chatHistory &&
 						chatHistory.chatChannelMessages.map((msg, index, array) => {
 							const previousMsg =

@@ -146,7 +146,9 @@ const ChatPage = () => {
 					/>
 				</Flex>
 			</S.ChatRoomListContainer>
-			{selectedChat !== 0 && <Chatting selectedChat={selectedChat} />}
+			{selectedChat !== 0 && (
+				<Chatting selectedChat={selectedChat} key={selectedChat} />
+			)}
 		</Flex>
 	);
 };
