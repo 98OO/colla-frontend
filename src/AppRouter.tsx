@@ -7,6 +7,7 @@ import InvitePage from '@pages/InvitePage/InvitePage';
 import LandingPage from '@pages/LandingPage/LandingPage';
 import MyPage from '@pages/MyPage/MyPage';
 import NotFoundPage from '@pages/NotFoundPage/NotFoundPage';
+import PostPage from '@pages/PostPage/PostPage';
 import RedirectPage from '@pages/RedirectPage/RedirectPage';
 import SettingPage from '@pages/SettingPage/SettingPage';
 import SignInPage from '@pages/SignInPage/SignInPage';
@@ -56,6 +57,10 @@ const AppRouter = () => {
 				{
 					path: PATH.FEED,
 					element: <FeedPage />,
+				},
+				{
+					path: PATH.POST,
+					element: <PostPage />,
 				},
 				{
 					path: PATH.CHAT,
