@@ -328,17 +328,18 @@ const Chatting = (props: ChattingProps) => {
 
 							return (
 								<Flex direction='column' key={msg.id}>
-									{previousMsg &&
+									{((previousMsg &&
 										getFormattedDate(msg.createdAt, 'chatDate') !==
-											getFormattedDate(previousMsg.createdAt, 'chatDate') && (
-											<Flex justify='center' height='28'>
-												<S.ChattingDateWrapper>
-													<Text size='sm' weight='medium' color='secondary'>
-														{getFormattedDate(msg.createdAt, 'chatDate')}
-													</Text>
-												</S.ChattingDateWrapper>
-											</Flex>
-										)}
+											getFormattedDate(previousMsg.createdAt, 'chatDate')) ||
+										index === array.length - 1) && (
+										<Flex justify='center' height='28'>
+											<S.ChattingDateWrapper>
+												<Text size='sm' weight='medium' color='secondary'>
+													{getFormattedDate(msg.createdAt, 'chatDate')}
+												</Text>
+											</S.ChattingDateWrapper>
+										</Flex>
+									)}
 									{msg.author.id === userStatus?.profile.userId ? (
 										<MyMessageBox
 											key={msg.id}
