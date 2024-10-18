@@ -35,8 +35,9 @@ const Chatting = (props: ChattingProps) => {
 	const [chatHistory, setChatHistory] = useState<ChatData | null>(null);
 	const [chatMessage, setChatMessage] = useState('');
 	const [prevHeight, setPrevHeight] = useState(0);
-	const [isScrollAtBottom, setIsScrollAtBottom] = useState(true);
+	const [isScrollAtBottom, setIsScrollAtBottom] = useState(false);
 	const [isLatestMessageVisible, setIsLatestMessageVisible] = useState(false);
+	const [initialLoad, setInitialLoad] = useState(true);
 
 	const chatRef = useRef<HTMLDivElement>(null);
 	const messageEndRef = useRef<HTMLInputElement | null>(null);
@@ -147,16 +148,32 @@ const Chatting = (props: ChattingProps) => {
 	}, [chatHistory]);
 
 	useEffect(() => {
-		const chatElement = chatRef.current;
+		const observedElement = chatRef.current;
+		const resizeObserver = new ResizeObserver(() => {
+			if (initialLoad) {
+				messageEndRef.current?.scrollIntoView();
+				setInitialLoad(false);
+			}
+		});
+
+		if (observedElement) resizeObserver.observe(observedElement);
+
+		return () => {
+			if (observedElement) resizeObserver.unobserve(observedElement);
+		};
+	}, []);
+
+	useEffect(() => {
+		const scrollElement = chatRef.current;
 		let ticking = false;
 
 		const handleScroll = () => {
-			if (!ticking && chatElement) {
+			if (!ticking && scrollElement) {
 				requestAnimationFrame(() => {
 					const isBottom =
-						chatElement.scrollHeight -
-							chatElement.scrollTop -
-							chatElement.clientHeight <=
+						scrollElement.scrollHeight -
+							scrollElement.scrollTop -
+							scrollElement.clientHeight <=
 						CHAT_AUTO_SCROLL_LIMIT;
 
 					if (isBottom) setIsLatestMessageVisible(false);
@@ -167,10 +184,10 @@ const Chatting = (props: ChattingProps) => {
 			}
 		};
 
-		chatElement?.addEventListener('scroll', handleScroll);
+		scrollElement?.addEventListener('scroll', handleScroll);
 
 		return () => {
-			chatElement?.removeEventListener('scroll', handleScroll);
+			scrollElement?.removeEventListener('scroll', handleScroll);
 		};
 	}, []);
 
