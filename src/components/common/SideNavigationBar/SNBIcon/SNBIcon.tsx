@@ -1,22 +1,38 @@
+import { useRef } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { Button } from '@components/common/Button/Button';
 import Divider from '@components/common/Divider/Divider';
 import Flex from '@components/common/Flex/Flex';
+import FeedMenu from '@components/common/SideNavigationBar/FeedMenu/FeedMenu';
 import MenuItem from '@components/common/SideNavigationBar/MenuItem/MenuItem';
+import useMenu from '@hooks/common/useMenu';
 import useSocketStore from '@stores/socketStore';
 import { PATH } from '@constants/path';
+import { SNB_ICON_WIDTH } from '@styles/layout';
 import * as S from './SNBIcon.styled';
 
 const SNBIcon = () => {
 	const navigate = useNavigate();
 	const location = useLocation();
 	const { chatMessageCount } = useSocketStore();
+	const baseRef = useRef<HTMLDivElement>(null);
+	const { toggleMenu: handleFeedMenu, showMenu: showFeedMenu } = useMenu();
 
 	return (
-		<S.Container>
+		<S.Container ref={baseRef}>
 			<S.ButtonWrapper>
-				<Button label='' variant='primary' size='md' leadingIcon='Plus' />
+				<Button
+					label=''
+					variant='primary'
+					size='md'
+					leadingIcon='Plus'
+					onClick={handleFeedMenu}
+				/>
 			</S.ButtonWrapper>
+			{showFeedMenu(baseRef, <FeedMenu closeMenu={handleFeedMenu} />, {
+				top: 24,
+				left: SNB_ICON_WIDTH + 26,
+			})}
 			<Flex direction='column' gap='48' paddingLeft='16' paddingRight='16'>
 				<Flex direction='column' gap='8' align='center'>
 					<MenuItem

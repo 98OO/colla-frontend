@@ -6,7 +6,7 @@ import { OauthButton } from '@components/common/OauthButton/OauthButton';
 import Text from '@components/common/Text/Text';
 import useLoginMutation from '@hooks/queries/useLoginMutation';
 import { PATH } from '@constants/path';
-import { KakaoLogin, NaverLogin, Colla } from '@assets/svg';
+import { KakaoLogin, NaverLogin, GoogleLogin, Colla } from '@assets/svg';
 import * as S from './SignInPage.styled';
 
 const SignInPage = () => {
@@ -125,6 +125,9 @@ const SignInPage = () => {
 				</OauthButton>
 				<OauthButton type='NAVER'>
 					<NaverLogin />
+				</OauthButton>
+				<OauthButton type='GOOGLE'>
+					<GoogleLogin />
 				</OauthButton>
 			</S.OauthWrapper>
 		</S.Container>
