@@ -5,3 +5,7 @@ export const GNB_HEIGHT = '64px';
 export const GNB_TEAM_INFO_WIDTH = 320;
 
 export const GNB_PROFILE_WIDTH = 240;
+
+export const CHAT_ROOM_CREATION_MODAL_WIDTH = 400;
+
+export const CHAT_ROOM_CREATION_MODAL_HEIGHT = 180;
