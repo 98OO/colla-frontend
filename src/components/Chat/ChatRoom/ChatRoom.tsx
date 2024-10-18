@@ -2,6 +2,7 @@ import Avatar from '@components/common/Avatar/Avatar';
 import Flex from '@components/common/Flex/Flex';
 import Heading from '@components/common/Heading/Heading';
 import Text from '@components/common/Text/Text';
+import { getFormattedDate } from '@utils/getFormattedDate';
 import * as S from './ChatRoom.styled';
 
 export interface ChatRoomProps {
@@ -24,27 +25,25 @@ const ChatRoom = (props: ChatRoomProps) => {
 
 	return (
 		<S.ChatRoomContainer onClick={handleClick} active={id === selectedChat}>
-			<Flex gap='10'>
+			<Flex align='center'>
 				<Avatar profile={null} initial={title} size='lg' shape='circle' />
-				<Flex direction='column' gap='6' justify='center'>
-					<Heading size='xs'>{title}</Heading>
-					<Flex height='16'>
-						{message && (
-							<Text size='md' weight='medium' color='secondary'>
-								{message}
-							</Text>
-						)}
-					</Flex>
-				</Flex>
 			</Flex>
+			<S.MessageContainer>
+				<Heading size='xs'>{title}</Heading>
+				{message && (
+					<Text size='md' weight='medium' color='secondary'>
+						{message}
+					</Text>
+				)}
+			</S.MessageContainer>
 			<Flex direction='column' justify='space-between'>
-				<Flex>
+				<S.DateWrapper>
 					{date && (
 						<Text size='sm' weight='medium' color='secondary'>
-							{date}
+							{getFormattedDate(date, 'fullDate')}
 						</Text>
 					)}
-				</Flex>
+				</S.DateWrapper>
 				{count !== 0 && count && (
 					<Flex justify='flex-end'>
 						{!(id === selectedChat) && (

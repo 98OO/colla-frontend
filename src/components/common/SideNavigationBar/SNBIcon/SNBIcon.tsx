@@ -6,6 +6,7 @@ import Flex from '@components/common/Flex/Flex';
 import FeedMenu from '@components/common/SideNavigationBar/FeedMenu/FeedMenu';
 import MenuItem from '@components/common/SideNavigationBar/MenuItem/MenuItem';
 import useMenu from '@hooks/common/useMenu';
+import useSocketStore from '@stores/socketStore';
 import { PATH } from '@constants/path';
 import { SNB_ICON_WIDTH } from '@styles/layout';
 import * as S from './SNBIcon.styled';
@@ -13,6 +14,7 @@ import * as S from './SNBIcon.styled';
 const SNBIcon = () => {
 	const navigate = useNavigate();
 	const location = useLocation();
+	const { chatMessageCount } = useSocketStore();
 	const baseRef = useRef<HTMLDivElement>(null);
 	const { toggleMenu: handleFeedMenu, showMenu: showFeedMenu } = useMenu();
 
@@ -48,7 +50,7 @@ const SNBIcon = () => {
 					<MenuItem
 						leadingIcon='Message'
 						selected={location.pathname === PATH.CHAT}
-						number={20}
+						number={chatMessageCount}
 						type='iconOnly'
 						onClick={() => navigate(PATH.CHAT)}
 					/>

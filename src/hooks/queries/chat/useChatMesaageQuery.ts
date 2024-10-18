@@ -21,6 +21,9 @@ const useChatMessageQuery = (
 			const lastMessage = lastChat[lastChat.length - 1];
 			return lastMessage.id;
 		},
+
+		gcTime: 24 * 60 * 60 * 1000,
+		staleTime: 24 * 60 * 60 * 1000,
 		enabled: !!teamspaceId,
 	});
 

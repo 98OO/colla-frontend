@@ -19,7 +19,23 @@ export const END_POINTS = {
 	USERSETTING: 'users/settings',
 	FEEDS: (teamspaceId: number) => `teamspaces/${teamspaceId}/feeds`,
 	CHATS: (teamspaceId: number, chatChannelId: number) =>
-		`${END_POINTS.TEAMSPACE}/${teamspaceId}/chat-channels/${chatChannelId}/messages`,
+		`teamspaces/${teamspaceId}/chat-channels/${chatChannelId}/messages`,
+	SUBSCRIBE: (teamspaceId: number, selectedChat: number) =>
+		`/topic/teamspaces/${teamspaceId}/chat-channels/${selectedChat}/messages`,
+	READ_MESSAGE: (
+		teamspaceId: number,
+		selectedChat: number,
+		messageId: number
+	) =>
+		`/app/teamspaces/${teamspaceId}/chat-channels/${selectedChat}/messages/${messageId}/read`,
+	SEND_MESSAGE: (teamspaceId: number, selectedChat: number) =>
+		`/app/teamspaces/${teamspaceId}/chat-channels/${selectedChat}/messages`,
+	CHAT_CHANNEL_LIST: (teamspaceId: number, userId: number) =>
+		`/topic/teamspaces/${teamspaceId}/users/${userId}/chat-channels/status`,
+	RECEIVE_MESSAGE: (teamspaceId: number) =>
+		`/topic/teamspaces/${teamspaceId}/receive-message`,
+	SEND_CHAT_CHANNEL_LIST: (teamspaceId: number, userId: number) =>
+		`/app/teamspaces/${teamspaceId}/users/${userId}/chat-channels/status`,
 } as const;
 
 export const AUTH_ERROR_CODE = {

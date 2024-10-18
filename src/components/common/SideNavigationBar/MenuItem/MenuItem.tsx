@@ -36,12 +36,13 @@ const MenuItem = (props: MenuItemProps) => {
 					</Text>
 				</S.MenuItemTextWrapper>
 			)}
-			{type === 'default' && number != null ? (
-				<Badge type='number' status='info' number={number} />
-			) : (
-				type === 'iconOnly' &&
-				number != null && <Badge type='dot' status='info' />
-			)}
+			{number != null &&
+				number !== 0 &&
+				(type === 'default' ? (
+					<Badge type='number' status='info' number={number} />
+				) : (
+					type === 'iconOnly' && <Badge type='dot' status='info' />
+				))}
 		</S.MenuItemContainer>
 	);
 };

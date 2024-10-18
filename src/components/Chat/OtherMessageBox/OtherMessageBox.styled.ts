@@ -4,7 +4,7 @@ import theme from '@styles/theme';
 export const OtherMessageBoxContainer = styled.div`
 	display: flex;
 	width: 100%;
-	padding: ${theme.units.spacing.space4} 0;
+	padding-top: ${theme.units.spacing.space4};
 	gap: ${theme.units.spacing.space8};
 `;
 
@@ -26,6 +26,7 @@ export const OtherMessageBoxWrapper = styled.div<{
 
 	max-width: 250px;
 	line-height: 18px;
+	word-break: break-all;
 `;
 
 export const ImageWrapper = styled.div`

@@ -14,8 +14,8 @@ const GNBTeamSpace = ({
 	chatChannelsStatus,
 }: {
 	chatChannelsStatus: {
-		status1?: StompSubscription;
-		status2?: StompSubscription;
+		chatChannelListStatus?: StompSubscription;
+		chatMessageStatus?: StompSubscription;
 	};
 }) => {
 	const { userStatus } = useUserStatusQuery();
@@ -27,16 +27,14 @@ const GNBTeamSpace = ({
 	const otherProfiles = userStatus?.participatedTeamspaces.filter(
 		(teamSpace) => teamSpace.name !== lastSeenTeam?.name
 	);
-	// const queryClient = useQueryClient();
 	const handleTeamChangeClick = (teamSpaceId: number) => {
 		mutateRecordTeamSpace(teamSpaceId);
-		if (chatChannelsStatus.status1) {
-			chatChannelsStatus.status1.unsubscribe();
-		}
-		if (chatChannelsStatus.status2) {
-			chatChannelsStatus.status2.unsubscribe();
-		}
-		// queryClient.invalidateQueries({ queryKey: ['chatChannel'] });
+		if (chatChannelsStatus.chatChannelListStatus)
+			chatChannelsStatus.chatChannelListStatus.unsubscribe();
+
+		if (chatChannelsStatus.chatMessageStatus)
+			chatChannelsStatus.chatMessageStatus.unsubscribe();
+
 		navigate(PATH.FEED);
 	};
 

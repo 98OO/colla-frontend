@@ -35,6 +35,7 @@ jobs:
 
           echo "VITE_NODE_ENV=${{ secrets.VITE_NODE_ENV }}" >> .env.production
           echo "VITE_BASE_URL=${{ secrets.VITE_BASE_URL }}" >> .env.production
+          echo "VITE_SOCKET_URL=${{ secrets.VITE_SOCKET_URL }}" >> .env.production
 
       - name: Install dependencies and build
         run: |

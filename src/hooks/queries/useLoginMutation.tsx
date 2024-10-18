@@ -16,6 +16,7 @@ const useLoginMutation = () => {
 		mutationFn: postLogin,
 		onSuccess: (content) => {
 			localStorage.setItem(ACCESS_TOKEN, content.accessToken);
+
 			const client = Stomp.over(function () {
 				return new SockJS(
 					`${WEBSOCKET_URL}${localStorage.getItem(ACCESS_TOKEN)}`
@@ -25,6 +26,7 @@ const useLoginMutation = () => {
 			client.connect({}, () => {
 				setStompClient(client);
 			});
+
 			if (inviteUrl) {
 				window.sessionStorage.removeItem(INVITE_URL);
 				navigate(`${PATH.INVITE}${inviteUrl}`);

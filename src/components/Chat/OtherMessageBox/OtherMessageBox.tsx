@@ -32,23 +32,29 @@ const OtherMessageBox = (props: OtherMessageBoxProps) => {
 					</Text>
 				)}
 				<S.OtherMessageBoxWrapper state={state} type={type}>
-					{/* eslint-disable-next-line no-nested-ternary */}
-					{type === 'TEXT' ? (
+					{type === 'TEXT' && (
 						<Text size='lg' weight='semiBold' color='secondary'>
 							{content}
 						</Text>
-					) : type === 'IMAGE' ? (
+					)}
+					{type === 'IMAGE' && (
 						<S.ImageWrapper>
 							{file?.map((img) => (
-								<a href={img.url} target='_blank' rel='noopener noreferrer'>
+								<a
+									key={img.id}
+									href={img.url}
+									target='_blank'
+									rel='noopener noreferrer'>
 									<img src={img.url} alt={img.filename} />
 								</a>
 							))}
 						</S.ImageWrapper>
-					) : (
+					)}
+					{type === 'FILE' && (
 						<Flex gap='10'>
 							{file?.map((files) => (
 								<Attachments
+									key={files.id}
 									attachment={{
 										id: files.id,
 										name: files.filename,
@@ -61,7 +67,6 @@ const OtherMessageBox = (props: OtherMessageBoxProps) => {
 					)}
 				</S.OtherMessageBoxWrapper>
 			</Flex>
-			{/* 날짜 */}
 			<Flex direction='column' justify='flex-end'>
 				{date && (
 					<Text size='sm' weight='medium' color='subtle'>
