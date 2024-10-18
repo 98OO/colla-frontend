@@ -30,3 +30,7 @@ export { ReactComponent as Image } from './image.svg';
 export { ReactComponent as File } from './file.svg';
 export { ReactComponent as Kebab } from './kebab.svg';
 export { ReactComponent as Download } from './download.svg';
+export { ReactComponent as Normal } from './normal.svg';
+export { ReactComponent as Scheduling } from './scheduling.svg';
+export { ReactComponent as Vote } from './vote.svg';
+export { ReactComponent as Collect } from './collect.svg';

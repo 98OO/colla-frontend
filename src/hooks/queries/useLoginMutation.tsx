@@ -4,7 +4,7 @@ import { Stomp } from '@stomp/stompjs';
 import { useMutation } from '@tanstack/react-query';
 import SockJS from 'sockjs-client';
 import useSocketStore from '@stores/socketStore';
-import { ACCESS_TOKEN, INVITE_URL } from '@constants/api';
+import { ACCESS_TOKEN, INVITE_URL, WEBSOCKET_URL } from '@constants/api';
 import { PATH } from '@constants/path';
 
 const useLoginMutation = () => {
@@ -19,7 +19,7 @@ const useLoginMutation = () => {
 
 			const client = Stomp.over(function () {
 				return new SockJS(
-					`${import.meta.env.VITE_SOCKET_URL}?accessToken=${localStorage.getItem(ACCESS_TOKEN)}`
+					`${WEBSOCKET_URL}${localStorage.getItem(ACCESS_TOKEN)}`
 				);
 			});
 
