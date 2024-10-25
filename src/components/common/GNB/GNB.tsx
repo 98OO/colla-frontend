@@ -11,14 +11,14 @@ import useMenu from '@hooks/common/useMenu';
 import useUserStatusQuery from '@hooks/queries/useUserStatusQuery';
 import { StompSubscription } from '@stomp/stompjs';
 import useSocketStore from '@stores/socketStore';
+import { END_POINTS } from '@constants/api';
 import { GNB_PROFILE_WIDTH, GNB_TEAM_INFO_WIDTH } from '@styles/layout';
 import * as S from './GNB.styled';
 
 const GNB = () => {
 	const { userStatus } = useUserStatusQuery();
-	const lastSeenTeamspaceId = userStatus?.profile.lastSeenTeamspaceId;
 	const lastSeenTeam = userStatus?.participatedTeamspaces.find(
-		(team) => team.teamspaceId === lastSeenTeamspaceId
+		(team) => team.teamspaceId === userStatus?.profile.lastSeenTeamspaceId
 	);
 
 	const { toggleMenu: handleTeamSpace, showMenu: showTeamSpace } = useMenu();
@@ -36,21 +36,23 @@ const GNB = () => {
 	};
 
 	const [chatChannelsStatus, setChatChannelsStatus] = useState<{
-		status1?: StompSubscription;
-		status2?: StompSubscription;
+		chatChannelListStatus?: StompSubscription;
+		chatMessageStatus?: StompSubscription;
 	}>({});
 
 	useEffect(() => {
 		if (userStatus) {
 			setChatChannelsStatus((prevState) => ({
 				...prevState,
-				status1: stompClient?.subscribe(
-					`/topic/teamspaces/${lastSeenTeamspaceId}/users/${userStatus.profile.userId}/chat-channels/status`,
+				chatChannelListStatus: stompClient?.subscribe(
+					END_POINTS.CHAT_CHANNEL_LIST(
+						userStatus.profile.lastSeenTeamspaceId,
+						userStatus.profile.userId
+					),
 					(message) => {
 						const { chatChannelsResponse } = JSON.parse(message.body);
 						const totalUnreadMessageCount = chatChannelsResponse.reduce(
-							// eslint-disable-next-line @typescript-eslint/no-explicit-any
-							(sum: any, channel: { unreadMessageCount: any }) =>
+							(sum: number, channel: { unreadMessageCount: number }) =>
 								sum + channel.unreadMessageCount,
 							0
 						);
@@ -62,17 +64,21 @@ const GNB = () => {
 
 			setChatChannelsStatus((prevState) => ({
 				...prevState,
-				status2: stompClient?.subscribe(
-					`/topic/teamspaces/${lastSeenTeamspaceId}/receive-message`,
-					// eslint-disable-next-line @typescript-eslint/no-unused-vars
-					(_message) => {
+				chatMessageStatus: stompClient?.subscribe(
+					END_POINTS.RECEIVE_MESSAGE(userStatus.profile.lastSeenTeamspaceId),
+					() => {
 						stompClient.send(
-							`/app/teamspaces/${lastSeenTeamspaceId}/users/${userStatus.profile.userId}/chat-channels/status`
+							END_POINTS.SEND_CHAT_CHANNEL_LIST(
+								userStatus.profile.lastSeenTeamspaceId,
+								userStatus.profile.userId
+							)
 						);
 					}
 				),
 			}));
 		}
+
+		setChatChannelList([]);
 	}, [userStatus, stompClient]);
 
 	useLayoutEffect(() => {

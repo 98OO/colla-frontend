@@ -4,7 +4,7 @@ import { Stomp } from '@stomp/stompjs';
 import { useMutation } from '@tanstack/react-query';
 import SockJS from 'sockjs-client';
 import useSocketStore from '@stores/socketStore';
-import { ACCESS_TOKEN, INVITE_URL } from '@constants/api';
+import { ACCESS_TOKEN, INVITE_URL, WEBSOCKET_URL } from '@constants/api';
 import { PATH } from '@constants/path';
 
 const useLoginMutation = () => {
@@ -16,15 +16,17 @@ const useLoginMutation = () => {
 		mutationFn: postLogin,
 		onSuccess: (content) => {
 			localStorage.setItem(ACCESS_TOKEN, content.accessToken);
+
 			const client = Stomp.over(function () {
 				return new SockJS(
-					`https://api.colla.so/ws-stomp?accessToken=${localStorage.getItem(ACCESS_TOKEN)}`
+					`${WEBSOCKET_URL}${localStorage.getItem(ACCESS_TOKEN)}`
 				);
 			});
 
 			client.connect({}, () => {
 				setStompClient(client);
 			});
+
 			if (inviteUrl) {
 				window.sessionStorage.removeItem(INVITE_URL);
 				navigate(`${PATH.INVITE}${inviteUrl}`);

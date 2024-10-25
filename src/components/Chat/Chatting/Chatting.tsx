@@ -1,5 +1,5 @@
 import { ChangeEvent, useRef, useState, useEffect, KeyboardEvent } from 'react';
-import InfiniteScroll from 'react-infinite-scroller';
+import LatestMessageBox from '@components/Chat/LatestMessageBox/LatestMessageBox';
 import MyMessageBox from '@components/Chat/MyMessageBox/MyMessageBox';
 import OtherMessageBox from '@components/Chat/OtherMessageBox/OtherMessageBox';
 import { Button } from '@components/common/Button/Button';
@@ -8,54 +8,81 @@ import IconButton from '@components/common/IconButton/IconButton';
 import Text from '@components/common/Text/Text';
 import useFileUpload from '@hooks/common/useFileUpload';
 import useChatMessageQuery from '@hooks/queries/chat/useChatMesaageQuery';
+import { queryClient } from '@hooks/queries/common/queryClient';
 import useUserStatusQuery from '@hooks/queries/useUserStatusQuery';
 import { StompSubscription } from '@stomp/stompjs';
 import useSocketStore from '@stores/socketStore';
 import useToastStore from '@stores/toastStore';
+import { getFormattedDate } from '@utils/getFormattedDate';
+import { END_POINTS } from '@constants/api';
+import { CHAT_AUTO_SCROLL_LIMIT } from '@constants/size';
 import type { ChatData } from '@type/chat';
 import * as S from './Chatting.styled';
 
-export interface ChattingProps {
+interface ChattingProps {
 	selectedChat: number;
 }
 
 const Chatting = (props: ChattingProps) => {
 	const { userStatus } = useUserStatusQuery();
-	const teamspaceId = userStatus?.profile.lastSeenTeamspaceId;
 	const { selectedChat } = props;
 	const { stompClient } = useSocketStore();
+	const { makeToast } = useToastStore();
+
 	const { messages, fetchNextPage, hasNextPage, isFetching } =
-		useChatMessageQuery(selectedChat, teamspaceId);
+		useChatMessageQuery(selectedChat, userStatus?.profile.lastSeenTeamspaceId);
 
 	const [chatHistory, setChatHistory] = useState<ChatData | null>(null);
-
-	const { makeToast } = useToastStore();
 	const [chatMessage, setChatMessage] = useState('');
-	const chatContainerRef = useRef<HTMLDivElement>(null);
+	const [prevHeight, setPrevHeight] = useState(0);
+	const [isScrollAtBottom, setIsScrollAtBottom] = useState(false);
+	const [isLatestMessageVisible, setIsLatestMessageVisible] = useState(false);
+	const [initialLoad, setInitialLoad] = useState(true);
 
-	const handleMessageChange = (e: ChangeEvent<HTMLTextAreaElement>) => {
-		const { value } = e.target;
-		if (value.length <= 1000) setChatMessage(value);
-	};
-
-	const [chatSubscribe, setChatSubscribe] = useState<StompSubscription | null>(
-		null
-	);
+	const chatRef = useRef<HTMLDivElement>(null);
+	const messageEndRef = useRef<HTMLInputElement | null>(null);
+	const chatSubscribeRef = useRef<StompSubscription | null>(null);
+	const inputImageRef = useRef<HTMLInputElement | null>(null);
+	const inputFileRef = useRef<HTMLInputElement | null>(null);
 
 	useEffect(() => {
-		if (selectedChat) {
-			if (chatSubscribe) {
-				console.log('전에 구독', chatSubscribe);
-				chatSubscribe?.unsubscribe();
-			}
-			// 새로운 구독 설정
+		if (selectedChat && userStatus) {
 			const newChatSubscribe = stompClient?.subscribe(
-				`/topic/teamspaces/${userStatus?.profile.lastSeenTeamspaceId}/chat-channels/${selectedChat}/messages`,
+				END_POINTS.SUBSCRIBE(
+					userStatus.profile.lastSeenTeamspaceId,
+					selectedChat
+				),
 				(message) => {
 					const parsedMessage = JSON.parse(message.body);
 					stompClient?.send(
-						`/app/teamspaces/${userStatus?.profile.lastSeenTeamspaceId}/chat-channels/${selectedChat}/messages/${parsedMessage.id}/read`
+						END_POINTS.READ_MESSAGE(
+							userStatus.profile.lastSeenTeamspaceId,
+							selectedChat,
+							parsedMessage.id
+						)
 					);
+
+					const isAutoScroll =
+						chatRef.current &&
+						chatRef.current.scrollHeight -
+							chatRef.current.clientHeight -
+							chatRef.current.scrollTop <=
+							CHAT_AUTO_SCROLL_LIMIT;
+
+					if (parsedMessage.author.id !== userStatus.profile.userId) {
+						if (isAutoScroll) {
+							if (parsedMessage.type === 'TEXT') setIsScrollAtBottom(true);
+							else {
+								setTimeout(() => {
+									messageEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+								}, 500);
+							}
+						} else setIsLatestMessageVisible(true);
+					} else {
+						setIsLatestMessageVisible(false);
+						if (parsedMessage.type === 'TEXT') setIsScrollAtBottom(true);
+					}
+
 					setChatHistory((prevChatHistory) => ({
 						chatChannelMessages: [
 							parsedMessage,
@@ -65,75 +92,134 @@ const Chatting = (props: ChattingProps) => {
 				}
 			);
 
-			if (newChatSubscribe) {
-				setChatSubscribe(newChatSubscribe);
-			}
-			setChatHistory(null);
+			if (newChatSubscribe) chatSubscribeRef.current = newChatSubscribe;
 		}
+
+		return () => {
+			if (chatSubscribeRef.current) {
+				chatSubscribeRef.current.unsubscribe();
+				chatSubscribeRef.current = null;
+			}
+
+			queryClient.removeQueries({
+				queryKey: ['chatMessage', selectedChat],
+			});
+		};
 	}, [selectedChat, stompClient]);
 
 	useEffect(() => {
-		if (messages && messages.pages[0].chatChannelMessages.length > 0) {
+		if (
+			messages &&
+			messages.pages[0].chatChannelMessages.length > 0 &&
+			userStatus
+		) {
 			stompClient?.send(
-				`/app/teamspaces/${userStatus?.profile.lastSeenTeamspaceId}/chat-channels/${selectedChat}/messages/${messages.pages[0].chatChannelMessages[0].id}/read`
+				END_POINTS.READ_MESSAGE(
+					userStatus.profile.lastSeenTeamspaceId,
+					selectedChat,
+					messages.pages[0].chatChannelMessages[0].id
+				)
 			);
 		}
-		const allChatChannelMessages =
-			messages?.pages.map((page) => page.chatChannelMessages) ?? [];
 
-		const mergedChatChannelMessages = allChatChannelMessages.flat();
+		if (chatRef.current) setPrevHeight(chatRef.current.scrollHeight);
 
-		const chatData = { chatChannelMessages: mergedChatChannelMessages };
-		setChatHistory(chatData);
+		setChatHistory((prevChatHistory) => {
+			const lastPageMessages =
+				messages?.pages[messages.pages.length - 1]?.chatChannelMessages ?? [];
+
+			return {
+				chatChannelMessages: [
+					...(prevChatHistory?.chatChannelMessages ?? []),
+					...lastPageMessages,
+				],
+			};
+		});
 	}, [messages?.pages]);
 
-	const handleText = () => {
-		stompClient?.send(
-			`/app/teamspaces/${userStatus?.profile.lastSeenTeamspaceId}/chat-channels/${selectedChat}/messages`,
-			{},
-			JSON.stringify({
-				chatType: 'TEXT',
-				content: chatMessage,
-				images: [],
-				attachments: [],
-			})
-		);
-		setChatMessage('');
+	useEffect(() => {
+		if (!chatHistory || chatHistory.chatChannelMessages.length === 0) return;
 
-		setTimeout(() => {
-			if (chatContainerRef.current) {
-				chatContainerRef.current.scrollTop =
-					chatContainerRef.current.scrollHeight;
+		if (isScrollAtBottom) {
+			messageEndRef.current?.scrollIntoView();
+			setIsScrollAtBottom(false);
+		} else if (chatRef.current)
+			window.scrollTo({ top: chatRef.current.scrollHeight - prevHeight });
+	}, [chatHistory]);
+
+	useEffect(() => {
+		const observedElement = chatRef.current;
+		const resizeObserver = new ResizeObserver(() => {
+			if (initialLoad) {
+				messageEndRef.current?.scrollIntoView();
+				setInitialLoad(false);
 			}
-		}, 150);
+		});
+
+		if (observedElement) resizeObserver.observe(observedElement);
+
+		return () => {
+			if (observedElement) resizeObserver.unobserve(observedElement);
+		};
+	}, []);
+
+	useEffect(() => {
+		const scrollElement = chatRef.current;
+		let ticking = false;
+
+		const handleScroll = () => {
+			if (!ticking && scrollElement) {
+				requestAnimationFrame(() => {
+					const isBottom =
+						scrollElement.scrollHeight -
+							scrollElement.scrollTop -
+							scrollElement.clientHeight <=
+						CHAT_AUTO_SCROLL_LIMIT;
+
+					if (isBottom) setIsLatestMessageVisible(false);
+					ticking = false;
+				});
+
+				ticking = true;
+			}
+		};
+
+		scrollElement?.addEventListener('scroll', handleScroll);
+
+		return () => {
+			scrollElement?.removeEventListener('scroll', handleScroll);
+		};
+	}, []);
+
+	const handleMessageChange = (e: ChangeEvent<HTMLTextAreaElement>) => {
+		const { value } = e.target;
+		if (value.length <= 1000) setChatMessage(value);
 	};
 
-	const formatDate = (dateString: string) => {
-		const date = new Date(dateString);
-		const year = date.getFullYear();
-		const month = date.getMonth() + 1;
-		const day = date.getDate();
+	const handleText = () => {
+		if (userStatus) {
+			stompClient?.send(
+				END_POINTS.SEND_MESSAGE(
+					userStatus.profile.lastSeenTeamspaceId,
+					selectedChat
+				),
+				{},
+				JSON.stringify({
+					chatType: 'TEXT',
+					content: chatMessage,
+					images: [],
+					attachments: [],
+				})
+			);
+		}
 
-		return `${year}년 ${month}월 ${day}일`;
+		setChatMessage('');
 	};
 
-	const formatTime = (dateString: string) => {
-		const date = new Date(dateString);
-		let hours = date.getHours();
-		const minutes = date.getMinutes();
-		const period = hours >= 12 ? '오후' : '오전';
-		hours = hours % 12 || 12;
-
-		const formattedMinutes = minutes !== 0 ? ` ${minutes}분` : '';
-
-		return `${period} ${hours}시${formattedMinutes}`;
-	};
-
-	const inputImageRef = useRef<HTMLInputElement | null>(null);
-	const inputFileRef = useRef<HTMLInputElement | null>(null);
 	const handleImageUploadClick = () => {
 		inputImageRef.current?.click();
 	};
+
 	const handleFileUploadClick = () => {
 		inputFileRef.current?.click();
 	};
@@ -153,9 +239,12 @@ const Chatting = (props: ChattingProps) => {
 					'TEAMSPACE',
 					userStatus?.profile.lastSeenTeamspaceId
 				);
-				if (imageUrl) {
+				if (imageUrl && userStatus) {
 					stompClient?.send(
-						`/app/teamspaces/${userStatus?.profile.lastSeenTeamspaceId}/chat-channels/${selectedChat}/messages`,
+						END_POINTS.SEND_MESSAGE(
+							userStatus.profile.lastSeenTeamspaceId,
+							selectedChat
+						),
 						{},
 						JSON.stringify({
 							chatType: 'IMAGE',
@@ -171,6 +260,10 @@ const Chatting = (props: ChattingProps) => {
 						})
 					);
 				}
+
+				setTimeout(() => {
+					messageEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+				}, 500);
 			}
 		}
 	};
@@ -181,15 +274,19 @@ const Chatting = (props: ChattingProps) => {
 				makeToast('파일 크기는 최대 100MB입니다.', 'Warning');
 				return;
 			}
+
 			if (inputFileRef.current?.files) {
 				const fileUrl = await uploadFiles(
 					inputFileRef.current?.files,
 					'TEAMSPACE',
 					userStatus?.profile.lastSeenTeamspaceId
 				);
-				if (fileUrl) {
+				if (fileUrl && userStatus) {
 					stompClient?.send(
-						`/app/teamspaces/${userStatus?.profile.lastSeenTeamspaceId}/chat-channels/${selectedChat}/messages`,
+						END_POINTS.SEND_MESSAGE(
+							userStatus.profile.lastSeenTeamspaceId,
+							selectedChat
+						),
 						{},
 						JSON.stringify({
 							chatType: 'FILE',
@@ -205,6 +302,10 @@ const Chatting = (props: ChattingProps) => {
 						})
 					);
 				}
+
+				setTimeout(() => {
+					messageEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+				}, 500);
 			}
 		}
 	};
@@ -220,106 +321,110 @@ const Chatting = (props: ChattingProps) => {
 		}
 	};
 
+	const handleLatestMessageClick = () => {
+		setIsLatestMessageVisible(false);
+		messageEndRef.current?.scrollIntoView();
+	};
+
 	return (
 		<S.ChattingContainer>
-			<S.ChattingListContainer ref={chatContainerRef}>
-				<InfiniteScroll
+			<S.ChattingListContainer ref={chatRef}>
+				<S.InfiniteScrollContainer
 					loadMore={() => {
 						if (!isFetching) fetchNextPage();
 					}}
 					isReverse
 					hasMore={hasNextPage}
-					useWindow={false}>
+					useWindow={false}
+					initialLoad={false}>
 					{chatHistory &&
-						chatHistory.chatChannelMessages
-							.slice()
-							.reverse()
-							.map((msg, index, array) => {
-								const previousMsg = index > 0 ? array[index - 1] : null;
-								const nextMsg =
-									index < array.length - 1 ? array[index + 1] : null;
+						chatHistory.chatChannelMessages.map((msg, index, array) => {
+							const previousMsg =
+								index < array.length - 1 ? array[index + 1] : null;
+							const nextMsg = index > 0 ? array[index - 1] : null;
 
-								return (
-									<Flex direction='column' key={msg.id}>
-										{previousMsg &&
-											formatDate(msg.createdAt) !==
-												formatDate(previousMsg?.createdAt) && (
-												<Flex justify='center' height='28'>
-													<S.ChattingDateWrapper>
-														<Text size='sm' weight='medium' color='secondary'>
-															{formatDate(msg.createdAt)}
-														</Text>
-													</S.ChattingDateWrapper>
-												</Flex>
-											)}
-										{msg.author.id === userStatus?.profile.userId ? (
-											<MyMessageBox
-												key={msg.id}
-												type={msg.type}
-												content={msg.content}
-												date={
-													(index < array.length - 1 &&
-														(nextMsg?.author.id !== msg.author.id ||
-															(nextMsg?.author.id === msg.author.id &&
-																nextMsg?.createdAt !== msg.createdAt))) ||
-													index === array.length - 1
-														? formatTime(msg.createdAt)
-														: null
-												}
-												file={
-													msg.attachments.length > 0
-														? msg.attachments.map((attachment) => ({
-																filename: attachment.filename,
-																url: attachment.url,
-																id: attachment.id,
-																size: attachment.size,
-															}))
-														: []
-												}
-												state={
-													previousMsg?.author.id !== msg.author.id ||
-													(previousMsg?.author.id === msg.author.id &&
-														previousMsg.createdAt !== msg.createdAt)
-												}
-											/>
-										) : (
-											<OtherMessageBox
-												name={msg.author.username}
-												profile={msg.author.profileImageUrl}
-												type={msg.type}
-												content={msg.content}
-												date={
-													(index < array.length - 1 &&
-														(nextMsg?.author.id !== msg.author.id ||
-															(nextMsg?.author.id === msg.author.id &&
-																nextMsg?.createdAt !== msg.createdAt))) ||
-													index === array.length - 1
-														? formatTime(msg.createdAt)
-														: null
-												}
-												file={
-													msg.attachments.length > 0
-														? msg.attachments.map((attachment) => ({
-																filename: attachment.filename,
-																url: attachment.url,
-																id: attachment.id,
-																size: attachment.size,
-															}))
-														: []
-												}
-												state={
-													previousMsg?.author.id !== msg.author.id ||
-													(previousMsg?.author.id === msg.author.id &&
-														previousMsg.createdAt !== msg.createdAt)
-												}
-											/>
-										)}
-									</Flex>
-								);
-							})}
-				</InfiniteScroll>
+							return (
+								<Flex direction='column' key={msg.id}>
+									{((previousMsg &&
+										getFormattedDate(msg.createdAt, 'chatDate') !==
+											getFormattedDate(previousMsg.createdAt, 'chatDate')) ||
+										index === array.length - 1) && (
+										<Flex justify='center' height='28'>
+											<S.ChattingDateWrapper>
+												<Text size='sm' weight='medium' color='secondary'>
+													{getFormattedDate(msg.createdAt, 'chatDate')}
+												</Text>
+											</S.ChattingDateWrapper>
+										</Flex>
+									)}
+									{msg.author.id === userStatus?.profile.userId ? (
+										<MyMessageBox
+											key={msg.id}
+											type={msg.type}
+											content={msg.content}
+											date={
+												nextMsg?.author.id !== msg.author.id ||
+												(nextMsg?.author.id === msg.author.id &&
+													nextMsg?.createdAt !== msg.createdAt)
+													? getFormattedDate(msg.createdAt, 'chatTime')
+													: null
+											}
+											file={
+												msg.attachments.length > 0
+													? msg.attachments.map((attachment) => ({
+															filename: attachment.filename,
+															url: attachment.url,
+															id: attachment.id,
+															size: attachment.size,
+														}))
+													: []
+											}
+											state={
+												previousMsg?.author.id !== msg.author.id ||
+												previousMsg?.createdAt !== msg.createdAt
+											}
+										/>
+									) : (
+										<OtherMessageBox
+											name={msg.author.username}
+											profile={msg.author.profileImageUrl}
+											type={msg.type}
+											content={msg.content}
+											date={
+												nextMsg?.author.id !== msg.author.id ||
+												(nextMsg?.author.id === msg.author.id &&
+													nextMsg?.createdAt !== msg.createdAt)
+													? getFormattedDate(msg.createdAt, 'chatTime')
+													: null
+											}
+											file={
+												msg.attachments.length > 0
+													? msg.attachments.map((attachment) => ({
+															filename: attachment.filename,
+															url: attachment.url,
+															id: attachment.id,
+															size: attachment.size,
+														}))
+													: []
+											}
+											state={
+												previousMsg?.author.id !== msg.author.id ||
+												previousMsg?.createdAt !== msg.createdAt
+											}
+										/>
+									)}
+								</Flex>
+							);
+						})}
+				</S.InfiniteScrollContainer>
+				<S.MessageEndWrapper ref={messageEndRef} />
 			</S.ChattingListContainer>
-
+			{isLatestMessageVisible && chatHistory && (
+				<LatestMessageBox
+					latestMessage={chatHistory.chatChannelMessages[0]}
+					onClick={handleLatestMessageClick}
+				/>
+			)}
 			<S.ChattingInputContainer>
 				<S.ChattingInputWrapper
 					value={chatMessage}

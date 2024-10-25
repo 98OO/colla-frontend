@@ -5,6 +5,7 @@ export const PATH = {
 	SCHEDULE: '/schedule',
 	CHAT: '/chat',
 	FEED: '/feed',
+	POST: '/feed/post/new',
 	ENTRY: '/entry',
 	REDIRECT: '/redirect',
 	INVITE: '/invite',

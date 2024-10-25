@@ -1,3 +1,4 @@
+import InfiniteScroll from 'react-infinite-scroller';
 import styled from 'styled-components';
 import theme from '@styles/theme';
 
@@ -8,12 +9,13 @@ export const ChattingContainer = styled.div`
 	gap: ${theme.units.spacing.space10};
 	padding: ${theme.units.spacing.space10};
 	max-height: calc(100vh - 64px);
+	position: relative;
 `;
 
 export const ChattingListContainer = styled.div`
 	flex-grow: 1;
 	gap: ${theme.units.spacing.space4};
-	padding: ${theme.units.spacing.space12};
+	padding: 0 ${theme.units.spacing.space12};
 	display: flex;
 	flex-direction: column;
 	overflow-y: auto;
@@ -27,6 +29,11 @@ export const ChattingListContainer = styled.div`
 		border-radius: ${theme.units.radius.radius20};
 		background: ${theme.color.border.secondary};
 	}
+`;
+
+export const InfiniteScrollContainer = styled(InfiniteScroll)`
+	display: flex;
+	flex-direction: column-reverse;
 `;
 
 export const ChattingInputContainer = styled.div`
@@ -70,4 +77,8 @@ export const ChattingDateWrapper = styled.div`
 
 export const ImgUploadWrapper = styled.input`
 	display: none;
+`;
+
+export const MessageEndWrapper = styled.div`
+	height: 1px;
 `;

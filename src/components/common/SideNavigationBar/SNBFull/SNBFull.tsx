@@ -1,13 +1,17 @@
+import { useRef } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { Button } from '@components/common/Button/Button';
 import Divider from '@components/common/Divider/Divider';
 import Flex from '@components/common/Flex/Flex';
 import Heading from '@components/common/Heading/Heading';
+import FeedMenu from '@components/common/SideNavigationBar/FeedMenu/FeedMenu';
 import MenuItem from '@components/common/SideNavigationBar/MenuItem/MenuItem';
 import Text from '@components/common/Text/Text';
+import useMenu from '@hooks/common/useMenu';
 import useUserStatusQuery from '@hooks/queries/useUserStatusQuery';
 import useSocketStore from '@stores/socketStore';
 import { PATH } from '@constants/path';
+import { SNB_FULL_WIDTH } from '@styles/layout';
 import * as S from './SNBFull.styled';
 
 const SNBFull = () => {
@@ -21,14 +25,22 @@ const SNBFull = () => {
 	)?.teamspaceRole;
 
 	const { chatMessageCount } = useSocketStore();
+	const baseRef = useRef<HTMLDivElement>(null);
+	const { toggleMenu: handleFeedMenu, showMenu: showFeedMenu } = useMenu();
+
 	return (
-		<S.Container>
+		<S.Container ref={baseRef}>
 			<Button
 				label='피드 작성'
 				variant='primary'
 				size='md'
 				leadingIcon='Plus'
+				onClick={handleFeedMenu}
 			/>
+			{showFeedMenu(baseRef, <FeedMenu closeMenu={handleFeedMenu} />, {
+				top: 24,
+				left: SNB_FULL_WIDTH + 10,
+			})}
 			<Flex direction='column' gap='48'>
 				<Flex direction='column' gap='8'>
 					<S.HeadingWrapper>
