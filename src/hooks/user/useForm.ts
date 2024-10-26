@@ -36,6 +36,7 @@ interface EventHandlers {
 	onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
 	onBlur?: (e: React.FocusEvent<HTMLInputElement>) => void;
 }
+const fieldValidations: FieldValidations = {};
 
 function useForm(options: FormOption) {
 	const [formData, setFormData] = useState<FormData>({});
@@ -43,7 +44,6 @@ function useForm(options: FormOption) {
 	const [submitting, setSubmitting] = useState(false);
 
 	const { subscribe, onSubmit } = options;
-	const fieldValidations: FieldValidations = {};
 	const subscribeValues = subscribe
 		? subscribe.map((item) => item.value).join(',')
 		: null;
@@ -65,7 +65,6 @@ function useForm(options: FormOption) {
 
 		if (validationOptions) {
 			const { required, length, pattern, validate } = validationOptions;
-
 			if (required && !value) setFieldError(fieldName, true, required);
 			else if (
 				length &&
@@ -98,9 +97,8 @@ function useForm(options: FormOption) {
 		setSubmitting(true);
 
 		let hasError = false;
-
 		Object.keys(fieldValidations).forEach((fieldName) => {
-			validateField(fieldName);
+			validateField(fieldName); // validateField가 값을 리턴하도록 하여 검사
 			if (errors[fieldName]?.isError) hasError = true;
 		});
 
