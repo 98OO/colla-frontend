@@ -35,50 +35,68 @@ const GNB = () => {
 		}
 	};
 
-	const [chatChannelsStatus, setChatChannelsStatus] = useState<{
-		chatChannelListStatus?: StompSubscription;
-		chatMessageStatus?: StompSubscription;
-	}>({});
+	const chatChannelsSubscribeRef = useRef<{
+		chatChannelListSubscribe: StompSubscription | null;
+		chatMessageSubscribe: StompSubscription | null;
+	}>({
+		chatChannelListSubscribe: null,
+		chatMessageSubscribe: null,
+	});
 
 	useEffect(() => {
 		if (userStatus) {
-			setChatChannelsStatus((prevState) => ({
-				...prevState,
-				chatChannelListStatus: stompClient?.subscribe(
-					END_POINTS.CHAT_CHANNEL_LIST(
-						userStatus.profile.lastSeenTeamspaceId,
-						userStatus.profile.userId
-					),
-					(message) => {
-						const { chatChannelsResponse } = JSON.parse(message.body);
-						const totalUnreadMessageCount = chatChannelsResponse.reduce(
-							(sum: number, channel: { unreadMessageCount: number }) =>
-								sum + channel.unreadMessageCount,
-							0
-						);
-						increaseChatMessageCount(totalUnreadMessageCount);
-						setChatChannelList(chatChannelsResponse);
-					}
+			const newChatChannelListSubscribe = stompClient?.subscribe(
+				END_POINTS.CHAT_CHANNEL_LIST(
+					userStatus.profile.lastSeenTeamspaceId,
+					userStatus.profile.userId
 				),
-			}));
+				(message) => {
+					const { chatChannelsResponse } = JSON.parse(message.body);
+					const totalUnreadMessageCount = chatChannelsResponse.reduce(
+						(sum: number, channel: { unreadMessageCount: number }) =>
+							sum + channel.unreadMessageCount,
+						0
+					);
+					increaseChatMessageCount(totalUnreadMessageCount);
+					setChatChannelList(chatChannelsResponse);
+				}
+			);
 
-			setChatChannelsStatus((prevState) => ({
-				...prevState,
-				chatMessageStatus: stompClient?.subscribe(
-					END_POINTS.RECEIVE_MESSAGE(userStatus.profile.lastSeenTeamspaceId),
-					() => {
-						stompClient.send(
-							END_POINTS.SEND_CHAT_CHANNEL_LIST(
-								userStatus.profile.lastSeenTeamspaceId,
-								userStatus.profile.userId
-							)
-						);
-					}
-				),
-			}));
+			const newChatMessageSubscribe = stompClient?.subscribe(
+				END_POINTS.RECEIVE_MESSAGE(userStatus.profile.lastSeenTeamspaceId),
+				() => {
+					stompClient.send(
+						END_POINTS.SEND_CHAT_CHANNEL_LIST(
+							userStatus.profile.lastSeenTeamspaceId,
+							userStatus.profile.userId
+						)
+					);
+				}
+			);
+
+			if (newChatChannelListSubscribe)
+				chatChannelsSubscribeRef.current.chatChannelListSubscribe =
+					newChatChannelListSubscribe;
+
+			if (newChatMessageSubscribe)
+				chatChannelsSubscribeRef.current.chatMessageSubscribe =
+					newChatMessageSubscribe;
 		}
 
 		setChatChannelList([]);
+
+		return () => {
+			if (chatChannelsSubscribeRef.current.chatChannelListSubscribe)
+				chatChannelsSubscribeRef.current.chatChannelListSubscribe.unsubscribe();
+
+			if (chatChannelsSubscribeRef.current.chatMessageSubscribe)
+				chatChannelsSubscribeRef.current.chatMessageSubscribe.unsubscribe();
+
+			chatChannelsSubscribeRef.current = {
+				chatChannelListSubscribe: null,
+				chatMessageSubscribe: null,
+			};
+		};
 	}, [userStatus, stompClient]);
 
 	useLayoutEffect(() => {
@@ -103,15 +121,11 @@ const GNB = () => {
 						<Heading size='md'>{lastSeenTeam.name}</Heading>
 						<Icon name='Updown' />
 					</S.LeftContainer>
-					{chatChannelsStatus &&
-						showTeamSpace(
-							baseRef,
-							<GNBTeamSpace chatChannelsStatus={chatChannelsStatus} />,
-							{
-								top: 70,
-								left: 10,
-							}
-						)}
+					{chatChannelsSubscribeRef &&
+						showTeamSpace(baseRef, <GNBTeamSpace />, {
+							top: 70,
+							left: 10,
+						})}
 					<S.RightContainer>
 						<IconButton
 							icon='Bell'

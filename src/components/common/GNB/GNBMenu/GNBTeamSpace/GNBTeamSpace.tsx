@@ -6,18 +6,10 @@ import Profile from '@components/common/Profile/Profile';
 import Text from '@components/common/Text/Text';
 import useRecordTeamSpace from '@hooks/queries/teamspace/useRecordTeamSpace';
 import useUserStatusQuery from '@hooks/queries/useUserStatusQuery';
-import { StompSubscription } from '@stomp/stompjs';
 import { PATH } from '@constants/path';
 import * as S from './GNBTeamSpace.syled';
 
-const GNBTeamSpace = ({
-	chatChannelsStatus,
-}: {
-	chatChannelsStatus: {
-		chatChannelListStatus?: StompSubscription;
-		chatMessageStatus?: StompSubscription;
-	};
-}) => {
+const GNBTeamSpace = () => {
 	const { userStatus } = useUserStatusQuery();
 	const { mutateRecordTeamSpace } = useRecordTeamSpace();
 	const navigate = useNavigate();
@@ -27,14 +19,9 @@ const GNBTeamSpace = ({
 	const otherProfiles = userStatus?.participatedTeamspaces.filter(
 		(teamSpace) => teamSpace.name !== lastSeenTeam?.name
 	);
+
 	const handleTeamChangeClick = (teamSpaceId: number) => {
 		mutateRecordTeamSpace(teamSpaceId);
-		if (chatChannelsStatus.chatChannelListStatus)
-			chatChannelsStatus.chatChannelListStatus.unsubscribe();
-
-		if (chatChannelsStatus.chatMessageStatus)
-			chatChannelsStatus.chatMessageStatus.unsubscribe();
-
 		navigate(PATH.FEED);
 	};
 
