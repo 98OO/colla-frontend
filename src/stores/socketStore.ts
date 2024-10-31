@@ -12,8 +12,8 @@ interface ChatChannel {
 type socketStore = {
 	stompClient: CompatClient | null;
 	setStompClient: (client: CompatClient | null) => void;
-	chatMessageCount: number;
-	increaseChatMessageCount: (number: number) => void;
+	chatMessageCount: number | null;
+	increaseChatMessageCount: (number: number | null) => void;
 	chatChannelList: ChatChannel[];
 	setChatChannelList: (channels: ChatChannel[]) => void;
 };
@@ -21,7 +21,7 @@ type socketStore = {
 const useSocketStore = create<socketStore>((set) => ({
 	stompClient: null,
 	setStompClient: (client) => set({ stompClient: client }),
-	chatMessageCount: 0,
+	chatMessageCount: null,
 	increaseChatMessageCount: (count) => set({ chatMessageCount: count }),
 	chatChannelList: [],
 	setChatChannelList: (channels) => set({ chatChannelList: channels }),
