@@ -6,6 +6,7 @@ import Profile from '@components/common/Profile/Profile';
 import Text from '@components/common/Text/Text';
 import useRecordTeamSpace from '@hooks/queries/teamspace/useRecordTeamSpace';
 import useUserStatusQuery from '@hooks/queries/useUserStatusQuery';
+import useSocketStore from '@stores/socketStore';
 import { PATH } from '@constants/path';
 import * as S from './GNBTeamSpace.syled';
 
@@ -13,6 +14,7 @@ const GNBTeamSpace = () => {
 	const { userStatus } = useUserStatusQuery();
 	const { mutateRecordTeamSpace } = useRecordTeamSpace();
 	const navigate = useNavigate();
+
 	const lastSeenTeam = userStatus?.participatedTeamspaces.find(
 		(team) => team.teamspaceId === userStatus?.profile.lastSeenTeamspaceId
 	);
@@ -20,8 +22,12 @@ const GNBTeamSpace = () => {
 		(teamSpace) => teamSpace.name !== lastSeenTeam?.name
 	);
 
+	const { increaseChatMessageCount, setChatChannelList } = useSocketStore();
+
 	const handleTeamChangeClick = (teamSpaceId: number) => {
 		mutateRecordTeamSpace(teamSpaceId);
+		increaseChatMessageCount(null);
+		setChatChannelList([]);
 		navigate(PATH.FEED);
 	};
 

@@ -83,8 +83,6 @@ const GNB = () => {
 					newChatMessageSubscribe;
 		}
 
-		setChatChannelList([]);
-
 		return () => {
 			if (chatChannelsSubscribeRef.current.chatChannelListSubscribe)
 				chatChannelsSubscribeRef.current.chatChannelListSubscribe.unsubscribe();
