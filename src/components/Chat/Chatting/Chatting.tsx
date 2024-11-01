@@ -311,13 +311,18 @@ const Chatting = (props: ChattingProps) => {
 	};
 
 	const handleKeyDown = (event: KeyboardEvent<HTMLTextAreaElement>) => {
-		if (event.key === 'Enter') {
-			if (!event.shiftKey) {
-				event.preventDefault();
-				if (chatMessage.length !== 0) {
-					handleText();
-				}
-			}
+		if (event.nativeEvent.isComposing) return;
+
+		if (event.key === 'Enter' && event.shiftKey) {
+			event.preventDefault();
+			setChatMessage((prev) => `${prev}\n`);
+		} else if (
+			event.key === 'Enter' &&
+			!event.shiftKey &&
+			chatMessage.length > 0
+		) {
+			event.preventDefault();
+			handleText();
 		}
 	};
 
