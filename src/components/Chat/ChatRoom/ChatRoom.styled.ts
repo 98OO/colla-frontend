@@ -26,7 +26,7 @@ export const MessageContainer = styled.div`
 	width: 315px;
 	flex-grow: 1;
 
-	p {
+	> * {
 		overflow: hidden;
 		white-space: nowrap;
 		text-overflow: ellipsis;

@@ -23,6 +23,7 @@ export const MyMessageBoxWrapper = styled.div<{ state: boolean; type: string }>`
 	max-width: 250px;
 	line-height: 18px;
 	word-break: break-all;
+	white-space: pre-line;
 `;
 
 export const ImageWrapper = styled.div`

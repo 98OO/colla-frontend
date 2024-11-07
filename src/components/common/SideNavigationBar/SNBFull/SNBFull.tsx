@@ -23,6 +23,9 @@ const SNBFull = () => {
 	const teamRole = teamspaces?.find(
 		(teamspace) => teamspace.teamspaceId === lastSeenTeamspaceId
 	)?.teamspaceRole;
+	const unreadMessageCount = teamspaces?.find(
+		(teamspace) => teamspace.teamspaceId === lastSeenTeamspaceId
+	)?.unreadMessageCount;
 
 	const { chatMessageCount } = useSocketStore();
 	const baseRef = useRef<HTMLDivElement>(null);
@@ -62,7 +65,9 @@ const SNBFull = () => {
 						leadingIcon='Message'
 						title='채팅'
 						selected={location.pathname === PATH.CHAT}
-						number={chatMessageCount}
+						number={
+							chatMessageCount === null ? unreadMessageCount : chatMessageCount
+						}
 						onClick={() => navigate(PATH.CHAT)}
 					/>
 					<MenuItem
