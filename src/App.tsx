@@ -41,6 +41,8 @@ function App() {
 			client.connect({}, () => {
 				setStompClient(client);
 			});
+
+			client.debug = () => {};
 		}
 	};
 

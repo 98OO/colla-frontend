@@ -18,6 +18,7 @@ interface ParticipatedTeamspace {
 	profileImageUrl: string;
 	teamspaceRole: string;
 	numOfParticipants: number;
+	unreadMessageCount: number;
 }
 
 export interface UserInformation {

@@ -6,6 +6,7 @@ import Flex from '@components/common/Flex/Flex';
 import FeedMenu from '@components/common/SideNavigationBar/FeedMenu/FeedMenu';
 import MenuItem from '@components/common/SideNavigationBar/MenuItem/MenuItem';
 import useMenu from '@hooks/common/useMenu';
+import useUserStatusQuery from '@hooks/queries/useUserStatusQuery';
 import useSocketStore from '@stores/socketStore';
 import { PATH } from '@constants/path';
 import { SNB_ICON_WIDTH } from '@styles/layout';
@@ -14,6 +15,16 @@ import * as S from './SNBIcon.styled';
 const SNBIcon = () => {
 	const navigate = useNavigate();
 	const location = useLocation();
+	const { userStatus } = useUserStatusQuery();
+	const lastSeenTeamspaceId = userStatus?.profile.lastSeenTeamspaceId;
+	const teamspaces = userStatus?.participatedTeamspaces;
+	const teamRole = teamspaces?.find(
+		(teamspace) => teamspace.teamspaceId === lastSeenTeamspaceId
+	)?.teamspaceRole;
+	const unreadMessageCount = teamspaces?.find(
+		(teamspace) => teamspace.teamspaceId === lastSeenTeamspaceId
+	)?.unreadMessageCount;
+
 	const { chatMessageCount } = useSocketStore();
 	const baseRef = useRef<HTMLDivElement>(null);
 	const { toggleMenu: handleFeedMenu, showMenu: showFeedMenu } = useMenu();
@@ -50,7 +61,9 @@ const SNBIcon = () => {
 					<MenuItem
 						leadingIcon='Message'
 						selected={location.pathname === PATH.CHAT}
-						number={chatMessageCount}
+						number={
+							chatMessageCount === null ? unreadMessageCount : chatMessageCount
+						}
 						type='iconOnly'
 						onClick={() => navigate(PATH.CHAT)}
 					/>
@@ -69,12 +82,14 @@ const SNBIcon = () => {
 				</Flex>
 				<Flex direction='column' gap='8' align='center'>
 					<Divider size='sm' />
-					<MenuItem
-						leadingIcon='Settings'
-						selected={location.pathname === PATH.SETTING}
-						type='iconOnly'
-						onClick={() => navigate(PATH.SETTING)}
-					/>
+					{teamRole === 'LEADER' && (
+						<MenuItem
+							leadingIcon='Settings'
+							selected={location.pathname === PATH.SETTING}
+							type='iconOnly'
+							onClick={() => navigate(PATH.SETTING)}
+						/>
+					)}
 					<MenuItem
 						leadingIcon='PlusBox'
 						selected={false}

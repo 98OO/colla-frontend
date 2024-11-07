@@ -38,6 +38,8 @@ const ChatRoomCreationModal = ({
 			setNameError('팀스페이스 이름은 공백일 수 없습니다.');
 		else if (teamspaceName.length < 2)
 			setNameError('팀스페이스 이름은 2글자 이상입니다.');
+		else if (teamspaceName.length > 15)
+			setNameError('팀스페이스 이름은 15글자 이하입니다.');
 		else {
 			setNameError('');
 			return true;
