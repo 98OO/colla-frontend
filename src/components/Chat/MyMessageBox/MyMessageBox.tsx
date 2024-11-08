@@ -26,7 +26,7 @@ const MyMessageBox = (props: MyMessageBoxProps) => {
 			)}
 			<S.MyMessageBoxWrapper state={state} type={type}>
 				{type === 'TEXT' && (
-					<Text size='lg' weight='semiBold' color='iInverse'>
+					<Text size='lg' weight='medium' color='iInverse'>
 						{content}
 					</Text>
 				)}

@@ -33,7 +33,7 @@ const OtherMessageBox = (props: OtherMessageBoxProps) => {
 				)}
 				<S.OtherMessageBoxWrapper state={state} type={type}>
 					{type === 'TEXT' && (
-						<Text size='lg' weight='semiBold' color='secondary'>
+						<Text size='lg' weight='medium' color='secondary'>
 							{content}
 						</Text>
 					)}
