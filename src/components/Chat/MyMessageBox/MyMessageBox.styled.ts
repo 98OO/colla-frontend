@@ -5,7 +5,7 @@ export const MyMessageBoxContainer = styled.div`
 	display: flex;
 	width: 100%;
 	justify-content: flex-end;
-	padding-top: ${theme.units.spacing.space4};
+	padding: ${theme.units.spacing.space4};
 	gap: ${theme.units.spacing.space8};
 `;
 

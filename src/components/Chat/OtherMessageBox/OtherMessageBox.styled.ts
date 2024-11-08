@@ -1,10 +1,15 @@
 import styled from 'styled-components';
 import theme from '@styles/theme';
 
-export const OtherMessageBoxContainer = styled.div`
+export const OtherMessageBoxContainer = styled.div<{
+	state: boolean;
+}>`
 	display: flex;
 	width: 100%;
-	padding-top: ${theme.units.spacing.space4};
+	padding: ${(props) =>
+		props.state
+			? `${theme.units.spacing.space12} ${theme.units.spacing.space4} ${theme.units.spacing.space4} ${theme.units.spacing.space4}`
+			: `${theme.units.spacing.space4}`};
 	gap: ${theme.units.spacing.space8};
 `;
 
