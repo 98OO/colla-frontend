@@ -42,7 +42,8 @@ export const ChattingInputContainer = styled.div`
 	border-radius: ${theme.units.radius.radius12};
 	display: flex;
 	flex-direction: column;
-	padding: ${theme.units.spacing.space12};
+	padding: ${theme.units.spacing.space12} ${theme.units.spacing.space8}
+		${theme.units.spacing.space6} ${theme.units.spacing.space8};
 `;
 
 export const ChattingInputWrapper = styled.textarea`
