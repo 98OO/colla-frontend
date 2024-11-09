@@ -5,7 +5,7 @@ export const MyMessageBoxContainer = styled.div`
 	display: flex;
 	width: 100%;
 	justify-content: flex-end;
-	padding-top: ${theme.units.spacing.space4};
+	padding: ${theme.units.spacing.space4};
 	gap: ${theme.units.spacing.space8};
 `;
 
@@ -23,7 +23,7 @@ export const MyMessageBoxWrapper = styled.div<{ state: boolean; type: string }>`
 	max-width: 250px;
 	line-height: 18px;
 	word-break: break-all;
-	white-space: pre-line;
+	white-space: pre;
 `;
 
 export const ImageWrapper = styled.div`

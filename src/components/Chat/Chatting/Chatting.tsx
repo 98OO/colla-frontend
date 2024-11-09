@@ -316,13 +316,10 @@ const Chatting = (props: ChattingProps) => {
 		if (event.key === 'Enter' && event.shiftKey) {
 			event.preventDefault();
 			setChatMessage((prev) => `${prev}\n`);
-		} else if (
-			event.key === 'Enter' &&
-			!event.shiftKey &&
-			chatMessage.length > 0
-		) {
+		} else if (event.key === 'Enter' && !event.shiftKey) {
 			event.preventDefault();
-			handleText();
+
+			if (chatMessage.trim().length > 0) handleText();
 		}
 	};
 
@@ -481,7 +478,7 @@ const Chatting = (props: ChattingProps) => {
 								variant='primary'
 								size='sm'
 								isFull
-								disabled={chatMessage.length === 0}
+								disabled={chatMessage.trimStart().length === 0}
 								onClick={handleText}
 							/>
 						</Flex>
