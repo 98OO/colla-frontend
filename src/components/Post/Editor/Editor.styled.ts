@@ -1,4 +1,5 @@
 import { styled } from 'styled-components';
+import { editorStyles } from '@styles/editorStyles';
 import theme from '@styles/theme';
 
 export const EditorContainer = styled.form`
@@ -16,5 +17,7 @@ export const EditorContainer = styled.form`
 		padding-bottom: ${theme.units.spacing.space36};
 		border: 1px solid ${theme.color.border.primary};
 		border-top: none;
+
+		${editorStyles}
 	}
 `;
