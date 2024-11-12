@@ -1,4 +1,5 @@
-import Icon from '@components/common/Icon/Icon';
+import EditorMenuButton from '@components/Post/EditorMenuButton/EditorMenuButton';
+import { getBasicButtons } from '@components/Post/EditorMenuButton/getButtons';
 import type { Editor } from '@tiptap/react';
 import * as S from './EditorMenu.styled';
 
@@ -7,35 +8,18 @@ interface EditorMenuProps {
 }
 
 const EditorMenu = ({ editor }: EditorMenuProps) => {
+	const basicButtons = getBasicButtons(editor);
+
 	return (
 		<S.EditorMenuContainer>
-			<S.EditorMenuButton
-				type='button'
-				onClick={() => editor.chain().focus().toggleBold().run()}>
-				<Icon
-					name='Bold'
-					size='md'
-					color={editor.isActive('bold') ? 'iPrimary' : 'primary'}
+			{basicButtons.map((button) => (
+				<EditorMenuButton
+					key={button.icon}
+					icon={button.icon}
+					command={button.command}
+					isActive={button.isActive}
 				/>
-			</S.EditorMenuButton>
-			<S.EditorMenuButton
-				type='button'
-				onClick={() => editor.chain().focus().toggleItalic().run()}>
-				<Icon
-					name='Italic'
-					size='md'
-					color={editor.isActive('italic') ? 'iPrimary' : 'primary'}
-				/>
-			</S.EditorMenuButton>
-			<S.EditorMenuButton
-				type='button'
-				onClick={() => editor.chain().focus().toggleStrike().run()}>
-				<Icon
-					name='Strike'
-					size='md'
-					color={editor.isActive('strike') ? 'iPrimary' : 'primary'}
-				/>
-			</S.EditorMenuButton>
+			))}
 		</S.EditorMenuContainer>
 	);
 };
