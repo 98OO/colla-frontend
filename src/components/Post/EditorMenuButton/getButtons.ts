@@ -17,6 +17,11 @@ export const getBasicButtons = (editor: Editor): ButtonProps[] => [
 		command: () => editor.chain().focus().toggleStrike().run(),
 		isActive: () => editor.isActive('strike'),
 	},
+	{
+		icon: 'UnderLine',
+		command: () => editor.chain().focus().toggleUnderline().run(),
+		isActive: () => editor.isActive('underline'),
+	},
 ];
 
 export const getFormatButtons = (editor: Editor): ButtonProps[] => [

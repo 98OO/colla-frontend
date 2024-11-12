@@ -1,5 +1,6 @@
 import EditorMenu from '@components/Post/EditorMenu/EditorMenu';
 import TextAlign from '@tiptap/extension-text-align';
+import Underline from '@tiptap/extension-underline';
 import { useEditor, EditorContent } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
 import * as S from './Editor.styled';
@@ -8,6 +9,7 @@ const Editor = () => {
 	const editor = useEditor({
 		extensions: [
 			StarterKit,
+			Underline,
 			TextAlign.configure({
 				types: ['heading', 'paragraph'],
 			}),
