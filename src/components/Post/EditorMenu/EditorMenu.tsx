@@ -20,6 +20,7 @@ const EditorMenu = ({ editor }: EditorMenuProps) => {
 					isActive={button.isActive}
 				/>
 			))}
+			<S.EditorMenuDivider />
 		</S.EditorMenuContainer>
 	);
 };
