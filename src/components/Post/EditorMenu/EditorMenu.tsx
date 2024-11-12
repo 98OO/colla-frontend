@@ -13,47 +13,27 @@ interface EditorMenuProps {
 }
 
 const EditorMenu = ({ editor }: EditorMenuProps) => {
-	const basicButtons = getBasicButtons(editor);
-	const formatButtons = getFormatButtons(editor);
-	const alignButtons = getAlignButtons(editor);
-	const utilityButtons = getUtilityButtons(editor);
+	const buttonGroups = [
+		getBasicButtons(editor),
+		getFormatButtons(editor),
+		getAlignButtons(editor),
+		getUtilityButtons(editor),
+	];
 
 	return (
 		<S.EditorMenuContainer>
-			{basicButtons.map((button) => (
-				<EditorMenuButton
-					key={button.icon}
-					icon={button.icon}
-					command={button.command}
-					isActive={button.isActive}
-				/>
-			))}
-			<S.EditorMenuDivider />
-			{formatButtons.map((button) => (
-				<EditorMenuButton
-					key={button.icon}
-					icon={button.icon}
-					command={button.command}
-					isActive={button.isActive}
-				/>
-			))}
-			<S.EditorMenuDivider />
-			{alignButtons.map((button) => (
-				<EditorMenuButton
-					key={button.icon}
-					icon={button.icon}
-					command={button.command}
-					isActive={button.isActive}
-				/>
-			))}
-			<S.EditorMenuDivider />
-			{utilityButtons.map((button) => (
-				<EditorMenuButton
-					key={button.icon}
-					icon={button.icon}
-					command={button.command}
-					isActive={button.isActive}
-				/>
+			{buttonGroups.map((group) => (
+				<>
+					{group.map((button) => (
+						<EditorMenuButton
+							key={button.icon}
+							icon={button.icon}
+							command={button.command}
+							isActive={button.isActive}
+						/>
+					))}
+					<S.EditorMenuDivider />
+				</>
 			))}
 		</S.EditorMenuContainer>
 	);
