@@ -18,6 +18,15 @@ const EditorMenu = ({ editor }: EditorMenuProps) => {
 					color={editor.isActive('bold') ? 'iPrimary' : 'primary'}
 				/>
 			</S.EditorMenuButton>
+			<S.EditorMenuButton
+				type='button'
+				onClick={() => editor.chain().focus().toggleItalic().run()}>
+				<Icon
+					name='Italic'
+					size='md'
+					color={editor.isActive('italic') ? 'iPrimary' : 'primary'}
+				/>
+			</S.EditorMenuButton>
 		</S.EditorMenuContainer>
 	);
 };
