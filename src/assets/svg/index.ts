@@ -34,3 +34,4 @@ export { ReactComponent as Normal } from './normal.svg';
 export { ReactComponent as Scheduling } from './scheduling.svg';
 export { ReactComponent as Vote } from './vote.svg';
 export { ReactComponent as Collect } from './collect.svg';
+export { ReactComponent as Bold } from './bold.svg';

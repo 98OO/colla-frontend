@@ -9,8 +9,14 @@ interface EditorMenuProps {
 const EditorMenu = ({ editor }: EditorMenuProps) => {
 	return (
 		<S.EditorMenuContainer>
-			<S.EditorMenuButton type='button' onClick={() => editor}>
-				<Icon name='Home' size='md' color='primary' />
+			<S.EditorMenuButton
+				type='button'
+				onClick={() => editor.chain().focus().toggleBold().run()}>
+				<Icon
+					name='Bold'
+					size='md'
+					color={editor.isActive('bold') ? 'iPrimary' : 'primary'}
+				/>
 			</S.EditorMenuButton>
 		</S.EditorMenuContainer>
 	);
