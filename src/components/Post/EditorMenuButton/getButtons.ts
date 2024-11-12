@@ -36,3 +36,21 @@ export const getFormatButtons = (editor: Editor): ButtonProps[] => [
 		isActive: () => editor.isActive('heading', { level: 3 }),
 	},
 ];
+
+export const getAlignButtons = (editor: Editor): ButtonProps[] => [
+	{
+		icon: 'AlignLeft',
+		command: () => editor.chain().focus().setTextAlign('left').run(),
+		isActive: () => editor.isActive({ textAlign: 'left' }),
+	},
+	{
+		icon: 'AlignCenter',
+		command: () => editor.chain().focus().setTextAlign('center').run(),
+		isActive: () => editor.isActive({ textAlign: 'center' }),
+	},
+	{
+		icon: 'AlignRight',
+		command: () => editor.chain().focus().setTextAlign('right').run(),
+		isActive: () => editor.isActive({ textAlign: 'right' }),
+	},
+];
