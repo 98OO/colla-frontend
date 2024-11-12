@@ -12,7 +12,9 @@ export const LNBItemContainer = styled.div<{ active?: boolean }>`
 	display: flex;
 	justify-content: center;
 	align-items: center;
-	width: 170px;
+	/* width: 170px; */
+	width: 260px;
+	height: ${theme.units.spacing.space40};
 	border-bottom: 2px solid
 		${({ active }) =>
 			active ? theme.color.border.iPrimary : theme.color.border.tertiary};
