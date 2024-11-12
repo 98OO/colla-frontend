@@ -1,3 +1,4 @@
+import EditorMenu from '@components/Post/EditorMenu/EditorMenu';
 import { useEditor, EditorContent } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
 import * as S from './Editor.styled';
@@ -12,6 +13,7 @@ const Editor = () => {
 
 	return (
 		<S.EditorContainer>
+			<EditorMenu editor={editor} />
 			<EditorContent editor={editor} />
 		</S.EditorContainer>
 	);
