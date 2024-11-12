@@ -1,4 +1,7 @@
-import EditorMenuButton from '@components/Post/EditorMenuButton/EditorMenuButton';
+import {
+	EditorMenuButton,
+	EditorMenuImageButton,
+} from '@components/Post/EditorMenuButton/EditorMenuButton';
 import {
 	getBasicButtons,
 	getFormatButtons,
@@ -20,6 +23,8 @@ const EditorMenu = ({ editor }: EditorMenuProps) => {
 		getUtilityButtons(editor),
 	];
 
+	const handleEditorImage = () => {};
+
 	return (
 		<S.EditorMenuContainer>
 			{buttonGroups.map((group) => (
@@ -35,6 +40,7 @@ const EditorMenu = ({ editor }: EditorMenuProps) => {
 					<S.EditorMenuDivider />
 				</>
 			))}
+			<EditorMenuImageButton onChange={handleEditorImage} />
 		</S.EditorMenuContainer>
 	);
 };

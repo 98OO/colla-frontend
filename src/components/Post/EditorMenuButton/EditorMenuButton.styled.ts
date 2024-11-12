@@ -18,3 +18,11 @@ export const EditorMenuButton = styled.button`
 		background-color: ${theme.color.bg.iSecondary};
 	}
 `;
+
+export const EditorImageButton = styled(EditorMenuButton).attrs({
+	as: 'label',
+})`
+	input {
+		display: none;
+	}
+`;

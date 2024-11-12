@@ -8,7 +8,11 @@ export interface ButtonProps {
 	isActive: () => boolean;
 }
 
-const EditorMenuButton = ({ icon, command, isActive }: ButtonProps) => {
+interface ImageButtonProps {
+	onChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
+}
+
+export const EditorMenuButton = ({ icon, command, isActive }: ButtonProps) => {
 	return (
 		<S.EditorMenuButton type='button' onClick={command}>
 			<Icon name={icon} size='md' color={isActive() ? 'iPrimary' : 'primary'} />
@@ -16,4 +20,9 @@ const EditorMenuButton = ({ icon, command, isActive }: ButtonProps) => {
 	);
 };
 
-export default EditorMenuButton;
+export const EditorMenuImageButton = ({ onChange }: ImageButtonProps) => (
+	<S.EditorImageButton>
+		<input type='file' accept='image/*' onChange={onChange} />
+		<Icon name='Image' size='md' />
+	</S.EditorImageButton>
+);
