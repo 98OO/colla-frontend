@@ -3,6 +3,7 @@ import {
 	getBasicButtons,
 	getFormatButtons,
 	getAlignButtons,
+	getUtilityButtons,
 } from '@components/Post/EditorMenuButton/getButtons';
 import type { Editor } from '@tiptap/react';
 import * as S from './EditorMenu.styled';
@@ -15,6 +16,7 @@ const EditorMenu = ({ editor }: EditorMenuProps) => {
 	const basicButtons = getBasicButtons(editor);
 	const formatButtons = getFormatButtons(editor);
 	const alignButtons = getAlignButtons(editor);
+	const utilityButtons = getUtilityButtons(editor);
 
 	return (
 		<S.EditorMenuContainer>
@@ -37,6 +39,15 @@ const EditorMenu = ({ editor }: EditorMenuProps) => {
 			))}
 			<S.EditorMenuDivider />
 			{alignButtons.map((button) => (
+				<EditorMenuButton
+					key={button.icon}
+					icon={button.icon}
+					command={button.command}
+					isActive={button.isActive}
+				/>
+			))}
+			<S.EditorMenuDivider />
+			{utilityButtons.map((button) => (
 				<EditorMenuButton
 					key={button.icon}
 					icon={button.icon}

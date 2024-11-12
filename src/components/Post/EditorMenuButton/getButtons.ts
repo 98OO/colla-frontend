@@ -54,3 +54,11 @@ export const getAlignButtons = (editor: Editor): ButtonProps[] => [
 		isActive: () => editor.isActive({ textAlign: 'right' }),
 	},
 ];
+
+export const getUtilityButtons = (editor: Editor): ButtonProps[] => [
+	{
+		icon: 'Code',
+		command: () => editor.chain().focus().toggleCodeBlock().run(),
+		isActive: () => editor.isActive('codeBlock'),
+	},
+];
