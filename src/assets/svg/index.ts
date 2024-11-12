@@ -36,3 +36,4 @@ export { ReactComponent as Vote } from './vote.svg';
 export { ReactComponent as Collect } from './collect.svg';
 export { ReactComponent as Bold } from './bold.svg';
 export { ReactComponent as Italic } from './italic.svg';
+export { ReactComponent as Strike } from './strike.svg';

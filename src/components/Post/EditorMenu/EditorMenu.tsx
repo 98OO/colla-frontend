@@ -27,6 +27,15 @@ const EditorMenu = ({ editor }: EditorMenuProps) => {
 					color={editor.isActive('italic') ? 'iPrimary' : 'primary'}
 				/>
 			</S.EditorMenuButton>
+			<S.EditorMenuButton
+				type='button'
+				onClick={() => editor.chain().focus().toggleStrike().run()}>
+				<Icon
+					name='Strike'
+					size='md'
+					color={editor.isActive('strike') ? 'iPrimary' : 'primary'}
+				/>
+			</S.EditorMenuButton>
 		</S.EditorMenuContainer>
 	);
 };
