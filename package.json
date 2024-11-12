@@ -21,6 +21,8 @@
 		"@svgr/rollup": "^8.1.0",
 		"@tanstack/react-query": "^5.29.0",
 		"@tanstack/react-query-devtools": "^5.29.0",
+		"@tiptap/react": "^2.9.1",
+		"@tiptap/starter-kit": "^2.9.1",
 		"@types/react-infinite-scroller": "^1.2.5",
 		"@types/stompjs": "^2.3.9",
 		"@vitejs/plugin-react": "^4.2.1",
