@@ -37,3 +37,6 @@ export { ReactComponent as Collect } from './collect.svg';
 export { ReactComponent as Bold } from './bold.svg';
 export { ReactComponent as Italic } from './italic.svg';
 export { ReactComponent as Strike } from './strike.svg';
+export { ReactComponent as HeadingOne } from './heading-one.svg';
+export { ReactComponent as HeadingTwo } from './heading-two.svg';
+export { ReactComponent as HeadingThree } from './heading-three.svg';

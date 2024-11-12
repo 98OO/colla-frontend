@@ -18,3 +18,21 @@ export const getBasicButtons = (editor: Editor): ButtonProps[] => [
 		isActive: () => editor.isActive('strike'),
 	},
 ];
+
+export const getFormatButtons = (editor: Editor): ButtonProps[] => [
+	{
+		icon: 'HeadingOne',
+		command: () => editor.chain().focus().toggleHeading({ level: 1 }).run(),
+		isActive: () => editor.isActive('heading', { level: 1 }),
+	},
+	{
+		icon: 'HeadingTwo',
+		command: () => editor.chain().focus().toggleHeading({ level: 2 }).run(),
+		isActive: () => editor.isActive('heading', { level: 2 }),
+	},
+	{
+		icon: 'HeadingThree',
+		command: () => editor.chain().focus().toggleHeading({ level: 3 }).run(),
+		isActive: () => editor.isActive('heading', { level: 3 }),
+	},
+];
