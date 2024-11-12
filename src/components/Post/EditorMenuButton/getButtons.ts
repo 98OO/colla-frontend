@@ -35,6 +35,16 @@ export const getFormatButtons = (editor: Editor): ButtonProps[] => [
 		command: () => editor.chain().focus().toggleHeading({ level: 3 }).run(),
 		isActive: () => editor.isActive('heading', { level: 3 }),
 	},
+	{
+		icon: 'OrderedList',
+		command: () => editor.chain().focus().toggleOrderedList().run(),
+		isActive: () => editor.isActive('orderedList'),
+	},
+	{
+		icon: 'BulletList',
+		command: () => editor.chain().focus().toggleBulletList().run(),
+		isActive: () => editor.isActive('bulletList'),
+	},
 ];
 
 export const getAlignButtons = (editor: Editor): ButtonProps[] => [

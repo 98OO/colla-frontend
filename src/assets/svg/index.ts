@@ -40,6 +40,8 @@ export { ReactComponent as Strike } from './strike.svg';
 export { ReactComponent as HeadingOne } from './heading-one.svg';
 export { ReactComponent as HeadingTwo } from './heading-two.svg';
 export { ReactComponent as HeadingThree } from './heading-three.svg';
+export { ReactComponent as BulletList } from './bulletList.svg';
+export { ReactComponent as OrderedList } from './orderedList.svg';
 export { ReactComponent as AlignLeft } from './alignLeft.svg';
 export { ReactComponent as AlignCenter } from './alignCenter.svg';
 export { ReactComponent as AlignRight } from './alignRight.svg';
