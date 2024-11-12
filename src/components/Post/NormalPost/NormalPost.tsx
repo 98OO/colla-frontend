@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@components/common/Button/Button';
+import Editor from '@components/Post/Editor/Editor';
 import { PATH } from '@constants/path';
 import * as S from './NormalPost.styled';
 
@@ -26,7 +27,7 @@ const NormalPost = () => {
 				value={title}
 				onChange={handleTitleChange}
 			/>
-			<div>에디터</div>
+			<Editor />
 			<S.ButtonContainer>
 				<Button
 					label='등록'
