@@ -61,4 +61,9 @@ export const getUtilityButtons = (editor: Editor): ButtonProps[] => [
 		command: () => editor.chain().focus().toggleCodeBlock().run(),
 		isActive: () => editor.isActive('codeBlock'),
 	},
+	{
+		icon: 'BlockQuote',
+		command: () => editor.chain().focus().toggleBlockquote().run(),
+		isActive: () => editor.isActive('blockquote'),
+	},
 ];
