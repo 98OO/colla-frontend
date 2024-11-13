@@ -78,6 +78,7 @@ export interface NormalFeedForm {
 	teamspaceId: number;
 	title: string;
 	images: Omit<Image, 'id'>[];
+	attachments: Omit<Attachment, 'id'>[];
 	details: { content: string };
 }
 

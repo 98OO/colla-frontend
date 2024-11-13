@@ -6,6 +6,7 @@ const postNormalFeed = async ({
 	teamspaceId,
 	title,
 	images,
+	attachments,
 	details,
 }: NormalFeedForm) => {
 	const response = await axiosInstance.post(
@@ -13,6 +14,7 @@ const postNormalFeed = async ({
 		{
 			title,
 			images,
+			attachments,
 			details,
 		}
 	);

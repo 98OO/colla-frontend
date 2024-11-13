@@ -39,9 +39,7 @@ const EditorMenu = ({ editor, appendImageFile }: EditorMenuProps) => {
 		}
 	};
 
-	const handleEditorImage = async (
-		event: React.ChangeEvent<HTMLInputElement>
-	) => {
+	const handleEditorImage = (event: React.ChangeEvent<HTMLInputElement>) => {
 		const file = event.target.files?.[0];
 
 		if (!file) {

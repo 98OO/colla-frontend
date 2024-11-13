@@ -83,21 +83,24 @@ const usePostEditor = () => {
 		if (!teamspaceId) return;
 
 		const content = editorRef.current.getHTML();
-		const attachmentUrls = await getAttachmentUrls(imageFiles, teamspaceId);
-
-		if (!content || !attachmentUrls) return;
-
-		const replacedContent = replaceDataUrlsToAttachmentUrls(
-			content,
-			attachmentUrls
+		const imageUrls = await getAttachmentUrls(imageFiles, teamspaceId);
+		const attachmentUrls = await getAttachmentUrls(
+			attachmentFiles,
+			teamspaceId
 		);
 
-		const images = getFileDTOs(imageFiles, attachmentUrls);
+		if (!content || !imageUrls || !attachmentUrls) return;
+
+		const replacedContent = replaceDataUrlsToAttachmentUrls(content, imageUrls);
+
+		const images = getFileDTOs(imageFiles, imageUrls);
+		const attachments = getFileDTOs(attachmentFiles, attachmentUrls);
 
 		mutateNormalFeed({
 			teamspaceId,
 			title,
 			images,
+			attachments,
 			details: { content: replacedContent },
 		});
 	};
