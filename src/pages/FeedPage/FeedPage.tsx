@@ -7,6 +7,7 @@ import Feed from '@components/Feed/Feed';
 import { queryClient } from '@hooks/queries/common/queryClient';
 import useFeedsQuery from '@hooks/queries/Feed/useFeedsQuery';
 import useUserStatusQuery from '@hooks/queries/useUserStatusQuery';
+import { getSanitizedFeeds } from '@utils/getSanitizedFeeds';
 import { FEED_SELECT_MAP } from '@constants/feed';
 import type { FeedData, SelectType } from '@type/feed';
 import * as S from './FeedPage.styled';
@@ -64,7 +65,9 @@ const FeedPage = () => {
 					hasMore={hasNextPage}
 					useWindow={false}>
 					{feeds?.pages.map((pageData) => {
-						return pageData.content.feeds.map((feedData: FeedData) => (
+						const sanitizedFeeds = getSanitizedFeeds(pageData.content.feeds);
+
+						return sanitizedFeeds.map((feedData: FeedData) => (
 							<Feed key={feedData.feedId} feedData={feedData} />
 						));
 					})}
