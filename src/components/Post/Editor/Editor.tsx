@@ -1,4 +1,5 @@
 import EditorMenu from '@components/Post/EditorMenu/EditorMenu';
+import Image from '@tiptap/extension-image';
 import TextAlign from '@tiptap/extension-text-align';
 import Underline from '@tiptap/extension-underline';
 import { useEditor, EditorContent } from '@tiptap/react';
@@ -10,6 +11,7 @@ const Editor = () => {
 		extensions: [
 			StarterKit,
 			Underline,
+			Image,
 			TextAlign.configure({
 				types: ['heading', 'paragraph'],
 			}),

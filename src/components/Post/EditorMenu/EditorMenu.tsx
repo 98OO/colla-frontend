@@ -8,6 +8,7 @@ import {
 	getAlignButtons,
 	getUtilityButtons,
 } from '@components/Post/EditorMenuButton/getButtons';
+import { convertToBase64 } from '@utils/editorImageUtils';
 import type { Editor } from '@tiptap/react';
 import * as S from './EditorMenu.styled';
 
@@ -23,7 +24,23 @@ const EditorMenu = ({ editor }: EditorMenuProps) => {
 		getUtilityButtons(editor),
 	];
 
-	const handleEditorImage = () => {};
+	const addImageToEditor = async (file: File) => {
+		const imageUrl = await convertToBase64(file);
+
+		if (imageUrl) {
+			editor.chain().focus().setImage({ src: imageUrl }).run();
+		}
+	};
+
+	const handleEditorImage = async (
+		event: React.ChangeEvent<HTMLInputElement>
+	) => {
+		const file = event.target.files?.[0];
+
+		if (!file) return;
+
+		addImageToEditor(file);
+	};
 
 	return (
 		<S.EditorMenuContainer>
