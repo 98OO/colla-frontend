@@ -3,6 +3,12 @@ import useFileUpload from '@hooks/common/useFileUpload';
 import useUserStatusQuery from '@hooks/queries/useUserStatusQuery';
 import type { Editor } from '@tiptap/react';
 
+interface FileDTO {
+	name: string;
+	fileUrl: string;
+	size: number;
+}
+
 const usePostEditor = () => {
 	const { userStatus } = useUserStatusQuery();
 	const { uploadFiles } = useFileUpload();
@@ -33,6 +39,14 @@ const usePostEditor = () => {
 		return attachmentUrls;
 	};
 
+	const getFileDTOs = (files: File[], attachmentUrls: string[]): FileDTO[] => {
+		return files.map((file, index) => ({
+			name: file.name,
+			fileUrl: attachmentUrls[index],
+			size: file.size,
+		}));
+	};
+
 	const handleSubmit = async () => {
 		if (!editorRef.current) return;
 
@@ -43,7 +57,11 @@ const usePostEditor = () => {
 		const content = editorRef.current.getHTML();
 		const attachmentUrls = await getAttachmentUrls(imageFiles, teamspaceId);
 
-		console.log(content, attachmentUrls);
+		if (!content || !attachmentUrls) return;
+
+		const images = getFileDTOs(imageFiles, attachmentUrls);
+
+		console.log(images);
 	};
 
 	return { editorRef, imageFiles, appendImageFile, handleSubmit };
