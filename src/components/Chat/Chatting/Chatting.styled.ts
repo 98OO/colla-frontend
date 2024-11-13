@@ -37,13 +37,13 @@ export const InfiniteScrollContainer = styled(InfiniteScroll)`
 `;
 
 export const ChattingInputContainer = styled.div`
-	height: 128px;
-	border: 1px solid ${theme.color.border.secondary};
+	min-height: 130px;
+	border: 1px solid ${theme.color.border.primary};
 	border-radius: ${theme.units.radius.radius12};
 	display: flex;
 	flex-direction: column;
-	padding: ${theme.units.spacing.space12} ${theme.units.spacing.space8}
-		${theme.units.spacing.space6} ${theme.units.spacing.space8};
+	padding: ${theme.units.spacing.space12} ${theme.units.spacing.space4}
+		${theme.units.spacing.space4} ${theme.units.spacing.space4};
 `;
 
 export const ChattingInputWrapper = styled.textarea`
@@ -53,7 +53,9 @@ export const ChattingInputWrapper = styled.textarea`
 	resize: none;
 	word-wrap: break-word;
 	white-space: pre-wrap;
+	color: ${theme.color.text.secondary};
 	font-size: ${theme.typography.fontSize.body.lg};
+	padding: 0 ${theme.units.spacing.space10};
 
 	&::-webkit-scrollbar {
 		width: 4px;

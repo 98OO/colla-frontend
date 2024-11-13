@@ -433,10 +433,10 @@ const Chatting = (props: ChattingProps) => {
 					onChange={handleMessageChange}
 					onKeyDown={handleKeyDown}
 					maxLength={1000}
-					placeholder='Shift + Enter로 줄바꿈합니다.'
+					placeholder='메세지 입력'
 				/>
 				<Flex
-					height='44'
+					height='38'
 					paddingLeft='4'
 					paddingRight='4'
 					justify='space-between'
@@ -446,7 +446,7 @@ const Chatting = (props: ChattingProps) => {
 							icon='Image'
 							ariaLabel='image'
 							color='secondary'
-							size='sm'
+							size='md'
 							onClick={handleImageUploadClick}
 						/>
 						<S.ImgUploadWrapper
@@ -459,7 +459,7 @@ const Chatting = (props: ChattingProps) => {
 							icon='File'
 							ariaLabel='file'
 							color='secondary'
-							size='sm'
+							size='md'
 							onClick={handleFileUploadClick}
 						/>
 						<S.ImgUploadWrapper
