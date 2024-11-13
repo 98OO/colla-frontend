@@ -8,7 +8,10 @@ import {
 	getAlignButtons,
 	getUtilityButtons,
 } from '@components/Post/EditorMenuButton/getButtons';
+import useFileUpload from '@hooks/common/useFileUpload';
+import useToastStore from '@stores/toastStore';
 import { convertToBase64 } from '@utils/editorImageUtils';
+import { EDITOR_IMAGE_ERROR_MESSAGE } from '@constants/feed';
 import type { Editor } from '@tiptap/react';
 import * as S from './EditorMenu.styled';
 
@@ -17,6 +20,9 @@ interface EditorMenuProps {
 }
 
 const EditorMenu = ({ editor }: EditorMenuProps) => {
+	const { isFileSizeExceedLimit } = useFileUpload();
+	const { makeToast } = useToastStore();
+
 	const buttonGroups = [
 		getBasicButtons(editor),
 		getFormatButtons(editor),
@@ -37,7 +43,15 @@ const EditorMenu = ({ editor }: EditorMenuProps) => {
 	) => {
 		const file = event.target.files?.[0];
 
-		if (!file) return;
+		if (!file) {
+			makeToast(EDITOR_IMAGE_ERROR_MESSAGE.NO_FILE_SELECTED, 'Warning');
+			return;
+		}
+
+		if (isFileSizeExceedLimit(file)) {
+			makeToast(EDITOR_IMAGE_ERROR_MESSAGE.EXCEED_LIMIT, 'Warning');
+			return;
+		}
 
 		addImageToEditor(file);
 	};
