@@ -29,9 +29,9 @@ const ChatRoom = (props: ChatRoomProps) => {
 				<Avatar profile={null} initial={title} size='lg' shape='circle' />
 			</Flex>
 			<S.MessageContainer>
-				<Heading size='xs'>{title}</Heading>
+				<Heading size='xxs'>{title}</Heading>
 				{message && (
-					<Text size='md' weight='medium' color='secondary'>
+					<Text size='sm' weight='medium' color='tertiary'>
 						{message}
 					</Text>
 				)}

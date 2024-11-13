@@ -4,14 +4,26 @@ import theme from '@styles/theme';
 export const ChatRoomListContainer = styled.div`
 	display: flex;
 	flex-direction: column;
-	width: 460px;
+	width: 398px;
+	min-width: 398px;
 	height: calc(100vh - 64px);
 	border-right: 1px solid ${theme.color.border.tertiary};
 	position: relative;
 
-	@media (max-width: 1440px) {
-		width: 250px;
+	@media (max-width: 900px) {
+		width: 104px;
+		min-width: 104px;
 	}
+`;
+
+export const ChatPageHeader = styled.div`
+	display: flex;
+	flex-direction: row;
+	justify-content: space-between;
+	width: 100%;
+	height: 74px;
+	padding: 10px 18px;
+	border-bottom: 1px solid ${theme.color.border.tertiary};
 `;
 
 export const ChatRoomListWrapper = styled.div`
