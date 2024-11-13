@@ -17,10 +17,35 @@ const usePostEditor = () => {
 	const { mutateNormalFeed } = useNormalFeedMutation();
 
 	const [imageFiles, setImageFiles] = useState<File[]>([]);
+	const [attachmentFiles, setAttachmentFiles] = useState<File[]>([]);
 	const editorRef = useRef<Editor>(null);
 
 	const appendImageFile = (file: File) => {
 		setImageFiles((prevFiles) => [...prevFiles, file]);
+	};
+
+	const appendAttachmentFile = (file: File) => {
+		setAttachmentFiles((prevFiles) => [...prevFiles, file]);
+	};
+
+	const deleteAttachmentFile = (fileName: string) => {
+		setAttachmentFiles((prevFiles) =>
+			prevFiles.filter((file) => file.name !== fileName)
+		);
+	};
+
+	const handleDragOver = (event: React.DragEvent<HTMLDivElement>) => {
+		event.preventDefault();
+	};
+
+	const handleDrop = (event: React.DragEvent<HTMLDivElement>) => {
+		event.preventDefault();
+
+		const files = Array.from(event.dataTransfer.files);
+
+		if (!files.length) return;
+
+		files.forEach((file) => appendAttachmentFile(file));
 	};
 
 	const getFileList = (files: File[]) => {
@@ -77,7 +102,16 @@ const usePostEditor = () => {
 		});
 	};
 
-	return { editorRef, appendImageFile, handleSubmit };
+	return {
+		editorRef,
+		attachmentFiles,
+		appendImageFile,
+		appendAttachmentFile,
+		deleteAttachmentFile,
+		handleDragOver,
+		handleDrop,
+		handleSubmit,
+	};
 };
 
 export default usePostEditor;

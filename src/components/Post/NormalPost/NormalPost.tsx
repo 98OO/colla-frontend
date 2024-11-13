@@ -1,18 +1,24 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@components/common/Button/Button';
+import FileUploadBox from '@components/common/FileUploadBox/FileUploadBox';
 import Editor from '@components/Post/Editor/Editor';
 import usePostEditor from '@hooks/post/usePostEditor';
 import { PATH } from '@constants/path';
 import * as S from './NormalPost.styled';
 
 const NormalPost = () => {
+	const navigate = useNavigate();
 	const {
 		editorRef,
+		attachmentFiles,
 		appendImageFile,
+		appendAttachmentFile,
+		deleteAttachmentFile,
+		handleDrop,
+		handleDragOver,
 		handleSubmit: submitNormalFeedForm,
 	} = usePostEditor();
-	const navigate = useNavigate();
 
 	const [title, setTitle] = useState('');
 
@@ -36,6 +42,13 @@ const NormalPost = () => {
 				onChange={handleTitleChange}
 			/>
 			<Editor editorRef={editorRef} appendImageFile={appendImageFile} />
+			<FileUploadBox
+				files={attachmentFiles}
+				handleDragOver={handleDragOver}
+				handleDrop={handleDrop}
+				handleFilesAdd={appendAttachmentFile}
+				handleFileDelete={deleteAttachmentFile}
+			/>
 			<S.ButtonContainer>
 				<Button
 					label='등록'
