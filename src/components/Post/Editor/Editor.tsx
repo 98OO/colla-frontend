@@ -5,6 +5,7 @@ import TextAlign from '@tiptap/extension-text-align';
 import Underline from '@tiptap/extension-underline';
 import { useEditor, EditorContent, Editor as EditorType } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
+import theme from '@styles/theme';
 import * as S from './Editor.styled';
 
 interface EditorProps {
@@ -15,7 +16,9 @@ interface EditorProps {
 const Editor = ({ editorRef, appendImageFile }: EditorProps) => {
 	const editor = useEditor({
 		extensions: [
-			StarterKit,
+			StarterKit.configure({
+				dropcursor: { color: theme.color.border.infoSubtle, width: 2 },
+			}),
 			Underline,
 			Image,
 			TextAlign.configure({
