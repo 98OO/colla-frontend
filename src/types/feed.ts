@@ -74,4 +74,11 @@ interface CollectFeed extends FeedBase {
 	details: CollectDetails;
 }
 
+export interface NormalFeedForm {
+	teamspaceId: number;
+	title: string;
+	images: Omit<Image, 'id'>[];
+	details: { content: string };
+}
+
 export type FeedData = NormalFeed | CollectFeed;
