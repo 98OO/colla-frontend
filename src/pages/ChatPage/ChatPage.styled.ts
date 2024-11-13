@@ -5,10 +5,14 @@ export const ChatRoomListContainer = styled.div`
 	display: flex;
 	flex-direction: column;
 	width: 398px;
-	min-width: 398px;
 	height: calc(100vh - 64px);
 	border-right: 1px solid ${theme.color.border.tertiary};
 	position: relative;
+
+	@media (max-width: 1440px) {
+		width: 270px;
+		min-width: 270px;
+	}
 
 	@media (max-width: 900px) {
 		width: 104px;
