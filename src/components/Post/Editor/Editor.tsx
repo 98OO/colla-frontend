@@ -6,7 +6,11 @@ import { useEditor, EditorContent } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
 import * as S from './Editor.styled';
 
-const Editor = () => {
+interface EditorProps {
+	appendImageFile: (file: File) => void;
+}
+
+const Editor = ({ appendImageFile }: EditorProps) => {
 	const editor = useEditor({
 		extensions: [
 			StarterKit,
@@ -23,7 +27,7 @@ const Editor = () => {
 
 	return (
 		<S.EditorContainer>
-			<EditorMenu editor={editor} />
+			<EditorMenu editor={editor} appendImageFile={appendImageFile} />
 			<EditorContent editor={editor} />
 		</S.EditorContainer>
 	);

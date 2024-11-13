@@ -17,9 +17,10 @@ import * as S from './EditorMenu.styled';
 
 interface EditorMenuProps {
 	editor: Editor;
+	appendImageFile: (file: File) => void;
 }
 
-const EditorMenu = ({ editor }: EditorMenuProps) => {
+const EditorMenu = ({ editor, appendImageFile }: EditorMenuProps) => {
 	const { isFileSizeExceedLimit } = useFileUpload();
 	const { makeToast } = useToastStore();
 
@@ -54,6 +55,7 @@ const EditorMenu = ({ editor }: EditorMenuProps) => {
 		}
 
 		addImageToEditor(file);
+		appendImageFile(file);
 	};
 
 	return (
