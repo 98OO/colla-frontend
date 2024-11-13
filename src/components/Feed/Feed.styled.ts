@@ -1,4 +1,5 @@
 import { styled } from 'styled-components';
+import { editorStyles } from '@styles/editorStyles';
 import theme from '@styles/theme';
 
 export const FeedContainer = styled.div`
@@ -13,6 +14,8 @@ export const FeedContainer = styled.div`
 `;
 
 export const DetailWrapper = styled.div`
+	${editorStyles}
+
 	padding: ${theme.units.spacing.space16} 0;
 	min-height: 50px;
 	max-height: 200px;
