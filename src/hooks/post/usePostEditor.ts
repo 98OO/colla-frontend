@@ -1,6 +1,8 @@
 import { useRef, useState } from 'react';
 import useFileUpload from '@hooks/common/useFileUpload';
+import useNormalFeedMutation from '@hooks/queries/post/useNormalFeedMutation';
 import useUserStatusQuery from '@hooks/queries/useUserStatusQuery';
+import { replaceDataUrlsToAttachmentUrls } from '@utils/editorImageUtils';
 import type { Editor } from '@tiptap/react';
 
 interface FileDTO {
@@ -12,6 +14,7 @@ interface FileDTO {
 const usePostEditor = () => {
 	const { userStatus } = useUserStatusQuery();
 	const { uploadFiles } = useFileUpload();
+	const { mutateNormalFeed } = useNormalFeedMutation();
 
 	const [imageFiles, setImageFiles] = useState<File[]>([]);
 	const editorRef = useRef<Editor>(null);
@@ -47,7 +50,7 @@ const usePostEditor = () => {
 		}));
 	};
 
-	const handleSubmit = async () => {
+	const handleSubmit = async (title: string) => {
 		if (!editorRef.current) return;
 
 		const teamspaceId = userStatus?.profile.lastSeenTeamspaceId;
@@ -59,12 +62,22 @@ const usePostEditor = () => {
 
 		if (!content || !attachmentUrls) return;
 
+		const replacedContent = replaceDataUrlsToAttachmentUrls(
+			content,
+			attachmentUrls
+		);
+
 		const images = getFileDTOs(imageFiles, attachmentUrls);
 
-		console.log(images);
+		mutateNormalFeed({
+			teamspaceId,
+			title,
+			images,
+			details: { content: replacedContent },
+		});
 	};
 
-	return { editorRef, imageFiles, appendImageFile, handleSubmit };
+	return { editorRef, appendImageFile, handleSubmit };
 };
 
 export default usePostEditor;

@@ -7,13 +7,21 @@ import { PATH } from '@constants/path';
 import * as S from './NormalPost.styled';
 
 const NormalPost = () => {
-	const { editorRef, appendImageFile, handleSubmit } = usePostEditor();
+	const {
+		editorRef,
+		appendImageFile,
+		handleSubmit: submitNormalFeedForm,
+	} = usePostEditor();
 	const navigate = useNavigate();
 
 	const [title, setTitle] = useState('');
 
 	const handleTitleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
 		setTitle(event.target.value);
+	};
+
+	const handleSubmit = async () => {
+		await submitNormalFeedForm(title);
 	};
 
 	const handleCancel = () => {
