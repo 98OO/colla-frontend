@@ -222,7 +222,7 @@ const MyPage = () => {
 								</Flex>
 							</Flex>
 						</Flex>
-						<Flex direction='column' gap='4'>
+						{/* <Flex direction='column' gap='4'>
 							<Flex paddingTop='8' paddingBottom='4' paddingLeft='4'>
 								<Text size='md' weight='semiBold' color='secondary'>
 									설정 관리
@@ -277,7 +277,7 @@ const MyPage = () => {
 									/>
 								</Flex>
 							</MySettingItem>
-						</Flex>
+						</Flex> */}
 						<Flex justify='flex-end' gap='12'>
 							<Flex width='64'>
 								<Button

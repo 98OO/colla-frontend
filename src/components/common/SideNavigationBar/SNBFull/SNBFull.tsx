@@ -55,12 +55,12 @@ const SNBFull = () => {
 						selected={location.pathname === PATH.FEED}
 						onClick={() => navigate(PATH.FEED)}
 					/>
-					<MenuItem
+					{/* <MenuItem
 						leadingIcon='Calendar'
 						title='일정 및 할 일'
 						selected={location.pathname === PATH.SCHEDULE}
 						onClick={() => navigate(PATH.SCHEDULE)}
-					/>
+					/> */}
 					<MenuItem
 						leadingIcon='Message'
 						title='채팅'
@@ -76,12 +76,12 @@ const SNBFull = () => {
 						selected={location.pathname === PATH.DOCUMENT}
 						onClick={() => navigate(PATH.DOCUMENT)}
 					/>
-					<MenuItem
+					{/* <MenuItem
 						leadingIcon='Mic'
 						title='발표 준비'
 						selected={location.pathname === PATH.PRESENTATION}
 						onClick={() => navigate(PATH.PRESENTATION)}
-					/>
+					/> */}
 				</Flex>
 				<Flex direction='column' gap='8'>
 					<Divider size='sm' />
