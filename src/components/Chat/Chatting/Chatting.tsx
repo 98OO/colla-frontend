@@ -351,7 +351,7 @@ const Chatting = (props: ChattingProps) => {
 										getFormattedDate(msg.createdAt, 'chatDate') !==
 											getFormattedDate(previousMsg.createdAt, 'chatDate')) ||
 										index === array.length - 1) && (
-										<Flex justify='center' height='28' margin='10px 0'>
+										<Flex justify='center' height='28' margin='20px 0 10px 0'>
 											<S.ChattingDateWrapper>
 												<Text size='sm' weight='medium' color='tertiary'>
 													{getFormattedDate(msg.createdAt, 'chatDate')}
