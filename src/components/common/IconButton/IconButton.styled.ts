@@ -10,6 +10,7 @@ export const IconButtonWrapper = styled.button`
 	aspect-ratio: 1/1;
 	padding: ${theme.units.spacing.space4};
 	border-radius: ${theme.units.radius.radius6};
+	cursor: pointer;
 	&:hover {
 		background-color: ${theme.color.bg.iSecondaryHover};
 	}
