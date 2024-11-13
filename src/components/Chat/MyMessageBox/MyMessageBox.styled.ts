@@ -20,10 +20,16 @@ export const MyMessageBoxWrapper = styled.div<{ state: boolean; type: string }>`
 		props.state
 			? `${theme.units.radius.radius20} 0 ${theme.units.radius.radius20} ${theme.units.radius.radius20}`
 			: theme.units.radius.radius20};
-	max-width: 250px;
+	max-width: 564px;
 	line-height: 18px;
 	word-break: break-all;
 	white-space: pre-line;
+`;
+
+export const MyMessageBoxSpacer = styled.div`
+	flex-shrink: 0;
+	width: 90px;
+	min-width: 90px;
 `;
 
 export const ImageWrapper = styled.div`

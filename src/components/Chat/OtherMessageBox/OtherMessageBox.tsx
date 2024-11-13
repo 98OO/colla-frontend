@@ -21,8 +21,10 @@ const OtherMessageBox = (props: OtherMessageBoxProps) => {
 	return (
 		<S.OtherMessageBoxContainer state={state}>
 			<Flex direction='column' width='32'>
-				{state && (
+				{state ? (
 					<Avatar profile={profile} initial={name} size='md' shape='circle' />
+				) : (
+					<S.AvatarSpacer />
 				)}
 			</Flex>
 			<Flex direction='column' gap='4'>
@@ -74,6 +76,7 @@ const OtherMessageBox = (props: OtherMessageBoxProps) => {
 					</Text>
 				)}
 			</Flex>
+			<S.OtherMessageBoxSpacer />
 		</S.OtherMessageBoxContainer>
 	);
 };

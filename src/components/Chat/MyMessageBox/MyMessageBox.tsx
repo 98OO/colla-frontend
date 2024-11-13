@@ -17,6 +17,7 @@ const MyMessageBox = (props: MyMessageBoxProps) => {
 
 	return (
 		<S.MyMessageBoxContainer>
+			<S.MyMessageBoxSpacer />
 			{date && (
 				<Flex direction='column' justify='flex-end'>
 					<Text size='sm' weight='regular' color='subtle'>

@@ -29,10 +29,22 @@ export const OtherMessageBoxWrapper = styled.div<{
 			? `0 ${theme.units.radius.radius20} ${theme.units.radius.radius20} ${theme.units.radius.radius20}`
 			: theme.units.radius.radius20};
 
-	max-width: 250px;
+	max-width: 564px;
 	line-height: 18px;
 	word-break: break-all;
 	white-space: pre-line;
+`;
+
+export const OtherMessageBoxSpacer = styled.div`
+	flex-shrink: 0;
+	width: 90px;
+	min-width: 90px;
+`;
+
+export const AvatarSpacer = styled.div`
+	flex-shrink: 0;
+	width: 32px;
+	min-width: 32px;
 `;
 
 export const ImageWrapper = styled.div`
