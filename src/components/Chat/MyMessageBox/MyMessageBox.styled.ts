@@ -5,7 +5,7 @@ export const MyMessageBoxContainer = styled.div`
 	display: flex;
 	width: 100%;
 	justify-content: flex-end;
-	padding: ${theme.units.spacing.space4};
+	padding-top: ${theme.units.spacing.space6};
 	gap: ${theme.units.spacing.space8};
 `;
 
@@ -13,7 +13,7 @@ export const MyMessageBoxWrapper = styled.div<{ state: boolean; type: string }>`
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	padding: ${theme.units.spacing.space12} ${theme.units.spacing.space16};
+	padding: ${theme.units.spacing.space10} ${theme.units.spacing.space14};
 	background-color: ${(props) =>
 		props.type === 'TEXT' ? theme.color.bg.iPrimary : 'none'};
 	border-radius: ${(props) =>
@@ -23,7 +23,7 @@ export const MyMessageBoxWrapper = styled.div<{ state: boolean; type: string }>`
 	max-width: 250px;
 	line-height: 18px;
 	word-break: break-all;
-	white-space: pre;
+	white-space: pre-line;
 `;
 
 export const ImageWrapper = styled.div`

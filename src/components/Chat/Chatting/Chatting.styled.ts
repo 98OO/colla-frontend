@@ -70,10 +70,9 @@ export const ChattingDateWrapper = styled.div`
 	justify-content: center;
 	align-items: center;
 
-	padding: ${theme.units.spacing.space4} ${theme.units.spacing.space8};
-	background-color: ${theme.color.bg.tertiary};
-	border: 1px solid ${theme.color.border.secondary};
-	border-radius: ${theme.units.radius.radius8};
+	padding: ${theme.units.spacing.space4} ${theme.units.spacing.space12};
+	border: 1px solid ${theme.color.border.primary};
+	border-radius: ${theme.units.radius.radius16};
 `;
 
 export const ImgUploadWrapper = styled.input`

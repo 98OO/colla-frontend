@@ -19,14 +19,14 @@ const MyMessageBox = (props: MyMessageBoxProps) => {
 		<S.MyMessageBoxContainer>
 			{date && (
 				<Flex direction='column' justify='flex-end'>
-					<Text size='sm' weight='medium' color='subtle'>
+					<Text size='sm' weight='regular' color='subtle'>
 						{date}
 					</Text>
 				</Flex>
 			)}
 			<S.MyMessageBoxWrapper state={state} type={type}>
 				{type === 'TEXT' && (
-					<Text size='lg' weight='medium' color='iInverse'>
+					<Text size='lg' weight='regular' color='iInverse'>
 						{content}
 					</Text>
 				)}

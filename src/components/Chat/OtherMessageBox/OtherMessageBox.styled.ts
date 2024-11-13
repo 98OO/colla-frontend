@@ -6,10 +6,10 @@ export const OtherMessageBoxContainer = styled.div<{
 }>`
 	display: flex;
 	width: 100%;
-	padding: ${(props) =>
+	padding-top: ${(props) =>
 		props.state
-			? `${theme.units.spacing.space12} ${theme.units.spacing.space4} ${theme.units.spacing.space4} ${theme.units.spacing.space4}`
-			: `${theme.units.spacing.space4}`};
+			? `${theme.units.spacing.space16}`
+			: `${theme.units.spacing.space6}`};
 	gap: ${theme.units.spacing.space8};
 `;
 
@@ -21,7 +21,7 @@ export const OtherMessageBoxWrapper = styled.div<{
 	align-items: center;
 	justify-content: center;
 
-	padding: ${theme.units.spacing.space12} ${theme.units.spacing.space16};
+	padding: ${theme.units.spacing.space10} ${theme.units.spacing.space14};
 	background-color: ${(props) =>
 		props.type === 'TEXT' ? theme.color.bg.secondary : 'none'};
 	border-radius: ${(props) =>
@@ -32,7 +32,7 @@ export const OtherMessageBoxWrapper = styled.div<{
 	max-width: 250px;
 	line-height: 18px;
 	word-break: break-all;
-	white-space: pre;
+	white-space: pre-line;
 `;
 
 export const ImageWrapper = styled.div`

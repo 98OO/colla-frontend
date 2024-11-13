@@ -25,15 +25,15 @@ const OtherMessageBox = (props: OtherMessageBoxProps) => {
 					<Avatar profile={profile} initial={name} size='md' shape='circle' />
 				)}
 			</Flex>
-			<Flex direction='column' gap='2'>
+			<Flex direction='column' gap='4'>
 				{state && (
-					<Text size='md' weight='medium'>
+					<Text size='md' weight='medium' color='tertiary'>
 						{name}
 					</Text>
 				)}
 				<S.OtherMessageBoxWrapper state={state} type={type}>
 					{type === 'TEXT' && (
-						<Text size='lg' weight='medium' color='secondary'>
+						<Text size='lg' weight='regular' color='secondary'>
 							{content}
 						</Text>
 					)}
@@ -69,7 +69,7 @@ const OtherMessageBox = (props: OtherMessageBoxProps) => {
 			</Flex>
 			<Flex direction='column' justify='flex-end'>
 				{date && (
-					<Text size='sm' weight='medium' color='subtle'>
+					<Text size='sm' weight='regular' color='subtle'>
 						{date}
 					</Text>
 				)}
