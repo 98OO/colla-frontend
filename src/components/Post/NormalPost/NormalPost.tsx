@@ -7,7 +7,7 @@ import { PATH } from '@constants/path';
 import * as S from './NormalPost.styled';
 
 const NormalPost = () => {
-	const { appendImageFile, handleSubmit } = usePostEditor();
+	const { editorRef, appendImageFile, handleSubmit } = usePostEditor();
 	const navigate = useNavigate();
 
 	const [title, setTitle] = useState('');
@@ -27,7 +27,7 @@ const NormalPost = () => {
 				value={title}
 				onChange={handleTitleChange}
 			/>
-			<Editor appendImageFile={appendImageFile} />
+			<Editor editorRef={editorRef} appendImageFile={appendImageFile} />
 			<S.ButtonContainer>
 				<Button
 					label='등록'

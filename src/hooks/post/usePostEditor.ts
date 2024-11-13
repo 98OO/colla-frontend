@@ -9,7 +9,12 @@ const usePostEditor = () => {
 		setImageFiles((prevFiles) => [...prevFiles, file]);
 	};
 
-	const handleSubmit = async () => {};
+	const handleSubmit = async () => {
+		if (!editorRef.current) return;
+
+		const content = editorRef.current.getHTML();
+		console.log(content);
+	};
 
 	return { editorRef, imageFiles, appendImageFile, handleSubmit };
 };
