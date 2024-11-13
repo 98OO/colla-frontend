@@ -28,16 +28,16 @@ const ChatPage = () => {
 						<Heading size='xxs' color='secondary'>
 							채팅
 						</Heading>
-						<Flex align='center' gap='2'>
+						<S.UsernameFlex>
 							<Text size='sm' weight='regular' color='tertiary'>
 								@
 							</Text>
 							<Text size='sm' weight='regular' color='tertiary'>
 								{userStatus?.profile.username ?? ''}
 							</Text>
-						</Flex>
+						</S.UsernameFlex>
 					</Flex>
-					<Flex>
+					<Flex align='center'>
 						<IconButton
 							icon='Normal'
 							size='md'

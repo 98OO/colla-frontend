@@ -26,6 +26,17 @@ export const ChatPageHeader = styled.div`
 	border-bottom: 1px solid ${theme.color.border.tertiary};
 `;
 
+export const UsernameFlex = styled.div`
+	display: flex;
+	flex-direction: row;
+	justify-content: space-between;
+	column-gap: 2px;
+
+	@media (max-width: 900px) {
+		display: none;
+	}
+`;
+
 export const ChatRoomListWrapper = styled.div`
 	display: flex;
 	flex-direction: column;
