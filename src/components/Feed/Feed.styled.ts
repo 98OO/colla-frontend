@@ -54,47 +54,6 @@ export const AttachmentWrapper = styled.div`
 	padding-top: ${theme.units.spacing.space12};
 `;
 
-export const ImageGrid = styled.div<{ count: number }>`
-	display: grid;
-	grid-template-columns: ${(props) =>
-		props.count === 1 ? '1fr' : 'repeat(2, 1fr)'};
-	gap: 20px;
-	max-width: 630px;
-
-	img {
-		width: 100%;
-		height: 100%;
-		object-fit: cover;
-	}
-`;
-
-export const ImgContainer = styled.div<{ count: number; index: number }>`
-	position: relative;
-
-	&:hover {
-		.moreText {
-			display: ${(props) =>
-				props.count >= 3 && props.index === 1 ? 'block' : 'none'};
-		}
-	}
-`;
-
-export const ImgWrapper = styled.div<{ count: number; index: number }>`
-	filter: ${(props) =>
-		props.count >= 3 && props.index === 1 ? 'brightness(0.5)' : 'none'};
-`;
-
-export const MoreButton = styled.button`
-	position: absolute;
-	top: 50%;
-	left: 50%;
-	transform: translate(-50%, -50%);
-	background: transparent;
-	border: none;
-	font-size: 16px;
-	color: ${theme.color.text.subtle};
-`;
-
 export const FeedDetailContainer = styled.div`
 	display: flex;
 	flex-direction: column;
