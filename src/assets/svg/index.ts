@@ -48,3 +48,4 @@ export { ReactComponent as AlignCenter } from './alignCenter.svg';
 export { ReactComponent as AlignRight } from './alignRight.svg';
 export { ReactComponent as Code } from './code.svg';
 export { ReactComponent as BlockQuote } from './blockQuote.svg';
+export { ReactComponent as X } from './x.svg';
