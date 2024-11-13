@@ -12,3 +12,7 @@ export const ProfileContainer = styled.div`
 		background-color: ${theme.color.bg.tertiary};
 	}
 `;
+
+export const ProfileAvatarContainer = styled.div`
+	flex-shrink: 0;
+`;
