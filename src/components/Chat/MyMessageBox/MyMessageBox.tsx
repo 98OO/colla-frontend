@@ -18,13 +18,13 @@ const MyMessageBox = (props: MyMessageBoxProps) => {
 	return (
 		<S.MyMessageBoxContainer>
 			<S.MyMessageBoxSpacer />
-			{date && (
-				<Flex direction='column' justify='flex-end'>
+			<S.TimeWrapper>
+				{date && (
 					<Text size='sm' weight='regular' color='subtle'>
 						{date}
 					</Text>
-				</Flex>
-			)}
+				)}
+			</S.TimeWrapper>
 			<S.MyMessageBoxWrapper state={state} type={type}>
 				{type === 'TEXT' && (
 					<Text size='lg' weight='regular' color='iInverse'>

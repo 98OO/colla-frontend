@@ -37,8 +37,19 @@ export const OtherMessageBoxWrapper = styled.div<{
 
 export const OtherMessageBoxSpacer = styled.div`
 	flex-shrink: 0;
-	width: 90px;
-	min-width: 90px;
+	width: 42px;
+	min-width: 42px;
+`;
+
+export const TimeWrapper = styled.div`
+	display: flex;
+	flex-direction: column;
+	justify-content: flex-end;
+	flex-shrink: 0;
+	width: 54px;
+	min-width: 54px;
+	flex-direction: column;
+	align-items: flex-start;
 `;
 
 export const AvatarSpacer = styled.div`

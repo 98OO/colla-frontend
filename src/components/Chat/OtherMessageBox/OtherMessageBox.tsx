@@ -69,13 +69,13 @@ const OtherMessageBox = (props: OtherMessageBoxProps) => {
 					)}
 				</S.OtherMessageBoxWrapper>
 			</Flex>
-			<Flex direction='column' justify='flex-end'>
+			<S.TimeWrapper>
 				{date && (
 					<Text size='sm' weight='regular' color='subtle'>
 						{date}
 					</Text>
 				)}
-			</Flex>
+			</S.TimeWrapper>
 			<S.OtherMessageBoxSpacer />
 		</S.OtherMessageBoxContainer>
 	);

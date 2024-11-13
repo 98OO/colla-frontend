@@ -1,3 +1,4 @@
+import Flex from '@components/common/Flex/Flex';
 import styled from 'styled-components';
 import theme from '@styles/theme';
 
@@ -28,8 +29,19 @@ export const MyMessageBoxWrapper = styled.div<{ state: boolean; type: string }>`
 
 export const MyMessageBoxSpacer = styled.div`
 	flex-shrink: 0;
-	width: 90px;
-	min-width: 90px;
+	width: 42px;
+	min-width: 42px;
+`;
+
+export const TimeWrapper = styled.div`
+	display: flex;
+	flex-direction: column;
+	justify-content: flex-end;
+	flex-shrink: 0;
+	width: 54px;
+	min-width: 54px;
+	flex-direction: column;
+	align-items: flex-end;
 `;
 
 export const ImageWrapper = styled.div`
