@@ -21,7 +21,10 @@ export const OtherMessageBoxWrapper = styled.div<{
 	align-items: center;
 	justify-content: center;
 
-	padding: ${theme.units.spacing.space10} ${theme.units.spacing.space14};
+	padding: ${(props) =>
+		props.type === 'TEXT'
+			? `${theme.units.spacing.space10} ${theme.units.spacing.space14}`
+			: `${theme.units.spacing.space10} 0 0 0`};
 	background-color: ${(props) =>
 		props.type === 'TEXT' ? theme.color.bg.secondary : 'none'};
 	border-radius: ${(props) =>

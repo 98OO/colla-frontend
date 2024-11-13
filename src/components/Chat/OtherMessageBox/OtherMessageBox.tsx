@@ -1,8 +1,8 @@
 import Avatar from '@components/common/Avatar/Avatar';
 import Flex from '@components/common/Flex/Flex';
 import Text from '@components/common/Text/Text';
-import Attachments from '@components/Feed/Attachments/Attachments';
 import type { Attachment } from '@type/chat';
+import ChatAttachments from '../ChatAttachment/ChatAttachments';
 import * as S from './OtherMessageBox.styled';
 
 export interface OtherMessageBoxProps {
@@ -55,7 +55,7 @@ const OtherMessageBox = (props: OtherMessageBoxProps) => {
 					{type === 'FILE' && (
 						<Flex gap='10'>
 							{file?.map((files) => (
-								<Attachments
+								<ChatAttachments
 									key={files.id}
 									attachment={{
 										id: files.id,
