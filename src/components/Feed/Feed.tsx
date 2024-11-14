@@ -8,12 +8,55 @@ import Attachments from '@components/Feed/Attachments/Attachments';
 import Comment from '@components/Feed/Comments/Comment';
 import NormalDetail from '@components/Feed/Detail/Normal/NormalDetail';
 import { useOverlay } from '@hooks/common/useOverlay';
+import { PREVIEW_LIMIT } from '@constants/feed';
 import type { FeedData } from '@type/feed';
 import * as S from './Feed.styled';
+
+interface CommentPreviewProps {
+	comments: FeedData['comments'];
+	openDetail: () => void;
+}
+
+interface AttachmentPreviewProps {
+	attachments: FeedData['attachments'];
+}
 
 interface FeedProps {
 	feedData: FeedData;
 }
+
+const CommentPreview = ({ comments, openDetail }: CommentPreviewProps) => {
+	return (
+		<S.CommentContainer>
+			<Flex direction='column' align='flex-start'>
+				<Button
+					type='button'
+					size='md'
+					variant='text'
+					label={`댓글 ${comments.length}개 모두 보기`}
+					onClick={openDetail}
+				/>
+			</Flex>
+			<Divider size='sm' />
+			{comments.slice(0, PREVIEW_LIMIT.comments).map((comment) => (
+				<Flex direction='column' gap='8'>
+					<Comment comment={comment} />
+					<Divider size='sm' />
+				</Flex>
+			))}
+		</S.CommentContainer>
+	);
+};
+
+const AttachmentPreview = ({ attachments }: AttachmentPreviewProps) => {
+	return (
+		<S.AttachmentWrapper>
+			{attachments.slice(0, PREVIEW_LIMIT.attachments).map((attachment) => (
+				<Attachments key={attachment.id} attachment={attachment} />
+			))}
+		</S.AttachmentWrapper>
+	);
+};
 
 const Feed = ({ feedData }: FeedProps) => {
 	const { author, title, createdAt, details, attachments, comments } = feedData;
@@ -40,35 +83,8 @@ const Feed = ({ feedData }: FeedProps) => {
 						<div dangerouslySetInnerHTML={{ __html: details.content || '' }} />
 					</S.DetailWrapper>
 				)}
-				{attachments.length !== 0 && (
-					<S.AttachmentWrapper>
-						{attachments.slice(0, 3).map((attachment) => {
-							return <Attachments attachment={attachment} />;
-						})}
-					</S.AttachmentWrapper>
-				)}
-				{comments.length !== 0 && (
-					<S.CommentContainer>
-						<Flex direction='column' align='flex-start'>
-							<Button
-								type='button'
-								size='md'
-								variant='text'
-								label={`댓글 ${comments.length}개 모두 보기`}
-								onClick={open}
-							/>
-						</Flex>
-						<Divider size='sm' />
-						{comments.slice(0, 2).map((comment) => {
-							return (
-								<Flex direction='column' gap='8'>
-									<Comment comment={comment} />
-									<Divider size='sm' />
-								</Flex>
-							);
-						})}
-					</S.CommentContainer>
-				)}
+				{attachments && <AttachmentPreview attachments={attachments} />}
+				{comments && <CommentPreview comments={comments} openDetail={open} />}
 			</Flex>
 			<Modal isOpen={isOpen} onClose={close}>
 				<S.FeedDetailContainer>

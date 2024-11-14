@@ -15,3 +15,8 @@ export const REGEX = {
 	DATA_URL: /<img\s+[^>]*src="data:image\/[^"]*"[^>]*>/g,
 	IMG_SRC: /src="[^"]*"/,
 };
+
+export const PREVIEW_LIMIT = {
+	comments: 1,
+	attachments: 1,
+};
