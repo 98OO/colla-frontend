@@ -18,7 +18,7 @@ export const DetailWrapper = styled.div`
 
 	padding: ${theme.units.spacing.space16} 0;
 	min-height: 50px;
-	max-height: 200px;
+	max-height: 400px;
 	position: relative;
 	overflow: hidden;
 
@@ -28,7 +28,7 @@ export const DetailWrapper = styled.div`
 		bottom: 0;
 		left: 0;
 		width: 100%;
-		height: calc(100% - 140px);
+		height: calc(20%);
 		background: linear-gradient(
 			to bottom,
 			transparent,
@@ -55,24 +55,4 @@ export const AttachmentWrapper = styled.div`
 	flex-direction: column;
 	gap: ${theme.units.spacing.space12};
 	padding-top: ${theme.units.spacing.space12};
-`;
-
-export const FeedDetailContainer = styled.div`
-	display: flex;
-	flex-direction: column;
-	gap: ${theme.units.spacing.space24};
-	width: 100%;
-	max-height: 80vh;
-	padding: ${theme.units.spacing.space24};
-	border-radius: ${theme.units.radius.radius8};
-	overflow-y: scroll;
-
-	&::-webkit-scrollbar {
-		width: 4px;
-	}
-
-	&::-webkit-scrollbar-thumb {
-		border-radius: ${theme.units.radius.radius20};
-		background: ${theme.color.border.secondary};
-	}
 `;

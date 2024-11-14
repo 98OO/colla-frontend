@@ -1,8 +1,8 @@
 import { Button } from '@components/common/Button/Button';
 import Divider from '@components/common/Divider/Divider';
+import Drawer from '@components/common/Drawer/Drawer';
 import Flex from '@components/common/Flex/Flex';
 import Heading from '@components/common/Heading/Heading';
-import Modal from '@components/common/Modal/Modal';
 import Profile from '@components/common/Profile/Profile';
 import Attachments from '@components/Feed/Attachments/Attachments';
 import Comment from '@components/Feed/Comments/Comment';
@@ -83,14 +83,16 @@ const Feed = ({ feedData }: FeedProps) => {
 						<div dangerouslySetInnerHTML={{ __html: details.content || '' }} />
 					</S.DetailWrapper>
 				)}
-				{attachments && <AttachmentPreview attachments={attachments} />}
-				{comments && <CommentPreview comments={comments} openDetail={open} />}
+				{attachments.length > 0 && (
+					<AttachmentPreview attachments={attachments} />
+				)}
+				{comments.length > 0 && (
+					<CommentPreview comments={comments} openDetail={open} />
+				)}
 			</Flex>
-			<Modal isOpen={isOpen} onClose={close}>
-				<S.FeedDetailContainer>
-					<NormalDetail feedData={feedData} />
-				</S.FeedDetailContainer>
-			</Modal>
+			<Drawer isOpen={isOpen} onClose={close}>
+				<NormalDetail feedData={feedData} />
+			</Drawer>
 		</S.FeedContainer>
 	);
 };

@@ -13,8 +13,7 @@ interface FeedProps {
 }
 
 const Feed = ({ feedData }: FeedProps) => {
-	const { author, title, createdAt, details, attachments, comments, images } =
-		feedData;
+	const { author, title, createdAt, details, attachments, comments } = feedData;
 
 	return (
 		<S.FeedContainer>
@@ -32,16 +31,9 @@ const Feed = ({ feedData }: FeedProps) => {
 			<Flex direction='column' gap='12'>
 				<Heading size='xs'>{title}</Heading>
 				<Divider size='sm' />
-				{images.length !== 0 && (
-					<Flex justify='center'>
-						<S.ImageGrid>
-							{images.map((image) => {
-								return <img alt={image.name} src={image.fileUrl} />;
-							})}
-						</S.ImageGrid>
-					</Flex>
-				)}
-				{details && <S.DetailWrapper>{`${details.content}`}</S.DetailWrapper>}
+				<S.DetailWrapper>
+					<div dangerouslySetInnerHTML={{ __html: details.content || '' }} />
+				</S.DetailWrapper>
 				{attachments.length !== 0 && (
 					<S.AttachmentWrapper>
 						{attachments.map((attachment) => {
