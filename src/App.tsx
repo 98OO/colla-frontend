@@ -64,6 +64,7 @@ function App() {
 			</Flex>
 			<ToastContainer />
 			<div id='modal-root' />
+			<div id='drawer-root' />
 		</GlobalErrorBoundary>
 	);
 }
