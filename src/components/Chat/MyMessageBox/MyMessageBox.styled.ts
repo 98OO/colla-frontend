@@ -26,7 +26,7 @@ export const MyMessageBoxWrapper = styled.div<{ state: boolean; type: string }>`
 	max-width: 564px;
 	line-height: 18px;
 	word-break: break-all;
-	white-space: pre-line;
+	white-space: pre-wrap;
 `;
 
 export const MyMessageBoxSpacer = styled.div`
