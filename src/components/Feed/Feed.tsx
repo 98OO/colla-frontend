@@ -19,6 +19,7 @@ interface CommentPreviewProps {
 
 interface AttachmentPreviewProps {
 	attachments: FeedData['attachments'];
+	openDetail: () => void;
 }
 
 interface FeedProps {
@@ -27,34 +28,55 @@ interface FeedProps {
 
 const CommentPreview = ({ comments, openDetail }: CommentPreviewProps) => {
 	return (
-		<S.CommentContainer>
-			<Flex direction='column' align='flex-start'>
-				<Button
-					type='button'
-					size='md'
-					variant='text'
-					label={`댓글 ${comments.length}개 모두 보기`}
-					onClick={openDetail}
-				/>
-			</Flex>
-			<Divider size='sm' />
+		<S.SectionContainer>
+			{comments.length > PREVIEW_LIMIT.comments && (
+				<>
+					<S.SectionHeader>
+						<Button
+							type='button'
+							size='md'
+							variant='text'
+							label={`댓글 ${comments.length}개 모두 보기`}
+							onClick={openDetail}
+						/>
+					</S.SectionHeader>
+					<Divider size='sm' />
+				</>
+			)}
 			{comments.slice(0, PREVIEW_LIMIT.comments).map((comment) => (
 				<Flex direction='column' gap='8'>
 					<Comment comment={comment} />
 					<Divider size='sm' />
 				</Flex>
 			))}
-		</S.CommentContainer>
+		</S.SectionContainer>
 	);
 };
 
-const AttachmentPreview = ({ attachments }: AttachmentPreviewProps) => {
+const AttachmentPreview = ({
+	attachments,
+	openDetail,
+}: AttachmentPreviewProps) => {
 	return (
-		<S.AttachmentWrapper>
+		<S.SectionContainer>
+			{attachments.length > PREVIEW_LIMIT.attachments && (
+				<>
+					<S.SectionHeader>
+						<Button
+							type='button'
+							size='md'
+							variant='text'
+							label={`첨부파일 ${attachments.length}개 모두 보기`}
+							onClick={openDetail}
+						/>
+					</S.SectionHeader>
+					<Divider size='sm' />
+				</>
+			)}
 			{attachments.slice(0, PREVIEW_LIMIT.attachments).map((attachment) => (
 				<Attachments key={attachment.id} attachment={attachment} />
 			))}
-		</S.AttachmentWrapper>
+		</S.SectionContainer>
 	);
 };
 
@@ -84,7 +106,7 @@ const Feed = ({ feedData }: FeedProps) => {
 					</S.DetailWrapper>
 				)}
 				{attachments.length > 0 && (
-					<AttachmentPreview attachments={attachments} />
+					<AttachmentPreview attachments={attachments} openDetail={open} />
 				)}
 				{comments.length > 0 && (
 					<CommentPreview comments={comments} openDetail={open} />

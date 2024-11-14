@@ -35,14 +35,21 @@ const Feed = ({ feedData }: FeedProps) => {
 					<div dangerouslySetInnerHTML={{ __html: details.content || '' }} />
 				</S.DetailWrapper>
 				{attachments.length !== 0 && (
-					<S.AttachmentWrapper>
+					<S.SectionContainer>
+						<Flex direction='column' align='flex-start'>
+							<Text
+								size='md'
+								weight='medium'
+								color='tertiary'>{`첨부파일 ${attachments.length}개`}</Text>
+						</Flex>
+						<Divider size='sm' />
 						{attachments.map((attachment) => {
 							return <Attachments attachment={attachment} />;
 						})}
-					</S.AttachmentWrapper>
+					</S.SectionContainer>
 				)}
 				{comments.length !== 0 && (
-					<S.CommentContainer>
+					<S.SectionContainer>
 						<Flex direction='column' align='flex-start'>
 							<Text
 								size='md'
@@ -58,7 +65,7 @@ const Feed = ({ feedData }: FeedProps) => {
 								</Flex>
 							);
 						})}
-					</S.CommentContainer>
+					</S.SectionContainer>
 				)}
 			</Flex>
 		</S.FeedContainer>

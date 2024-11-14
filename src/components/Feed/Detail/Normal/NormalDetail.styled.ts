@@ -43,11 +43,11 @@ export const ImageGrid = styled.div`
 	}
 `;
 
-export const CommentContainer = styled.div`
+export const SectionContainer = styled.div`
 	display: flex;
 	flex-direction: column;
-	padding: ${theme.units.spacing.space12} ${theme.units.spacing.space8};
-	gap: ${theme.units.spacing.space24};
+	padding: ${theme.units.spacing.space12} 0;
+	gap: ${theme.units.spacing.space12};
 `;
 
 export const FeedDetailContainer = styled.div`

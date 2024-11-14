@@ -9,7 +9,7 @@ export const FeedContainer = styled.div`
 	width: 680px;
 	padding: ${theme.units.spacing.space24};
 	border-radius: ${theme.units.radius.radius12};
-	box-shadow: ${theme.elevation.shadow.shadow8};
+	box-shadow: ${theme.elevation.shadow.shadow4};
 	margin-bottom: ${theme.units.spacing.space32};
 `;
 
@@ -38,16 +38,22 @@ export const DetailWrapper = styled.div`
 	}
 `;
 
-export const CommentContainer = styled.div`
+export const SectionHeader = styled.div`
 	display: flex;
 	flex-direction: column;
-	padding: ${theme.units.spacing.space12} ${theme.units.spacing.space8};
-	gap: ${theme.units.spacing.space12};
+	align-items: flex-start;
 
 	button {
 		height: 20px;
 		padding: 0px;
 	}
+`;
+
+export const SectionContainer = styled.div`
+	display: flex;
+	flex-direction: column;
+	padding: ${theme.units.spacing.space6} 0;
+	gap: ${theme.units.spacing.space8};
 `;
 
 export const AttachmentWrapper = styled.div`

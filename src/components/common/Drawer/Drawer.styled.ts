@@ -26,7 +26,6 @@ export const DrawerMenu = styled.div`
 	height: 64px;
 	align-items: center;
 	padding: ${theme.units.spacing.space8} ${theme.units.spacing.space24};
-	border-bottom: 1px solid ${theme.color.border.primary};
 `;
 
 export const DrawerContent = styled.div`
