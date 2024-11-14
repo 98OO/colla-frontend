@@ -5,6 +5,7 @@ import FileUploadBox from '@components/common/FileUploadBox/FileUploadBox';
 import Editor from '@components/Post/Editor/Editor';
 import usePostEditor from '@hooks/post/usePostEditor';
 import { PATH } from '@constants/path';
+import { USER_CONFIRM_MESSAGE } from '@constants/post';
 import * as S from './NormalPost.styled';
 
 const NormalPost = () => {
@@ -31,6 +32,12 @@ const NormalPost = () => {
 	};
 
 	const handleCancel = () => {
+		if (title || editorRef.current?.getHTML() !== '<p></p>') {
+			const userConfirmed = window.confirm(USER_CONFIRM_MESSAGE);
+
+			if (!userConfirmed) return;
+		}
+
 		navigate(PATH.FEED);
 	};
 

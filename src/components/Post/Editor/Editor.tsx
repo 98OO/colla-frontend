@@ -25,7 +25,6 @@ const Editor = ({ editorRef, appendImageFile }: EditorProps) => {
 				types: ['heading', 'paragraph'],
 			}),
 		],
-		content: 'editor content',
 	});
 
 	if (!editor) return null;
