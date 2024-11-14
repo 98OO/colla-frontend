@@ -4,8 +4,9 @@ import { storageResponse } from '@type/document';
 
 const useDocumentQuery = (teamspaceId?: number) => {
 	const { data: teamDocument } = useQuery<storageResponse>({
-		queryKey: ['teamDocument'],
+		queryKey: ['teamDocument', teamspaceId],
 		queryFn: () => getDocument(teamspaceId!),
+
 		gcTime: 60 * 60 * 60 * 1000,
 		staleTime: 60 * 60 * 60 * 1000,
 		enabled: !!teamspaceId,
