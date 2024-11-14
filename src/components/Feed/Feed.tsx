@@ -1,3 +1,4 @@
+import { useEffect, useRef, useState } from 'react';
 import { Button } from '@components/common/Button/Button';
 import Divider from '@components/common/Divider/Divider';
 import Drawer from '@components/common/Drawer/Drawer';
@@ -9,6 +10,7 @@ import Comment from '@components/Feed/Comments/Comment';
 import NormalDetail from '@components/Feed/Detail/Normal/NormalDetail';
 import { useOverlay } from '@hooks/common/useOverlay';
 import { PREVIEW_LIMIT } from '@constants/feed';
+import { FEED_DETAIL_MAX_HEIGHT } from '@styles/layout';
 import type { FeedData } from '@type/feed';
 import * as S from './Feed.styled';
 
@@ -83,6 +85,16 @@ const AttachmentPreview = ({
 const Feed = ({ feedData }: FeedProps) => {
 	const { author, title, createdAt, details, attachments, comments } = feedData;
 	const { open, close, isOpen } = useOverlay();
+	const [showMoreButton, setShowMoreButton] = useState(false);
+	const detailRef = useRef<HTMLDivElement | null>(null);
+
+	useEffect(() => {
+		if (!detailRef.current) return;
+
+		if (detailRef.current.scrollHeight > FEED_DETAIL_MAX_HEIGHT) {
+			setShowMoreButton(true);
+		}
+	}, [details]);
 
 	return (
 		<S.FeedContainer>
@@ -101,9 +113,18 @@ const Feed = ({ feedData }: FeedProps) => {
 				<Heading size='xs'>{title}</Heading>
 				<Divider size='sm' />
 				{details && (
-					<S.DetailWrapper>
+					<S.DetailWrapper ref={detailRef}>
 						<div dangerouslySetInnerHTML={{ __html: details.content || '' }} />
 					</S.DetailWrapper>
+				)}
+				{showMoreButton && (
+					<Button
+						type='button'
+						size='md'
+						variant='text'
+						label='상세 보기'
+						onClick={open}
+					/>
 				)}
 				{attachments.length > 0 && (
 					<AttachmentPreview attachments={attachments} openDetail={open} />

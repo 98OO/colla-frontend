@@ -1,5 +1,6 @@
 import { styled } from 'styled-components';
 import { editorStyles } from '@styles/editorStyles';
+import { FEED_DETAIL_MAX_HEIGHT } from '@styles/layout';
 import theme from '@styles/theme';
 
 export const FeedContainer = styled.div`
@@ -18,7 +19,7 @@ export const DetailWrapper = styled.div`
 
 	padding: ${theme.units.spacing.space16} 0;
 	min-height: 50px;
-	max-height: 400px;
+	max-height: ${FEED_DETAIL_MAX_HEIGHT}px;
 	position: relative;
 	overflow: hidden;
 
