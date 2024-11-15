@@ -1,5 +1,6 @@
 import { useLocation } from 'react-router-dom';
 import LNB from '@components/Post/LNB/LNB';
+import NormalPost from '@components/Post/NormalPost/NormalPost';
 import type { FeedMenuType } from '@type/feed';
 import * as S from './PostPage.styled';
 
@@ -10,6 +11,7 @@ const PostPage = () => {
 	return (
 		<S.Container>
 			<LNB selected={feedType} />
+			{feedType === 'normal' && <NormalPost />}
 		</S.Container>
 	);
 };
