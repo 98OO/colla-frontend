@@ -12,8 +12,8 @@ export interface AvatarProps {
 }
 
 const sizeMap = {
-	xl: 'xxl',
-	lg: 'md',
+	xl: 'xl',
+	lg: 'xs',
 	md: 'md',
 	sm: 'sm',
 	xs: 'sm',
@@ -44,7 +44,8 @@ const Avatar = (props: AvatarProps) => {
 			profile={profile}
 			size={size}
 			shape={shape}
-			onClick={onClick}>
+			onClick={onClick}
+			$seed={initial}>
 			{profile ? (
 				<img src={profile} alt='profile' />
 			) : (

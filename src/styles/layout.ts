@@ -10,6 +10,8 @@ export const SNB_FULL_WIDTH = 240;
 
 export const SNB_ICON_WIDTH = 88;
 
-export const CHAT_ROOM_CREATION_MODAL_WIDTH = 400;
+export const CHAT_ROOM_CREATION_MODAL_WIDTH = 320;
 
 export const CHAT_ROOM_CREATION_MODAL_HEIGHT = 180;
+
+export const FEED_DETAIL_MAX_HEIGHT = 400;

@@ -18,7 +18,7 @@ type LNBItem = { label: string; type: FeedMenuType }[];
 const LNB_ITEMS: LNBItem = [
 	{ label: '일반 게시글', type: 'normal' },
 	{ label: '일정 조율', type: 'scheduling' },
-	{ label: '투표', type: 'vote' },
+	// { label: '투표', type: 'vote' },
 	{ label: '자료 수집', type: 'collect' },
 ];
 

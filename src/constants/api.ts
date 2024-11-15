@@ -18,6 +18,8 @@ export const END_POINTS = {
 	PRESIGNED: 'presigned',
 	USERSETTING: 'users/settings',
 	FEEDS: (teamspaceId: number) => `teamspaces/${teamspaceId}/feeds`,
+	POST_NORMAL_FEED: (teamspaceId: number) =>
+		`teamspaces/${teamspaceId}/feeds/normal`,
 	CHATS: (teamspaceId: number, chatChannelId: number) =>
 		`teamspaces/${teamspaceId}/chat-channels/${chatChannelId}/messages`,
 	SUBSCRIBE: (teamspaceId: number, selectedChat: number) =>
