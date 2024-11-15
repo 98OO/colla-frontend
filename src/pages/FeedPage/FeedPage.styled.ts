@@ -20,7 +20,7 @@ export const FeedHeaderContainer = styled.div<{
 	flex-direction: column;
 	background-color: ${theme.color.bg.primary};
 
-	transition: transform 0.1s ease-in-out;
+	transition: transform 0.3s ease-in-out;
 	transform: ${({ isOpen, adjustedWidth }) =>
 		isOpen ? `translateX(-${adjustedWidth}px)` : 'translateX(0)'};
 `;

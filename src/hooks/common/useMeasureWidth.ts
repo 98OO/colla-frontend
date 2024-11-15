@@ -19,7 +19,7 @@ const useMeasureWidth = () => {
 		return () => {
 			window.removeEventListener('resize', measureWidth);
 		};
-	}, []);
+	}, [ref.current]);
 
 	return { ref, width };
 };
