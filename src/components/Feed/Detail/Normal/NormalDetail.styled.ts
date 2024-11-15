@@ -1,16 +1,30 @@
 import { styled } from 'styled-components';
+import { editorStyles } from '@styles/editorStyles';
 import theme from '@styles/theme';
 
 export const FeedContainer = styled.div`
 	display: flex;
 	flex-direction: column;
 	gap: ${theme.units.spacing.space24};
-	width: 680px;
+	height: calc(100% - 64px); // 64 : menu height
+	overflow: auto;
+	padding: ${theme.units.spacing.space24} ${theme.units.spacing.space32};
+	padding-bottom: 0;
+	overflow-x: hidden;
+
+	&::-webkit-scrollbar {
+		width: 4px;
+	}
+
+	&::-webkit-scrollbar-thumb {
+		border-radius: ${theme.units.radius.radius20};
+		background: ${theme.color.border.secondary};
+	}
 `;
 
 export const DetailWrapper = styled.div`
-	padding: ${theme.units.spacing.space16} 0;
-	min-height: 50px;
+	width: 680px;
+	${editorStyles}
 `;
 
 export const AttachmentWrapper = styled.div`
@@ -32,11 +46,11 @@ export const ImageGrid = styled.div`
 	}
 `;
 
-export const CommentContainer = styled.div`
+export const SectionContainer = styled.div`
 	display: flex;
 	flex-direction: column;
-	padding: ${theme.units.spacing.space12} ${theme.units.spacing.space8};
-	gap: ${theme.units.spacing.space24};
+	padding: ${theme.units.spacing.space12} 0;
+	gap: ${theme.units.spacing.space12};
 `;
 
 export const FeedDetailContainer = styled.div`
