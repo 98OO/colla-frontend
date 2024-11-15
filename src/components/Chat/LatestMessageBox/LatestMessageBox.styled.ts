@@ -5,11 +5,10 @@ export const LatestMessageContainer = styled.div`
 	display: flex;
 	position: absolute;
 	cursor: pointer;
-	height: 34px;
-	left: 22px;
-	opacity: 0.9;
-	width: calc(100% - 44px);
-	top: calc(100% - 175px);
+	height: 40px;
+	left: 10px;
+	width: calc(100% - 22px);
+	top: calc(100% - 186px);
 
 	padding: 0 ${theme.units.spacing.space10};
 	border: 1px solid ${theme.color.border.primary};
@@ -17,11 +16,8 @@ export const LatestMessageContainer = styled.div`
 	z-index: ${theme.elevation.zIndex.MODAL};
 	background-color: ${theme.color.bg.iSecondary};
 
-	&:hover {
-		background-color: ${theme.color.bg.iSecondaryHover};
-
-		div {
-			background-color: ${theme.color.bg.iSecondaryHover};
-		}
-	}
+	/* 간단한 블러 처리 */
+	background-color: rgba(255, 255, 255, 0.7);
+	backdrop-filter: blur(8px);
+	-webkit-backdrop-filter: blur(8px);
 `;

@@ -1,7 +1,7 @@
 import Flex from '@components/common/Flex/Flex';
 import Text from '@components/common/Text/Text';
-import Attachments from '@components/Feed/Attachments/Attachments';
 import type { Attachment } from '@type/chat';
+import ChatAttachments from '../ChatAttachment/ChatAttachments';
 import * as S from './MyMessageBox.styled';
 
 export interface MyMessageBoxProps {
@@ -17,16 +17,17 @@ const MyMessageBox = (props: MyMessageBoxProps) => {
 
 	return (
 		<S.MyMessageBoxContainer>
-			{date && (
-				<Flex direction='column' justify='flex-end'>
-					<Text size='sm' weight='medium' color='subtle'>
+			<S.MyMessageBoxSpacer />
+			<S.TimeWrapper>
+				{date && (
+					<Text size='sm' weight='regular' color='subtle'>
 						{date}
 					</Text>
-				</Flex>
-			)}
+				)}
+			</S.TimeWrapper>
 			<S.MyMessageBoxWrapper state={state} type={type}>
 				{type === 'TEXT' && (
-					<Text size='lg' weight='medium' color='iInverse'>
+					<Text size='lg' weight='regular' color='iInverse'>
 						{content}
 					</Text>
 				)}
@@ -46,7 +47,7 @@ const MyMessageBox = (props: MyMessageBoxProps) => {
 				{type === 'FILE' && (
 					<Flex gap='10'>
 						{file?.map((files) => (
-							<Attachments
+							<ChatAttachments
 								key={files.id}
 								attachment={{
 									id: files.id,
