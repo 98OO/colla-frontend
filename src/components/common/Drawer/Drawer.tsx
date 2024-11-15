@@ -24,7 +24,7 @@ const Drawer = ({ isOpen, onClose, children }: DrawerProps) => {
 	}, [isOpen]);
 
 	return createPortal(
-		<S.DrawerContainer ref={ref} isOpen={isOpen}>
+		<S.DrawerContainer ref={ref}>
 			<S.DrawerContent>
 				<S.DrawerMenu>
 					<IconButton
