@@ -8,7 +8,6 @@ import Profile from '@components/common/Profile/Profile';
 import Attachments from '@components/Feed/Attachments/Attachments';
 import Comment from '@components/Feed/Comments/Comment';
 import NormalDetail from '@components/Feed/Detail/Normal/NormalDetail';
-import { useOverlay } from '@hooks/common/useOverlay';
 import { PREVIEW_LIMIT } from '@constants/feed';
 import { FEED_DETAIL_MAX_HEIGHT } from '@styles/layout';
 import type { FeedData } from '@type/feed';
@@ -26,6 +25,9 @@ interface AttachmentPreviewProps {
 
 interface FeedProps {
 	feedData: FeedData;
+	isDetailOpen: boolean;
+	openDetail: () => void;
+	closeDetail: () => void;
 }
 
 const CommentPreview = ({ comments, openDetail }: CommentPreviewProps) => {
@@ -82,9 +84,13 @@ const AttachmentPreview = ({
 	);
 };
 
-const Feed = ({ feedData }: FeedProps) => {
+const Feed = ({
+	feedData,
+	isDetailOpen,
+	openDetail,
+	closeDetail,
+}: FeedProps) => {
 	const { author, title, createdAt, details, attachments, comments } = feedData;
-	const { open, close, isOpen } = useOverlay();
 	const [showMoreButton, setShowMoreButton] = useState(false);
 	const detailRef = useRef<HTMLDivElement | null>(null);
 
@@ -123,17 +129,20 @@ const Feed = ({ feedData }: FeedProps) => {
 						size='md'
 						variant='text'
 						label='상세 보기'
-						onClick={open}
+						onClick={openDetail}
 					/>
 				)}
 				{attachments.length > 0 && (
-					<AttachmentPreview attachments={attachments} openDetail={open} />
+					<AttachmentPreview
+						attachments={attachments}
+						openDetail={openDetail}
+					/>
 				)}
 				{comments.length > 0 && (
-					<CommentPreview comments={comments} openDetail={open} />
+					<CommentPreview comments={comments} openDetail={openDetail} />
 				)}
 			</Flex>
-			<Drawer isOpen={isOpen} onClose={close}>
+			<Drawer isOpen={isDetailOpen} onClose={closeDetail}>
 				<NormalDetail feedData={feedData} />
 			</Drawer>
 		</S.FeedContainer>

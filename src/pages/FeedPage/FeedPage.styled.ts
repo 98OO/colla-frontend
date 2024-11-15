@@ -1,4 +1,4 @@
-import { styled } from 'styled-components';
+import styled from 'styled-components';
 import theme from '@styles/theme';
 
 export const Container = styled.div`
@@ -10,12 +10,19 @@ export const Container = styled.div`
 	height: 100%;
 `;
 
-export const FeedHeaderContainer = styled.div`
+export const FeedHeaderContainer = styled.div<{
+	isOpen: boolean;
+	adjustedWidth: number;
+}>`
 	position: fixed;
 	z-index: 1;
 	display: flex;
 	flex-direction: column;
 	background-color: ${theme.color.bg.primary};
+
+	transition: transform 0.1s ease-in-out;
+	transform: ${({ isOpen, adjustedWidth }) =>
+		isOpen ? `translateX(-${adjustedWidth}px)` : 'translateX(0)'};
 `;
 
 export const FeedHeader = styled.div`
@@ -26,7 +33,10 @@ export const FeedHeader = styled.div`
 	padding: 24px 12px 16px 12px;
 `;
 
-export const FeedsWrapper = styled.div`
+export const FeedsWrapper = styled.div<{
+	isOpen: boolean;
+	adjustedWidth: number;
+}>`
 	display: flex;
 	flex-direction: column;
 	align-items: center;
@@ -35,6 +45,10 @@ export const FeedsWrapper = styled.div`
 	margin-top: 86px;
 	overflow-x: hidden;
 	overflow: auto;
+
+	transition: transform 0.3s ease-in-out;
+	transform: ${({ isOpen, adjustedWidth }) =>
+		isOpen ? `translateX(-${adjustedWidth}px)` : 'translateX(0)'};
 
 	&::-webkit-scrollbar {
 		width: 4px;

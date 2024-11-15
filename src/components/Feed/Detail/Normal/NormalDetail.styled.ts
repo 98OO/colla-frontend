@@ -9,6 +9,8 @@ export const FeedContainer = styled.div`
 	height: calc(100% - 64px); // 64 : menu height
 	overflow: auto;
 	padding: ${theme.units.spacing.space24} ${theme.units.spacing.space32};
+	padding-bottom: 0;
+	overflow-x: hidden;
 
 	&::-webkit-scrollbar {
 		width: 4px;
@@ -21,6 +23,7 @@ export const FeedContainer = styled.div`
 `;
 
 export const DetailWrapper = styled.div`
+	width: 680px;
 	${editorStyles}
 `;
 
