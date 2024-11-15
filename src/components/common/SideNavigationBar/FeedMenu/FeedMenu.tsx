@@ -8,7 +8,7 @@ interface FeedMenuProps {
 	closeMenu: () => void;
 }
 
-const MENU_ITEMS: FeedMenuType[] = ['normal', 'scheduling', 'vote', 'collect'];
+const MENU_ITEMS: FeedMenuType[] = ['normal', 'scheduling', 'collect']; // , 'vote'
 
 const FeedMenu = ({ closeMenu }: FeedMenuProps) => {
 	const navigate = useNavigate();
