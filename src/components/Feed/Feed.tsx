@@ -128,7 +128,7 @@ const Feed = ({
 						type='button'
 						size='md'
 						variant='text'
-						label='상세 보기'
+						label='더보기'
 						onClick={openDetail}
 					/>
 				)}
@@ -142,9 +142,11 @@ const Feed = ({
 					<CommentPreview comments={comments} openDetail={openDetail} />
 				)}
 			</Flex>
-			<Drawer isOpen={isDetailOpen} onClose={closeDetail}>
-				<NormalDetail feedData={feedData} />
-			</Drawer>
+			{isDetailOpen && (
+				<Drawer isOpen={isDetailOpen} onClose={closeDetail}>
+					<NormalDetail feedData={feedData} />
+				</Drawer>
+			)}
 		</S.FeedContainer>
 	);
 };

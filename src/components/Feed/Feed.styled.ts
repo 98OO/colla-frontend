@@ -63,3 +63,9 @@ export const AttachmentWrapper = styled.div`
 	gap: ${theme.units.spacing.space12};
 	padding-top: ${theme.units.spacing.space12};
 `;
+
+export const MoreButton = styled.div`
+	display: flex;
+	justify-content: center;
+	align-items: center;
+`;
