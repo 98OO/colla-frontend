@@ -36,3 +36,4 @@ export { ReactComponent as Vote } from './vote.svg';
 export { ReactComponent as Collect } from './collect.svg';
 export { ReactComponent as Left } from './chevron-left.svg';
 export { ReactComponent as Right } from './chevron-right.svg';
+export { ReactComponent as PDF } from './PDFLogo.svg';
