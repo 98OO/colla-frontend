@@ -30,11 +30,11 @@ const variantStyle = {
 		}
 	`,
 	secondary: css`
-		border: 2px solid ${theme.color.border.iSecondary};
+		border: 1px solid ${theme.color.border.iSecondary};
 		color: ${theme.color.text.iSecondary};
 		background-color: transparent;
 		&:hover {
-			border: 2px solid ${theme.color.border.iSecondaryHover};
+			border: 1px solid ${theme.color.border.iSecondaryHover};
 			color: ${theme.color.text.iSecondaryHover};
 			background-color: ${theme.color.bg.iSecondaryHover};
 			svg {

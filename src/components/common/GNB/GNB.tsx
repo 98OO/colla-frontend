@@ -125,13 +125,13 @@ const GNB = () => {
 							left: 10,
 						})}
 					<S.RightContainer>
-						<IconButton
+						{/* <IconButton
 							icon='Bell'
 							ariaLabel='Bell'
 							color='iSecondary'
 							onClick={() => ''}
 						/>
-						<IconButton icon='Search' ariaLabel='Search' onClick={() => ''} />
+						<IconButton icon='Search' ariaLabel='Search' onClick={() => ''} /> */}
 						<S.ProfileContainer>
 							<Button
 								label='초대'
