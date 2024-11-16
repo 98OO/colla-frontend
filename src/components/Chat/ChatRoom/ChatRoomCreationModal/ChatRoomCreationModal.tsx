@@ -35,9 +35,11 @@ const ChatRoomCreationModal = ({
 
 	const checkTeamSpaceName = () => {
 		if (teamspaceName.length === 0)
-			setNameError('팀스페이스 이름은 공백일 수 없습니다.');
+			setNameError('채팅방 이름은 공백일 수 없습니다.');
 		else if (teamspaceName.length < 2)
-			setNameError('팀스페이스 이름은 2글자 이상입니다.');
+			setNameError('채팅방 이름은 2글자 이상입니다.');
+		else if (teamspaceName.length > 15)
+			setNameError('채팅방 이름은 15글자 이하입니다.');
 		else {
 			setNameError('');
 			return true;
@@ -58,13 +60,15 @@ const ChatRoomCreationModal = ({
 
 	return (
 		<S.ChatRoomCreationModalContainer ref={ref}>
-			<Heading size='xxs'>채팅방 이름을 작성해주세요.</Heading>
-			<Flex direction='column' gap='6'>
+			<Flex marginLeft='20' marginRight='20' marginBottom='12'>
+				<Heading size='xxs'>채팅방 만들기</Heading>
+			</Flex>
+			<Flex direction='column' gap='6' marginLeft='20' marginRight='20'>
 				<Input
 					size='md'
-					border='underLine'
+					placeholder='채팅방 이름을 입력하세요'
 					isError={!!nameError}
-					maxLength={20}
+					maxLength={15}
 					value={teamspaceName}
 					onChange={handleNameChange}
 				/>
@@ -76,23 +80,23 @@ const ChatRoomCreationModal = ({
 					)}
 				</Flex>
 			</Flex>
-			<Flex gap='20'>
-				<Flex width='80'>
+			<Flex gap='6' justify='right' marginRight='20'>
+				<Flex width='60'>
 					<Button
-						label='생성'
+						label='취소'
+						variant='secondary'
+						size='sm'
+						isFull
+						onClick={handleCancleClick}
+					/>
+				</Flex>
+				<Flex width='60'>
+					<Button
+						label='만들기'
 						variant='primary'
 						size='sm'
 						isFull
 						onClick={handlCreateClick}
-					/>
-				</Flex>
-				<Flex width='80'>
-					<Button
-						label='취소'
-						variant='destructive'
-						size='sm'
-						isFull
-						onClick={handleCancleClick}
 					/>
 				</Flex>
 			</Flex>

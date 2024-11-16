@@ -40,12 +40,14 @@ const Profile = (props: ProfileProps) => {
 	return (
 		<S.ProfileContainer onClick={onClick}>
 			<Flex gap='8' align='center'>
-				<Avatar
-					profile={profile}
-					initial={initial}
-					size={avatarSize}
-					shape={avatarShape}
-				/>
+				<S.ProfileAvatarContainer>
+					<Avatar
+						profile={profile}
+						initial={initial}
+						size={avatarSize}
+						shape={avatarShape}
+					/>
+				</S.ProfileAvatarContainer>
 				<Flex direction='column' gap='4'>
 					<Flex align='center' gap='6'>
 						<Text size={titleSize} weight={titleWeight}>

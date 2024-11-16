@@ -41,6 +41,8 @@ function App() {
 			client.connect({}, () => {
 				setStompClient(client);
 			});
+
+			client.debug = () => {};
 		}
 	};
 
@@ -62,6 +64,7 @@ function App() {
 			</Flex>
 			<ToastContainer />
 			<div id='modal-root' />
+			<div id='drawer-root' />
 		</GlobalErrorBoundary>
 	);
 }

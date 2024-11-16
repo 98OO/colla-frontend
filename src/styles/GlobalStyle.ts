@@ -31,6 +31,18 @@ const GlobalStyle = createGlobalStyle`
     width: 100%;
     height : calc(100vh - ${GNB_HEIGHT});
   }
+
+  .tiptap * {
+    all: revert;
+
+    :first-child {
+      margin-top: 0;
+    }
+  }
+
+  .ProseMirror:focus-visible {
+		outline: none;
+	}
 `;
 
 export default GlobalStyle;

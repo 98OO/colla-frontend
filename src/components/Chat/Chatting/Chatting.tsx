@@ -311,13 +311,15 @@ const Chatting = (props: ChattingProps) => {
 	};
 
 	const handleKeyDown = (event: KeyboardEvent<HTMLTextAreaElement>) => {
-		if (event.key === 'Enter') {
-			if (!event.shiftKey) {
-				event.preventDefault();
-				if (chatMessage.length !== 0) {
-					handleText();
-				}
-			}
+		if (event.nativeEvent.isComposing) return;
+
+		if (event.key === 'Enter' && event.shiftKey) {
+			event.preventDefault();
+			setChatMessage((prev) => `${prev}\n`);
+		} else if (event.key === 'Enter' && !event.shiftKey) {
+			event.preventDefault();
+
+			if (chatMessage.trim().length > 0) handleText();
 		}
 	};
 
@@ -349,9 +351,9 @@ const Chatting = (props: ChattingProps) => {
 										getFormattedDate(msg.createdAt, 'chatDate') !==
 											getFormattedDate(previousMsg.createdAt, 'chatDate')) ||
 										index === array.length - 1) && (
-										<Flex justify='center' height='28'>
+										<Flex justify='center' height='28' margin='20px 0 10px 0'>
 											<S.ChattingDateWrapper>
-												<Text size='sm' weight='medium' color='secondary'>
+												<Text size='sm' weight='medium' color='tertiary'>
 													{getFormattedDate(msg.createdAt, 'chatDate')}
 												</Text>
 											</S.ChattingDateWrapper>
@@ -431,10 +433,10 @@ const Chatting = (props: ChattingProps) => {
 					onChange={handleMessageChange}
 					onKeyDown={handleKeyDown}
 					maxLength={1000}
-					placeholder='Shift + Enter로 줄바꿈합니다.'
+					placeholder='메세지 입력'
 				/>
 				<Flex
-					height='44'
+					height='38'
 					paddingLeft='4'
 					paddingRight='4'
 					justify='space-between'
@@ -444,7 +446,7 @@ const Chatting = (props: ChattingProps) => {
 							icon='Image'
 							ariaLabel='image'
 							color='secondary'
-							size='sm'
+							size='md'
 							onClick={handleImageUploadClick}
 						/>
 						<S.ImgUploadWrapper
@@ -457,7 +459,7 @@ const Chatting = (props: ChattingProps) => {
 							icon='File'
 							ariaLabel='file'
 							color='secondary'
-							size='sm'
+							size='md'
 							onClick={handleFileUploadClick}
 						/>
 						<S.ImgUploadWrapper
@@ -476,7 +478,7 @@ const Chatting = (props: ChattingProps) => {
 								variant='primary'
 								size='sm'
 								isFull
-								disabled={chatMessage.length === 0}
+								disabled={chatMessage.trimStart().length === 0}
 								onClick={handleText}
 							/>
 						</Flex>

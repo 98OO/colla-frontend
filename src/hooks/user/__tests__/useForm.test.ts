@@ -1,3 +1,4 @@
+import { FormEvent } from 'react';
 import { renderHook, act } from '@testing-library/react';
 import { describe, test, expect, vi, beforeEach } from 'vitest';
 import useForm from '../useForm';
@@ -17,8 +18,14 @@ describe('useForm > ', () => {
 
 		// Register a field and simulate a change
 		const field = result.current.register('name');
+		const inputElement = document.createElement('input');
+		inputElement.name = 'name';
+		inputElement.value = 'John';
+
 		act(() => {
-			field.onChange({ target: { name: 'name', value: 'John' } });
+			field.onChange({
+				target: inputElement,
+			} as React.ChangeEvent<HTMLInputElement>);
 		});
 
 		// formData에 값이 잘 들어갔는지 확인
@@ -37,9 +44,17 @@ describe('useForm > ', () => {
 		const field = result.current.register('name', {
 			required: 'Name is required',
 		});
+		const inputElement = document.createElement('input');
+		inputElement.name = 'name';
+		inputElement.value = '';
+
 		act(() => {
-			field.onChange({ target: { name: 'name', value: '' } });
-			field.onBlur({ target: { name: 'name' } });
+			field.onChange({
+				target: inputElement,
+			} as React.ChangeEvent<HTMLInputElement>);
+			field.onBlur?.({
+				target: inputElement,
+			} as React.FocusEvent<HTMLInputElement>);
 		});
 
 		// 에러가 발생하는지 확인
@@ -59,13 +74,21 @@ describe('useForm > ', () => {
 		const field = result.current.register('name', {
 			required: 'Name is required',
 		});
+		const inputElement = document.createElement('input');
+		inputElement.name = 'name';
+		inputElement.value = 'John';
+
 		act(() => {
-			field.onChange({ target: { name: 'name', value: 'John' } });
+			field.onChange({
+				target: inputElement,
+			} as React.ChangeEvent<HTMLInputElement>);
 		});
 
 		// handleSubmit을 호출해서 검증
 		await act(async () => {
-			result.current.handleSubmit({ preventDefault: vi.fn() });
+			result.current.handleSubmit({
+				preventDefault: vi.fn(),
+			} as unknown as FormEvent<HTMLFormElement>);
 		});
 
 		expect(onSubmitMock).toHaveBeenCalled();
@@ -83,14 +106,24 @@ describe('useForm > ', () => {
 		const field = result.current.register('name', {
 			required: 'Name is required',
 		});
+		const inputElement = document.createElement('input');
+		inputElement.name = 'name';
+		inputElement.value = '';
+
 		act(() => {
-			field.onChange({ target: { name: 'name', value: '' } });
-			field.onBlur({ target: { name: 'name' } });
+			field.onChange({
+				target: inputElement,
+			} as React.ChangeEvent<HTMLInputElement>);
+			field.onBlur?.({
+				target: inputElement,
+			} as React.FocusEvent<HTMLInputElement>);
 		});
 
 		// handleSubmit 호출
 		act(() => {
-			result.current.handleSubmit({ preventDefault: vi.fn() });
+			result.current.handleSubmit({
+				preventDefault: vi.fn(),
+			} as unknown as FormEvent<HTMLFormElement>);
 		});
 
 		// onSubmit이 호출되지 않음을 확인

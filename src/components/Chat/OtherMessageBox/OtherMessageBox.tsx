@@ -1,8 +1,8 @@
 import Avatar from '@components/common/Avatar/Avatar';
 import Flex from '@components/common/Flex/Flex';
 import Text from '@components/common/Text/Text';
-import Attachments from '@components/Feed/Attachments/Attachments';
 import type { Attachment } from '@type/chat';
+import ChatAttachments from '../ChatAttachment/ChatAttachments';
 import * as S from './OtherMessageBox.styled';
 
 export interface OtherMessageBoxProps {
@@ -19,21 +19,23 @@ const OtherMessageBox = (props: OtherMessageBoxProps) => {
 	const { name, profile, type, content, date, file, state } = props;
 
 	return (
-		<S.OtherMessageBoxContainer>
+		<S.OtherMessageBoxContainer state={state}>
 			<Flex direction='column' width='32'>
-				{state && (
+				{state ? (
 					<Avatar profile={profile} initial={name} size='md' shape='circle' />
+				) : (
+					<S.AvatarSpacer />
 				)}
 			</Flex>
-			<Flex direction='column' gap='2'>
+			<Flex direction='column' gap='4'>
 				{state && (
-					<Text size='md' weight='medium'>
+					<Text size='md' weight='medium' color='tertiary'>
 						{name}
 					</Text>
 				)}
 				<S.OtherMessageBoxWrapper state={state} type={type}>
 					{type === 'TEXT' && (
-						<Text size='lg' weight='semiBold' color='secondary'>
+						<Text size='lg' weight='regular' color='secondary'>
 							{content}
 						</Text>
 					)}
@@ -53,7 +55,7 @@ const OtherMessageBox = (props: OtherMessageBoxProps) => {
 					{type === 'FILE' && (
 						<Flex gap='10'>
 							{file?.map((files) => (
-								<Attachments
+								<ChatAttachments
 									key={files.id}
 									attachment={{
 										id: files.id,
@@ -67,13 +69,14 @@ const OtherMessageBox = (props: OtherMessageBoxProps) => {
 					)}
 				</S.OtherMessageBoxWrapper>
 			</Flex>
-			<Flex direction='column' justify='flex-end'>
+			<S.TimeWrapper>
 				{date && (
-					<Text size='sm' weight='medium' color='subtle'>
+					<Text size='sm' weight='regular' color='subtle'>
 						{date}
 					</Text>
 				)}
-			</Flex>
+			</S.TimeWrapper>
+			<S.OtherMessageBoxSpacer />
 		</S.OtherMessageBoxContainer>
 	);
 };

@@ -27,6 +27,8 @@ const useLoginMutation = () => {
 				setStompClient(client);
 			});
 
+			client.debug = () => {};
+
 			if (inviteUrl) {
 				window.sessionStorage.removeItem(INVITE_URL);
 				navigate(`${PATH.INVITE}${inviteUrl}`);
