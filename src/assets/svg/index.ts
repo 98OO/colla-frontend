@@ -50,3 +50,5 @@ export { ReactComponent as Code } from './code.svg';
 export { ReactComponent as BlockQuote } from './blockQuote.svg';
 export { ReactComponent as X } from './x.svg';
 export { ReactComponent as ChevronsRight } from './chevrons-right.svg';
+export { ReactComponent as Attachment } from './attachment.svg';
+export { ReactComponent as Comment } from './comment.svg';
