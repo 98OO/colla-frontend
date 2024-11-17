@@ -12,6 +12,7 @@ const Calendar = () => {
 		moveNextMonth,
 		isPrevDisabled,
 		isNextDisabled,
+		isDayDisabled,
 	} = useCalendar();
 
 	return (
@@ -29,8 +30,11 @@ const Calendar = () => {
 						<S.HeaderWrapper key={day}>{day}</S.HeaderWrapper>
 					))}
 					{calendarDays.map((calendarDay) => {
+						const isDisabled = isDayDisabled(calendarDay);
 						return (
-							<S.DateWrapper>
+							<S.DateWrapper
+								key={`${calendarDay.year}-${calendarDay.month}-${calendarDay.day}`}
+								isDisabled={isDisabled}>
 								<S.Date>{calendarDay.day}</S.Date>
 							</S.DateWrapper>
 						);

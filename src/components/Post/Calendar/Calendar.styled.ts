@@ -1,4 +1,4 @@
-import { styled } from 'styled-components';
+import { styled, css } from 'styled-components';
 import theme from '@styles/theme';
 
 export const CalendarContainer = styled.div`
@@ -29,12 +29,20 @@ export const HeaderWrapper = styled.div`
 	color: ${theme.color.text.secondary};
 `;
 
-export const DateWrapper = styled.div`
+export const DateWrapper = styled.div<{
+	isDisabled: boolean;
+}>`
 	display: flex;
 	justify-content: center;
 	align-items: center;
 	width: 80px;
 	height: 80px;
+	${({ isDisabled }) =>
+		isDisabled &&
+		css`
+			pointer-events: none;
+			color: ${theme.color.text.disabled};
+		`}
 `;
 
 export const Date = styled.div`

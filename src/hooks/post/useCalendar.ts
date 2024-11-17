@@ -66,6 +66,12 @@ const useCalendar = () => {
 
 	const calendarDays = [...prevDays, ...curDays, ...nextDays];
 
+	const isDayDisabled = ({ year, month, day }: Day) => {
+		const currentDate = startOfDay(new Date(year, month - 1, day));
+
+		return isBefore(currentDate, today) || isAfter(currentDate, oneYearLater);
+	};
+
 	const movePrevMonth = () => {
 		if (isAfter(curDate, today)) {
 			setCurDate((prevDate) => subMonths(prevDate, 1));
@@ -88,6 +94,7 @@ const useCalendar = () => {
 		moveNextMonth,
 		isPrevDisabled,
 		isNextDisabled,
+		isDayDisabled,
 	};
 };
 
