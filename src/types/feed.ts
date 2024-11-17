@@ -1,8 +1,8 @@
 import { FEED_SELECT_MAP } from '@constants/feed';
 
-export type FeedType = 'ALL' | 'NORMAL' | 'COLLECT' | 'VOTE' | 'SCHEDULING';
+export type FeedType = 'ALL' | 'NORMAL' | 'COLLECT' | 'SCHEDULING'; // | 'VOTE'
 
-export type FeedMenuType = 'normal' | 'vote' | 'collect' | 'scheduling';
+export type FeedMenuType = 'normal' | 'collect' | 'scheduling'; // | 'vote'
 
 export type SelectType = keyof typeof FEED_SELECT_MAP;
 
@@ -24,6 +24,7 @@ interface Image {
 }
 
 interface Comment {
+	id: number;
 	author: Author;
 	content: string;
 	createdAt: string;

@@ -9,7 +9,7 @@ type MenuMap = Record<FeedMenuType, [iconName, string]>;
 const MENU_MAP: MenuMap = {
 	normal: ['Normal', '일반 게시글'],
 	scheduling: ['Scheduling', '일정 조율'],
-	vote: ['Vote', '투표'],
+	// vote: ['Vote', '투표'],
 	collect: ['Collect', '자료 수집'],
 };
 
