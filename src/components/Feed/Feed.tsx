@@ -4,14 +4,14 @@ import Divider from '@components/common/Divider/Divider';
 import Drawer from '@components/common/Drawer/Drawer';
 import Flex from '@components/common/Flex/Flex';
 import Heading from '@components/common/Heading/Heading';
-import IconButton from '../common/IconButton/IconButton';
-import Text from '../common/Text/Text';
-import Input from '../common/Input/Input';
-import FeedAuthor from '@components/Feed/FeedAuthors/FeedAuthor';
 import NormalDetail from '@components/Feed/Detail/Normal/NormalDetail';
+import FeedAuthor from '@components/Feed/FeedAuthors/FeedAuthor';
 import { getFormattedDate } from '@utils/getFormattedDate';
 import { FEED_DETAIL_MAX_HEIGHT } from '@styles/layout';
 import type { FeedData } from '@type/feed';
+import IconButton from '../common/IconButton/IconButton';
+import Input from '../common/Input/Input';
+import Text from '../common/Text/Text';
 import * as S from './Feed.styled';
 
 interface ActionButtonProps {
