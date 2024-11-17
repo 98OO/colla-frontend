@@ -66,9 +66,16 @@ const useCalendar = () => {
 
 	const calendarDays = [...prevDays, ...curDays, ...nextDays];
 
+	const getToday = () => {
+		return {
+			year: today.getFullYear(),
+			month: today.getMonth() + 1,
+			day: today.getDate(),
+		};
+	};
+
 	const isDayDisabled = ({ year, month, day }: Day) => {
 		const currentDate = startOfDay(new Date(year, month - 1, day));
-
 		return isBefore(currentDate, today) || isAfter(currentDate, oneYearLater);
 	};
 
@@ -90,6 +97,7 @@ const useCalendar = () => {
 	return {
 		curMonth: curMonth + 1,
 		calendarDays,
+		getToday,
 		movePrevMonth,
 		moveNextMonth,
 		isPrevDisabled,
