@@ -6,8 +6,6 @@ const deleteComment = async (
 	feedId: number,
 	commentId: number
 ) => {
-	if (!teamspaceId) throw new Error('teamspaceId가 존재하지 않습니다.');
-
 	const response = await axiosInstance.delete(
 		`${END_POINTS.COMMENT(teamspaceId, feedId, commentId)}`
 	);
