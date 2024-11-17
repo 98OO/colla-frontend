@@ -1,5 +1,12 @@
 import { useState } from 'react';
-import { getDaysInMonth, addMonths, subMonths, startOfDay } from 'date-fns';
+import {
+	getDaysInMonth,
+	addMonths,
+	subMonths,
+	isBefore,
+	isAfter,
+	startOfDay,
+} from 'date-fns';
 
 const CALENDAR_LENGTH = 35;
 
@@ -11,6 +18,9 @@ interface Day {
 
 const useCalendar = () => {
 	const [curDate, setCurDate] = useState(startOfDay(new Date()));
+
+	const today = startOfDay(new Date());
+	const oneYearLater = startOfDay(addMonths(today, 12));
 
 	const curYear = curDate.getFullYear();
 	const curMonth = curDate.getMonth();
@@ -57,11 +67,15 @@ const useCalendar = () => {
 	const calendarDays = [...prevDays, ...curDays, ...nextDays];
 
 	const movePrevMonth = () => {
-		setCurDate((prevDate) => subMonths(prevDate, 1));
+		if (isAfter(curDate, today)) {
+			setCurDate((prevDate) => subMonths(prevDate, 1));
+		}
 	};
 
 	const moveNextMonth = () => {
-		setCurDate((prevDate) => addMonths(prevDate, 1));
+		if (isBefore(curDate, oneYearLater)) {
+			setCurDate((prevDate) => addMonths(prevDate, 1));
+		}
 	};
 
 	return {
