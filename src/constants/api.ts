@@ -22,7 +22,7 @@ export const END_POINTS = {
 		`teamspaces/${teamspaceId}/feeds/normal`,
 	POST_COMMENT: (teamspaceId: number, feedId: number) =>
 		`teamspaces/${teamspaceId}/feeds/${feedId}/comments`,
-	DELETE_COMMENT: (teamspaceId: number, feedId: number, commentId: number) =>
+	COMMENT: (teamspaceId: number, feedId: number, commentId: number) =>
 		`teamspaces/${teamspaceId}/feeds/${feedId}/comments/${commentId}`,
 	CHATS: (teamspaceId: number, chatChannelId: number) =>
 		`teamspaces/${teamspaceId}/chat-channels/${chatChannelId}/messages`,
