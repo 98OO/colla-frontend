@@ -1,4 +1,4 @@
-import deleteComment from '@apis/Feed/deleteComment';
+import deleteComment from '@apis/Feed/Comment/deleteComment';
 import { useMutation } from '@hooks/queries/common/useMutation';
 import { useQueryClient } from '@tanstack/react-query';
 

@@ -1,4 +1,4 @@
-import postComment from '@apis/post/postComment';
+import postComment from '@apis/Feed/Comment/postComment';
 import { useMutation } from '@hooks/queries/common/useMutation';
 import { useQueryClient } from '@tanstack/react-query';
 

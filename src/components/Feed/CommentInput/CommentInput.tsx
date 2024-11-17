@@ -1,7 +1,7 @@
 import { ChangeEvent, useRef, useState } from 'react';
 import { Button } from '@components/common/Button/Button';
 import Input from '@components/common/Input/Input';
-import useLeaveCommentMutation from '@hooks/queries/post/useLeaveCommentMutation';
+import useLeaveCommentMutation from '@hooks/queries/Feed/Comment/useLeaveCommentMutation';
 import * as S from './CommentInput.styled';
 
 interface CommentInputProps {

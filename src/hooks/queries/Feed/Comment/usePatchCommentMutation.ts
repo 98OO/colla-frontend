@@ -1,4 +1,4 @@
-import patchComment from '@apis/Feed/patchComment';
+import patchComment from '@apis/Feed/Comment/patchComment';
 import { useMutation } from '@hooks/queries/common/useMutation';
 import { useQueryClient } from '@tanstack/react-query';
 
