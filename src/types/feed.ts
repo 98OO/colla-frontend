@@ -24,6 +24,7 @@ interface Image {
 }
 
 interface Comment {
+	id: number;
 	author: Author;
 	content: string;
 	createdAt: string;
