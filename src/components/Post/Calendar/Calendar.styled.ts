@@ -45,10 +45,18 @@ export const DateWrapper = styled.div<{
 		`}
 `;
 
-export const Date = styled.div`
+export const Date = styled.div<{ isSelected: boolean }>`
 	display: flex;
 	justify-content: center;
 	align-items: center;
 	width: 40px;
 	height: 40px;
+
+	${({ isSelected }) =>
+		isSelected &&
+		css`
+			color: ${theme.color.text.iInverse};
+			border-radius: ${theme.units.radius.full};
+			background-color: ${theme.color.bg.iPrimary};
+		`}
 `;

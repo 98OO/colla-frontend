@@ -1,6 +1,7 @@
 import Flex from '@components/common/Flex/Flex';
 import IconButton from '@components/common/IconButton/IconButton';
 import useCalendar from '@hooks/post/useCalendar';
+import useDaySelection from '@hooks/post/useDaySelection';
 import * as S from './Calendar.styled';
 
 const Calendar = () => {
@@ -8,12 +9,17 @@ const Calendar = () => {
 	const {
 		curMonth,
 		calendarDays,
+		getToday,
 		movePrevMonth,
 		moveNextMonth,
 		isPrevDisabled,
 		isNextDisabled,
 		isDayDisabled,
 	} = useCalendar();
+
+	const { selectedDays, isDaySelected, toggleDaySelection } = useDaySelection([
+		getToday(),
+	]);
 
 	return (
 		<S.CalendarContainer>
@@ -31,11 +37,13 @@ const Calendar = () => {
 					))}
 					{calendarDays.map((calendarDay) => {
 						const isDisabled = isDayDisabled(calendarDay);
+						const isSelected = isDaySelected(selectedDays, calendarDay);
 						return (
 							<S.DateWrapper
 								key={`${calendarDay.year}-${calendarDay.month}-${calendarDay.day}`}
-								isDisabled={isDisabled}>
-								<S.Date>{calendarDay.day}</S.Date>
+								isDisabled={isDisabled}
+								onClick={() => toggleDaySelection(calendarDay)}>
+								<S.Date isSelected={isSelected}>{calendarDay.day}</S.Date>
 							</S.DateWrapper>
 						);
 					})}
