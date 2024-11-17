@@ -1,4 +1,4 @@
-type FormatDateType = 'fullDate' | 'chatDate' | 'chatTime';
+type FormatDateType = 'fullDate' | 'chatDate' | 'chatTime' | 'documentDate';
 
 export const getFormattedDate = (date: string, formatType: FormatDateType) => {
 	const todayDate = new Date();
@@ -25,6 +25,9 @@ export const getFormattedDate = (date: string, formatType: FormatDateType) => {
 
 		case 'chatTime':
 			return `${targetDate.getHours() >= 12 ? '오후' : '오전'} ${targetDate.getHours() % 12 || 12}:${targetDate.getMinutes().toString().padStart(2, '0')}`;
+
+		case 'documentDate':
+			return `${targetDate.getFullYear()}.${(targetDate.getMonth() + 1).toString().padStart(2, '0')}.${targetDate.getDate().toString().padStart(2, '0')}`;
 
 		default:
 			return '';
