@@ -56,10 +56,19 @@ const useCalendar = () => {
 
 	const calendarDays = [...prevDays, ...curDays, ...nextDays];
 
+	const movePrevMonth = () => {
+		setCurDate((prevDate) => subMonths(prevDate, 1));
+	};
+
+	const moveNextMonth = () => {
+		setCurDate((prevDate) => addMonths(prevDate, 1));
+	};
+
 	return {
 		curMonth: curMonth + 1,
-		setCurDate,
 		calendarDays,
+		movePrevMonth,
+		moveNextMonth,
 	};
 };
 
