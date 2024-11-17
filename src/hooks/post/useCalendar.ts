@@ -78,11 +78,16 @@ const useCalendar = () => {
 		}
 	};
 
+	const isPrevDisabled = () => !isAfter(curDate, today);
+	const isNextDisabled = () => !isBefore(curDate, oneYearLater);
+
 	return {
 		curMonth: curMonth + 1,
 		calendarDays,
 		movePrevMonth,
 		moveNextMonth,
+		isPrevDisabled,
+		isNextDisabled,
 	};
 };
 

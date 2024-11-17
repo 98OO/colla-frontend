@@ -5,8 +5,14 @@ import * as S from './Calendar.styled';
 
 const Calendar = () => {
 	const HEADER_DAYS = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'];
-	const { curMonth, calendarDays, movePrevMonth, moveNextMonth } =
-		useCalendar();
+	const {
+		curMonth,
+		calendarDays,
+		movePrevMonth,
+		moveNextMonth,
+		isPrevDisabled,
+		isNextDisabled,
+	} = useCalendar();
 
 	return (
 		<S.CalendarContainer>
@@ -16,6 +22,7 @@ const Calendar = () => {
 					ariaLabel='prevMonth'
 					icon='ChevronLeft'
 					onClick={movePrevMonth}
+					disabled={isPrevDisabled()}
 				/>
 				<S.WeeksWrapper>
 					{HEADER_DAYS.map((day) => (
@@ -33,6 +40,7 @@ const Calendar = () => {
 					ariaLabel='nextMonth'
 					icon='ChevronRight'
 					onClick={moveNextMonth}
+					disabled={isNextDisabled()}
 				/>
 			</Flex>
 		</S.CalendarContainer>
