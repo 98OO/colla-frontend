@@ -8,6 +8,7 @@ export const OauthButtonWrapper = styled.button`
 	border-radius: 6px;
 	border: none;
 	background-color: none;
+	cursor: pointer;
 
 	svg {
 		position: absolute;
