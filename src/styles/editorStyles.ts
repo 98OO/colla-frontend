@@ -4,6 +4,7 @@ import theme from '@styles/theme';
 export const editorStyles = css`
 	* {
 		all: revert;
+		color: ${theme.color.text.primary};
 	}
 
 	// horizontalRule
@@ -59,7 +60,8 @@ export const editorStyles = css`
 	img {
 		display: block;
 		margin: 0 auto;
-		max-width: 80%;
+		width: 98%;
+		border: 1px solid ${theme.color.border.tertiary};
 		height: auto;
 	}
 `;
