@@ -14,3 +14,7 @@ export const PostInput = styled.input`
 	border: none;
 	outline: none;
 `;
+
+export const DatePickerWrapper = styled.div`
+	position: relative;
+`;

@@ -10,6 +10,8 @@ export const DatePickerButton = styled.button`
 `;
 
 export const CalendarContainer = styled.div<{ isOpen: boolean }>`
+	position: absolute;
+	right: 0;
 	display: flex;
 	flex-direction: column;
 	align-items: center;
@@ -19,6 +21,9 @@ export const CalendarContainer = styled.div<{ isOpen: boolean }>`
 	border: 1px solid ${theme.color.border.tertiary};
 	border-radius: ${theme.units.radius.radius6};
 	box-shadow: ${theme.elevation.shadow.shadow2};
+	background-color: ${theme.color.bg.primary};
+
+	display: ${({ isOpen }) => (isOpen ? 'block' : 'none')};
 `;
 
 export const CalendarHeader = styled.div`

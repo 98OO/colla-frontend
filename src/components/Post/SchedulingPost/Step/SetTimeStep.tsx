@@ -48,11 +48,13 @@ const SetTimeStep = ({
 							마감 일시
 						</Heading>
 					</Flex>
-					<DatePicker
-						selectedDays={selectedDays}
-						isDaySelected={isDaySelected}
-						toggleDaySelection={toggleDaySelection}
-					/>
+					<S.DatePickerWrapper>
+						<DatePicker
+							selectedDays={selectedDays}
+							isDaySelected={isDaySelected}
+							toggleDaySelection={toggleDaySelection}
+						/>
+					</S.DatePickerWrapper>
 				</Flex>
 				<Flex direction='column' gap='12'>
 					<Flex align='center' gap='6'>
