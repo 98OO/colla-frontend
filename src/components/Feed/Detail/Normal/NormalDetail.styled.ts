@@ -25,6 +25,7 @@ export const FeedContainer = styled.div`
 export const DetailWrapper = styled.div`
 	${editorStyles}
 	margin-bottom: ${theme.units.spacing.space48};
+	width: 732px;
 	min-height: 150px;
 `;
 
