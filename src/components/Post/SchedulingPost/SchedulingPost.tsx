@@ -4,6 +4,7 @@ import Flex from '@components/common/Flex/Flex';
 import Heading from '@components/common/Heading/Heading';
 import Icon from '@components/common/Icon/Icon';
 import Calendar from '@components/Post/Calendar/Calendar';
+import DatePicker from '@components/Post/DatePicker/DatePicker';
 import useCalendar from '@hooks/post/useCalendar';
 import useDaySelection from '@hooks/post/useDaySelection';
 import { INITIAL_SCHEDULING_FORM } from '@constants/post';
@@ -46,11 +47,28 @@ const SelectDateStep = ({
 	);
 };
 
-const SetTimeStep = ({ onPrev, onSubmit }: SetTimeProps) => {
+const SetTimeStep = ({
+	onPrev,
+	onSubmit,
+	dueAt,
+	handleDueAt,
+}: SetTimeProps) => {
+	const { getInitialDueAt } = useCalendar();
+	const initalDueAt = getInitialDueAt(dueAt);
+	const { selectedDays, isDaySelected, toggleDaySelection } = useDaySelection(
+		initalDueAt,
+		'single'
+	);
+
 	const [title, setTitle] = useState('');
 
 	const handleTitleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
 		setTitle(event.target.value);
+	};
+
+	const handleSumbit = () => {
+		handleDueAt('');
+		onSubmit();
 	};
 
 	return (
@@ -68,7 +86,11 @@ const SetTimeStep = ({ onPrev, onSubmit }: SetTimeProps) => {
 							마감 일시
 						</Heading>
 					</Flex>
-					{/* date Picker */}
+					<DatePicker
+						selectedDays={selectedDays}
+						isDaySelected={isDaySelected}
+						toggleDaySelection={toggleDaySelection}
+					/>
 				</Flex>
 				<Flex direction='column' gap='12'>
 					<Flex align='center' gap='6'>
@@ -81,7 +103,12 @@ const SetTimeStep = ({ onPrev, onSubmit }: SetTimeProps) => {
 			</Flex>
 			<Flex justify='flex-end' gap='12'>
 				<Button label='이전' variant='secondary' size='md' onClick={onPrev} />
-				<Button label='등록' variant='primary' size='md' onClick={onSubmit} />
+				<Button
+					label='등록'
+					variant='primary'
+					size='md'
+					onClick={() => handleSumbit()}
+				/>
 			</Flex>
 		</>
 	);
@@ -103,6 +130,16 @@ const SchedulingPost = () => {
 		}));
 	};
 
+	const handleDueAt = (dueAt: string) => {
+		setFormData((prev) => ({
+			...prev,
+			details: {
+				...prev.details,
+				dueAt,
+			},
+		}));
+	};
+
 	return (
 		<S.SchedulingPostContainer>
 			{step === 'selectDate' && (
@@ -113,7 +150,12 @@ const SchedulingPost = () => {
 				/>
 			)}
 			{step === 'setTime' && (
-				<SetTimeStep onPrev={() => setStep('selectDate')} onSubmit={() => {}} />
+				<SetTimeStep
+					onPrev={() => setStep('selectDate')}
+					dueAt={formData.details.dueAt}
+					handleDueAt={handleDueAt}
+					onSubmit={() => {}}
+				/>
 			)}
 		</S.SchedulingPostContainer>
 	);

@@ -2,9 +2,14 @@ import { useState } from 'react';
 import Flex from '@components/common/Flex/Flex';
 import IconButton from '@components/common/IconButton/IconButton';
 import useCalendar from '@hooks/post/useCalendar';
+import { CalendarProps } from '@type/post';
 import * as S from './DatePicker.styled';
 
-const DatePicker = () => {
+const DatePicker = ({
+	selectedDays,
+	isDaySelected,
+	toggleDaySelection,
+}: CalendarProps) => {
 	const [isOpen, setIsOpen] = useState(false);
 	const HEADER_DAYS = ['일', '월', '화', '수', '목', '금', '토'];
 	const {
@@ -15,12 +20,13 @@ const DatePicker = () => {
 		isPrevDisabled,
 		isNextDisabled,
 		isDayDisabled,
+		getFormattedDay,
 	} = useCalendar();
 
 	return (
 		<Flex justify='space-between'>
 			<S.DatePickerButton onClick={() => setIsOpen(true)}>
-				2023.11.18
+				{getFormattedDay(selectedDays[0])}
 			</S.DatePickerButton>
 			<S.CalendarContainer isOpen={isOpen}>
 				<S.CalendarHeader>
@@ -44,11 +50,13 @@ const DatePicker = () => {
 					))}
 					{calendarDays.map((calendarDay) => {
 						const isDisabled = isDayDisabled(calendarDay);
+						const isSelected = isDaySelected(selectedDays, calendarDay);
 						return (
 							<S.DateCell
 								key={`${calendarDay.year}-${calendarDay.month}-${calendarDay.day}`}
 								isDisabled={isDisabled}
-								onClick={() => {}}>
+								isSelected={isSelected}
+								onClick={() => toggleDaySelection(calendarDay)}>
 								{calendarDay.day}
 							</S.DateCell>
 						);

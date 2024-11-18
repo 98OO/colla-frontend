@@ -50,11 +50,21 @@ export const Cell = styled.div`
 	font-size: ${theme.typography.fontSize.body.md};
 `;
 
-export const DateCell = styled(Cell)<{ isDisabled: boolean }>`
+export const DateCell = styled(Cell)<{
+	isDisabled: boolean;
+	isSelected: boolean;
+}>`
 	${({ isDisabled }) =>
 		isDisabled &&
 		css`
 			pointer-events: none;
 			color: ${theme.color.text.disabled};
+		`}
+
+	${({ isSelected }) =>
+		isSelected &&
+		css`
+			color: ${theme.color.text.iInverse};
+			background-color: ${theme.color.bg.iPrimary};
 		`}
 `;

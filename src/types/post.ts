@@ -23,4 +23,8 @@ export interface SelectDateProps {
 export interface SetTimeProps {
 	onPrev: () => void;
 	onSubmit: () => void;
+	dueAt: string;
+	handleDueAt: (dueAt: string) => void;
 }
+
+export type SelectionMode = 'multi' | 'single';

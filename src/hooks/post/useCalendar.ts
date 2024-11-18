@@ -97,7 +97,7 @@ const useCalendar = () => {
 	};
 
 	const getFormattedDay = (day: Day) => {
-		return format(new Date(day.year, day.month, day.day), 'yyyy-MM-dd');
+		return format(new Date(day.year, day.month - 1, day.day), 'yyyy-MM-dd');
 	};
 
 	const getInitialDays = (targetDates: string[]) => {
@@ -106,6 +106,14 @@ const useCalendar = () => {
 		}
 
 		return targetDates.map((date) => getDayObject(date));
+	};
+
+	const getInitialDueAt = (dueAt: string) => {
+		if (dueAt === '') {
+			return [getToday()];
+		}
+
+		return [getDayObject(dueAt)];
 	};
 
 	return {
@@ -117,6 +125,7 @@ const useCalendar = () => {
 		isNextDisabled,
 		isDayDisabled,
 		getInitialDays,
+		getInitialDueAt,
 		getFormattedDay,
 	};
 };
