@@ -13,8 +13,10 @@ export const GNBContainer = styled.div`
 
 export const LeftContainer = styled.div`
 	display: flex;
+	border-radius: ${theme.units.radius.radius8};
 	align-items: center;
 	gap: ${theme.units.spacing.space8};
+	cursor: pointer;
 
 	&:hover {
 		background-color: ${theme.color.bg.iSecondaryHover};
@@ -30,4 +32,5 @@ export const RightContainer = styled.div`
 export const ProfileContainer = styled.div`
 	display: flex;
 	gap: ${theme.units.spacing.space24};
+	cursor: pointer;
 `;

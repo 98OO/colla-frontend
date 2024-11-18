@@ -19,6 +19,7 @@ export const TeamSpacesWrapper = styled.div`
 	display: flex;
 	flex-direction: column;
 	overflow-y: auto;
+	cursor: pointer;
 
 	max-height: ${MENU_HEIGHT};
 	padding-right: ${theme.units.spacing.space10};
@@ -40,6 +41,7 @@ export const FooterContainer = styled.button`
 	border: none;
 	background: none;
 	width: 100%;
+	cursor: pointer;
 
 	gap: ${theme.units.spacing.space8};
 
