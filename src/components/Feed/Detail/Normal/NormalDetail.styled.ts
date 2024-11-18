@@ -6,9 +6,9 @@ export const FeedContainer = styled.div`
 	display: flex;
 	flex-direction: column;
 	gap: ${theme.units.spacing.space24};
-	height: calc(100% - 64px); // 64 : menu height
+	height: calc(100% - 64px);
 	overflow: auto;
-	padding: ${theme.units.spacing.space24} ${theme.units.spacing.space32};
+	padding: ${theme.units.spacing.space12} ${theme.units.spacing.space32};
 	padding-bottom: 0;
 	overflow-x: hidden;
 
@@ -23,7 +23,6 @@ export const FeedContainer = styled.div`
 `;
 
 export const DetailWrapper = styled.div`
-	width: 680px;
 	${editorStyles}
 `;
 

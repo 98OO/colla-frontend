@@ -6,7 +6,7 @@ import * as S from './Avatar.styled';
 export interface AvatarProps {
 	profile: string | null;
 	initial: string;
-	size: AvatarSize;
+	size: AvatarSize | 'mlg';
 	shape: 'circle' | 'rect';
 	onClick?: React.MouseEventHandler<HTMLDivElement>;
 }
@@ -14,6 +14,7 @@ export interface AvatarProps {
 const sizeMap = {
 	xl: 'xl',
 	lg: 'xs',
+	mlg: 'mlg',
 	md: 'md',
 	sm: 'sm',
 	xs: 'sm',
