@@ -10,7 +10,6 @@ import { getFormattedDate } from '@utils/getFormattedDate';
 import { FEED_DETAIL_MAX_HEIGHT } from '@styles/layout';
 import type { FeedData } from '@type/feed';
 import IconButton from '../common/IconButton/IconButton';
-import Input from '../common/Input/Input';
 import Text from '../common/Text/Text';
 import * as S from './Feed.styled';
 
@@ -79,7 +78,7 @@ const Feed = ({
 }: FeedProps) => {
 	const { author, title, createdAt, details, attachments, comments } = feedData;
 	const [showMoreButton, setShowMoreButton] = useState(false);
-	const [commentText, setCommentText] = useState('');
+	// const [commentText, setCommentText] = useState('');
 	const detailRef = useRef<HTMLDivElement | null>(null);
 
 	useEffect(() => {
@@ -100,15 +99,15 @@ const Feed = ({
 		};
 	}, [details?.content]);
 
-	const handleCommentChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-		setCommentText(e.target.value);
-	};
+	// const handleCommentChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+	// 	setCommentText(e.target.value);
+	// };
 
-	const handleCommentSubmit = () => {
-		// 여기에 댓글 제출 로직 추가
-		console.log('Comment submitted:', commentText);
-		setCommentText('');
-	};
+	// const handleCommentSubmit = () => {
+	// 	// 여기에 댓글 제출 로직 추가
+	// 	console.log('Comment submitted:', commentText);
+	// 	setCommentText('');
+	// };
 
 	return (
 		<S.FeedContainer>
@@ -167,10 +166,15 @@ const Feed = ({
 					/>
 				)}
 			</Flex>
-			<Flex direction='row' marginTop='12' marginLeft='24' gap='8'>
+			<Flex
+				direction='row'
+				marginTop='12'
+				marginLeft='24'
+				marginBottom='6'
+				gap='8'>
 				<CommentPreview comments={comments} />
 			</Flex>
-			<Flex paddingRight='24' paddingLeft='24'>
+			{/* <Flex paddingRight='24' paddingLeft='24'>
 				<Flex
 					direction='row'
 					gap='12'
@@ -198,7 +202,7 @@ const Feed = ({
 						</S.CommentWriteButton>
 					)}
 				</Flex>
-			</Flex>
+			</Flex> */}
 		</S.FeedContainer>
 	);
 };
