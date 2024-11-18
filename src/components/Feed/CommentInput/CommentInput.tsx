@@ -34,17 +34,19 @@ const CommentInput = (props: CommentInputProps) => {
 	return (
 		<S.CommentInputContainer ref={commentRef}>
 			<Input
-				size='sm'
+				size='md'
 				border='underLine'
 				isError={false}
 				placeholder='댓글 달기...'
 				value={comment}
 				onChange={handleCommentChange}
+				onEnterPress={handleLeaveComment}
+				maxLength={250}
 			/>
 			<Button
-				label='등록'
+				label='작성'
 				variant='primary'
-				size='sm'
+				size='md'
 				disabled={!comment.trim().length}
 				onClick={handleLeaveComment}
 			/>

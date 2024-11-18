@@ -24,6 +24,8 @@ export const FeedContainer = styled.div`
 
 export const DetailWrapper = styled.div`
 	${editorStyles}
+	margin-bottom: ${theme.units.spacing.space48};
+	min-height: 150px;
 `;
 
 export const AttachmentWrapper = styled.div`

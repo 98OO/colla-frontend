@@ -49,7 +49,7 @@ const Feed = ({ feedData }: FeedProps) => {
 						})}
 					</S.SectionContainer>
 				)}
-				{comments.length !== 0 && (
+				{true && (
 					<S.SectionContainer>
 						<Flex direction='column' align='flex-start'>
 							<Text
@@ -68,12 +68,14 @@ const Feed = ({ feedData }: FeedProps) => {
 						})}
 					</S.SectionContainer>
 				)}
-				{userStatus && (
-					<CommentInput
-						teamspaceId={userStatus.profile.lastSeenTeamspaceId}
-						feedId={feedId}
-					/>
-				)}
+				<Flex direction='column' marginTop='8' marginBottom='48' grow='1'>
+					{userStatus && (
+						<CommentInput
+							teamspaceId={userStatus.profile.lastSeenTeamspaceId}
+							feedId={feedId}
+						/>
+					)}
+				</Flex>
 			</Flex>
 		</S.FeedContainer>
 	);
