@@ -1,10 +1,5 @@
 import { useState } from 'react';
-
-interface Day {
-	year: number;
-	month: number;
-	day: number;
-}
+import { Day } from '@type/post';
 
 const useDaySelection = (init: Day[] = []) => {
 	const [selectedDays, setSelectedDays] = useState<Day[]>(init);

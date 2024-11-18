@@ -2,18 +2,8 @@ import { useState } from 'react';
 import { Button } from '@components/common/Button/Button';
 import Flex from '@components/common/Flex/Flex';
 import Calendar from '@components/Post/Calendar/Calendar';
+import { SchedulingPostStep, SelectDateProps, SetTimeProps } from '@type/post';
 import * as S from './SchedulingPost.styled';
-
-type SchedulingPostStep = 'selectDate' | 'setTime';
-
-interface SelectDateProps {
-	onNext: () => void;
-}
-
-interface SetTimeProps {
-	onPrev: () => void;
-	onSubmit: () => void;
-}
 
 const SelectDate = ({ onNext }: SelectDateProps) => {
 	return (

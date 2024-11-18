@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { Day } from '@type/post';
 import {
 	getDaysInMonth,
 	addMonths,
@@ -9,12 +10,6 @@ import {
 } from 'date-fns';
 
 const CALENDAR_LENGTH = 35;
-
-interface Day {
-	year: number;
-	month: number;
-	day: number;
-}
 
 const useCalendar = () => {
 	const [curDate, setCurDate] = useState(startOfDay(new Date()));
