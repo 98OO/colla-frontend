@@ -52,3 +52,4 @@ export { ReactComponent as X } from './x.svg';
 export { ReactComponent as ChevronsRight } from './chevrons-right.svg';
 export { ReactComponent as ChevronRight } from './chevron-right.svg';
 export { ReactComponent as ChevronLeft } from './chevron-left.svg';
+export { ReactComponent as Clock } from './clock.svg';
