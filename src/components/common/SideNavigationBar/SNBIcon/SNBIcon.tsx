@@ -52,12 +52,12 @@ const SNBIcon = () => {
 						type='iconOnly'
 						onClick={() => navigate(PATH.FEED)}
 					/>
-					<MenuItem
+					{/* <MenuItem
 						leadingIcon='Calendar'
 						selected={location.pathname === PATH.SCHEDULE}
 						type='iconOnly'
 						onClick={() => navigate(PATH.SCHEDULE)}
-					/>
+					/> */}
 					<MenuItem
 						leadingIcon='Message'
 						selected={location.pathname === PATH.CHAT}
@@ -73,12 +73,12 @@ const SNBIcon = () => {
 						type='iconOnly'
 						onClick={() => navigate(PATH.DOCUMENT)}
 					/>
-					<MenuItem
+					{/* <MenuItem
 						leadingIcon='Mic'
 						selected={location.pathname === PATH.PRESENTATION}
 						type='iconOnly'
 						onClick={() => navigate(PATH.PRESENTATION)}
-					/>
+					/> */}
 				</Flex>
 				<Flex direction='column' gap='8' align='center'>
 					<Divider size='sm' />

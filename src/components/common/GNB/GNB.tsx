@@ -6,7 +6,6 @@ import GNBTeamInfo from '@components/common/GNB/GNBMenu/GNBTeamInfo/GNBTeamInfo'
 import GNBTeamSpace from '@components/common/GNB/GNBMenu/GNBTeamSpace/GNBTeamSpace';
 import Heading from '@components/common/Heading/Heading';
 import Icon from '@components/common/Icon/Icon';
-import IconButton from '@components/common/IconButton/IconButton';
 import useMenu from '@hooks/common/useMenu';
 import useUserStatusQuery from '@hooks/queries/useUserStatusQuery';
 import { StompSubscription } from '@stomp/stompjs';
@@ -125,13 +124,13 @@ const GNB = () => {
 							left: 10,
 						})}
 					<S.RightContainer>
-						<IconButton
+						{/* <IconButton
 							icon='Bell'
 							ariaLabel='Bell'
 							color='iSecondary'
 							onClick={() => ''}
 						/>
-						<IconButton icon='Search' ariaLabel='Search' onClick={() => ''} />
+						<IconButton icon='Search' ariaLabel='Search' onClick={() => ''} /> */}
 						<S.ProfileContainer>
 							<Button
 								label='초대'

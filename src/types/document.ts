@@ -1,4 +1,4 @@
-interface Attachment {
+export interface Document {
 	id: number;
 	name: string;
 	type: string;
@@ -15,5 +15,5 @@ interface Attachment {
 
 export interface storageResponse {
 	totalStorageCapacity: number;
-	attachments: Attachment[];
+	attachments: Document[];
 }

@@ -1,10 +1,11 @@
 import Divider from '@components/common/Divider/Divider';
 import Flex from '@components/common/Flex/Flex';
 import Heading from '@components/common/Heading/Heading';
-import Profile from '@components/common/Profile/Profile';
 import Text from '@components/common/Text/Text';
 import Attachments from '@components/Feed/Attachments/Attachments';
+import CommentInput from '@components/Feed/CommentInput/CommentInput';
 import Comment from '@components/Feed/Comments/Comment';
+import useUserStatusQuery from '@hooks/queries/useUserStatusQuery';
 import { getFormattedDate } from '@utils/getFormattedDate';
 import type { FeedData } from '@type/feed';
 import FeedAuthor from '../../FeedAuthors/FeedAuthor';
@@ -15,7 +16,9 @@ interface FeedProps {
 }
 
 const Feed = ({ feedData }: FeedProps) => {
-	const { author, title, createdAt, details, attachments, comments } = feedData;
+	const { feedId, author, title, createdAt, details, attachments, comments } =
+		feedData;
+	const { userStatus } = useUserStatusQuery();
 
 	return (
 		<S.FeedContainer>
@@ -64,6 +67,12 @@ const Feed = ({ feedData }: FeedProps) => {
 							);
 						})}
 					</S.SectionContainer>
+				)}
+				{userStatus && (
+					<CommentInput
+						teamspaceId={userStatus.profile.lastSeenTeamspaceId}
+						feedId={feedId}
+					/>
 				)}
 			</Flex>
 		</S.FeedContainer>

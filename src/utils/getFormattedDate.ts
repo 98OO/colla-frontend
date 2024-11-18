@@ -4,7 +4,8 @@ type FormatDateType =
 	| 'chatTime'
 	| 'feed'
 	| 'detail'
-	| 'fullDateWithToday';
+	| 'fullDateWithToday'
+	| 'documentDate';
 
 export const getFormattedDate = (
 	dateString: string | Date,
@@ -104,6 +105,9 @@ export const getFormattedDate = (
 
 			return `${year}-${month}-${day} ${hours}:${minutes}`;
 		}
+
+		case 'documentDate':
+			return `${targetDate.getFullYear()}.${(targetDate.getMonth() + 1).toString().padStart(2, '0')}.${targetDate.getDate().toString().padStart(2, '0')}`;
 
 		default:
 			return '';

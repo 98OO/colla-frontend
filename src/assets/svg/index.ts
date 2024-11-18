@@ -52,3 +52,7 @@ export { ReactComponent as X } from './x.svg';
 export { ReactComponent as ChevronsRight } from './chevrons-right.svg';
 export { ReactComponent as Attachment } from './attachment.svg';
 export { ReactComponent as Comment } from './comment.svg';
+export { ReactComponent as ChevronsLeft } from './chevrons-left.svg';
+export { ReactComponent as ChevronLeft } from './chevron-left.svg';
+export { ReactComponent as ChevronRight } from './chevron-right.svg';
+export { ReactComponent as PDF } from './PDFLogo.svg';
