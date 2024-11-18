@@ -1,25 +1,24 @@
 import Flex from '@components/common/Flex/Flex';
 import IconButton from '@components/common/IconButton/IconButton';
 import useCalendar from '@hooks/post/useCalendar';
-import useDaySelection from '@hooks/post/useDaySelection';
+import { CalendarProps } from '@type/post';
 import * as S from './Calendar.styled';
 
-const Calendar = () => {
+const Calendar = ({
+	selectedDays,
+	isDaySelected,
+	toggleDaySelection,
+}: CalendarProps) => {
 	const HEADER_DAYS = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'];
 	const {
 		curMonth,
 		calendarDays,
-		getToday,
 		movePrevMonth,
 		moveNextMonth,
 		isPrevDisabled,
 		isNextDisabled,
 		isDayDisabled,
 	} = useCalendar();
-
-	const { selectedDays, isDaySelected, toggleDaySelection } = useDaySelection([
-		getToday(),
-	]);
 
 	return (
 		<S.CalendarContainer>

@@ -6,7 +6,15 @@ export interface Day {
 
 export type SchedulingPostStep = 'selectDate' | 'setTime';
 
-export interface SelectDateProps {
+interface DaySelection {
+	selectedDays: Day[];
+	isDaySelected: (days: Day[], day: Day) => boolean;
+	toggleDaySelection: (day: Day) => void;
+}
+
+export interface CalendarProps extends DaySelection {}
+
+export interface SelectDateProps extends DaySelection {
 	onNext: () => void;
 }
 
