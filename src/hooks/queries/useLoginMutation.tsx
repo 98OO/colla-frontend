@@ -31,11 +31,11 @@ const useLoginMutation = () => {
 
 			if (inviteUrl) {
 				window.sessionStorage.removeItem(INVITE_URL);
-				navigate(`${PATH.INVITE}${inviteUrl}`);
+				navigate(`${PATH.INVITE}${inviteUrl}`, { replace: true });
 			} else if (content.hasTeam) {
-				navigate(PATH.FEED);
+				navigate(PATH.FEED, { replace: true });
 			} else {
-				navigate(PATH.ENTRY);
+				navigate(PATH.ENTRY, { replace: true });
 			}
 		},
 		onError: (error) => {
