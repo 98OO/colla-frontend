@@ -7,6 +7,7 @@ import {
 	isBefore,
 	isAfter,
 	startOfDay,
+	format,
 } from 'date-fns';
 
 const CALENDAR_LENGTH = 35;
@@ -89,15 +90,34 @@ const useCalendar = () => {
 	const isPrevDisabled = () => !isAfter(curDate, today);
 	const isNextDisabled = () => !isBefore(curDate, oneYearLater);
 
+	const getDayObject = (date: string): Day => {
+		const [year, month, day] = date.split('-').map(Number);
+
+		return { year, month: month - 1, day };
+	};
+
+	const getFormattedDay = (day: Day) => {
+		return format(new Date(day.year, day.month, day.day), 'yyyy-MM-dd');
+	};
+
+	const getInitialDays = (targetDates: string[]) => {
+		if (targetDates.length === 0) {
+			return [getToday()];
+		}
+
+		return targetDates.map((date) => getDayObject(date));
+	};
+
 	return {
 		curMonth: curMonth + 1,
 		calendarDays,
-		getToday,
 		movePrevMonth,
 		moveNextMonth,
 		isPrevDisabled,
 		isNextDisabled,
 		isDayDisabled,
+		getInitialDays,
+		getFormattedDay,
 	};
 };
 

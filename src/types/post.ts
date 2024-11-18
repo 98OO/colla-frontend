@@ -14,8 +14,10 @@ interface DaySelection {
 
 export interface CalendarProps extends DaySelection {}
 
-export interface SelectDateProps extends DaySelection {
+export interface SelectDateProps {
 	onNext: () => void;
+	targetDates: string[];
+	handleTargetDates: (dates: string[]) => void;
 }
 
 export interface SetTimeProps {

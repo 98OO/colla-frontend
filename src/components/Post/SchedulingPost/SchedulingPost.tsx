@@ -6,15 +6,32 @@ import Icon from '@components/common/Icon/Icon';
 import Calendar from '@components/Post/Calendar/Calendar';
 import useCalendar from '@hooks/post/useCalendar';
 import useDaySelection from '@hooks/post/useDaySelection';
-import { SchedulingPostStep, SelectDateProps, SetTimeProps } from '@type/post';
+import { INITIAL_SCHEDULING_FORM } from '@constants/post';
+import type { SchedulingFeedForm } from '@type/feed';
+import type {
+	SchedulingPostStep,
+	SelectDateProps,
+	SetTimeProps,
+} from '@type/post';
 import * as S from './SchedulingPost.styled';
 
 const SelectDateStep = ({
 	onNext,
-	selectedDays,
-	isDaySelected,
-	toggleDaySelection,
+	targetDates,
+	handleTargetDates,
 }: SelectDateProps) => {
+	const { getInitialDays, getFormattedDay } = useCalendar();
+	const initalDays = getInitialDays(targetDates);
+	const { selectedDays, isDaySelected, toggleDaySelection } =
+		useDaySelection(initalDays);
+
+	const handleNext = () => {
+		const formattedDates = selectedDays.map((day) => getFormattedDay(day));
+
+		handleTargetDates(formattedDates);
+		onNext();
+	};
+
 	return (
 		<>
 			<Calendar
@@ -23,7 +40,7 @@ const SelectDateStep = ({
 				toggleDaySelection={toggleDaySelection}
 			/>
 			<Flex justify='flex-end'>
-				<Button label='다음' variant='primary' size='md' onClick={onNext} />
+				<Button label='다음' variant='primary' size='md' onClick={handleNext} />
 			</Flex>
 		</>
 	);
@@ -71,21 +88,28 @@ const SetTimeStep = ({ onPrev, onSubmit }: SetTimeProps) => {
 };
 
 const SchedulingPost = () => {
-	const { getToday } = useCalendar();
-	const { selectedDays, isDaySelected, toggleDaySelection } = useDaySelection([
-		getToday(),
-	]);
-
 	const [step, setStep] = useState<SchedulingPostStep>('selectDate');
+	const [formData, setFormData] = useState<SchedulingFeedForm>(
+		INITIAL_SCHEDULING_FORM
+	);
+
+	const handleTargetDates = (dates: string[]) => {
+		setFormData((prev) => ({
+			...prev,
+			details: {
+				...prev.details,
+				targetDates: dates,
+			},
+		}));
+	};
 
 	return (
 		<S.SchedulingPostContainer>
 			{step === 'selectDate' && (
 				<SelectDateStep
 					onNext={() => setStep('setTime')}
-					selectedDays={selectedDays}
-					isDaySelected={isDaySelected}
-					toggleDaySelection={toggleDaySelection}
+					targetDates={formData.details.targetDates}
+					handleTargetDates={handleTargetDates}
 				/>
 			)}
 			{step === 'setTime' && (
