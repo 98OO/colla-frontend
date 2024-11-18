@@ -8,6 +8,11 @@ export const NormalPostContainer = styled.form`
 	gap: ${theme.units.spacing.space32};
 `;
 
+export const EditorContainer = styled.div`
+	max-height: calc(100vh - 500px);
+	overflow-x: hidden;
+`;
+
 export const PostInput = styled.input`
 	font-size: ${theme.typography.fontSize.header.sm};
 	font-weight: ${theme.typography.fontWeight.semiBold};
