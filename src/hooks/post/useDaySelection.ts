@@ -1,7 +1,7 @@
 import { useState } from 'react';
-import { Day } from '@type/post';
+import type { Day, SelectionMode } from '@type/post';
 
-const useDaySelection = (init: Day[] = []) => {
+const useDaySelection = (init: Day[] = [], mode: SelectionMode = 'multi') => {
 	const [selectedDays, setSelectedDays] = useState<Day[]>(init);
 
 	const areDaysEqual = (day1: Day, day2: Day) => {
@@ -31,7 +31,13 @@ const useDaySelection = (init: Day[] = []) => {
 	};
 
 	const toggleDaySelection = (day: Day) => {
-		setSelectedDays((prev) => updateDaySelection(prev, day));
+		setSelectedDays((prev) => {
+			if (mode === 'single') {
+				return [day];
+			}
+
+			return updateDaySelection(prev, day);
+		});
 	};
 
 	return {
