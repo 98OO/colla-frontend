@@ -70,7 +70,7 @@ interface NormalFeed extends FeedBase {
 	details: NormalDetails;
 }
 
-interface CollectFeed extends FeedBase {
+export interface CollectFeed extends FeedBase {
 	feedType: 'COLLECT';
 	details: CollectDetails;
 }
