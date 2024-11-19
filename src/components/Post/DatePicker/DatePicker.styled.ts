@@ -9,16 +9,28 @@ export const DatePickerButton = styled.button`
 	border-radius: ${theme.units.radius.radius6};
 `;
 
+export const TimeInput = styled.input`
+	width: 90%;
+	height: ${theme.units.spacing.space28};
+	padding: ${theme.units.spacing.space6};
+	background-color: ${theme.color.bg.tertiary};
+	border: 1px solid ${theme.color.border.tertiary};
+	border-radius: ${theme.units.radius.radius6};
+	outline: none;
+`;
+
 export const TimeToggleWrapper = styled.div`
 	display: flex;
+	justify-content: space-between;
 	align-items: center;
-	gap: ${theme.units.spacing.space16};
+	width: 100%;
+	padding: 0 ${theme.units.spacing.space4};
 `;
 
 export const CalendarContainer = styled.div<{ isOpen: boolean }>`
 	position: absolute;
 	right: 0;
-	display: flex;
+	display: ${({ isOpen }) => (isOpen ? 'flex' : 'none')};
 	flex-direction: column;
 	align-items: center;
 	gap: ${theme.units.spacing.space12};
@@ -28,8 +40,6 @@ export const CalendarContainer = styled.div<{ isOpen: boolean }>`
 	border-radius: ${theme.units.radius.radius6};
 	box-shadow: ${theme.elevation.shadow.shadow2};
 	background-color: ${theme.color.bg.primary};
-
-	display: ${({ isOpen }) => (isOpen ? 'block' : 'none')};
 `;
 
 export const CalendarHeader = styled.div`

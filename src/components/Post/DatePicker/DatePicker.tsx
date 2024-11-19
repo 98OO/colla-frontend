@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Flex from '@components/common/Flex/Flex';
 import IconButton from '@components/common/IconButton/IconButton';
 import Text from '@components/common/Text/Text';
@@ -33,25 +33,21 @@ const DatePicker = ({
 	});
 
 	const [toggleState, setToggleState] = useState(false);
+	const [pickedDay, setPickedDay] = useState(getFormattedDay(selectedDays[0]));
 
 	const handleToggle = () => {
 		setToggleState((prev) => !prev);
 	};
 
+	useEffect(() => {
+		setPickedDay(getFormattedDay(selectedDays[0], toggleState));
+	}, [selectedDays, toggleState]);
+
 	return (
 		<Flex justify='space-between'>
-			<Flex direction='column' gap='24'>
-				<S.DatePickerButton onClick={open}>
-					{getFormattedDay(selectedDays[0])}
-				</S.DatePickerButton>
-				<S.TimeToggleWrapper>
-					<Text size='md' weight='regular' color='tertiary'>
-						시간 포함
-					</Text>
-					<Toggle state={toggleState} onToggle={handleToggle} />
-				</S.TimeToggleWrapper>
-			</Flex>
+			<S.DatePickerButton onClick={open}>{pickedDay}</S.DatePickerButton>
 			<S.CalendarContainer ref={ref} isOpen={isOpen}>
+				{toggleState && <S.TimeInput type='text' placeholder='오전 12:00' />}
 				<S.CalendarHeader>
 					<IconButton
 						ariaLabel='prevMonth'
@@ -85,6 +81,12 @@ const DatePicker = ({
 						);
 					})}
 				</S.WeeksWrapper>
+				<S.TimeToggleWrapper>
+					<Text size='md' weight='regular' color='tertiary'>
+						시간 포함
+					</Text>
+					<Toggle state={toggleState} onToggle={handleToggle} />
+				</S.TimeToggleWrapper>
 			</S.CalendarContainer>
 		</Flex>
 	);
