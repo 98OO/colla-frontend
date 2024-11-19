@@ -4,21 +4,33 @@ import theme from '@styles/theme';
 export const DocumentContainer = styled.div`
 	display: flex;
 	flex-direction: column;
-	border: 1px solid black;
-	width: 100%;
+	width: 920px;
 	height: 100%;
-	padding: ${theme.units.spacing.space32};
-	gap: ${theme.units.spacing.space24};
+	padding: ${theme.units.spacing.space20} ${theme.units.spacing.space10};
+	overflow-x: none;
+	gap: ${theme.units.spacing.space16};
 `;
 
-export const DocumentListContainer = styled.div`
+export const DocumentTitleContainer = styled.div`
 	display: flex;
-	padding: ${theme.units.spacing.space16};
 	background-color: ${theme.color.bg.secondary};
+	height: 48px;
 `;
 
-export const DocumentWrapper = styled.div`
+export const DocumentTitleWrapper = styled.div<{ width: string }>`
 	display: flex;
-	width: 400px;
 	justify-content: center;
+	align-items: center;
+	width: ${(props) => props.width || 'auto'};
+`;
+
+export const NumberButtonWrapper = styled.div<{ active: boolean }>`
+	button {
+		color: ${({ active }) =>
+			active ? `${theme.color.text.iPrimary}` : `${theme.color.text.tertiary}`};
+
+		&:hover {
+			color: ${theme.color.text.iPrimary};
+		}
+	}
 `;

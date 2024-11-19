@@ -6,9 +6,9 @@ export const FeedContainer = styled.div`
 	display: flex;
 	flex-direction: column;
 	gap: ${theme.units.spacing.space24};
-	height: calc(100% - 64px); // 64 : menu height
+	height: calc(100% - 64px);
 	overflow: auto;
-	padding: ${theme.units.spacing.space24} ${theme.units.spacing.space32};
+	padding: ${theme.units.spacing.space12} ${theme.units.spacing.space32};
 	padding-bottom: 0;
 	overflow-x: hidden;
 
@@ -23,8 +23,10 @@ export const FeedContainer = styled.div`
 `;
 
 export const DetailWrapper = styled.div`
-	width: 680px;
 	${editorStyles}
+	margin-bottom: ${theme.units.spacing.space48};
+	width: 732px;
+	min-height: 150px;
 `;
 
 export const AttachmentWrapper = styled.div`
@@ -71,4 +73,12 @@ export const FeedDetailContainer = styled.div`
 		border-radius: ${theme.units.radius.radius20};
 		background: ${theme.color.border.secondary};
 	}
+`;
+
+export const CommentContainer = styled.div`
+	display: flex;
+	flex-direction: column;
+	margin-top: 8px;
+	margin-bottom: 48px;
+	flex-grow: 1;
 `;

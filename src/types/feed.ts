@@ -6,7 +6,7 @@ export type FeedMenuType = 'normal' | 'collect' | 'scheduling'; // | 'vote'
 
 export type SelectType = keyof typeof FEED_SELECT_MAP;
 
-interface Author {
+export interface Author {
 	id: number;
 	profileImageUrl: string | null;
 	username: string;
@@ -24,6 +24,7 @@ interface Image {
 }
 
 interface Comment {
+	id: number;
 	author: Author;
 	content: string;
 	createdAt: string;
@@ -40,7 +41,7 @@ interface NormalDetails {
 	content: string | null;
 }
 
-interface CollectResponse {
+export interface CollectResponse {
 	title: string | null;
 	status: 'PENDING' | 'COMPLETED';
 	updatedAt: string;
@@ -69,7 +70,7 @@ interface NormalFeed extends FeedBase {
 	details: NormalDetails;
 }
 
-interface CollectFeed extends FeedBase {
+export interface CollectFeed extends FeedBase {
 	feedType: 'COLLECT';
 	details: CollectDetails;
 }

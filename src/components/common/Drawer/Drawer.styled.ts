@@ -31,5 +31,4 @@ export const DrawerMenu = styled.div`
 export const DrawerContent = styled.div`
 	width: 100%;
 	background: ${theme.color.bg.primary};
-	padding-bottom: ${theme.units.spacing.space32};
 `;

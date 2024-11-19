@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useCallback } from 'react';
 import { createPortal } from 'react-dom';
 import IconButton from '@components/common/IconButton/IconButton';
 import useOutsideClick from '@hooks/common/useOutSideClick';
@@ -14,6 +14,20 @@ const Drawer = ({ isOpen, onClose, children }: DrawerProps) => {
 	const ref = useOutsideClick({
 		onClickOutside: onClose,
 	});
+
+	const handleKeyDown = useCallback(
+		(event: KeyboardEvent) => {
+			if (event.key === 'Escape' && isOpen) {
+				onClose();
+			}
+		},
+		[isOpen, onClose]
+	);
+
+	useEffect(() => {
+		window.addEventListener('keydown', handleKeyDown);
+		return () => window.removeEventListener('keydown', handleKeyDown);
+	}, [handleKeyDown]);
 
 	useEffect(() => {
 		if (isOpen && ref.current) {

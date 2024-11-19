@@ -42,7 +42,8 @@ export const FeedsWrapper = styled.div<{
 	align-items: center;
 	width: 100%;
 	height: 100%;
-	margin-top: 86px;
+	margin-top: 82px;
+	padding-top: 10px;
 	overflow-x: hidden;
 	overflow: auto;
 

@@ -96,7 +96,7 @@ const GNBTeamSpace = () => {
 						<S.FooterContainer onClick={() => navigate(PATH.ENTRY)}>
 							<Icon name='PlusBox' size='sm' color='iSecondary' />
 							<Text size='md' weight='medium' color='secondary'>
-								새 팀스페이스 생성 또는 참여
+								새 팀스페이스 생성 또는 참가
 							</Text>
 						</S.FooterContainer>
 					</Flex>

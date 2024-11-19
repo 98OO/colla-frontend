@@ -29,10 +29,12 @@ const Toast = (props: ToastProps) => {
 
 	return createPortal(
 		<S.ToastWrapper ref={ref} isActive={isActive}>
-			<Icon name={variant} size='md' />
-			<Text as='span' color='iInverse' size='md' weight='medium'>
-				{message}
-			</Text>
+			<Icon name={variant} size='lg' />
+			<S.ToastTextWrapper>
+				<Text as='span' color='iInverse' size='lg' weight='medium'>
+					{message}
+				</Text>
+			</S.ToastTextWrapper>
 		</S.ToastWrapper>,
 		document.getElementById('toast-container') as Element
 	);

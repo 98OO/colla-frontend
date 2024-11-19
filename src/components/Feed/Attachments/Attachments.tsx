@@ -27,10 +27,10 @@ const Attachments = ({ attachment }: AttachmentsProps) => {
 			<Profile
 				profile={filterImageURL(fileUrl)}
 				initial={name.charAt(0)}
-				avatarSize='lg'
+				avatarSize='mlg'
 				avatarShape='rect'
 				title={name}
-				titleSize='lg'
+				titleSize='md'
 				titleWeight='medium'
 				text={getUnitFormattedSize(size)}
 			/>

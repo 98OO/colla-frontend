@@ -71,6 +71,7 @@ const ChatRoomCreationModal = ({
 					maxLength={15}
 					value={teamspaceName}
 					onChange={handleNameChange}
+					onEnterPress={handlCreateClick}
 				/>
 				<Flex height='14' align='center'>
 					{nameError && (

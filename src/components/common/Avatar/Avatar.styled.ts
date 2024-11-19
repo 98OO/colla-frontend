@@ -5,6 +5,7 @@ import type { AvatarProps } from './Avatar';
 const avatarSizeMap = {
 	xl: '80px',
 	lg: '48px',
+	mlg: '40px',
 	md: '32px',
 	sm: '24px',
 	xs: '16px',

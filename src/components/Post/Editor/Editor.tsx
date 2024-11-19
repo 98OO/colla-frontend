@@ -1,4 +1,5 @@
 import { MutableRefObject } from 'react';
+import Flex from '@components/common/Flex/Flex';
 import EditorMenu from '@components/Post/EditorMenu/EditorMenu';
 import Image from '@tiptap/extension-image';
 import TextAlign from '@tiptap/extension-text-align';
@@ -11,9 +12,10 @@ import * as S from './Editor.styled';
 interface EditorProps {
 	editorRef: MutableRefObject<EditorType | null>;
 	appendImageFile: (file: File) => void;
+	heightOffset?: number;
 }
 
-const Editor = ({ editorRef, appendImageFile }: EditorProps) => {
+const Editor = ({ editorRef, appendImageFile, heightOffset }: EditorProps) => {
 	const editor = useEditor({
 		extensions: [
 			StarterKit.configure({
@@ -35,10 +37,12 @@ const Editor = ({ editorRef, appendImageFile }: EditorProps) => {
 	}
 
 	return (
-		<S.EditorContainer>
+		<Flex direction='column'>
 			<EditorMenu editor={editor} appendImageFile={appendImageFile} />
-			<EditorContent editor={editor} />
-		</S.EditorContainer>
+			<S.EditorContainer heightOffset={heightOffset}>
+				<EditorContent editor={editor} />
+			</S.EditorContainer>
+		</Flex>
 	);
 };
 

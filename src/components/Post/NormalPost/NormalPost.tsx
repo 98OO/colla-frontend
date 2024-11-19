@@ -48,7 +48,9 @@ const NormalPost = () => {
 				value={title}
 				onChange={handleTitleChange}
 			/>
-			<Editor editorRef={editorRef} appendImageFile={appendImageFile} />
+			<S.EditorContainer>
+				<Editor editorRef={editorRef} appendImageFile={appendImageFile} />
+			</S.EditorContainer>
 			<FileUploadBox
 				files={attachmentFiles}
 				handleDragOver={handleDragOver}

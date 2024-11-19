@@ -16,7 +16,7 @@ export const InputContainer = styled.div.withConfig({
 	align-items: center;
 	gap: ${(props) => props.theme.units.spacing.space16};
 	height: ${(props) => inputSizeMap[props.size]};
-	padding: 0 ${(props) => props.theme.units.spacing.space16};
+	padding: 0 ${(props) => props.theme.units.spacing.space10};
 	input {
 		font-size: ${(props) => props.theme.typography.fontSize.body[props.size]};
 	}
