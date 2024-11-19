@@ -58,7 +58,7 @@ export const SelectOptionContainer = styled.ul`
 export const SelectOptionWrapper = styled.li`
 	display: flex;
 	align-items: center;
-	height: 28px;
+	min-height: 28px;
 	justify-content: space-between;
 	border-radius: ${theme.units.radius.radius4};
 	font-size: ${theme.typography.fontSize.body.md};
