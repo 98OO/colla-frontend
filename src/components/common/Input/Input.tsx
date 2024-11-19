@@ -40,10 +40,6 @@ const Input = forwardRef<
 		if (e.key === 'Enter' && !e.nativeEvent.isComposing && onEnterPress) {
 			e.preventDefault();
 			onEnterPress();
-			const event = {
-				target: { value: '' },
-			} as React.ChangeEvent<HTMLInputElement>;
-			onChange(event);
 		}
 	};
 

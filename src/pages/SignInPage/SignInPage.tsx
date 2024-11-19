@@ -1,4 +1,4 @@
-import { useState, useRef, ChangeEvent, MouseEvent } from 'react';
+import { useState, useEffect, useRef, ChangeEvent, MouseEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
 import getTeamSpaceInformation from '@apis/teamspace/getTeamSpaceInformation';
 import { Button } from '@components/common/Button/Button';
@@ -9,15 +9,21 @@ import { OauthButton } from '@components/common/OauthButton/OauthButton';
 import Profile from '@components/common/Profile/Profile';
 import Text from '@components/common/Text/Text';
 import useLoginMutation from '@hooks/queries/useLoginMutation';
-import { useQuery } from '@tanstack/react-query';
 import useToastStore from '@stores/toastStore';
 import { INVITE_URL } from '@constants/api';
 import { PATH } from '@constants/path';
 import { KakaoLogin, NaverLogin, GoogleLogin, Colla } from '@assets/svg';
 import * as S from './SignInPage.styled';
 
+interface TeamSpaceInfo {
+	teamspaceProfileImageUrl: string | null;
+	teamspaceName: string;
+}
+
 const SignInPage = () => {
-	const [showInvitation, setShowInvitation] = useState(true);
+	const [teamSpaceInfo, setTeamspaceInfo] = useState<TeamSpaceInfo | null>(
+		null
+	);
 	const [formData, setFormData] = useState({
 		email: '',
 		password: '',
@@ -29,24 +35,32 @@ const SignInPage = () => {
 	const { mutatePostLogin } = useLoginMutation();
 	const { makeToast } = useToastStore();
 
-	const inviteUrl = window.sessionStorage.getItem(INVITE_URL);
-	const code = new URLSearchParams(inviteUrl || '').get('code');
+	const handleInviteCode = async () => {
+		const inviteUrl = window.sessionStorage.getItem(INVITE_URL);
+		if (inviteUrl === null) return;
 
-	const { data: teamSpaceInfo } = useQuery({
-		queryKey: ['teamSpaceInvitation', inviteUrl],
-		queryFn: async () => {
-			try {
-				if (!code) throw new Error('초대 코드가 없습니다.');
-				return await getTeamSpaceInformation(code, { authRequired: false });
-			} catch (error) {
-				window.sessionStorage.removeItem(INVITE_URL);
-				setShowInvitation(false);
-				makeToast('유효하지 않은 초대입니다.', 'Warning');
-				throw error;
-			}
-		},
-		enabled: !!inviteUrl,
-	});
+		const code = new URLSearchParams(inviteUrl).get('code');
+		if (code === null) return;
+
+		try {
+			const response = await getTeamSpaceInformation(code, {
+				authRequired: false,
+			});
+			setTeamspaceInfo({
+				teamspaceProfileImageUrl: response.teamspaceProfileImageUrl,
+				teamspaceName: response.teamspaceName,
+			});
+		} catch (error) {
+			window.sessionStorage.removeItem(INVITE_URL);
+			setTeamspaceInfo(null);
+			makeToast('유효하지 않은 초대입니다.', 'Warning');
+			throw error;
+		}
+	};
+
+	useEffect(() => {
+		handleInviteCode();
+	}, []);
 
 	const handleChange = (
 		e: ChangeEvent<HTMLInputElement>,
@@ -86,7 +100,7 @@ const SignInPage = () => {
 
 	return (
 		<S.Container>
-			{teamSpaceInfo && showInvitation && (
+			{teamSpaceInfo && (
 				<S.InvitedTeamspaceInfo>
 					<Flex gap='xs' align='center'>
 						<Profile
@@ -105,7 +119,7 @@ const SignInPage = () => {
 							size='sm'
 							onClick={() => {
 								window.sessionStorage.removeItem(INVITE_URL);
-								setShowInvitation(false);
+								setTeamspaceInfo(null);
 							}}
 						/>
 					</Flex>

@@ -74,3 +74,11 @@ export const FeedDetailContainer = styled.div`
 		background: ${theme.color.border.secondary};
 	}
 `;
+
+export const CommentContainer = styled.div`
+	display: flex;
+	flex-direction: column;
+	margin-top: 8px;
+	margin-bottom: 48px;
+	flex-grow: 1;
+`;

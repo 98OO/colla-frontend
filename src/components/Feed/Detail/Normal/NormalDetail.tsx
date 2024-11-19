@@ -49,33 +49,31 @@ const Feed = ({ feedData }: FeedProps) => {
 						})}
 					</S.SectionContainer>
 				)}
-				{true && (
-					<S.SectionContainer>
-						<Flex direction='column' align='flex-start'>
-							<Text
-								size='md'
-								weight='medium'
-								color='tertiary'>{`댓글 ${comments.length}개`}</Text>
-						</Flex>
-						<Divider size='sm' />
-						{comments.map((comment) => {
-							return (
-								<Flex direction='column' gap='8'>
-									<Comment comment={comment} />
-									<Divider size='sm' />
-								</Flex>
-							);
-						})}
-					</S.SectionContainer>
-				)}
-				<Flex direction='column' marginTop='8' marginBottom='48' grow='1'>
+				<S.SectionContainer>
+					<Flex direction='column' align='flex-start'>
+						<Text
+							size='md'
+							weight='medium'
+							color='tertiary'>{`댓글 ${comments.length}개`}</Text>
+					</Flex>
+					<Divider size='sm' />
+					{comments.map((comment) => {
+						return (
+							<Flex direction='column' gap='8'>
+								<Comment comment={comment} />
+								<Divider size='sm' />
+							</Flex>
+						);
+					})}
+				</S.SectionContainer>
+				<S.CommentContainer>
 					{userStatus && (
 						<CommentInput
 							teamspaceId={userStatus.profile.lastSeenTeamspaceId}
 							feedId={feedId}
 						/>
 					)}
-				</Flex>
+				</S.CommentContainer>
 			</Flex>
 		</S.FeedContainer>
 	);
