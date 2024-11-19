@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Button } from '@components/common/Button/Button';
 import Flex from '@components/common/Flex/Flex';
 import Heading from '@components/common/Heading/Heading';
@@ -62,7 +62,7 @@ const SetTimeStep = ({
 		return adjustedHour * 2 + (minute === 30 ? 1 : 0);
 	};
 
-	const handleSumbit = () => {
+	useEffect(() => {
 		const minTimeSegment = calcTimeSegment(amPmFrom, fromTime);
 		const maxTimeSegment = calcTimeSegment(amPmTo, toTime);
 
@@ -72,6 +72,9 @@ const SetTimeStep = ({
 			maxTimeSegment,
 			getFormattedDay(selectedDays[0], true)
 		);
+	}, [title, selectedDays, amPmFrom, fromTime, amPmTo, toTime]);
+
+	const handleSumbit = () => {
 		onSubmit();
 	};
 
