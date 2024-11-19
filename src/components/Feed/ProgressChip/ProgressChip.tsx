@@ -9,7 +9,7 @@ type progressType =
 
 export interface progressChipProps {
 	type: progressType;
-	status: boolean;
+	status?: boolean;
 }
 
 const getProgressText = (type: progressType) => {
@@ -28,7 +28,7 @@ const getProgressText = (type: progressType) => {
 };
 
 const ProgressChip = (props: progressChipProps) => {
-	const { type, status } = props;
+	const { type, status = true } = props;
 
 	return (
 		<S.ProgressChipContainer type={type} status={status}>
