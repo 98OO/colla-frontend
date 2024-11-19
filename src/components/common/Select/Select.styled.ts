@@ -35,6 +35,8 @@ export const SelectOptionContainer = styled.ul`
 	flex-direction: column;
 	position: absolute;
 	top: 110%;
+	max-height: 400px;
+	overflow-y: scroll;
 	z-index: ${theme.elevation.zIndex.MENU};
 	gap: ${theme.units.spacing.space4};
 	border: 1px solid ${theme.color.border.tertiary};
@@ -42,6 +44,15 @@ export const SelectOptionContainer = styled.ul`
 	border-radius: ${theme.units.radius.radius4};
 	padding: ${theme.units.spacing.space8} ${theme.units.spacing.space2};
 	box-shadow: ${theme.elevation.shadow.shadow4};
+
+	&::-webkit-scrollbar {
+		width: 4px;
+	}
+
+	&::-webkit-scrollbar-thumb {
+		border-radius: ${theme.units.radius.radius20};
+		background: ${theme.color.border.secondary};
+	}
 `;
 
 export const SelectOptionWrapper = styled.li`
