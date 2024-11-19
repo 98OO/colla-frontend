@@ -14,7 +14,7 @@ import ProgressChip from '@components/Feed/ProgressChip/ProgressChip';
 import { getFormattedDate } from '@utils/getFormattedDate';
 import { FEED_DETAIL_MAX_HEIGHT } from '@styles/layout';
 import type { FeedData, CollectFeed } from '@type/feed';
-import * as S from './CollectFeed.styled';
+import * as S from './Collect.styled';
 
 interface ActionButtonProps {
 	icon: 'Comment' | 'Attachment';
@@ -73,7 +73,7 @@ const CommentPreview = ({ comments }: { comments: FeedData['comments'] }) => {
 	);
 };
 
-const CollectFeed = ({
+const Collect = ({
 	feedData,
 	isDetailOpen,
 	openDetail,
@@ -203,4 +203,4 @@ const CollectFeed = ({
 	);
 };
 
-export default CollectFeed;
+export default Collect;
