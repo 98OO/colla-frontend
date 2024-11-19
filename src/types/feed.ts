@@ -41,7 +41,7 @@ interface NormalDetails {
 	content: string | null;
 }
 
-interface CollectResponse {
+export interface CollectResponse {
 	title: string | null;
 	status: 'PENDING' | 'COMPLETED';
 	updatedAt: string;
