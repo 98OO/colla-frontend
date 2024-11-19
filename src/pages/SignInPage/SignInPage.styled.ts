@@ -67,3 +67,14 @@ export const OauthWrapper = styled.div`
 	flex-direction: column;
 	gap: ${theme.units.spacing.space12};
 `;
+
+export const InvitedTeamspaceInfo = styled.div`
+	display: flex;
+	flex-direction: column;
+	width: 400px;
+	border-radius: ${theme.units.radius.radius8};
+	border: 1px solid ${theme.color.border.tertiary};
+	padding: ${theme.units.spacing.space16} ${theme.units.spacing.space24};
+	margin-bottom: ${theme.units.spacing.space8};
+	gap: ${theme.units.spacing.space12};
+`;

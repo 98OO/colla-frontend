@@ -112,10 +112,10 @@ const GNB = () => {
 						<Avatar
 							profile={lastSeenTeam.profileImageUrl}
 							initial={lastSeenTeam.name}
-							size='lg'
+							size='mlg'
 							shape='rect'
 						/>
-						<Heading size='md'>{lastSeenTeam.name}</Heading>
+						<Heading size='sm'>{lastSeenTeam.name}</Heading>
 						<Icon name='Updown' />
 					</S.LeftContainer>
 					{chatChannelsSubscribeRef &&

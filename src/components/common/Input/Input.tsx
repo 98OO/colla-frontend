@@ -18,6 +18,7 @@ export interface InputWrapperProps {
 	value: string;
 	maxLength?: number;
 	onChange: React.ChangeEventHandler<HTMLInputElement>;
+	onEnterPress?: () => void;
 }
 
 const Input = forwardRef<
@@ -30,12 +31,26 @@ const Input = forwardRef<
 		isError,
 		trailingIcon,
 		trailingIconColor,
+		onEnterPress,
+		onChange,
 		...attributes
 	} = props;
 
+	const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+		if (e.key === 'Enter' && !e.nativeEvent.isComposing && onEnterPress) {
+			e.preventDefault();
+			onEnterPress();
+		}
+	};
+
 	return (
 		<S.InputContainer size={size} border={border} isError={isError}>
-			<S.InputWrapper ref={ref} {...attributes} />
+			<S.InputWrapper
+				ref={ref}
+				onChange={onChange}
+				{...attributes}
+				onKeyDown={handleKeyDown}
+			/>
 			{trailingIcon && (
 				<Icon name={trailingIcon} size={size} color={trailingIconColor} />
 			)}

@@ -9,7 +9,7 @@ import * as S from './Profile.styled';
 export interface ProfileProps {
 	profile: string | null;
 	initial: string;
-	avatarSize?: AvatarSize;
+	avatarSize?: AvatarSize | 'mlg';
 	avatarShape?: 'circle' | 'rect';
 	title: string;
 	titleSize?: fontSize;
