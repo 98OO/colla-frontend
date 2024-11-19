@@ -9,6 +9,12 @@ export const DatePickerButton = styled.button`
 	border-radius: ${theme.units.radius.radius6};
 `;
 
+export const TimeToggleWrapper = styled.div`
+	display: flex;
+	align-items: center;
+	gap: ${theme.units.spacing.space16};
+`;
+
 export const CalendarContainer = styled.div<{ isOpen: boolean }>`
 	position: absolute;
 	right: 0;

@@ -1,5 +1,8 @@
+import { useState } from 'react';
 import Flex from '@components/common/Flex/Flex';
 import IconButton from '@components/common/IconButton/IconButton';
+import Text from '@components/common/Text/Text';
+import Toggle from '@components/common/Toggle/Toggle';
 import useOutsideClick from '@hooks/common/useOutSideClick';
 import { useOverlay } from '@hooks/common/useOverlay';
 import useCalendar from '@hooks/post/useCalendar';
@@ -29,11 +32,25 @@ const DatePicker = ({
 		onClickOutside: close,
 	});
 
+	const [toggleState, setToggleState] = useState(false);
+
+	const handleToggle = () => {
+		setToggleState((prev) => !prev);
+	};
+
 	return (
 		<Flex justify='space-between'>
-			<S.DatePickerButton onClick={open}>
-				{getFormattedDay(selectedDays[0])}
-			</S.DatePickerButton>
+			<Flex direction='column' gap='24'>
+				<S.DatePickerButton onClick={open}>
+					{getFormattedDay(selectedDays[0])}
+				</S.DatePickerButton>
+				<S.TimeToggleWrapper>
+					<Text size='md' weight='regular' color='tertiary'>
+						시간 포함
+					</Text>
+					<Toggle state={toggleState} onToggle={handleToggle} />
+				</S.TimeToggleWrapper>
+			</Flex>
 			<S.CalendarContainer ref={ref} isOpen={isOpen}>
 				<S.CalendarHeader>
 					<IconButton
