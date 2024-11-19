@@ -69,11 +69,14 @@ const DatePicker = ({
 	};
 
 	useEffect(() => {
+		setPickedDay(getFormattedDay(selectedDays[0], toggleState));
+	}, [selectedDays, toggleState]);
+
+	useEffect(() => {
 		if (!toggleState) {
 			handleSelectedDayTime();
 		}
-		setPickedDay(getFormattedDay(selectedDays[0], toggleState));
-	}, [selectedDays, toggleState]);
+	}, [toggleState]);
 
 	return (
 		<Flex justify='space-between'>

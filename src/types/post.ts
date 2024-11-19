@@ -26,7 +26,12 @@ export interface SetTimeProps {
 	onPrev: () => void;
 	onSubmit: () => void;
 	dueAt: string;
-	handleDueAt: (dueAt: string) => void;
+	handleDetail: (
+		title: string,
+		minTimeSegment: number,
+		maxTimeSegment: number,
+		dueAt: string
+	) => void;
 }
 
 export type SelectionMode = 'multi' | 'single';

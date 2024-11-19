@@ -22,12 +22,19 @@ const SchedulingPost = () => {
 		}));
 	};
 
-	const handleDueAt = (dueAt: string) => {
+	const handleDetail = (
+		title: string,
+		minTimeSegment: number,
+		maxTimeSegment: number,
+		dueAt: string
+	) => {
 		setFormData((prev) => ({
-			...prev,
+			title,
 			details: {
 				...prev.details,
 				dueAt,
+				minTimeSegment,
+				maxTimeSegment,
 			},
 		}));
 	};
@@ -45,7 +52,7 @@ const SchedulingPost = () => {
 				<SetTimeStep
 					onPrev={() => setStep('selectDate')}
 					dueAt={formData.details.dueAt}
-					handleDueAt={handleDueAt}
+					handleDetail={handleDetail}
 					onSubmit={() => {}}
 				/>
 			)}

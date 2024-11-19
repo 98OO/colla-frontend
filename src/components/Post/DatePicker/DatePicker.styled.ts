@@ -44,6 +44,7 @@ export const CalendarContainer = styled.div<{ isOpen: boolean }>`
 	border-radius: ${theme.units.radius.radius6};
 	box-shadow: ${theme.elevation.shadow.shadow2};
 	background-color: ${theme.color.bg.primary};
+	z-index: ${theme.elevation.zIndex.DIALOG};
 `;
 
 export const CalendarHeader = styled.div`
