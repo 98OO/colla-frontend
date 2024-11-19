@@ -6,7 +6,7 @@ export type FeedMenuType = 'normal' | 'collect' | 'scheduling'; // | 'vote'
 
 export type SelectType = keyof typeof FEED_SELECT_MAP;
 
-interface Author {
+export interface Author {
 	id: number;
 	profileImageUrl: string | null;
 	username: string;
