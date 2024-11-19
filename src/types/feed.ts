@@ -116,4 +116,4 @@ export interface SchedulingFeedForm {
 	};
 }
 
-export type FeedData = NormalFeed | CollectFeed;
+export type FeedData = NormalFeed | CollectFeed | SchedulingFeed;
