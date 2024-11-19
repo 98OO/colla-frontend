@@ -5,7 +5,8 @@ type FormatDateType =
 	| 'feed'
 	| 'detail'
 	| 'fullDateWithToday'
-	| 'documentDate';
+	| 'documentDate'
+	| 'collectDate';
 
 export const getFormattedDate = (
 	dateString: string | Date,
@@ -108,6 +109,16 @@ export const getFormattedDate = (
 
 		case 'documentDate':
 			return `${targetDate.getFullYear()}.${(targetDate.getMonth() + 1).toString().padStart(2, '0')}.${targetDate.getDate().toString().padStart(2, '0')}`;
+
+		case 'collectDate': {
+			const year = targetDate.getFullYear();
+			const month = String(targetDate.getMonth() + 1).padStart(2, '0');
+			const day = String(targetDate.getDate()).padStart(2, '0');
+			const weekDays = ['일', '월', '화', '수', '목', '금', '토'];
+			const dayOfWeek = weekDays[targetDate.getDay()];
+
+			return `${year}-${month}-${day} (${dayOfWeek})`;
+		}
 
 		default:
 			return '';

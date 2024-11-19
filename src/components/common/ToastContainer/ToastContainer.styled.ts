@@ -1,8 +1,8 @@
 import { styled } from 'styled-components';
 
 export const ToastContainerWrapper = styled.div`
-	position: absolute;
-	bottom: 40px;
+	position: fixed;
+	bottom: 50px;
 	display: flex;
 	flex-direction: column-reverse;
 	justify-content: center;

@@ -3,6 +3,7 @@ import reset from 'styled-reset';
 import { GNB_HEIGHT } from '@styles/layout';
 
 const GlobalStyle = createGlobalStyle`
+  @import url("https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css");
   ${reset}
 
   #root {

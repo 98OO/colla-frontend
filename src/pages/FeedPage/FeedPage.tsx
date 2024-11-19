@@ -3,6 +3,7 @@ import InfiniteScroll from 'react-infinite-scroller';
 import Divider from '@components/common/Divider/Divider';
 import Heading from '@components/common/Heading/Heading';
 import Select from '@components/common/Select/Select';
+import Collect from '@components/Feed/CollectFeed/Collect';
 import Feed from '@components/Feed/Feed';
 import useMeasureWidth from '@hooks/common/useMeasureWidth';
 import useFeedDrawer from '@hooks/post/useFeedDrawer';
@@ -82,15 +83,29 @@ const FeedPage = () => {
 						const sanitizedFeeds = getSanitizedFeeds(pageData.content.feeds);
 
 						return sanitizedFeeds.map((feedData: FeedData) => {
-							const { feedId } = feedData;
+							const { feedId, feedType } = feedData;
+
 							return (
-								<Feed
-									key={feedId}
-									feedData={feedData}
-									isDetailOpen={isDrawerOpen(feedId)}
-									openDetail={() => openDrawer(feedId)}
-									closeDetail={closeDrawer}
-								/>
+								<>
+									{feedType === 'NORMAL' && (
+										<Feed
+											key={feedId}
+											feedData={feedData}
+											isDetailOpen={isDrawerOpen(feedId)}
+											openDetail={() => openDrawer(feedId)}
+											closeDetail={closeDrawer}
+										/>
+									)}
+									{feedType === 'COLLECT' && (
+										<Collect
+											key={feedId}
+											feedData={feedData}
+											isDetailOpen={isDrawerOpen(feedId)}
+											openDetail={() => openDrawer(feedId)}
+											closeDetail={closeDrawer}
+										/>
+									)}
+								</>
 							);
 						});
 					})}
