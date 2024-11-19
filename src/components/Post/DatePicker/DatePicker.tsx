@@ -1,6 +1,7 @@
-import { useState } from 'react';
 import Flex from '@components/common/Flex/Flex';
 import IconButton from '@components/common/IconButton/IconButton';
+import useOutsideClick from '@hooks/common/useOutSideClick';
+import { useOverlay } from '@hooks/common/useOverlay';
 import useCalendar from '@hooks/post/useCalendar';
 import { CalendarProps } from '@type/post';
 import * as S from './DatePicker.styled';
@@ -10,7 +11,6 @@ const DatePicker = ({
 	isDaySelected,
 	toggleDaySelection,
 }: CalendarProps) => {
-	const [isOpen, setIsOpen] = useState(false);
 	const HEADER_DAYS = ['일', '월', '화', '수', '목', '금', '토'];
 	const {
 		curMonth,
@@ -23,12 +23,18 @@ const DatePicker = ({
 		getFormattedDay,
 	} = useCalendar();
 
+	const { isOpen, open, close } = useOverlay();
+
+	const ref = useOutsideClick({
+		onClickOutside: close,
+	});
+
 	return (
 		<Flex justify='space-between'>
-			<S.DatePickerButton onClick={() => setIsOpen(true)}>
+			<S.DatePickerButton onClick={open}>
 				{getFormattedDay(selectedDays[0])}
 			</S.DatePickerButton>
-			<S.CalendarContainer isOpen={isOpen}>
+			<S.CalendarContainer ref={ref} isOpen={isOpen}>
 				<S.CalendarHeader>
 					<IconButton
 						ariaLabel='prevMonth'
