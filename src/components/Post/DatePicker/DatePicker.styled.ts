@@ -9,7 +9,7 @@ export const DatePickerButton = styled.button`
 	border-radius: ${theme.units.radius.radius6};
 `;
 
-export const TimeInput = styled.input`
+export const TimeInput = styled.input<{ isError: boolean }>`
 	width: 90%;
 	height: ${theme.units.spacing.space28};
 	padding: ${theme.units.spacing.space6};
@@ -17,6 +17,10 @@ export const TimeInput = styled.input`
 	border: 1px solid ${theme.color.border.tertiary};
 	border-radius: ${theme.units.radius.radius6};
 	outline: none;
+
+	border: 1px solid
+		${({ isError }) =>
+			isError ? theme.color.border.danger : theme.color.border.tertiary};
 `;
 
 export const TimeToggleWrapper = styled.div`

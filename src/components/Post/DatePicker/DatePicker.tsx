@@ -7,6 +7,7 @@ import useOutsideClick from '@hooks/common/useOutSideClick';
 import { useOverlay } from '@hooks/common/useOverlay';
 import useCalendar from '@hooks/post/useCalendar';
 import { CalendarProps } from '@type/post';
+import getParsedTime from '@utils/getParsedTime';
 import * as S from './DatePicker.styled';
 
 const DatePicker = ({
@@ -34,12 +35,43 @@ const DatePicker = ({
 
 	const [toggleState, setToggleState] = useState(false);
 	const [pickedDay, setPickedDay] = useState(getFormattedDay(selectedDays[0]));
+	const [timeInput, setTimeInput] = useState('오전 12:00');
+	const [timeError, setTimeError] = useState(false);
 
 	const handleToggle = () => {
 		setToggleState((prev) => !prev);
 	};
 
+	const handleTimeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+		const inputValue = e.target.value;
+		setTimeInput(inputValue);
+	};
+
+	const handleSelectedDayTime = (hour: number = 0, minute: number = 0) => {
+		const { year, month, day } = selectedDays[0];
+		const timeIncludedDay = { year, month, day, hour, minute };
+
+		toggleDaySelection(timeIncludedDay);
+	};
+
+	const handleTimeBlur = () => {
+		const parsedTime = getParsedTime(timeInput);
+
+		if (parsedTime.isSuccess) {
+			const hour = parsedTime.data?.hours;
+			const minutes = parsedTime.data?.minutes;
+
+			handleSelectedDayTime(hour, minutes);
+			setTimeError(false);
+		} else {
+			setTimeError(true);
+		}
+	};
+
 	useEffect(() => {
+		if (!toggleState) {
+			handleSelectedDayTime();
+		}
 		setPickedDay(getFormattedDay(selectedDays[0], toggleState));
 	}, [selectedDays, toggleState]);
 
@@ -47,7 +79,16 @@ const DatePicker = ({
 		<Flex justify='space-between'>
 			<S.DatePickerButton onClick={open}>{pickedDay}</S.DatePickerButton>
 			<S.CalendarContainer ref={ref} isOpen={isOpen}>
-				{toggleState && <S.TimeInput type='text' placeholder='오전 12:00' />}
+				{toggleState && (
+					<S.TimeInput
+						type='text'
+						value={timeInput}
+						onChange={handleTimeChange}
+						onBlur={handleTimeBlur}
+						placeholder='오전 12:00'
+						isError={timeError}
+					/>
+				)}
 				<S.CalendarHeader>
 					<IconButton
 						ariaLabel='prevMonth'
