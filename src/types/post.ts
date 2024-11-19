@@ -2,6 +2,8 @@ export interface Day {
 	year: number;
 	month: number;
 	day: number;
+	hour?: number;
+	minute?: number;
 }
 
 export type SchedulingPostStep = 'selectDate' | 'setTime';

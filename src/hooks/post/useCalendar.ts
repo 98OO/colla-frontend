@@ -62,12 +62,19 @@ const useCalendar = () => {
 
 	const calendarDays = [...prevDays, ...curDays, ...nextDays];
 
-	const getToday = () => {
-		return {
+	const getToday = (includeTime: boolean = false) => {
+		const todayObject: Day = {
 			year: today.getFullYear(),
 			month: today.getMonth() + 1,
 			day: today.getDate(),
 		};
+
+		if (includeTime) {
+			todayObject.hour = today.getHours();
+			todayObject.minute = today.getMinutes();
+		}
+
+		return todayObject;
 	};
 
 	const isDayDisabled = ({ year, month, day }: Day) => {
@@ -90,14 +97,32 @@ const useCalendar = () => {
 	const isPrevDisabled = () => !isAfter(curDate, today);
 	const isNextDisabled = () => !isBefore(curDate, oneYearLater);
 
-	const getDayObject = (date: string): Day => {
-		const [year, month, day] = date.split('-').map(Number);
+	const getDayObject = (date: string, includeTime: boolean = false): Day => {
+		const [year, month, day, hour, minute] = date.split(/[-:]/).map(Number);
 
-		return { year, month: month - 1, day };
+		const dayObject: Day = { year, month, day };
+
+		if (includeTime) {
+			dayObject.hour = hour;
+			dayObject.minute = minute;
+		}
+
+		return dayObject;
 	};
 
-	const getFormattedDay = (day: Day) => {
-		return format(new Date(day.year, day.month - 1, day.day), 'yyyy-MM-dd');
+	const getFormattedDay = (day: Day, includeTime: boolean = false) => {
+		const dayFormat = includeTime ? 'yyyy-MM-dd HH:mm' : 'yyyy-MM-dd';
+
+		return format(
+			new Date(
+				day.year,
+				day.month - 1,
+				day.day,
+				day.hour ?? 0,
+				day.minute ?? 0
+			),
+			dayFormat
+		);
 	};
 
 	const getInitialDays = (targetDates: string[]) => {
@@ -110,10 +135,10 @@ const useCalendar = () => {
 
 	const getInitialDueAt = (dueAt: string) => {
 		if (dueAt === '') {
-			return [getToday()];
+			return [getToday(true)];
 		}
 
-		return [getDayObject(dueAt)];
+		return [getDayObject(dueAt, true)];
 	};
 
 	return {

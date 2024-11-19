@@ -15,7 +15,7 @@ const SetTimeStep = ({
 	dueAt,
 	handleDueAt,
 }: SetTimeProps) => {
-	const { getInitialDueAt } = useCalendar();
+	const { getInitialDueAt, getFormattedDay } = useCalendar();
 	const initalDueAt = getInitialDueAt(dueAt);
 	const { selectedDays, isDaySelected, toggleDaySelection } = useDaySelection(
 		initalDueAt,
@@ -29,7 +29,7 @@ const SetTimeStep = ({
 	};
 
 	const handleSumbit = () => {
-		handleDueAt('');
+		handleDueAt(getFormattedDay(selectedDays[0], true));
 		onSubmit();
 	};
 
