@@ -20,6 +20,8 @@ export const END_POINTS = {
 	FEEDS: (teamspaceId: number) => `teamspaces/${teamspaceId}/feeds`,
 	POST_NORMAL_FEED: (teamspaceId: number) =>
 		`teamspaces/${teamspaceId}/feeds/normal`,
+	POST_SCHEDULING_FEED: (teamspaceId: number) =>
+		`teamspaces/${teamspaceId}/feeds/scheduling`,
 	POST_COMMENT: (teamspaceId: number, feedId: number) =>
 		`teamspaces/${teamspaceId}/feeds/${feedId}/comments`,
 	COMMENT: (teamspaceId: number, feedId: number, commentId: number) =>

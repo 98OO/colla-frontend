@@ -83,4 +83,14 @@ export interface NormalFeedForm {
 	details: { content: string };
 }
 
+export interface SchedulingFeedForm {
+	title: string;
+	details: {
+		dueAt: string;
+		minTimeSegment: number;
+		maxTimeSegment: number;
+		targetDates: string[];
+	};
+}
+
 export type FeedData = NormalFeed | CollectFeed;
