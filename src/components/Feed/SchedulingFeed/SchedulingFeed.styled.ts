@@ -55,6 +55,7 @@ export const TimeColumn = styled.div`
 	padding-right: ${theme.units.spacing.space10};
 	border-right: 1px solid ${theme.color.border.tertiary};
 	font-size: ${theme.typography.fontSize.body.sm};
+	color: ${theme.color.text.secondary};
 	box-sizing: border-box;
 `;
 
@@ -106,4 +107,43 @@ export const Slot = styled.div<{ isSelected: boolean }>`
 	background-color: ${({ isSelected }) =>
 		isSelected ? theme.color.bg.iSelected : 'transparent'};
 	cursor: pointer;
+`;
+export const HeaderContainer = styled.div`
+	display: flex;
+	flex-grow: 1;
+	box-sizing: border-box;
+`;
+
+export const TimeHeader = styled.div`
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	height: 42px;
+	width: 50px;
+	padding-right: ${theme.units.spacing.space4};
+`;
+
+export const HeaderWrapper = styled.div`
+	display: flex;
+	flex-grow: 1;
+	box-sizing: border-box;
+`;
+
+export const Header = styled.div`
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	width: 100%;
+	height: 42px;
+	gap: ${theme.units.spacing.space4};
+`;
+
+export const DayOfWeek = styled.div`
+	font-size: ${theme.typography.fontSize.body.md};
+`;
+
+export const DayOfMonth = styled.div`
+	font-size: ${theme.typography.fontSize.body.sm};
+	color: ${theme.color.text.secondary};
 `;

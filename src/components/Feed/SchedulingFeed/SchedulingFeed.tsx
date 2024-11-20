@@ -8,6 +8,8 @@ import IconButton from '@components/common/IconButton/IconButton';
 import Text from '@components/common/Text/Text';
 import SchedulingDetail from '@components/Feed/Detail/Scheduling/SchedulingDetail';
 import FeedAuthor from '@components/Feed/FeedAuthors/FeedAuthor';
+import { format } from 'date-fns';
+import { ko } from 'date-fns/locale';
 import { getFormattedDate } from '@utils/getFormattedDate';
 import type { FeedData, SchedulingFeed } from '@type/feed';
 import * as S from './SchedulingFeed.styled';
@@ -147,8 +149,36 @@ const SchedulingFeed = ({
 		);
 	};
 
+	const getDayAndDate = (dateString: string) => {
+		const date = new Date(dateString);
+		const dayOfWeek = format(date, 'EEEEEE', { locale: ko });
+		const dayOfMonth = format(date, 'd');
+
+		return { dayOfWeek, dayOfMonth };
+	};
+
 	const availability = getAvailabilityInRange(totalAvailability);
 	const columnData = Object.entries(availability);
+
+	const renderHeader = () => {
+		return (
+			<S.HeaderContainer>
+				<S.TimeHeader />
+				<S.HeaderWrapper>
+					{columnData.map(([date]) => {
+						const { dayOfWeek, dayOfMonth } = getDayAndDate(date);
+
+						return (
+							<S.Header key={`header-${date}`}>
+								<S.DayOfWeek>{dayOfWeek}</S.DayOfWeek>
+								<S.DayOfMonth>{dayOfMonth}</S.DayOfMonth>
+							</S.Header>
+						);
+					})}
+				</S.HeaderWrapper>
+			</S.HeaderContainer>
+		);
+	};
 
 	const renderTable = () => {
 		return (
@@ -213,6 +243,7 @@ const SchedulingFeed = ({
 					<Divider size='sm' />
 					{details && (
 						<S.DetailWrapper>
+							{renderHeader()}
 							{renderTable()}
 							<Flex justify='space-between'>
 								<S.ParticipantsContainer>
