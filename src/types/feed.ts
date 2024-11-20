@@ -41,6 +41,14 @@ interface NormalDetails {
 	content: string | null;
 }
 
+export interface SubTaskResponse {
+	title: string | null;
+	status: 'PENDING' | 'COMPLETED';
+	updatedAt: string;
+	content: string | null;
+	author: Author;
+}
+
 export interface CollectResponse {
 	title: string | null;
 	status: 'PENDING' | 'COMPLETED';
