@@ -1,5 +1,4 @@
 import { styled } from 'styled-components';
-import { editorStyles } from '@styles/editorStyles';
 import theme from '@styles/theme';
 
 export const FeedContainer = styled.div`
@@ -20,7 +19,6 @@ export const SchedulingContainer = styled.div`
 `;
 
 export const DetailWrapper = styled.div`
-	${editorStyles}
 	padding: ${theme.units.spacing.space16} 0;
 `;
 
@@ -30,6 +28,14 @@ export const CommentPreviewWrapper = styled.div`
 	margin-left: ${theme.units.spacing.space24};
 	margin-bottom: ${theme.units.spacing.space6};
 	gap: ${theme.units.spacing.space8};
+`;
+
+export const ParticipantsContainer = styled.div`
+	display: flex;
+	flex-direction: column;
+	gap: ${theme.units.spacing.space16};
+	font-size: ${theme.typography.fontSize.header.xxs};
+	font-weight: ${theme.typography.fontWeight.semiBold};
 `;
 
 export const Participants = styled.div`

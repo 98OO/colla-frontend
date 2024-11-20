@@ -1,3 +1,5 @@
+import { useState } from 'react';
+import { Button } from '@components/common/Button/Button';
 import Divider from '@components/common/Divider/Divider';
 import Drawer from '@components/common/Drawer/Drawer';
 import Flex from '@components/common/Flex/Flex';
@@ -131,6 +133,14 @@ const SchedulingFeed = ({
 		);
 	};
 
+	const [isEditable, setIsEditable] = useState(false);
+
+	const handleAddSchedule = () => setIsEditable(true);
+	const handleCancelEdit = () => setIsEditable(false);
+	const handleSubmit = () => {
+		setIsEditable(false);
+	};
+
 	return (
 		<S.FeedContainer>
 			<S.SchedulingContainer>
@@ -147,7 +157,43 @@ const SchedulingFeed = ({
 					{details && (
 						<S.DetailWrapper>
 							{renderTable()}
-							<S.Participants>{`일정 작성 인원 (${details.numOfParticipants})`}</S.Participants>
+							<Flex justify='space-between'>
+								<S.ParticipantsContainer>
+									<S.Participants>{`일정 작성 인원 (${details.numOfParticipants})`}</S.Participants>
+									{details.numOfParticipants === 0 && (
+										<Text size='md' weight='medium' color='tertiary'>
+											가능한 일정을 작성해주세요
+										</Text>
+									)}
+									{details.numOfParticipants !== 0 && (
+										<Flex gap='6'>avatar</Flex>
+									)}
+								</S.ParticipantsContainer>
+								{!isEditable && (
+									<Button
+										label='일정 추가'
+										variant='primary'
+										size='md'
+										onClick={handleAddSchedule}
+									/>
+								)}
+								{isEditable && (
+									<Flex gap='16'>
+										<Button
+											label='취소'
+											variant='secondary'
+											size='md'
+											onClick={handleCancelEdit}
+										/>
+										<Button
+											label='등록'
+											variant='primary'
+											size='md'
+											onClick={handleSubmit}
+										/>
+									</Flex>
+								)}
+							</Flex>
 						</S.DetailWrapper>
 					)}
 				</Flex>
