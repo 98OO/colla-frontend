@@ -101,7 +101,9 @@ export const SlotGroup = styled.div`
 	background-color: ${theme.color.bg.primary};
 `;
 
-export const Slot = styled.div`
+export const Slot = styled.div<{ isSelected: boolean }>`
 	height: 20px;
-	background-color: transparent;
+	background-color: ${({ isSelected }) =>
+		isSelected ? theme.color.bg.iSelected : 'transparent'};
+	cursor: pointer;
 `;

@@ -80,6 +80,38 @@ const SchedulingFeed = ({
 
 	const rowCount = maxTimeSegment - minTimeSegment;
 
+	const [dragging, setDragging] = useState(false);
+	const [selectedSlots, setSelectedSlots] = useState<Set<string>>(new Set());
+
+	const toggleSlotSelection = (slotId: string) => {
+		setSelectedSlots((prev) => {
+			const updated = new Set(prev);
+			if (updated.has(slotId)) {
+				updated.delete(slotId);
+			} else {
+				updated.add(slotId);
+			}
+			return updated;
+		});
+	};
+
+	const handleMouseDown = (slotId: string) => {
+		setDragging(true);
+		toggleSlotSelection(slotId);
+	};
+
+	const handleMouseEnter = (slotId: string) => {
+		if (dragging) {
+			toggleSlotSelection(slotId);
+		}
+	};
+
+	const handleMouseUp = () => {
+		setDragging(false);
+	};
+
+	const isSelected = (slotId: string) => selectedSlots.has(slotId);
+
 	const convertTimeString = (num: number) => {
 		let hour = (num % 24) % 12;
 		if (hour === 0) {
@@ -108,7 +140,7 @@ const SchedulingFeed = ({
 
 	const renderTable = () => {
 		return (
-			<S.TableContainer>
+			<S.TableContainer onMouseLeave={() => setDragging(false)}>
 				<S.TimeColumn>
 					{Array.from({ length: rowCount / 2 }).map((_, idx) => (
 						<S.TimeGroup>
@@ -120,12 +152,27 @@ const SchedulingFeed = ({
 				<S.Table>
 					{columnData.map(([date, availArray]) => (
 						<S.Column key={`column-${date}`}>
-							{Array.from({ length: availArray.length / 2 }).map((_, idx) => (
-								<S.SlotGroup>
-									<S.Slot key={`${date}-${idx * 2}`} />
-									<S.Slot key={`${date}-${idx * 2 + 1}`} />
-								</S.SlotGroup>
-							))}
+							{Array.from({ length: availArray.length / 2 }).map((_, idx) => {
+								const slotId = `${date}-${idx}`;
+								return (
+									<S.SlotGroup key={slotId}>
+										<S.Slot
+											key={`${slotId}-1`}
+											onMouseDown={() => handleMouseDown(`${slotId}-1`)}
+											onMouseEnter={() => handleMouseEnter(`${slotId}-1`)}
+											onMouseUp={handleMouseUp}
+											isSelected={isSelected(`${slotId}-1`)}
+										/>
+										<S.Slot
+											key={`${slotId}-2`}
+											onMouseDown={() => handleMouseDown(`${slotId}-2`)}
+											onMouseEnter={() => handleMouseEnter(`${slotId}-2`)}
+											onMouseUp={handleMouseUp}
+											isSelected={isSelected(`${slotId}-2`)}
+										/>
+									</S.SlotGroup>
+								);
+							})}
 						</S.Column>
 					))}
 				</S.Table>
