@@ -74,6 +74,43 @@ const SchedulingFeed = ({
 	closeDetail,
 }: FeedProps) => {
 	const { author, title, createdAt, details, comments } = feedData;
+	const { minTimeSegment, maxTimeSegment, totalAvailability } = details;
+
+	const rowCount = maxTimeSegment - minTimeSegment;
+	const columnData = Object.keys(totalAvailability);
+
+	function convertTimeString(num: number) {
+		let hour = (num % 24) % 12;
+		if (hour === 0) {
+			hour = 12;
+		}
+
+		const period = num < 24 ? 'AM' : 'PM';
+
+		return `${hour} ${period}`;
+	}
+
+	const renderTable = () => {
+		return (
+			<S.TableContainer>
+				<S.TimeColumn>
+					{Array.from({ length: rowCount / 2 }).map((_, idx) => (
+						<S.TimeSlot>{`${convertTimeString(minTimeSegment + idx)}`}</S.TimeSlot>
+					))}
+				</S.TimeColumn>
+				{columnData.map((date, cIdx) => (
+					<S.Column>
+						{Array.from({ length: rowCount / 2 }).map(() => (
+							<S.SlotGroup>
+								<S.Slot key={`${date}-${cIdx / 2}`} />
+								<S.Slot key={`${date}-${cIdx / 2 + 1}`} />
+							</S.SlotGroup>
+						))}
+					</S.Column>
+				))}
+			</S.TableContainer>
+		);
+	};
 
 	return (
 		<S.FeedContainer>
@@ -88,7 +125,12 @@ const SchedulingFeed = ({
 				<Flex direction='column' gap='12'>
 					<Heading size='xs'>{title}</Heading>
 					<Divider size='sm' />
-					{details && <S.DetailWrapper>일정 조율 디테일</S.DetailWrapper>}
+					{details && (
+						<S.DetailWrapper>
+							{renderTable()}
+							<S.Participants>{`일정 작성 인원 (${details.numOfParticipants})`}</S.Participants>
+						</S.DetailWrapper>
+					)}
 				</Flex>
 				{isDetailOpen && (
 					<Drawer isOpen={isDetailOpen} onClose={closeDetail}>

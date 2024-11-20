@@ -31,3 +31,45 @@ export const CommentPreviewWrapper = styled.div`
 	margin-bottom: ${theme.units.spacing.space6};
 	gap: ${theme.units.spacing.space8};
 `;
+
+export const Participants = styled.div`
+	font-size: ${theme.typography.fontSize.header.xxs};
+	font-weight: ${theme.typography.fontWeight.semiBold};
+`;
+
+export const TableContainer = styled.div`
+	display: flex;
+	justify-content: center;
+	width: 100%;
+	margin-bottom: ${theme.units.spacing.space8};
+`;
+
+export const TimeColumn = styled.div`
+	display: flex;
+	flex-direction: column;
+	width: 40px;
+`;
+
+export const TimeSlot = styled.div`
+	width: 40px;
+	height: 40px;
+	font-weight: ${theme.typography.fontWeight.regular};
+	font-size: ${theme.typography.fontSize.body.sm};
+	color: ${theme.color.text.secondary};
+`;
+
+export const Column = styled.div`
+	display: flex;
+	flex-direction: column;
+`;
+
+export const SlotGroup = styled.div`
+	border: 1px solid ${theme.color.border.tertiary};
+	box-sizing: border-box;
+`;
+
+export const Slot = styled.div`
+	width: 90px;
+	height: 20px;
+	background-color: ${theme.color.bg.primary};
+`;
