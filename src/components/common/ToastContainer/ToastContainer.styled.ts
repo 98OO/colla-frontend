@@ -8,5 +8,5 @@ export const ToastContainerWrapper = styled.div`
 	justify-content: center;
 	align-items: center;
 	gap: ${(props) => props.theme.units.spacing.space12};
-	z-index: ${(props) => props.theme.elevation.zIndex.DIALOG};
+	z-index: 1001;
 `;
