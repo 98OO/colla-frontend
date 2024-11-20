@@ -101,4 +101,12 @@ export interface SchedulingFeedForm {
 	};
 }
 
+export interface CollectFeedForm {
+	teamspaceId: number;
+	title: string;
+	images: Omit<Image, 'id'>[];
+	attachments: Omit<Attachment, 'id'>[];
+	details: { content: string; dueAt: string | null };
+}
+
 export type FeedData = NormalFeed | CollectFeed;

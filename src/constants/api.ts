@@ -20,6 +20,8 @@ export const END_POINTS = {
 	FEEDS: (teamspaceId: number) => `teamspaces/${teamspaceId}/feeds`,
 	POST_NORMAL_FEED: (teamspaceId: number) =>
 		`teamspaces/${teamspaceId}/feeds/normal`,
+	POST_COLLECT_FEED: (teamspaceId: number) =>
+		`teamspaces/${teamspaceId}/feeds/collect`,
 	GET_COLLECT_SUB_TASK: (teamspaceId: number, feedId: number, userId: number) =>
 		`teamspaces/${teamspaceId}/feeds/collect/${feedId}/responses/users/${userId}`,
 	PATCH_COLLECT_SUB_TASK: (teamspaceId: number, feedId: number) =>
