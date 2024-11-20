@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Button } from '@components/common/Button/Button';
 import Divider from '@components/common/Divider/Divider';
 import Drawer from '@components/common/Drawer/Drawer';
@@ -95,19 +95,31 @@ const SchedulingFeed = ({
 		});
 	};
 
+	const [isEditable, setIsEditable] = useState(false);
+
+	const handleAddSchedule = () => setIsEditable(true);
+	const handleCancelEdit = () => setIsEditable(false);
+	const handleSubmit = () => {
+		setIsEditable(false);
+	};
+
 	const handleMouseDown = (slotId: string) => {
-		setDragging(true);
-		toggleSlotSelection(slotId);
+		if (isEditable) {
+			setDragging(true);
+			toggleSlotSelection(slotId);
+		}
 	};
 
 	const handleMouseEnter = (slotId: string) => {
-		if (dragging) {
+		if (dragging && isEditable) {
 			toggleSlotSelection(slotId);
 		}
 	};
 
 	const handleMouseUp = () => {
-		setDragging(false);
+		if (isEditable) {
+			setDragging(false);
+		}
 	};
 
 	const isSelected = (slotId: string) => selectedSlots.has(slotId);
@@ -180,13 +192,11 @@ const SchedulingFeed = ({
 		);
 	};
 
-	const [isEditable, setIsEditable] = useState(false);
-
-	const handleAddSchedule = () => setIsEditable(true);
-	const handleCancelEdit = () => setIsEditable(false);
-	const handleSubmit = () => {
-		setIsEditable(false);
-	};
+	useEffect(() => {
+		if (!isEditable) {
+			setSelectedSlots(new Set());
+		}
+	}, [isEditable]);
 
 	return (
 		<S.FeedContainer>
