@@ -1,8 +1,6 @@
 export const PROD = import.meta.env.VITE_NODE_ENV === 'production';
 
-export const BASE_URL = PROD
-	? `${window.location.protocol}//${import.meta.env.VITE_BASE_URL}`
-	: 'http://localhost:3000';
+export const BASE_URL = `https://api.colla.so/api/v1/`;
 
 export const END_POINTS = {
 	SIGNIN: 'auth/login',
@@ -20,6 +18,10 @@ export const END_POINTS = {
 	FEEDS: (teamspaceId: number) => `teamspaces/${teamspaceId}/feeds`,
 	POST_NORMAL_FEED: (teamspaceId: number) =>
 		`teamspaces/${teamspaceId}/feeds/normal`,
+	GET_COLLECT_SUB_TASK: (teamspaceId: number, feedId: number, userId: number) =>
+		`teamspaces/${teamspaceId}/feeds/collect/${feedId}/responses/users/${userId}`,
+	PATCH_COLLECT_SUB_TASK: (teamspaceId: number, feedId: number) =>
+		`teamspaces/${teamspaceId}/feeds/collect/${feedId}/responses`,
 	POST_COMMENT: (teamspaceId: number, feedId: number) =>
 		`teamspaces/${teamspaceId}/feeds/${feedId}/comments`,
 	COMMENT: (teamspaceId: number, feedId: number, commentId: number) =>
