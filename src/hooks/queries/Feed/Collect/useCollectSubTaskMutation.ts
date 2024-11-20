@@ -15,14 +15,14 @@ const useCollectSubTaskMutation = (
 	const queryClient = useQueryClient();
 
 	const handleCollectSubTaskSuccess = () => {
-		makeToast('하위 업무 작성 성공', 'Success');
+		makeToast('하위 업무 수정 성공', 'Success');
 		queryClient.invalidateQueries({ queryKey: ['feeds', teamspaceId] });
 		queryClient.invalidateQueries({ queryKey: ['subTask', feedId] });
 	};
 
 	const handleCollectSubTaskError = (error: Error) => {
 		if (error instanceof HTTPError) {
-			makeToast('하위 업무 작성을 실패했습니다. 다시 시도해주세요', 'Warning');
+			makeToast('하위 업무 수정을 실패했습니다. 다시 시도해주세요', 'Warning');
 		} else showBoundary(error);
 	};
 
