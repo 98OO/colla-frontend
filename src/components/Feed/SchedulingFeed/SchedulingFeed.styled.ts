@@ -39,37 +39,63 @@ export const Participants = styled.div`
 
 export const TableContainer = styled.div`
 	display: flex;
-	justify-content: center;
-	width: 100%;
-	margin-bottom: ${theme.units.spacing.space8};
+	flex-grow: 1;
+	margin-bottom: ${theme.units.spacing.space32};
 `;
 
 export const TimeColumn = styled.div`
 	display: flex;
 	flex-direction: column;
-	width: 40px;
+	padding-right: ${theme.units.spacing.space10};
+	border-right: 1px solid ${theme.color.border.tertiary};
+	font-size: ${theme.typography.fontSize.body.sm};
+	box-sizing: border-box;
+`;
+
+export const TimeGroup = styled.div`
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+	height: 40px;
+	box-sizing: border-box;
 `;
 
 export const TimeSlot = styled.div`
-	width: 40px;
-	height: 40px;
-	font-weight: ${theme.typography.fontWeight.regular};
-	font-size: ${theme.typography.fontSize.body.sm};
-	color: ${theme.color.text.secondary};
+	height: 20px;
+	padding-right: ${theme.units.spacing.space4};
+	text-align: right;
+	box-sizing: border-box;
+`;
+
+export const Table = styled.div`
+	display: flex;
+	flex-grow: 1;
+	font-size: ${theme.typography.fontSize.body.md};
+	box-sizing: border-box;
+	border-top: 1px solid ${theme.color.border.tertiary};
 `;
 
 export const Column = styled.div`
+	width: 100%;
 	display: flex;
 	flex-direction: column;
 `;
 
+export const Slots = styled.div`
+	cursor: pointer;
+`;
+
 export const SlotGroup = styled.div`
-	border: 1px solid ${theme.color.border.tertiary};
 	box-sizing: border-box;
+	height: 40px;
+	display: flex;
+	flex-direction: column;
+	border-bottom: 1px solid ${theme.color.border.tertiary};
+	border-right: 1px solid ${theme.color.border.tertiary};
+	background-color: ${theme.color.bg.primary};
 `;
 
 export const Slot = styled.div`
-	width: 90px;
 	height: 20px;
-	background-color: ${theme.color.bg.primary};
+	background-color: transparent;
 `;

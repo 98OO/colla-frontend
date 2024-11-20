@@ -77,9 +77,8 @@ const SchedulingFeed = ({
 	const { minTimeSegment, maxTimeSegment, totalAvailability } = details;
 
 	const rowCount = maxTimeSegment - minTimeSegment;
-	const columnData = Object.keys(totalAvailability);
 
-	function convertTimeString(num: number) {
+	const convertTimeString = (num: number) => {
 		let hour = (num % 24) % 12;
 		if (hour === 0) {
 			hour = 12;
@@ -88,26 +87,46 @@ const SchedulingFeed = ({
 		const period = num < 24 ? 'AM' : 'PM';
 
 		return `${hour} ${period}`;
-	}
+	};
+
+	const getAvailabilityInRange = (total: Record<string, number[]>) => {
+		const entries = Object.entries(total);
+
+		return entries.reduce(
+			(acc, [date, array]) => {
+				acc[date] = array.slice(minTimeSegment, maxTimeSegment);
+				return acc;
+			},
+			{} as Record<string, number[]>
+		);
+	};
+
+	const availability = getAvailabilityInRange(totalAvailability);
+	const columnData = Object.entries(availability);
 
 	const renderTable = () => {
 		return (
 			<S.TableContainer>
 				<S.TimeColumn>
 					{Array.from({ length: rowCount / 2 }).map((_, idx) => (
-						<S.TimeSlot>{`${convertTimeString(minTimeSegment + idx)}`}</S.TimeSlot>
+						<S.TimeGroup>
+							<S.TimeSlot>{`${convertTimeString(minTimeSegment + idx)}`}</S.TimeSlot>
+							<S.TimeSlot />
+						</S.TimeGroup>
 					))}
 				</S.TimeColumn>
-				{columnData.map((date, cIdx) => (
-					<S.Column>
-						{Array.from({ length: rowCount / 2 }).map(() => (
-							<S.SlotGroup>
-								<S.Slot key={`${date}-${cIdx / 2}`} />
-								<S.Slot key={`${date}-${cIdx / 2 + 1}`} />
-							</S.SlotGroup>
-						))}
-					</S.Column>
-				))}
+				<S.Table>
+					{columnData.map(([date, availArray]) => (
+						<S.Column key={`column-${date}`}>
+							{Array.from({ length: availArray.length / 2 }).map((_, idx) => (
+								<S.SlotGroup>
+									<S.Slot key={`${date}-${idx * 2}`} />
+									<S.Slot key={`${date}-${idx * 2 + 1}`} />
+								</S.SlotGroup>
+							))}
+						</S.Column>
+					))}
+				</S.Table>
 			</S.TableContainer>
 		);
 	};
