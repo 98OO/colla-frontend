@@ -24,6 +24,8 @@ export const END_POINTS = {
 		`teamspaces/${teamspaceId}/feeds/collect/${feedId}/responses/users/${userId}`,
 	PATCH_COLLECT_SUB_TASK: (teamspaceId: number, feedId: number) =>
 		`teamspaces/${teamspaceId}/feeds/collect/${feedId}/responses`,
+	POST_SCHEDULING_FEED: (teamspaceId: number) =>
+		`teamspaces/${teamspaceId}/feeds/scheduling`,
 	POST_COMMENT: (teamspaceId: number, feedId: number) =>
 		`teamspaces/${teamspaceId}/feeds/${feedId}/comments`,
 	COMMENT: (teamspaceId: number, feedId: number, commentId: number) =>
