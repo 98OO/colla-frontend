@@ -8,8 +8,8 @@ export const FeedContainer = styled.div`
 	gap: ${theme.units.spacing.space24};
 	height: calc(100% - 64px);
 	overflow: auto;
-	padding: ${theme.units.spacing.space12} ${theme.units.spacing.space32};
-	padding-bottom: 0;
+	padding: 0 ${theme.units.spacing.space32};
+	padding-bottom: ${theme.units.spacing.space24};
 	overflow-x: hidden;
 
 	&::-webkit-scrollbar {

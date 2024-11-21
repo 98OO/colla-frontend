@@ -1,5 +1,6 @@
 import { useRef, useState } from 'react';
 import useFileUpload from '@hooks/common/useFileUpload';
+import useCollectFeedMutation from '@hooks/queries/post/useCollectFeedMutation';
 import useNormalFeedMutation from '@hooks/queries/post/useNormalFeedMutation';
 import useUserStatusQuery from '@hooks/queries/useUserStatusQuery';
 import { replaceDataUrlsToAttachmentUrls } from '@utils/editorImageUtils';
@@ -15,6 +16,7 @@ const usePostEditor = () => {
 	const { userStatus } = useUserStatusQuery();
 	const { uploadFiles } = useFileUpload();
 	const { mutateNormalFeed } = useNormalFeedMutation();
+	const { mutateCollectFeed } = useCollectFeedMutation();
 
 	const [imageFiles, setImageFiles] = useState<File[]>([]);
 	const [attachmentFiles, setAttachmentFiles] = useState<File[]>([]);
@@ -75,7 +77,7 @@ const usePostEditor = () => {
 		}));
 	};
 
-	const handleSubmit = async (title: string) => {
+	const handleSubmit = async (title: string, dueAt?: string | null) => {
 		if (!editorRef.current) return;
 
 		const teamspaceId = userStatus?.profile.lastSeenTeamspaceId;
@@ -96,13 +98,23 @@ const usePostEditor = () => {
 		const images = getFileDTOs(imageFiles, imageUrls);
 		const attachments = getFileDTOs(attachmentFiles, attachmentUrls);
 
-		mutateNormalFeed({
-			teamspaceId,
-			title,
-			images,
-			attachments,
-			details: { content: replacedContent },
-		});
+		if (dueAt !== undefined) {
+			mutateCollectFeed({
+				teamspaceId,
+				title,
+				images,
+				attachments,
+				details: { content: replacedContent, dueAt },
+			});
+		} else {
+			mutateNormalFeed({
+				teamspaceId,
+				title,
+				images,
+				attachments,
+				details: { content: replacedContent },
+			});
+		}
 	};
 
 	return {
