@@ -87,7 +87,29 @@ const SchedulingFeed = ({
 	const rowCount = maxTimeSegment - minTimeSegment;
 
 	const [dragging, setDragging] = useState(false);
-	const [selectedSlots, setSelectedSlots] = useState<Set<string>>(new Set());
+	const [selectedSlots, setSelectedSlots] = useState<Set<string>>(() => {
+		const initialSelectedSlots = new Set<string>();
+		Object.entries(totalAvailability).forEach(([date, segments]) => {
+			segments.forEach((value, index) => {
+				if (value > 0) {
+					initialSelectedSlots.add(`${date}:${index}`);
+				}
+			});
+		});
+		return initialSelectedSlots;
+	});
+
+	useEffect(() => {
+		const initialSelectedSlots = new Set<string>();
+		Object.entries(totalAvailability).forEach(([date, segments]) => {
+			segments.forEach((value, index) => {
+				if (value > 0) {
+					initialSelectedSlots.add(`${date}:${index}`);
+				}
+			});
+		});
+		setSelectedSlots(initialSelectedSlots);
+	}, [totalAvailability]);
 
 	const toggleSlotSelection = (slotId: string) => {
 		setSelectedSlots((prev) => {
@@ -258,12 +280,6 @@ const SchedulingFeed = ({
 			</S.TableContainer>
 		);
 	};
-
-	useEffect(() => {
-		if (!isEditable) {
-			setSelectedSlots(new Set());
-		}
-	}, [isEditable]);
 
 	return (
 		<S.FeedContainer>
