@@ -63,6 +63,24 @@ interface CollectDetails {
 	responses: CollectResponse[];
 }
 
+interface SchedulingDetails {
+	dueAt: string;
+	isClosed: boolean;
+	minTimeSegment: number;
+	maxTimeSegment: number;
+	numOfParticipants: number;
+	totalAvailability: Record<string, number[]>;
+	responses: {
+		availabilities: Record<string, number[]>;
+		createdAt: string;
+		user: {
+			id: number;
+			profileImageUrl: string;
+			username: string;
+		};
+	}[];
+}
+
 interface FeedBase {
 	feedId: number;
 	author: Author;
@@ -81,6 +99,11 @@ interface NormalFeed extends FeedBase {
 export interface CollectFeed extends FeedBase {
 	feedType: 'COLLECT';
 	details: CollectDetails;
+}
+
+export interface SchedulingFeed extends FeedBase {
+	feedType: 'SCHEDULING';
+	details: SchedulingDetails;
 }
 
 export interface NormalFeedForm {
@@ -109,4 +132,4 @@ export interface CollectFeedForm {
 	details: { content: string; dueAt: string | null };
 }
 
-export type FeedData = NormalFeed | CollectFeed;
+export type FeedData = NormalFeed | CollectFeed | SchedulingFeed;

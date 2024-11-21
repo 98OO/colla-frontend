@@ -5,6 +5,7 @@ import Heading from '@components/common/Heading/Heading';
 import Select from '@components/common/Select/Select';
 import Collect from '@components/Feed/CollectFeed/Collect';
 import Feed from '@components/Feed/Feed';
+import SchedulingFeed from '@components/Feed/SchedulingFeed/SchedulingFeed';
 import useMeasureWidth from '@hooks/common/useMeasureWidth';
 import useFeedDrawer from '@hooks/post/useFeedDrawer';
 import { queryClient } from '@hooks/queries/common/queryClient';
@@ -98,6 +99,15 @@ const FeedPage = () => {
 									)}
 									{feedType === 'COLLECT' && (
 										<Collect
+											key={feedId}
+											feedData={feedData}
+											isDetailOpen={isDrawerOpen(feedId)}
+											openDetail={() => openDrawer(feedId)}
+											closeDetail={closeDrawer}
+										/>
+									)}
+									{feedType === 'SCHEDULING' && (
+										<SchedulingFeed
 											key={feedId}
 											feedData={feedData}
 											isDetailOpen={isDrawerOpen(feedId)}

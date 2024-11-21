@@ -4,6 +4,7 @@ export const FEED_SELECT_MAP: Record<string, FeedType> = {
 	전체: 'ALL',
 	일반: 'NORMAL',
 	자료수집: 'COLLECT',
+	일정조율: 'SCHEDULING',
 };
 
 export const EDITOR_IMAGE_ERROR_MESSAGE = {
