@@ -8,6 +8,7 @@ const useRecordTeamSpace = () => {
 	const handleSettingSucess = () => {
 		queryClient.invalidateQueries({ queryKey: ['userStatus'] });
 		queryClient.invalidateQueries({ queryKey: ['teamSetting'] });
+		queryClient.invalidateQueries({ queryKey: ['teamSpaceUsers'] });
 		queryClient.refetchQueries({ queryKey: ['chatChannel'] });
 	};
 

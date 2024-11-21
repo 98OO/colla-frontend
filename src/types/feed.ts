@@ -41,6 +41,14 @@ interface NormalDetails {
 	content: string | null;
 }
 
+export interface SubTaskResponse {
+	title: string | null;
+	status: 'PENDING' | 'COMPLETED';
+	updatedAt: string;
+	content: string | null;
+	author: Author;
+}
+
 export interface CollectResponse {
 	title: string | null;
 	status: 'PENDING' | 'COMPLETED';
@@ -114,6 +122,14 @@ export interface SchedulingFeedForm {
 		maxTimeSegment: number;
 		targetDates: string[];
 	};
+}
+
+export interface CollectFeedForm {
+	teamspaceId: number;
+	title: string;
+	images: Omit<Image, 'id'>[];
+	attachments: Omit<Attachment, 'id'>[];
+	details: { content: string; dueAt: string | null };
 }
 
 export type FeedData = NormalFeed | CollectFeed | SchedulingFeed;

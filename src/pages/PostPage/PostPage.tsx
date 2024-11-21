@@ -1,4 +1,5 @@
 import { useLocation } from 'react-router-dom';
+import CollectPost from '@components/Post/CollectPost/CollectPost';
 import LNB from '@components/Post/LNB/LNB';
 import NormalPost from '@components/Post/NormalPost/NormalPost';
 import SchedulingPost from '@components/Post/SchedulingPost/SchedulingPost';
@@ -14,6 +15,7 @@ const PostPage = () => {
 			<LNB selected={feedType} />
 			{feedType === 'normal' && <NormalPost />}
 			{feedType === 'scheduling' && <SchedulingPost />}
+			{feedType === 'collect' && <CollectPost />}
 		</S.Container>
 	);
 };
