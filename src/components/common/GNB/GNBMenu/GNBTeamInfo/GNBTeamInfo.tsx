@@ -26,6 +26,11 @@ const GNBTeamInfo = () => {
 	const lastSeenTeam = userStatus?.participatedTeamspaces.find(
 		(team) => team.teamspaceId === userStatus?.profile.lastSeenTeamspaceId
 	);
+	const teamRole = userStatus?.participatedTeamspaces?.find(
+		(teamspace) =>
+			teamspace.teamspaceId === userStatus?.profile.lastSeenTeamspaceId
+	)?.teamspaceRole;
+
 	const { formData, submitting, errors, register, handleSubmit } = useForm({
 		onSubmit: async () => {
 			if (userStatus?.profile.lastSeenTeamspaceId !== undefined) {
@@ -121,12 +126,16 @@ const GNBTeamInfo = () => {
 					</Flex>
 					<Divider size='sm' padding={4} />
 					<Flex paddingLeft='16' paddingRight='16' justify='space-between'>
-						<S.FooterWrapper onClick={() => navigate(PATH.SETTING)}>
-							<Icon name='Settings' size='sm' color='iSecondary' />
-							<Text size='md' weight='medium' color='secondary'>
-								설정
-							</Text>
-						</S.FooterWrapper>
+						<Flex>
+							{teamRole === 'LEADER' && (
+								<S.FooterWrapper onClick={() => navigate(PATH.SETTING)}>
+									<Icon name='Settings' size='sm' color='iSecondary' />
+									<Text size='md' weight='medium' color='secondary'>
+										설정
+									</Text>
+								</S.FooterWrapper>
+							)}
+						</Flex>
 						<S.FooterWrapper
 							onClick={() => mutateTeampSpaceCode(lastSeenTeam.teamspaceId)}>
 							<Icon name='Link' size='sm' color='iSecondary' />
