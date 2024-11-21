@@ -8,6 +8,8 @@ import IconButton from '@components/common/IconButton/IconButton';
 import Text from '@components/common/Text/Text';
 import SchedulingDetail from '@components/Feed/Detail/Scheduling/SchedulingDetail';
 import FeedAuthor from '@components/Feed/FeedAuthors/FeedAuthor';
+import useSchedulingAvailMutation from '@hooks/queries/post/useSchedulingAvailMutation';
+import useUserStatusQuery from '@hooks/queries/useUserStatusQuery';
 import { format } from 'date-fns';
 import { ko } from 'date-fns/locale';
 import { getFormattedDate } from '@utils/getFormattedDate';
@@ -77,8 +79,10 @@ const SchedulingFeed = ({
 	openDetail,
 	closeDetail,
 }: FeedProps) => {
-	const { author, title, createdAt, details, comments } = feedData;
+	const { feedId, author, title, createdAt, details, comments } = feedData;
 	const { minTimeSegment, maxTimeSegment, totalAvailability } = details;
+	const { userStatus } = useUserStatusQuery();
+	const teamspaceId = userStatus?.profile.lastSeenTeamspaceId;
 
 	const rowCount = maxTimeSegment - minTimeSegment;
 
@@ -98,12 +102,10 @@ const SchedulingFeed = ({
 	};
 
 	const [isEditable, setIsEditable] = useState(false);
+	const { mutateSchedulingAvail } = useSchedulingAvailMutation();
 
 	const handleAddSchedule = () => setIsEditable(true);
 	const handleCancelEdit = () => setIsEditable(false);
-	const handleSubmit = () => {
-		setIsEditable(false);
-	};
 
 	const handleMouseDown = (slotId: string) => {
 		if (isEditable) {
@@ -160,6 +162,34 @@ const SchedulingFeed = ({
 	const availability = getAvailabilityInRange(totalAvailability);
 	const columnData = Object.entries(availability);
 
+	const prepareAvailabilities = () => {
+		const availabilities: Record<string, number[]> = {};
+
+		selectedSlots.forEach((slotId) => {
+			const [date, index] = slotId.split(':');
+			const timeIndex = parseInt(index, 10) + minTimeSegment;
+
+			const isoDate = format(new Date(date), 'yyyy-MM-dd');
+
+			if (!availabilities[isoDate]) {
+				availabilities[isoDate] = Array(48).fill(0);
+			}
+
+			availabilities[isoDate][timeIndex] = 1;
+		});
+
+		return availabilities;
+	};
+
+	const handleSubmit = async () => {
+		const availabilites = prepareAvailabilities();
+
+		if (!teamspaceId) return;
+
+		mutateSchedulingAvail(teamspaceId, feedId, availabilites);
+		setIsEditable(false);
+	};
+
 	const renderHeader = () => {
 		return (
 			<S.HeaderContainer>
@@ -196,21 +226,28 @@ const SchedulingFeed = ({
 						<S.Column key={`column-${date}`}>
 							{Array.from({ length: availArray.length / 2 }).map((_, idx) => {
 								const slotId = `${date}-${idx}`;
+
 								return (
 									<S.SlotGroup key={slotId}>
 										<S.Slot
 											key={`${slotId}-1`}
-											onMouseDown={() => handleMouseDown(`${slotId}-1`)}
-											onMouseEnter={() => handleMouseEnter(`${slotId}-1`)}
+											onMouseDown={() => handleMouseDown(`${date}:${idx * 2}`)}
+											onMouseEnter={() =>
+												handleMouseEnter(`${date}:${idx * 2}`)
+											}
 											onMouseUp={handleMouseUp}
-											isSelected={isSelected(`${slotId}-1`)}
+											isSelected={isSelected(`${date}:${idx * 2}`)}
 										/>
 										<S.Slot
 											key={`${slotId}-2`}
-											onMouseDown={() => handleMouseDown(`${slotId}-2`)}
-											onMouseEnter={() => handleMouseEnter(`${slotId}-2`)}
+											onMouseDown={() =>
+												handleMouseDown(`${date}:${idx * 2 + 1}`)
+											}
+											onMouseEnter={() =>
+												handleMouseEnter(`${date}:${idx * 2 + 1}`)
+											}
 											onMouseUp={handleMouseUp}
-											isSelected={isSelected(`${slotId}-2`)}
+											isSelected={isSelected(`${date}:${idx * 2 + 1}`)}
 										/>
 									</S.SlotGroup>
 								);
