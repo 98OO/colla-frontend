@@ -7,6 +7,7 @@ import GNBTeamSpace from '@components/common/GNB/GNBMenu/GNBTeamSpace/GNBTeamSpa
 import Heading from '@components/common/Heading/Heading';
 import Icon from '@components/common/Icon/Icon';
 import useMenu from '@hooks/common/useMenu';
+import useRecordTeamSpace from '@hooks/queries/teamspace/useRecordTeamSpace';
 import useUserStatusQuery from '@hooks/queries/useUserStatusQuery';
 import { StompSubscription } from '@stomp/stompjs';
 import useSocketStore from '@stores/socketStore';
@@ -19,6 +20,7 @@ const GNB = () => {
 	const lastSeenTeam = userStatus?.participatedTeamspaces.find(
 		(team) => team.teamspaceId === userStatus?.profile.lastSeenTeamspaceId
 	);
+	const { mutateRecordTeamSpace } = useRecordTeamSpace();
 
 	const { toggleMenu: handleTeamSpace, showMenu: showTeamSpace } = useMenu();
 	const { toggleMenu: handleTeamInfo, showMenu: showTeamInfo } = useMenu();
@@ -95,6 +97,11 @@ const GNB = () => {
 			};
 		};
 	}, [userStatus, stompClient]);
+
+	useEffect(() => {
+		if (userStatus?.profile.lastSeenTeamspaceId === null && userStatus)
+			mutateRecordTeamSpace(userStatus.participatedTeamspaces[0].teamspaceId);
+	}, [userStatus]);
 
 	useLayoutEffect(() => {
 		updatePosition();
