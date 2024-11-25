@@ -78,7 +78,6 @@ const Feed = ({
 }: FeedProps) => {
 	const { author, title, createdAt, details, attachments, comments } = feedData;
 	const [showMoreButton, setShowMoreButton] = useState(false);
-	// const [commentText, setCommentText] = useState('');
 	const detailRef = useRef<HTMLDivElement | null>(null);
 
 	useEffect(() => {
@@ -98,16 +97,6 @@ const Feed = ({
 			observer.disconnect();
 		};
 	}, [details?.content]);
-
-	// const handleCommentChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-	// 	setCommentText(e.target.value);
-	// };
-
-	// const handleCommentSubmit = () => {
-	// 	// 여기에 댓글 제출 로직 추가
-	// 	console.log('Comment submitted:', commentText);
-	// 	setCommentText('');
-	// };
 
 	return (
 		<S.FeedContainer>
@@ -174,35 +163,6 @@ const Feed = ({
 				gap='8'>
 				<CommentPreview comments={comments} />
 			</Flex>
-			{/* <Flex paddingRight='24' paddingLeft='24'>
-				<Flex
-					direction='row'
-					gap='12'
-					grow='1'
-					position='relative'
-					marginTop='4'
-					marginBottom='6'>
-					<Input
-						size='md'
-						border='underLine'
-						placeholder='댓글 달기...'
-						isError={false}
-						maxLength={50}
-						onChange={handleCommentChange}
-						value={commentText}
-					/>
-					{commentText.trim() && (
-						<S.CommentWriteButton>
-							<Button
-								size='sm'
-								label='작성'
-								variant='text'
-								onClick={handleCommentSubmit}
-							/>
-						</S.CommentWriteButton>
-					)}
-				</Flex>
-			</Flex> */}
 		</S.FeedContainer>
 	);
 };
