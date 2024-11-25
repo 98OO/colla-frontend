@@ -5,23 +5,17 @@ import Drawer from '@components/common/Drawer/Drawer';
 import Flex from '@components/common/Flex/Flex';
 import Heading from '@components/common/Heading/Heading';
 import Icon from '@components/common/Icon/Icon';
-import IconButton from '@components/common/IconButton/IconButton';
 import Text from '@components/common/Text/Text';
+import ActionButton from '@components/Feed/ActionButton/ActionButton';
 import SubTask from '@components/Feed/CollectFeed/SubTask/SubTask';
 import CollectDetail from '@components/Feed/Detail/Collect/CollectDetail';
 import FeedAuthor from '@components/Feed/FeedAuthors/FeedAuthor';
+import { CommentPreview } from '@components/Feed/Preview/Preview';
 import ProgressChip from '@components/Feed/ProgressChip/ProgressChip';
 import { getFormattedDate } from '@utils/getFormattedDate';
 import { FEED_DETAIL_MAX_HEIGHT } from '@styles/layout';
-import type { FeedData, CollectFeed } from '@type/feed';
+import type { CollectFeed } from '@type/feed';
 import * as S from './CollectFeed.styled';
-
-interface ActionButtonProps {
-	icon: 'Comment' | 'Attachment';
-	count: number;
-	onClick: () => void;
-	ariaLabel: string;
-}
 
 interface FeedProps {
 	feedData: CollectFeed;
@@ -29,49 +23,6 @@ interface FeedProps {
 	openDetail: () => void;
 	closeDetail: () => void;
 }
-
-const ActionButton = ({
-	icon,
-	count,
-	onClick,
-	ariaLabel,
-}: ActionButtonProps) => {
-	return (
-		<Flex align='center'>
-			<IconButton
-				icon={icon}
-				size='md'
-				color='secondary'
-				ariaLabel={ariaLabel}
-				onClick={onClick}
-			/>
-			<Text color='secondary' size='md' weight='medium'>
-				{count === 0 ? '0' : String(count)}
-			</Text>
-		</Flex>
-	);
-};
-
-const CommentPreview = ({ comments }: { comments: FeedData['comments'] }) => {
-	if (comments.length === 0) return null;
-
-	const commentsToShow =
-		comments.length === 1 ? comments.slice(-1) : comments.slice(-2);
-	return (
-		<Flex direction='column' gap='8' marginBottom='10'>
-			{commentsToShow.map((comment) => (
-				<Flex key={comment.id} gap='6'>
-					<Text size='md' weight='semiBold'>
-						{comment.author.username}
-					</Text>
-					<Text size='md' weight='regular'>
-						{comment.content}
-					</Text>
-				</Flex>
-			))}
-		</Flex>
-	);
-};
 
 const CollectFeed = ({
 	feedData,
