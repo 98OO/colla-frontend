@@ -1,23 +1,17 @@
 import { useEffect, useState } from 'react';
 import { Button } from '@components/common/Button/Button';
-import Divider from '@components/common/Divider/Divider';
-import Drawer from '@components/common/Drawer/Drawer';
 import Flex from '@components/common/Flex/Flex';
-import Heading from '@components/common/Heading/Heading';
 import Text from '@components/common/Text/Text';
-import ActionButton from '@components/Feed/ActionButton/ActionButton';
+import BaseFeed from '@components/Feed/BaseFeed/BaseFeed';
 import SchedulingDetail from '@components/Feed/Detail/Scheduling/SchedulingDetail';
-import FeedAuthor from '@components/Feed/FeedAuthors/FeedAuthor';
-import { CommentPreview } from '@components/Feed/Preview/Preview';
 import useSchedulingAvailMutation from '@hooks/queries/post/useSchedulingAvailMutation';
 import useUserStatusQuery from '@hooks/queries/useUserStatusQuery';
 import { format } from 'date-fns';
 import { ko } from 'date-fns/locale';
-import { getFormattedDate } from '@utils/getFormattedDate';
 import type { SchedulingFeed } from '@type/feed';
 import * as S from './SchedulingFeed.styled';
 
-interface FeedProps {
+interface SchedulingFeedProps {
 	feedData: SchedulingFeed;
 	isDetailOpen: boolean;
 	openDetail: () => void;
@@ -29,8 +23,8 @@ const SchedulingFeed = ({
 	isDetailOpen,
 	openDetail,
 	closeDetail,
-}: FeedProps) => {
-	const { feedId, author, title, createdAt, details, comments } = feedData;
+}: SchedulingFeedProps) => {
+	const { feedId, details } = feedData;
 	const { minTimeSegment, maxTimeSegment, totalAvailability } = details;
 	const { userStatus } = useUserStatusQuery();
 	const teamspaceId = userStatus?.profile.lastSeenTeamspaceId;
@@ -233,83 +227,54 @@ const SchedulingFeed = ({
 	};
 
 	return (
-		<S.FeedContainer>
-			<S.SchedulingContainer>
-				<FeedAuthor
-					profile={author.profileImageUrl}
-					initial={author.username.charAt(0)}
-					title={author.username}
-					createdAt={getFormattedDate(createdAt, 'feed')}
-					tag={author?.tag?.name || ''}
-				/>
-				<Flex direction='column' gap='12'>
-					<Heading size='xs'>{title}</Heading>
-					<Divider size='sm' />
-					{details && (
-						<S.DetailWrapper>
-							{renderHeader()}
-							{renderTable()}
-							<Flex justify='space-between'>
-								<S.ParticipantsContainer>
-									<S.Participants>{`일정 작성 인원 (${details.numOfParticipants})`}</S.Participants>
-									{details.numOfParticipants === 0 && (
-										<Text size='md' weight='medium' color='tertiary'>
-											가능한 일정을 작성해주세요
-										</Text>
-									)}
-									{details.numOfParticipants !== 0 && (
-										<Flex gap='6'>avatar</Flex>
-									)}
-								</S.ParticipantsContainer>
-								{!isEditable && (
-									<Button
-										label='일정 추가'
-										variant='primary'
-										size='md'
-										onClick={handleAddSchedule}
-									/>
-								)}
-								{isEditable && (
-									<Flex gap='16'>
-										<Button
-											label='취소'
-											variant='secondary'
-											size='md'
-											onClick={handleCancelEdit}
-										/>
-										<Button
-											label='등록'
-											variant='primary'
-											size='md'
-											onClick={handleSubmit}
-										/>
-									</Flex>
-								)}
+		<BaseFeed
+			feedData={feedData}
+			isDetailOpen={isDetailOpen}
+			openDetail={openDetail}
+			closeDetail={closeDetail}
+			renderDetail={() => <SchedulingDetail feedData={feedData} />}>
+			{details && (
+				<S.DetailWrapper>
+					{renderHeader()}
+					{renderTable()}
+					<Flex justify='space-between'>
+						<S.ParticipantsContainer>
+							<S.Participants>{`일정 작성 인원 (${details.numOfParticipants})`}</S.Participants>
+							{details.numOfParticipants === 0 && (
+								<Text size='md' weight='medium' color='tertiary'>
+									가능한 일정을 작성해주세요
+								</Text>
+							)}
+							{details.numOfParticipants !== 0 && <Flex gap='6'>avatar</Flex>}
+						</S.ParticipantsContainer>
+						{!isEditable && (
+							<Button
+								label='일정 추가'
+								variant='primary'
+								size='md'
+								onClick={handleAddSchedule}
+							/>
+						)}
+						{isEditable && (
+							<Flex gap='16'>
+								<Button
+									label='취소'
+									variant='secondary'
+									size='md'
+									onClick={handleCancelEdit}
+								/>
+								<Button
+									label='등록'
+									variant='primary'
+									size='md'
+									onClick={handleSubmit}
+								/>
 							</Flex>
-						</S.DetailWrapper>
-					)}
-				</Flex>
-				{isDetailOpen && (
-					<Drawer isOpen={isDetailOpen} onClose={closeDetail}>
-						<SchedulingDetail feedData={feedData} />
-					</Drawer>
-				)}
-			</S.SchedulingContainer>
-			<Flex direction='column' paddingRight='24' paddingLeft='24'>
-				<Divider size='sm' padding={16} />
-			</Flex>
-			<Flex direction='row' marginLeft='18' gap='8'>
-				<ActionButton
-					icon='Comment'
-					count={comments.length}
-					onClick={openDetail}
-					ariaLabel='댓글'
-				/>
-			</Flex>
-			<S.CommentPreviewWrapper>
-				<CommentPreview comments={comments} />
-			</S.CommentPreviewWrapper>
-		</S.FeedContainer>
+						)}
+					</Flex>
+				</S.DetailWrapper>
+			)}
+		</BaseFeed>
 	);
 };
 
