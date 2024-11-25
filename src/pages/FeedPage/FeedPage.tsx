@@ -3,9 +3,7 @@ import InfiniteScroll from 'react-infinite-scroller';
 import Divider from '@components/common/Divider/Divider';
 import Heading from '@components/common/Heading/Heading';
 import Select from '@components/common/Select/Select';
-import CollectFeed from '@components/Feed/CollectFeed/CollectFeed';
-import NormalFeed from '@components/Feed/NormalFeed/NormalFeed';
-import SchedulingFeed from '@components/Feed/SchedulingFeed/SchedulingFeed';
+import Feed from '@components/Feed/Feed';
 import useMeasureWidth from '@hooks/common/useMeasureWidth';
 import useFeedDrawer from '@hooks/post/useFeedDrawer';
 import { queryClient } from '@hooks/queries/common/queryClient';
@@ -84,38 +82,16 @@ const FeedPage = () => {
 						const sanitizedFeeds = getSanitizedFeeds(pageData.content.feeds);
 
 						return sanitizedFeeds.map((feedData: FeedData) => {
-							const { feedId, feedType } = feedData;
+							const { feedId } = feedData;
 
 							return (
-								<>
-									{feedType === 'NORMAL' && (
-										<NormalFeed
-											key={feedId}
-											feedData={feedData}
-											isDetailOpen={isDrawerOpen(feedId)}
-											openDetail={() => openDrawer(feedId)}
-											closeDetail={closeDrawer}
-										/>
-									)}
-									{feedType === 'COLLECT' && (
-										<CollectFeed
-											key={feedId}
-											feedData={feedData}
-											isDetailOpen={isDrawerOpen(feedId)}
-											openDetail={() => openDrawer(feedId)}
-											closeDetail={closeDrawer}
-										/>
-									)}
-									{feedType === 'SCHEDULING' && (
-										<SchedulingFeed
-											key={feedId}
-											feedData={feedData}
-											isDetailOpen={isDrawerOpen(feedId)}
-											openDetail={() => openDrawer(feedId)}
-											closeDetail={closeDrawer}
-										/>
-									)}
-								</>
+								<Feed
+									key={feedId}
+									feedData={feedData}
+									isDetailOpen={isDrawerOpen(feedId)}
+									openDetail={() => openDrawer(feedId)}
+									closeDetail={closeDrawer}
+								/>
 							);
 						});
 					})}
