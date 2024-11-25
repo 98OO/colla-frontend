@@ -3,8 +3,8 @@ import InfiniteScroll from 'react-infinite-scroller';
 import Divider from '@components/common/Divider/Divider';
 import Heading from '@components/common/Heading/Heading';
 import Select from '@components/common/Select/Select';
-import Collect from '@components/Feed/CollectFeed/Collect';
-import Feed from '@components/Feed/Feed';
+import CollectFeed from '@components/Feed/CollectFeed/CollectFeed';
+import NormalFeed from '@components/Feed/NormalFeed/NormalFeed';
 import SchedulingFeed from '@components/Feed/SchedulingFeed/SchedulingFeed';
 import useMeasureWidth from '@hooks/common/useMeasureWidth';
 import useFeedDrawer from '@hooks/post/useFeedDrawer';
@@ -89,7 +89,7 @@ const FeedPage = () => {
 							return (
 								<>
 									{feedType === 'NORMAL' && (
-										<Feed
+										<NormalFeed
 											key={feedId}
 											feedData={feedData}
 											isDetailOpen={isDrawerOpen(feedId)}
@@ -98,7 +98,7 @@ const FeedPage = () => {
 										/>
 									)}
 									{feedType === 'COLLECT' && (
-										<Collect
+										<CollectFeed
 											key={feedId}
 											feedData={feedData}
 											isDetailOpen={isDrawerOpen(feedId)}

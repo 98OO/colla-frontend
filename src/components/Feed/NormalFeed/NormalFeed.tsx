@@ -4,17 +4,14 @@ import Divider from '@components/common/Divider/Divider';
 import Drawer from '@components/common/Drawer/Drawer';
 import Flex from '@components/common/Flex/Flex';
 import Heading from '@components/common/Heading/Heading';
-import Icon from '@components/common/Icon/Icon';
 import IconButton from '@components/common/IconButton/IconButton';
 import Text from '@components/common/Text/Text';
-import SubTask from '@components/Feed/CollectFeed/SubTask/SubTask';
-import CollectDetail from '@components/Feed/Detail/Collect/CollectDetail';
+import NormalDetail from '@components/Feed/Detail/Normal/NormalDetail';
 import FeedAuthor from '@components/Feed/FeedAuthors/FeedAuthor';
-import ProgressChip from '@components/Feed/ProgressChip/ProgressChip';
 import { getFormattedDate } from '@utils/getFormattedDate';
 import { FEED_DETAIL_MAX_HEIGHT } from '@styles/layout';
-import type { FeedData, CollectFeed } from '@type/feed';
-import * as S from './Collect.styled';
+import type { FeedData } from '@type/feed';
+import * as S from './NormalFeed.styled';
 
 interface ActionButtonProps {
 	icon: 'Comment' | 'Attachment';
@@ -24,7 +21,7 @@ interface ActionButtonProps {
 }
 
 interface FeedProps {
-	feedData: CollectFeed;
+	feedData: FeedData;
 	isDetailOpen: boolean;
 	openDetail: () => void;
 	closeDetail: () => void;
@@ -73,7 +70,7 @@ const CommentPreview = ({ comments }: { comments: FeedData['comments'] }) => {
 	);
 };
 
-const Collect = ({
+const NormalFeed = ({
 	feedData,
 	isDetailOpen,
 	openDetail,
@@ -103,7 +100,7 @@ const Collect = ({
 
 	return (
 		<S.FeedContainer>
-			<S.CollectContainer>
+			<Flex direction='column' paddingLeft='24' paddingRight='24' gap='24'>
 				<FeedAuthor
 					profile={author.profileImageUrl}
 					initial={author.username.charAt(0)}
@@ -114,69 +111,31 @@ const Collect = ({
 				<Flex direction='column' gap='12'>
 					<Heading size='xs'>{title}</Heading>
 					<Divider size='sm' />
-					<Flex direction='column' gap='16'>
-						<Flex align='center' gap='14'>
-							<Icon name='Clock' />
-							<Flex gap='8'>
-								<ProgressChip type='PENDING' status={!details.isClosed} />
-								<ProgressChip type='COMPLETED' status={details.isClosed} />
-							</Flex>
+					{details && (
+						<S.DetailWrapper ref={detailRef} hasMoreButton={showMoreButton}>
+							<div
+								dangerouslySetInnerHTML={{ __html: details.content || '' }}
+							/>
+						</S.DetailWrapper>
+					)}
+					{showMoreButton && (
+						<Flex>
+							<Button
+								type='button'
+								size='sm'
+								variant='secondary'
+								label='더보기'
+								onClick={openDetail}
+							/>
 						</Flex>
-						<Flex align='center' gap='14'>
-							<Icon name='Calendar' />
-							<Text size='md' weight='regular'>
-								{getFormattedDate(createdAt, 'detail')}
-							</Text>
-						</Flex>
-						<Flex align='center' gap='14'>
-							<Icon name='Calendar' />
-							{details.dueAt && (
-								<Text size='md' weight='regular'>
-									{`${getFormattedDate(details.dueAt, 'detail')} 까지`}
-								</Text>
-							)}
-						</Flex>
-						{details && (
-							<S.DetailWrapper ref={detailRef} hasMoreButton={showMoreButton}>
-								<div
-									dangerouslySetInnerHTML={{ __html: details.content || '' }}
-								/>
-							</S.DetailWrapper>
-						)}
-						{showMoreButton && (
-							<Flex>
-								<Button
-									type='button'
-									size='sm'
-									variant='secondary'
-									label='더보기'
-									onClick={openDetail}
-								/>
-							</Flex>
-						)}
-					</Flex>
-					<Flex direction='column' gap='12'>
-						<Flex align='center' gap='6'>
-							<Text size='lg' weight='semiBold'>
-								하위업무
-							</Text>
-							<Text size='lg' weight='semiBold' color='tertiary'>
-								{details.responses.length.toString()}
-							</Text>
-						</Flex>
-						<Flex direction='column'>
-							{details.responses.map((task) => (
-								<SubTask subTaskData={task} onClick={openDetail} />
-							))}
-						</Flex>
-					</Flex>
+					)}
 				</Flex>
 				{isDetailOpen && (
 					<Drawer isOpen={isDetailOpen} onClose={closeDetail}>
-						<CollectDetail feedData={feedData} />
+						<NormalDetail feedData={feedData} />
 					</Drawer>
 				)}
-			</S.CollectContainer>
+			</Flex>
 			<Flex direction='column' paddingRight='24' paddingLeft='24'>
 				<Divider size='sm' padding={16} />
 			</Flex>
@@ -196,11 +155,16 @@ const Collect = ({
 					/>
 				)}
 			</Flex>
-			<S.CommentPreviewWrapper>
+			<Flex
+				direction='row'
+				marginTop='12'
+				marginLeft='24'
+				marginBottom='6'
+				gap='8'>
 				<CommentPreview comments={comments} />
-			</S.CommentPreviewWrapper>
+			</Flex>
 		</S.FeedContainer>
 	);
 };
 
-export default Collect;
+export default NormalFeed;
