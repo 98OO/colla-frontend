@@ -1,4 +1,3 @@
-import { useEffect, useRef, useState } from 'react';
 import { Button } from '@components/common/Button/Button';
 import Divider from '@components/common/Divider/Divider';
 import Drawer from '@components/common/Drawer/Drawer';
@@ -8,13 +7,13 @@ import ActionButton from '@components/Feed/ActionButton/ActionButton';
 import NormalDetail from '@components/Feed/Detail/Normal/NormalDetail';
 import FeedAuthor from '@components/Feed/FeedAuthors/FeedAuthor';
 import { CommentPreview } from '@components/Feed/Preview/Preview';
+import useDetailObserver from '@hooks/feed/useDetailObserver';
 import { getFormattedDate } from '@utils/getFormattedDate';
-import { FEED_DETAIL_MAX_HEIGHT } from '@styles/layout';
-import type { FeedData } from '@type/feed';
+import type { NormalFeed } from '@type/feed';
 import * as S from './NormalFeed.styled';
 
 interface FeedProps {
-	feedData: FeedData;
+	feedData: NormalFeed;
 	isDetailOpen: boolean;
 	openDetail: () => void;
 	closeDetail: () => void;
@@ -27,26 +26,8 @@ const NormalFeed = ({
 	closeDetail,
 }: FeedProps) => {
 	const { author, title, createdAt, details, attachments, comments } = feedData;
-	const [showMoreButton, setShowMoreButton] = useState(false);
-	const detailRef = useRef<HTMLDivElement | null>(null);
-
-	useEffect(() => {
-		const observer = new ResizeObserver(() => {
-			if (!detailRef.current) return;
-
-			setShowMoreButton(
-				detailRef.current.scrollHeight > FEED_DETAIL_MAX_HEIGHT
-			);
-		});
-
-		if (detailRef.current) {
-			observer.observe(detailRef.current);
-		}
-
-		return () => {
-			observer.disconnect();
-		};
-	}, [details?.content]);
+	const { content } = details;
+	const { showMoreButton, detailRef } = useDetailObserver(content);
 
 	return (
 		<S.FeedContainer>

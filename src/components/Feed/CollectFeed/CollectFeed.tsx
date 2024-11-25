@@ -1,4 +1,3 @@
-import { useEffect, useRef, useState } from 'react';
 import { Button } from '@components/common/Button/Button';
 import Divider from '@components/common/Divider/Divider';
 import Drawer from '@components/common/Drawer/Drawer';
@@ -12,8 +11,8 @@ import CollectDetail from '@components/Feed/Detail/Collect/CollectDetail';
 import FeedAuthor from '@components/Feed/FeedAuthors/FeedAuthor';
 import { CommentPreview } from '@components/Feed/Preview/Preview';
 import ProgressChip from '@components/Feed/ProgressChip/ProgressChip';
+import useDetailObserver from '@hooks/feed/useDetailObserver';
 import { getFormattedDate } from '@utils/getFormattedDate';
-import { FEED_DETAIL_MAX_HEIGHT } from '@styles/layout';
 import type { CollectFeed } from '@type/feed';
 import * as S from './CollectFeed.styled';
 
@@ -31,26 +30,8 @@ const CollectFeed = ({
 	closeDetail,
 }: FeedProps) => {
 	const { author, title, createdAt, details, attachments, comments } = feedData;
-	const [showMoreButton, setShowMoreButton] = useState(false);
-	const detailRef = useRef<HTMLDivElement | null>(null);
-
-	useEffect(() => {
-		const observer = new ResizeObserver(() => {
-			if (!detailRef.current) return;
-
-			setShowMoreButton(
-				detailRef.current.scrollHeight > FEED_DETAIL_MAX_HEIGHT
-			);
-		});
-
-		if (detailRef.current) {
-			observer.observe(detailRef.current);
-		}
-
-		return () => {
-			observer.disconnect();
-		};
-	}, [details?.content]);
+	const { content } = details;
+	const { showMoreButton, detailRef } = useDetailObserver(content);
 
 	return (
 		<S.FeedContainer>
