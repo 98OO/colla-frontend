@@ -1,10 +1,11 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { Button } from '@components/common/Button/Button';
 import Flex from '@components/common/Flex/Flex';
 import Text from '@components/common/Text/Text';
 import BaseFeed from '@components/Feed/BaseFeed/BaseFeed';
 import SchedulingDetail from '@components/Feed/Detail/Scheduling/SchedulingDetail';
 import TableHeader from '@components/Feed/SchedulingFeed/TableHeader';
+import useScheduleSelection from '@hooks/feed/useScheduleSelection';
 import useSchedulingAvailMutation from '@hooks/queries/post/useSchedulingAvailMutation';
 import useUserStatusQuery from '@hooks/queries/useUserStatusQuery';
 import {
@@ -30,74 +31,26 @@ const SchedulingFeed = ({
 }: SchedulingFeedProps) => {
 	const { feedId, details } = feedData;
 	const { minTimeSegment, maxTimeSegment, totalAvailability } = details;
+	const rowCount = maxTimeSegment - minTimeSegment;
+
 	const { userStatus } = useUserStatusQuery();
 	const teamspaceId = userStatus?.profile.lastSeenTeamspaceId;
 
-	const rowCount = maxTimeSegment - minTimeSegment;
-
-	const [dragging, setDragging] = useState(false);
-	const [selectedSlots, setSelectedSlots] = useState<Set<string>>(() => {
-		const initialSelectedSlots = new Set<string>();
-		Object.entries(totalAvailability).forEach(([date, segments]) => {
-			segments.forEach((value, index) => {
-				if (value > 0) {
-					initialSelectedSlots.add(`${date}:${index}`);
-				}
-			});
-		});
-		return initialSelectedSlots;
-	});
-
-	useEffect(() => {
-		const initialSelectedSlots = new Set<string>();
-		Object.entries(totalAvailability).forEach(([date, segments]) => {
-			segments.forEach((value, index) => {
-				if (value > 0) {
-					initialSelectedSlots.add(`${date}:${index}`);
-				}
-			});
-		});
-		setSelectedSlots(initialSelectedSlots);
-	}, [totalAvailability]);
-
-	const toggleSlotSelection = (slotId: string) => {
-		setSelectedSlots((prev) => {
-			const updated = new Set(prev);
-			if (updated.has(slotId)) {
-				updated.delete(slotId);
-			} else {
-				updated.add(slotId);
-			}
-			return updated;
-		});
-	};
+	const { mutateSchedulingAvail } = useSchedulingAvailMutation();
 
 	const [isEditable, setIsEditable] = useState(false);
-	const { mutateSchedulingAvail } = useSchedulingAvailMutation();
 
 	const handleAddSchedule = () => setIsEditable(true);
 	const handleCancelEdit = () => setIsEditable(false);
 
-	const handleMouseDown = (slotId: string) => {
-		if (isEditable) {
-			setDragging(true);
-			toggleSlotSelection(slotId);
-		}
-	};
-
-	const handleMouseEnter = (slotId: string) => {
-		if (dragging && isEditable) {
-			toggleSlotSelection(slotId);
-		}
-	};
-
-	const handleMouseUp = () => {
-		if (isEditable) {
-			setDragging(false);
-		}
-	};
-
-	const isSelected = (slotId: string) => selectedSlots.has(slotId);
+	const {
+		setIsDragging,
+		selectedSlots,
+		handleMouseDown,
+		handleMouseEnter,
+		handleMouseUp,
+		isSelected,
+	} = useScheduleSelection(isEditable);
 
 	const availability = getAvailabilityInRange(
 		totalAvailability,
@@ -105,6 +58,10 @@ const SchedulingFeed = ({
 		maxTimeSegment
 	);
 	const columnData = Object.entries(availability);
+
+	const handleMouseLeave = () => {
+		setIsDragging(false);
+	};
 
 	const handleSubmit = async () => {
 		const availabilites = prepareAvailabilities(selectedSlots, minTimeSegment);
@@ -117,7 +74,7 @@ const SchedulingFeed = ({
 
 	const renderTable = () => {
 		return (
-			<S.TableContainer onMouseLeave={() => setDragging(false)}>
+			<S.TableContainer onMouseLeave={handleMouseLeave}>
 				<S.TimeColumn>
 					{Array.from({ length: rowCount / 2 }).map((_, idx) => (
 						<S.TimeGroup>
@@ -130,29 +87,25 @@ const SchedulingFeed = ({
 					{columnData.map(([date, availArray]) => (
 						<S.Column key={`column-${date}`}>
 							{Array.from({ length: availArray.length / 2 }).map((_, idx) => {
-								const slotId = `${date}-${idx}`;
+								const slotGroupId = `${date}:${idx}`;
+								const firstSlotId = `${date}:${idx * 2}`;
+								const secondSlotId = `${date}:${idx * 2 + 1}`;
 
 								return (
-									<S.SlotGroup key={slotId}>
+									<S.SlotGroup key={slotGroupId}>
 										<S.Slot
-											key={`${slotId}-1`}
-											onMouseDown={() => handleMouseDown(`${date}:${idx * 2}`)}
-											onMouseEnter={() =>
-												handleMouseEnter(`${date}:${idx * 2}`)
-											}
+											key={firstSlotId}
+											onMouseDown={() => handleMouseDown(firstSlotId)}
+											onMouseEnter={() => handleMouseEnter(firstSlotId)}
 											onMouseUp={handleMouseUp}
-											isSelected={isSelected(`${date}:${idx * 2}`)}
+											isSelected={isSelected(firstSlotId)}
 										/>
 										<S.Slot
-											key={`${slotId}-2`}
-											onMouseDown={() =>
-												handleMouseDown(`${date}:${idx * 2 + 1}`)
-											}
-											onMouseEnter={() =>
-												handleMouseEnter(`${date}:${idx * 2 + 1}`)
-											}
+											key={secondSlotId}
+											onMouseDown={() => handleMouseDown(secondSlotId)}
+											onMouseEnter={() => handleMouseEnter(secondSlotId)}
 											onMouseUp={handleMouseUp}
-											isSelected={isSelected(`${date}:${idx * 2 + 1}`)}
+											isSelected={isSelected(secondSlotId)}
 										/>
 									</S.SlotGroup>
 								);
