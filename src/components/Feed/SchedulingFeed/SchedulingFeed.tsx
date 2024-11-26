@@ -4,11 +4,11 @@ import Flex from '@components/common/Flex/Flex';
 import Text from '@components/common/Text/Text';
 import BaseFeed from '@components/Feed/BaseFeed/BaseFeed';
 import SchedulingDetail from '@components/Feed/Detail/Scheduling/SchedulingDetail';
+import TableHeader from '@components/Feed/SchedulingFeed/TableHeader';
 import useSchedulingAvailMutation from '@hooks/queries/post/useSchedulingAvailMutation';
 import useUserStatusQuery from '@hooks/queries/useUserStatusQuery';
 import {
 	convertTimeString,
-	getDayAndDate,
 	getAvailabilityInRange,
 	prepareAvailabilities,
 } from '@utils/schedulingUtils';
@@ -115,26 +115,6 @@ const SchedulingFeed = ({
 		setIsEditable(false);
 	};
 
-	const renderHeader = () => {
-		return (
-			<S.HeaderContainer>
-				<S.TimeHeader />
-				<S.HeaderWrapper>
-					{columnData.map(([date]) => {
-						const { dayOfWeek, dayOfMonth } = getDayAndDate(date);
-
-						return (
-							<S.Header key={`header-${date}`}>
-								<S.DayOfWeek>{dayOfWeek}</S.DayOfWeek>
-								<S.DayOfMonth>{dayOfMonth}</S.DayOfMonth>
-							</S.Header>
-						);
-					})}
-				</S.HeaderWrapper>
-			</S.HeaderContainer>
-		);
-	};
-
 	const renderTable = () => {
 		return (
 			<S.TableContainer onMouseLeave={() => setDragging(false)}>
@@ -193,7 +173,7 @@ const SchedulingFeed = ({
 			renderDetail={() => <SchedulingDetail feedData={feedData} />}>
 			{details && (
 				<S.DetailWrapper>
-					{renderHeader()}
+					<TableHeader columnData={columnData} />
 					{renderTable()}
 					<Flex justify='space-between'>
 						<S.ParticipantsContainer>
