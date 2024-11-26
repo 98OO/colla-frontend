@@ -1,5 +1,11 @@
-export interface AccessToken {
-	accessToken: string;
+export interface NewToken {
+	code: number;
+	content: {
+		accessToken: string;
+		hasTeam: boolean;
+		userId: number;
+	};
+	message: string;
 }
 
 export interface UserProfile {
