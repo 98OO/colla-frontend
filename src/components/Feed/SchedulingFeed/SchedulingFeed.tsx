@@ -6,11 +6,11 @@ import Text from '@components/common/Text/Text';
 import BaseFeed from '@components/Feed/BaseFeed/BaseFeed';
 import SchedulingDetail from '@components/Feed/Detail/Scheduling/SchedulingDetail';
 import TableHeader from '@components/Feed/SchedulingFeed/TableHeader';
+import TimeColumn from '@components/Feed/SchedulingFeed/TimeColumn';
 import useScheduleSelection from '@hooks/feed/useScheduleSelection';
 import useSchedulingAvailMutation from '@hooks/queries/post/useSchedulingAvailMutation';
 import useUserStatusQuery from '@hooks/queries/useUserStatusQuery';
 import {
-	convertTimeString,
 	getAvailabilityInRange,
 	prepareAvailabilities,
 } from '@utils/schedulingUtils';
@@ -38,7 +38,6 @@ const SchedulingFeed = ({
 		responses,
 		numOfParticipants,
 	} = details;
-	const rowCount = maxTimeSegment - minTimeSegment;
 
 	const { userStatus } = useUserStatusQuery();
 	const teamspaceId = userStatus?.profile.lastSeenTeamspaceId;
@@ -59,12 +58,12 @@ const SchedulingFeed = ({
 		isSelected,
 	} = useScheduleSelection(isEditable);
 
-	const availability = getAvailabilityInRange(
+	const availabilityInRange = getAvailabilityInRange(
 		totalAvailability,
 		minTimeSegment,
 		maxTimeSegment
 	);
-	const columnData = Object.entries(availability);
+	const columnData = Object.entries(availabilityInRange);
 
 	const handleMouseLeave = () => {
 		setIsDragging(false);
@@ -82,14 +81,10 @@ const SchedulingFeed = ({
 	const renderTable = () => {
 		return (
 			<S.TableContainer onMouseLeave={handleMouseLeave}>
-				<S.TimeColumn>
-					{Array.from({ length: rowCount / 2 }).map((_, idx) => (
-						<S.TimeGroup>
-							<S.TimeSlot>{`${convertTimeString(minTimeSegment + idx)}`}</S.TimeSlot>
-							<S.TimeSlot />
-						</S.TimeGroup>
-					))}
-				</S.TimeColumn>
+				<TimeColumn
+					minTimeSegment={minTimeSegment}
+					maxTimeSegment={maxTimeSegment}
+				/>
 				<S.Table>
 					{columnData.map(([date, availArray]) => (
 						<S.Column key={`column-${date}`}>
