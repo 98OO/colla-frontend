@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import Avatar from '@components/common/Avatar/Avatar';
 import { Button } from '@components/common/Button/Button';
 import Flex from '@components/common/Flex/Flex';
 import Text from '@components/common/Text/Text';
@@ -30,7 +31,13 @@ const SchedulingFeed = ({
 	closeDetail,
 }: SchedulingFeedProps) => {
 	const { feedId, details } = feedData;
-	const { minTimeSegment, maxTimeSegment, totalAvailability } = details;
+	const {
+		minTimeSegment,
+		maxTimeSegment,
+		totalAvailability,
+		responses,
+		numOfParticipants,
+	} = details;
 	const rowCount = maxTimeSegment - minTimeSegment;
 
 	const { userStatus } = useUserStatusQuery();
@@ -130,13 +137,28 @@ const SchedulingFeed = ({
 					{renderTable()}
 					<Flex justify='space-between'>
 						<S.ParticipantsContainer>
-							<S.Participants>{`일정 작성 인원 (${details.numOfParticipants})`}</S.Participants>
-							{details.numOfParticipants === 0 && (
+							<S.Participants>{`일정 작성 인원 (${numOfParticipants})`}</S.Participants>
+							{numOfParticipants === 0 && (
 								<Text size='md' weight='medium' color='tertiary'>
 									가능한 일정을 작성해주세요
 								</Text>
 							)}
-							{details.numOfParticipants !== 0 && <Flex gap='6'>avatar</Flex>}
+							{numOfParticipants !== 0 && (
+								<Flex gap='6'>
+									{responses.map(({ user }) => {
+										const { profileImageUrl, username } = user;
+
+										return (
+											<Avatar
+												profile={profileImageUrl}
+												initial={username}
+												size='mlg'
+												shape='circle'
+											/>
+										);
+									})}
+								</Flex>
+							)}
 						</S.ParticipantsContainer>
 						{!isEditable && (
 							<Button
