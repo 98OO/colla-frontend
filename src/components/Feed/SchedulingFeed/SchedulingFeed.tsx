@@ -133,13 +133,15 @@ const SchedulingFeed = ({
 			{details && (
 				<S.DetailWrapper>
 					<TableHeader columnData={columnData} />
-					{renderTable()}
-					<AvailabilityTable
-						minTimeSegment={minTimeSegment}
-						maxTimeSegment={maxTimeSegment}
-						availabilitySlots={availabilitySlots}
-						numOfParticipants={numOfParticipants}
-					/>
+					{isEditable && renderTable()}
+					{!isEditable && (
+						<AvailabilityTable
+							minTimeSegment={minTimeSegment}
+							maxTimeSegment={maxTimeSegment}
+							availabilitySlots={availabilitySlots}
+							numOfParticipants={numOfParticipants}
+						/>
+					)}
 					<Flex justify='space-between'>
 						<S.ParticipantsContainer>
 							<S.Participants>{`일정 작성 인원 (${numOfParticipants})`}</S.Participants>
