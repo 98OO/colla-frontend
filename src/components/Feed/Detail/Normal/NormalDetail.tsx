@@ -7,12 +7,12 @@ import CommentInput from '@components/Feed/CommentInput/CommentInput';
 import Comment from '@components/Feed/Comments/Comment';
 import useUserStatusQuery from '@hooks/queries/useUserStatusQuery';
 import { getFormattedDate } from '@utils/getFormattedDate';
-import type { FeedData } from '@type/feed';
+import type { NormalFeed } from '@type/feed';
 import FeedAuthor from '../../FeedAuthors/FeedAuthor';
 import * as S from './NormalDetail.styled';
 
 interface FeedProps {
-	feedData: FeedData;
+	feedData: NormalFeed;
 }
 
 const Feed = ({ feedData }: FeedProps) => {

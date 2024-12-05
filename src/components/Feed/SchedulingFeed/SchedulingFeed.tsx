@@ -1,210 +1,80 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
+import Avatar from '@components/common/Avatar/Avatar';
 import { Button } from '@components/common/Button/Button';
-import Divider from '@components/common/Divider/Divider';
-import Drawer from '@components/common/Drawer/Drawer';
 import Flex from '@components/common/Flex/Flex';
-import Heading from '@components/common/Heading/Heading';
-import IconButton from '@components/common/IconButton/IconButton';
 import Text from '@components/common/Text/Text';
+import BaseFeed from '@components/Feed/BaseFeed/BaseFeed';
 import SchedulingDetail from '@components/Feed/Detail/Scheduling/SchedulingDetail';
-import FeedAuthor from '@components/Feed/FeedAuthors/FeedAuthor';
+import AvailabilityTable from '@components/Feed/SchedulingFeed/AvailabilityTable';
+import TableHeader from '@components/Feed/SchedulingFeed/TableHeader';
+import TimeColumn from '@components/Feed/SchedulingFeed/TimeColumn';
+import useScheduleSelection from '@hooks/feed/useScheduleSelection';
 import useSchedulingAvailMutation from '@hooks/queries/post/useSchedulingAvailMutation';
 import useUserStatusQuery from '@hooks/queries/useUserStatusQuery';
-import { format } from 'date-fns';
-import { ko } from 'date-fns/locale';
-import { getFormattedDate } from '@utils/getFormattedDate';
-import type { FeedData, SchedulingFeed } from '@type/feed';
+import {
+	getAvailabilityInRange,
+	prepareAvailabilities,
+	convertAvailabilityToSlots,
+} from '@utils/schedulingUtils';
+import type { SchedulingFeed } from '@type/feed';
 import * as S from './SchedulingFeed.styled';
 
-interface ActionButtonProps {
-	icon: 'Comment' | 'Attachment';
-	count: number;
-	onClick: () => void;
-	ariaLabel: string;
-}
-
-interface FeedProps {
+interface SchedulingFeedProps {
 	feedData: SchedulingFeed;
 	isDetailOpen: boolean;
 	openDetail: () => void;
 	closeDetail: () => void;
 }
 
-const ActionButton = ({
-	icon,
-	count,
-	onClick,
-	ariaLabel,
-}: ActionButtonProps) => {
-	return (
-		<Flex align='center'>
-			<IconButton
-				icon={icon}
-				size='md'
-				color='secondary'
-				ariaLabel={ariaLabel}
-				onClick={onClick}
-			/>
-			<Text color='secondary' size='md' weight='medium'>
-				{count === 0 ? '0' : String(count)}
-			</Text>
-		</Flex>
-	);
-};
-
-const CommentPreview = ({ comments }: { comments: FeedData['comments'] }) => {
-	if (comments.length === 0) return null;
-
-	const commentsToShow =
-		comments.length === 1 ? comments.slice(-1) : comments.slice(-2);
-	return (
-		<Flex direction='column' gap='8' marginBottom='10'>
-			{commentsToShow.map((comment) => (
-				<Flex key={comment.id} gap='6'>
-					<Text size='md' weight='semiBold'>
-						{comment.author.username}
-					</Text>
-					<Text size='md' weight='regular'>
-						{comment.content}
-					</Text>
-				</Flex>
-			))}
-		</Flex>
-	);
-};
-
 const SchedulingFeed = ({
 	feedData,
 	isDetailOpen,
 	openDetail,
 	closeDetail,
-}: FeedProps) => {
-	const { feedId, author, title, createdAt, details, comments } = feedData;
-	const { minTimeSegment, maxTimeSegment, totalAvailability } = details;
+}: SchedulingFeedProps) => {
+	const { feedId, details } = feedData;
+	const {
+		minTimeSegment,
+		maxTimeSegment,
+		totalAvailability,
+		responses,
+		numOfParticipants,
+	} = details;
+
 	const { userStatus } = useUserStatusQuery();
 	const teamspaceId = userStatus?.profile.lastSeenTeamspaceId;
 
-	const rowCount = maxTimeSegment - minTimeSegment;
-
-	const [dragging, setDragging] = useState(false);
-	const [selectedSlots, setSelectedSlots] = useState<Set<string>>(() => {
-		const initialSelectedSlots = new Set<string>();
-		Object.entries(totalAvailability).forEach(([date, segments]) => {
-			segments.forEach((value, index) => {
-				if (value > 0) {
-					initialSelectedSlots.add(`${date}:${index}`);
-				}
-			});
-		});
-		return initialSelectedSlots;
-	});
-
-	useEffect(() => {
-		const initialSelectedSlots = new Set<string>();
-		Object.entries(totalAvailability).forEach(([date, segments]) => {
-			segments.forEach((value, index) => {
-				if (value > 0) {
-					initialSelectedSlots.add(`${date}:${index}`);
-				}
-			});
-		});
-		setSelectedSlots(initialSelectedSlots);
-	}, [totalAvailability]);
-
-	const toggleSlotSelection = (slotId: string) => {
-		setSelectedSlots((prev) => {
-			const updated = new Set(prev);
-			if (updated.has(slotId)) {
-				updated.delete(slotId);
-			} else {
-				updated.add(slotId);
-			}
-			return updated;
-		});
-	};
+	const { mutateSchedulingAvail } = useSchedulingAvailMutation();
 
 	const [isEditable, setIsEditable] = useState(false);
-	const { mutateSchedulingAvail } = useSchedulingAvailMutation();
 
 	const handleAddSchedule = () => setIsEditable(true);
 	const handleCancelEdit = () => setIsEditable(false);
 
-	const handleMouseDown = (slotId: string) => {
-		if (isEditable) {
-			setDragging(true);
-			toggleSlotSelection(slotId);
-		}
-	};
+	const {
+		setIsDragging,
+		selectedSlots,
+		handleMouseDown,
+		handleMouseEnter,
+		handleMouseUp,
+		isSelected,
+	} = useScheduleSelection(isEditable);
 
-	const handleMouseEnter = (slotId: string) => {
-		if (dragging && isEditable) {
-			toggleSlotSelection(slotId);
-		}
-	};
+	const availabilityInRange = getAvailabilityInRange(
+		totalAvailability,
+		minTimeSegment,
+		maxTimeSegment
+	);
+	const availabilitySlots = convertAvailabilityToSlots(availabilityInRange);
 
-	const handleMouseUp = () => {
-		if (isEditable) {
-			setDragging(false);
-		}
-	};
+	const columnData = Object.entries(availabilityInRange);
 
-	const isSelected = (slotId: string) => selectedSlots.has(slotId);
-
-	const convertTimeString = (num: number) => {
-		let hour = (num % 24) % 12;
-		if (hour === 0) {
-			hour = 12;
-		}
-
-		const period = num < 24 ? 'AM' : 'PM';
-
-		return `${hour} ${period}`;
-	};
-
-	const getAvailabilityInRange = (total: Record<string, number[]>) => {
-		const entries = Object.entries(total);
-
-		return entries.reduce(
-			(acc, [date, array]) => {
-				acc[date] = array.slice(minTimeSegment, maxTimeSegment);
-				return acc;
-			},
-			{} as Record<string, number[]>
-		);
-	};
-
-	const getDayAndDate = (dateString: string) => {
-		const date = new Date(dateString);
-		const dayOfWeek = format(date, 'EEEEEE', { locale: ko });
-		const dayOfMonth = format(date, 'd');
-
-		return { dayOfWeek, dayOfMonth };
-	};
-
-	const availability = getAvailabilityInRange(totalAvailability);
-	const columnData = Object.entries(availability);
-
-	const prepareAvailabilities = () => {
-		const availabilities: Record<string, number[]> = {};
-
-		selectedSlots.forEach((slotId) => {
-			const [date, index] = slotId.split(':');
-			const timeIndex = parseInt(index, 10) + minTimeSegment;
-
-			const isoDate = format(new Date(date), 'yyyy-MM-dd');
-
-			if (!availabilities[isoDate]) {
-				availabilities[isoDate] = Array(48).fill(0);
-			}
-
-			availabilities[isoDate][timeIndex] = 1;
-		});
-
-		return availabilities;
+	const handleMouseLeave = () => {
+		setIsDragging(false);
 	};
 
 	const handleSubmit = async () => {
-		const availabilites = prepareAvailabilities();
+		const availabilites = prepareAvailabilities(selectedSlots, minTimeSegment);
 
 		if (!teamspaceId) return;
 
@@ -212,64 +82,36 @@ const SchedulingFeed = ({
 		setIsEditable(false);
 	};
 
-	const renderHeader = () => {
-		return (
-			<S.HeaderContainer>
-				<S.TimeHeader />
-				<S.HeaderWrapper>
-					{columnData.map(([date]) => {
-						const { dayOfWeek, dayOfMonth } = getDayAndDate(date);
-
-						return (
-							<S.Header key={`header-${date}`}>
-								<S.DayOfWeek>{dayOfWeek}</S.DayOfWeek>
-								<S.DayOfMonth>{dayOfMonth}</S.DayOfMonth>
-							</S.Header>
-						);
-					})}
-				</S.HeaderWrapper>
-			</S.HeaderContainer>
-		);
-	};
-
 	const renderTable = () => {
 		return (
-			<S.TableContainer onMouseLeave={() => setDragging(false)}>
-				<S.TimeColumn>
-					{Array.from({ length: rowCount / 2 }).map((_, idx) => (
-						<S.TimeGroup>
-							<S.TimeSlot>{`${convertTimeString(minTimeSegment + idx)}`}</S.TimeSlot>
-							<S.TimeSlot />
-						</S.TimeGroup>
-					))}
-				</S.TimeColumn>
+			<S.TableContainer onMouseLeave={handleMouseLeave}>
+				<TimeColumn
+					minTimeSegment={minTimeSegment}
+					maxTimeSegment={maxTimeSegment}
+				/>
 				<S.Table>
 					{columnData.map(([date, availArray]) => (
 						<S.Column key={`column-${date}`}>
 							{Array.from({ length: availArray.length / 2 }).map((_, idx) => {
-								const slotId = `${date}-${idx}`;
+								const slotGroupId = `${date}:${idx}`;
+								const firstSlotId = `${date}:${idx * 2}`;
+								const secondSlotId = `${date}:${idx * 2 + 1}`;
 
 								return (
-									<S.SlotGroup key={slotId}>
+									<S.SlotGroup key={slotGroupId}>
 										<S.Slot
-											key={`${slotId}-1`}
-											onMouseDown={() => handleMouseDown(`${date}:${idx * 2}`)}
-											onMouseEnter={() =>
-												handleMouseEnter(`${date}:${idx * 2}`)
-											}
+											key={firstSlotId}
+											onMouseDown={() => handleMouseDown(firstSlotId)}
+											onMouseEnter={() => handleMouseEnter(firstSlotId)}
 											onMouseUp={handleMouseUp}
-											isSelected={isSelected(`${date}:${idx * 2}`)}
+											isSelected={isSelected(firstSlotId)}
 										/>
 										<S.Slot
-											key={`${slotId}-2`}
-											onMouseDown={() =>
-												handleMouseDown(`${date}:${idx * 2 + 1}`)
-											}
-											onMouseEnter={() =>
-												handleMouseEnter(`${date}:${idx * 2 + 1}`)
-											}
+											key={secondSlotId}
+											onMouseDown={() => handleMouseDown(secondSlotId)}
+											onMouseEnter={() => handleMouseEnter(secondSlotId)}
 											onMouseUp={handleMouseUp}
-											isSelected={isSelected(`${date}:${idx * 2 + 1}`)}
+											isSelected={isSelected(secondSlotId)}
 										/>
 									</S.SlotGroup>
 								);
@@ -282,83 +124,77 @@ const SchedulingFeed = ({
 	};
 
 	return (
-		<S.FeedContainer>
-			<S.SchedulingContainer>
-				<FeedAuthor
-					profile={author.profileImageUrl}
-					initial={author.username.charAt(0)}
-					title={author.username}
-					createdAt={getFormattedDate(createdAt, 'feed')}
-					tag={author?.tag?.name || ''}
-				/>
-				<Flex direction='column' gap='12'>
-					<Heading size='xs'>{title}</Heading>
-					<Divider size='sm' />
-					{details && (
-						<S.DetailWrapper>
-							{renderHeader()}
-							{renderTable()}
-							<Flex justify='space-between'>
-								<S.ParticipantsContainer>
-									<S.Participants>{`일정 작성 인원 (${details.numOfParticipants})`}</S.Participants>
-									{details.numOfParticipants === 0 && (
-										<Text size='md' weight='medium' color='tertiary'>
-											가능한 일정을 작성해주세요
-										</Text>
-									)}
-									{details.numOfParticipants !== 0 && (
-										<Flex gap='6'>avatar</Flex>
-									)}
-								</S.ParticipantsContainer>
-								{!isEditable && (
-									<Button
-										label='일정 추가'
-										variant='primary'
-										size='md'
-										onClick={handleAddSchedule}
-									/>
-								)}
-								{isEditable && (
-									<Flex gap='16'>
-										<Button
-											label='취소'
-											variant='secondary'
-											size='md'
-											onClick={handleCancelEdit}
-										/>
-										<Button
-											label='등록'
-											variant='primary'
-											size='md'
-											onClick={handleSubmit}
-										/>
-									</Flex>
-								)}
-							</Flex>
-						</S.DetailWrapper>
+		<BaseFeed
+			feedData={feedData}
+			isDetailOpen={isDetailOpen}
+			openDetail={openDetail}
+			closeDetail={closeDetail}
+			renderDetail={() => <SchedulingDetail feedData={feedData} />}>
+			{details && (
+				<S.DetailWrapper>
+					<TableHeader columnData={columnData} />
+					{isEditable && renderTable()}
+					{!isEditable && (
+						<AvailabilityTable
+							minTimeSegment={minTimeSegment}
+							maxTimeSegment={maxTimeSegment}
+							availabilitySlots={availabilitySlots}
+							numOfParticipants={numOfParticipants}
+						/>
 					)}
-				</Flex>
-				{isDetailOpen && (
-					<Drawer isOpen={isDetailOpen} onClose={closeDetail}>
-						<SchedulingDetail feedData={feedData} />
-					</Drawer>
-				)}
-			</S.SchedulingContainer>
-			<Flex direction='column' paddingRight='24' paddingLeft='24'>
-				<Divider size='sm' padding={16} />
-			</Flex>
-			<Flex direction='row' marginLeft='18' gap='8'>
-				<ActionButton
-					icon='Comment'
-					count={comments.length}
-					onClick={openDetail}
-					ariaLabel='댓글'
-				/>
-			</Flex>
-			<S.CommentPreviewWrapper>
-				<CommentPreview comments={comments} />
-			</S.CommentPreviewWrapper>
-		</S.FeedContainer>
+					<Flex justify='space-between'>
+						<S.ParticipantsContainer>
+							<S.Participants>{`일정 작성 인원 (${numOfParticipants})`}</S.Participants>
+							{numOfParticipants === 0 && (
+								<Text size='md' weight='medium' color='tertiary'>
+									가능한 일정을 작성해주세요
+								</Text>
+							)}
+							{numOfParticipants !== 0 && (
+								<Flex gap='6'>
+									{responses.map(({ user }) => {
+										const { profileImageUrl, username } = user;
+
+										return (
+											<Avatar
+												profile={profileImageUrl}
+												initial={username}
+												size='mlg'
+												shape='circle'
+											/>
+										);
+									})}
+								</Flex>
+							)}
+						</S.ParticipantsContainer>
+						{!isEditable && (
+							<Button
+								label='일정 추가'
+								variant='primary'
+								size='md'
+								onClick={handleAddSchedule}
+							/>
+						)}
+						{isEditable && (
+							<Flex gap='16'>
+								<Button
+									label='취소'
+									variant='secondary'
+									size='md'
+									onClick={handleCancelEdit}
+								/>
+								<Button
+									label='등록'
+									variant='primary'
+									size='md'
+									onClick={handleSubmit}
+								/>
+							</Flex>
+						)}
+					</Flex>
+				</S.DetailWrapper>
+			)}
+		</BaseFeed>
 	);
 };
 
