@@ -38,7 +38,7 @@ interface Attachment {
 }
 
 interface NormalDetails {
-	content: string | null;
+	content: string;
 }
 
 export interface SubTaskResponse {
@@ -57,7 +57,7 @@ export interface CollectResponse {
 }
 
 interface CollectDetails {
-	content: string | null;
+	content: string;
 	dueAt: string | null;
 	isClosed: boolean;
 	responses: CollectResponse[];
@@ -91,7 +91,7 @@ interface FeedBase {
 	attachments: Attachment[];
 }
 
-interface NormalFeed extends FeedBase {
+export interface NormalFeed extends FeedBase {
 	feedType: 'NORMAL';
 	details: NormalDetails;
 }

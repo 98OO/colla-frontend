@@ -147,3 +147,12 @@ export const DayOfMonth = styled.div`
 	font-size: ${theme.typography.fontSize.body.sm};
 	color: ${theme.color.text.secondary};
 `;
+
+export const AvailabilitySlot = styled.div<{ slotColor: string }>`
+	height: 20px;
+	background-color: ${({ slotColor }) => slotColor || 'transparent'};
+
+	&:hover {
+		border: 2px dotted ${theme.color.border.iSecondaryHover};
+	}
+`;

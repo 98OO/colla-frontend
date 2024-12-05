@@ -24,7 +24,7 @@ export const setAuthorizedRequest = (config: InternalAxiosRequestConfig) => {
 	const accessToken = localStorage.getItem(ACCESS_TOKEN);
 
 	if (!accessToken) {
-		window.location.href = PATH.SIGNIN;
+		window.location.href = PATH.ROOT;
 		throw new Error('인증 토큰이 없습니다. 다시 로그인해주세요.');
 	}
 
