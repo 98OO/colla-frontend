@@ -5,6 +5,7 @@ import Flex from '@components/common/Flex/Flex';
 import Text from '@components/common/Text/Text';
 import BaseFeed from '@components/Feed/BaseFeed/BaseFeed';
 import SchedulingDetail from '@components/Feed/Detail/Scheduling/SchedulingDetail';
+import AvailabilityTable from '@components/Feed/SchedulingFeed/AvailabilityTable';
 import TableHeader from '@components/Feed/SchedulingFeed/TableHeader';
 import TimeColumn from '@components/Feed/SchedulingFeed/TimeColumn';
 import useScheduleSelection from '@hooks/feed/useScheduleSelection';
@@ -13,6 +14,7 @@ import useUserStatusQuery from '@hooks/queries/useUserStatusQuery';
 import {
 	getAvailabilityInRange,
 	prepareAvailabilities,
+	convertAvailabilityToSlots,
 } from '@utils/schedulingUtils';
 import type { SchedulingFeed } from '@type/feed';
 import * as S from './SchedulingFeed.styled';
@@ -63,6 +65,8 @@ const SchedulingFeed = ({
 		minTimeSegment,
 		maxTimeSegment
 	);
+	const availabilitySlots = convertAvailabilityToSlots(availabilityInRange);
+
 	const columnData = Object.entries(availabilityInRange);
 
 	const handleMouseLeave = () => {
@@ -130,6 +134,12 @@ const SchedulingFeed = ({
 				<S.DetailWrapper>
 					<TableHeader columnData={columnData} />
 					{renderTable()}
+					<AvailabilityTable
+						minTimeSegment={minTimeSegment}
+						maxTimeSegment={maxTimeSegment}
+						availabilitySlots={availabilitySlots}
+						numOfParticipants={numOfParticipants}
+					/>
 					<Flex justify='space-between'>
 						<S.ParticipantsContainer>
 							<S.Participants>{`일정 작성 인원 (${numOfParticipants})`}</S.Participants>
