@@ -3,10 +3,12 @@ import type { FeedData } from '@type/feed';
 
 export const getSanitizedFeeds = (dirtyFeeds: FeedData[]) => {
 	const sanitizedFeeds = dirtyFeeds.map((feed) => {
-		const sanitizedContent = DOMPurify.sanitize(feed.details.content || '');
+		const { feedType, details } = feed;
 
-		switch (feed.feedType) {
-			case 'NORMAL': {
+		if (feedType === 'NORMAL' || feedType === 'COLLECT') {
+			const sanitizedContent = DOMPurify.sanitize(details.content || '');
+
+			if (feed.feedType === 'NORMAL') {
 				return {
 					...feed,
 					details: {
@@ -15,8 +17,10 @@ export const getSanitizedFeeds = (dirtyFeeds: FeedData[]) => {
 					},
 				};
 			}
-			case 'COLLECT': {
+
+			if (feed.feedType === 'COLLECT') {
 				const { dueAt, isClosed, responses } = feed.details;
+
 				return {
 					...feed,
 					details: {
@@ -28,9 +32,9 @@ export const getSanitizedFeeds = (dirtyFeeds: FeedData[]) => {
 					},
 				};
 			}
-			default:
-				return feed;
 		}
+
+		return feed;
 	});
 
 	return sanitizedFeeds;
