@@ -15,13 +15,6 @@ const GNBTeamSpace = () => {
 	const { mutateRecordTeamSpace } = useRecordTeamSpace();
 	const navigate = useNavigate();
 
-	const lastSeenTeam = userStatus?.participatedTeamspaces.find(
-		(team) => team.teamspaceId === userStatus?.profile.lastSeenTeamspaceId
-	);
-	const otherProfiles = userStatus?.participatedTeamspaces.filter(
-		(teamSpace) => teamSpace.name !== lastSeenTeam?.name
-	);
-
 	const { increaseChatMessageCount, setChatChannelList } = useSocketStore();
 
 	const handleTeamChangeClick = (teamSpaceId: number) => {
@@ -33,7 +26,7 @@ const GNBTeamSpace = () => {
 
 	return (
 		<S.GNBTeamSpaceContainer>
-			{userStatus && lastSeenTeam && otherProfiles && (
+			{userStatus && (
 				<>
 					<Flex direction='column' gap='4'>
 						<Flex
@@ -55,23 +48,7 @@ const GNBTeamSpace = () => {
 						paddingRight='16'
 						gap='8'>
 						<S.TeamSpacesWrapper>
-							<Profile
-								key={lastSeenTeam.teamspaceId}
-								profile={lastSeenTeam.profileImageUrl}
-								initial={lastSeenTeam.name}
-								avatarSize='lg'
-								avatarShape='rect'
-								title={lastSeenTeam.name}
-								titleSize='lg'
-								titleWeight='bold'
-								text={
-									lastSeenTeam.teamspaceRole === 'LEADER'
-										? `팀장 - 총 ${lastSeenTeam.numOfParticipants}명의 멤버`
-										: '팀원'
-								}
-								trailingIcon='Check'
-							/>
-							{otherProfiles.map((teamSpace) => (
+							{userStatus.participatedTeamspaces.map((teamSpace) => (
 								<Profile
 									key={teamSpace.teamspaceId}
 									profile={teamSpace.profileImageUrl}
@@ -86,6 +63,10 @@ const GNBTeamSpace = () => {
 											? `팀장 - 총 ${teamSpace.numOfParticipants}명의 멤버`
 											: '팀원'
 									}
+									{...(teamSpace.teamspaceId ===
+										userStatus.profile.lastSeenTeamspaceId && {
+										trailingIcon: 'Check',
+									})}
 									onClick={() => handleTeamChangeClick(teamSpace.teamspaceId)}
 								/>
 							))}
