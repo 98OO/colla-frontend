@@ -6,7 +6,7 @@ import { Button } from '@components/common/Button/Button';
 import Flex from '@components/common/Flex/Flex';
 import IconButton from '@components/common/IconButton/IconButton';
 import Text from '@components/common/Text/Text';
-import { useChatInput } from '@hooks/chatting/useChatInput';
+import useChatInput from '@hooks/chatting/useChatInput';
 import useChatMessageQuery from '@hooks/queries/chat/useChatMesaageQuery';
 import { queryClient } from '@hooks/queries/common/queryClient';
 import useUserStatusQuery from '@hooks/queries/useUserStatusQuery';

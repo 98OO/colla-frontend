@@ -5,7 +5,7 @@ import useToastStore from '@stores/toastStore';
 import { END_POINTS } from '@constants/api';
 import type { UserInformation } from '@type/user';
 
-export const useChatInput = (
+const useChatInput = (
 	selectedChat: number,
 	userStatus: UserInformation | undefined
 ) => {
@@ -162,3 +162,5 @@ export const useChatInput = (
 		handleKeyDown,
 	};
 };
+
+export default useChatInput;
