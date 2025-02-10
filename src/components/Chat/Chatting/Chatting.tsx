@@ -18,13 +18,8 @@ import { END_POINTS } from '@constants/api';
 import { CHAT_AUTO_SCROLL_LIMIT } from '@constants/size';
 import * as S from './Chatting.styled';
 
-interface ChattingProps {
-	selectedChat: number;
-}
-
-const Chatting = (props: ChattingProps) => {
+const Chatting = ({ selectedChat }: { selectedChat: number }) => {
 	const { userStatus } = useUserStatusQuery();
-	const { selectedChat } = props;
 	const { stompClient } = useSocketStore();
 
 	const {
