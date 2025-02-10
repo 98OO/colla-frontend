@@ -1,4 +1,4 @@
-import { useRef, useState, useEffect } from 'react';
+import { useRef, useEffect } from 'react';
 import LatestMessageBox from '@components/Chat/LatestMessageBox/LatestMessageBox';
 import MyMessageBox from '@components/Chat/MyMessageBox/MyMessageBox';
 import OtherMessageBox from '@components/Chat/OtherMessageBox/OtherMessageBox';
@@ -7,6 +7,7 @@ import Flex from '@components/common/Flex/Flex';
 import IconButton from '@components/common/IconButton/IconButton';
 import Text from '@components/common/Text/Text';
 import useChatInput from '@hooks/chatting/useChatInput';
+import useChatScroll from '@hooks/chatting/useChatScroll';
 import useChatMessageQuery from '@hooks/queries/chat/useChatMesaageQuery';
 import { queryClient } from '@hooks/queries/common/queryClient';
 import useUserStatusQuery from '@hooks/queries/useUserStatusQuery';
@@ -15,7 +16,6 @@ import useSocketStore from '@stores/socketStore';
 import { getFormattedDate } from '@utils/getFormattedDate';
 import { END_POINTS } from '@constants/api';
 import { CHAT_AUTO_SCROLL_LIMIT } from '@constants/size';
-import type { ChatData } from '@type/chat';
 import * as S from './Chatting.styled';
 
 interface ChattingProps {
@@ -41,16 +41,20 @@ const Chatting = (props: ChattingProps) => {
 		handleKeyDown,
 	} = useChatInput(selectedChat, userStatus);
 
+	const {
+		chatRef,
+		chatHistory,
+		isLatestMessageVisible,
+		setIsScrollAtBottom,
+		setIsLatestMessageVisible,
+		setChatHistory,
+		setPrevHeight,
+		handleLatestMessageClick,
+	} = useChatScroll(messageEndRef);
+
 	const { messages, fetchNextPage, hasNextPage, isFetching } =
 		useChatMessageQuery(selectedChat, userStatus?.profile.lastSeenTeamspaceId);
 
-	const [chatHistory, setChatHistory] = useState<ChatData | null>(null);
-	const [prevHeight, setPrevHeight] = useState(0);
-	const [isScrollAtBottom, setIsScrollAtBottom] = useState(false);
-	const [isLatestMessageVisible, setIsLatestMessageVisible] = useState(false);
-	const [initialLoad, setInitialLoad] = useState(true);
-
-	const chatRef = useRef<HTMLDivElement>(null);
 	const chatSubscribeRef = useRef<StompSubscription | null>(null);
 
 	useEffect(() => {
@@ -144,65 +148,6 @@ const Chatting = (props: ChattingProps) => {
 			};
 		});
 	}, [messages?.pages]);
-
-	useEffect(() => {
-		if (!chatHistory || chatHistory.chatChannelMessages.length === 0) return;
-
-		if (isScrollAtBottom) {
-			messageEndRef.current?.scrollIntoView();
-			setIsScrollAtBottom(false);
-		} else if (chatRef.current)
-			window.scrollTo({ top: chatRef.current.scrollHeight - prevHeight });
-	}, [chatHistory]);
-
-	useEffect(() => {
-		const observedElement = chatRef.current;
-		const resizeObserver = new ResizeObserver(() => {
-			if (initialLoad) {
-				messageEndRef.current?.scrollIntoView();
-				setInitialLoad(false);
-			}
-		});
-
-		if (observedElement) resizeObserver.observe(observedElement);
-
-		return () => {
-			if (observedElement) resizeObserver.unobserve(observedElement);
-		};
-	}, []);
-
-	useEffect(() => {
-		const scrollElement = chatRef.current;
-		let ticking = false;
-
-		const handleScroll = () => {
-			if (!ticking && scrollElement) {
-				requestAnimationFrame(() => {
-					const isBottom =
-						scrollElement.scrollHeight -
-							scrollElement.scrollTop -
-							scrollElement.clientHeight <=
-						CHAT_AUTO_SCROLL_LIMIT;
-
-					if (isBottom) setIsLatestMessageVisible(false);
-					ticking = false;
-				});
-
-				ticking = true;
-			}
-		};
-
-		scrollElement?.addEventListener('scroll', handleScroll);
-
-		return () => {
-			scrollElement?.removeEventListener('scroll', handleScroll);
-		};
-	}, []);
-
-	const handleLatestMessageClick = () => {
-		setIsLatestMessageVisible(false);
-		messageEndRef.current?.scrollIntoView();
-	};
 
 	return (
 		<S.ChattingContainer>
