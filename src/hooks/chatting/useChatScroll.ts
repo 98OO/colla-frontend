@@ -1,8 +1,12 @@
 import { useRef, useState, useEffect } from 'react';
 import { CHAT_AUTO_SCROLL_LIMIT } from '@constants/size';
-import type { ChatData } from '@type/chat';
+import type { ChatData, Message } from '@type/chat';
+import type { UserInformation } from '@type/user';
 
-const useChatScroll = (messageEndRef: React.RefObject<HTMLInputElement>) => {
+const useChatScroll = (
+	messageEndRef: React.RefObject<HTMLInputElement>,
+	userStatus: UserInformation | undefined
+) => {
 	const [chatHistory, setChatHistory] = useState<ChatData | null>(null);
 	const [isScrollAtBottom, setIsScrollAtBottom] = useState(false);
 	const [initialLoad, setInitialLoad] = useState(true);
@@ -69,15 +73,46 @@ const useChatScroll = (messageEndRef: React.RefObject<HTMLInputElement>) => {
 		messageEndRef.current?.scrollIntoView();
 	};
 
+	const handleCheckScroll = (parsedMessage: Message) => {
+		if (userStatus) {
+			const isAutoScroll =
+				chatRef.current &&
+				chatRef.current.scrollHeight -
+					chatRef.current.clientHeight -
+					chatRef.current.scrollTop <=
+					CHAT_AUTO_SCROLL_LIMIT;
+
+			if (parsedMessage.author.id !== userStatus.profile.userId) {
+				if (isAutoScroll) {
+					if (parsedMessage.type === 'TEXT') setIsScrollAtBottom(true);
+					else {
+						setTimeout(() => {
+							messageEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+						}, 500);
+					}
+				} else setIsLatestMessageVisible(true);
+			} else {
+				setIsLatestMessageVisible(false);
+				if (parsedMessage.type === 'TEXT') setIsScrollAtBottom(true);
+			}
+
+			setChatHistory((prevChatHistory) => ({
+				chatChannelMessages: [
+					parsedMessage,
+					...(prevChatHistory?.chatChannelMessages ?? []),
+				],
+			}));
+		}
+	};
+
 	return {
 		chatRef,
 		chatHistory,
 		isLatestMessageVisible,
-		setIsScrollAtBottom,
-		setIsLatestMessageVisible,
 		setChatHistory,
 		setPrevHeight,
 		handleLatestMessageClick,
+		handleCheckScroll,
 	};
 };
 
