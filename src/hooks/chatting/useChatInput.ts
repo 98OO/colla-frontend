@@ -5,14 +5,17 @@ import useToastStore from '@stores/toastStore';
 import { END_POINTS } from '@constants/api';
 import type { UserInformation } from '@type/user';
 
-const useChatInput = (
-	selectedChat: number,
-	userStatus: UserInformation | undefined
-) => {
+interface useChatInputProps {
+	selectedChat: number;
+	userStatus: UserInformation | undefined;
+	messageEndRef: React.RefObject<HTMLInputElement>;
+}
+
+const useChatInput = (props: useChatInputProps) => {
+	const { selectedChat, userStatus, messageEndRef } = props;
 	const [chatMessage, setChatMessage] = useState('');
 	const inputImageRef = useRef<HTMLInputElement | null>(null);
 	const inputFileRef = useRef<HTMLInputElement | null>(null);
-	const messageEndRef = useRef<HTMLInputElement | null>(null);
 	const { stompClient } = useSocketStore();
 	const { makeToast } = useToastStore();
 	const { isFileSizeExceedLimit, uploadFiles } = useFileUpload();
