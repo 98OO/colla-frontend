@@ -1,4 +1,4 @@
-import { useRef, useEffect } from 'react';
+import { useEffect } from 'react';
 import LatestMessageBox from '@components/Chat/LatestMessageBox/LatestMessageBox';
 import MyMessageBox from '@components/Chat/MyMessageBox/MyMessageBox';
 import OtherMessageBox from '@components/Chat/OtherMessageBox/OtherMessageBox';
@@ -8,14 +8,12 @@ import IconButton from '@components/common/IconButton/IconButton';
 import Text from '@components/common/Text/Text';
 import useChatInput from '@hooks/chatting/useChatInput';
 import useChatScroll from '@hooks/chatting/useChatScroll';
+import useChatSubscription from '@hooks/chatting/useChatSubscription';
 import useChatMessageQuery from '@hooks/queries/chat/useChatMesaageQuery';
-import { queryClient } from '@hooks/queries/common/queryClient';
 import useUserStatusQuery from '@hooks/queries/useUserStatusQuery';
-import { StompSubscription } from '@stomp/stompjs';
 import useSocketStore from '@stores/socketStore';
 import { getFormattedDate } from '@utils/getFormattedDate';
 import { END_POINTS } from '@constants/api';
-import { CHAT_AUTO_SCROLL_LIMIT } from '@constants/size';
 import * as S from './Chatting.styled';
 
 const Chatting = ({ selectedChat }: { selectedChat: number }) => {
@@ -40,79 +38,16 @@ const Chatting = ({ selectedChat }: { selectedChat: number }) => {
 		chatRef,
 		chatHistory,
 		isLatestMessageVisible,
-		setIsScrollAtBottom,
-		setIsLatestMessageVisible,
 		setChatHistory,
 		setPrevHeight,
 		handleLatestMessageClick,
-	} = useChatScroll(messageEndRef);
+		handleCheckScroll,
+	} = useChatScroll(messageEndRef, userStatus);
+
+	useChatSubscription({ selectedChat, userStatus, handleCheckScroll });
 
 	const { messages, fetchNextPage, hasNextPage, isFetching } =
 		useChatMessageQuery(selectedChat, userStatus?.profile.lastSeenTeamspaceId);
-
-	const chatSubscribeRef = useRef<StompSubscription | null>(null);
-
-	useEffect(() => {
-		if (selectedChat && userStatus) {
-			const newChatSubscribe = stompClient?.subscribe(
-				END_POINTS.SUBSCRIBE(
-					userStatus.profile.lastSeenTeamspaceId,
-					selectedChat
-				),
-				(message) => {
-					const parsedMessage = JSON.parse(message.body);
-					stompClient?.send(
-						END_POINTS.READ_MESSAGE(
-							userStatus.profile.lastSeenTeamspaceId,
-							selectedChat,
-							parsedMessage.id
-						)
-					);
-
-					const isAutoScroll =
-						chatRef.current &&
-						chatRef.current.scrollHeight -
-							chatRef.current.clientHeight -
-							chatRef.current.scrollTop <=
-							CHAT_AUTO_SCROLL_LIMIT;
-
-					if (parsedMessage.author.id !== userStatus.profile.userId) {
-						if (isAutoScroll) {
-							if (parsedMessage.type === 'TEXT') setIsScrollAtBottom(true);
-							else {
-								setTimeout(() => {
-									messageEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-								}, 500);
-							}
-						} else setIsLatestMessageVisible(true);
-					} else {
-						setIsLatestMessageVisible(false);
-						if (parsedMessage.type === 'TEXT') setIsScrollAtBottom(true);
-					}
-
-					setChatHistory((prevChatHistory) => ({
-						chatChannelMessages: [
-							parsedMessage,
-							...(prevChatHistory?.chatChannelMessages ?? []),
-						],
-					}));
-				}
-			);
-
-			if (newChatSubscribe) chatSubscribeRef.current = newChatSubscribe;
-		}
-
-		return () => {
-			if (chatSubscribeRef.current) {
-				chatSubscribeRef.current.unsubscribe();
-				chatSubscribeRef.current = null;
-			}
-
-			queryClient.removeQueries({
-				queryKey: ['chatMessage', selectedChat],
-			});
-		};
-	}, [selectedChat, stompClient]);
 
 	useEffect(() => {
 		if (
