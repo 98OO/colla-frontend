@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useState } from 'react';
 import LatestMessageBox from '@components/Chat/LatestMessageBox/LatestMessageBox';
 import MyMessageBox from '@components/Chat/MyMessageBox/MyMessageBox';
 import OtherMessageBox from '@components/Chat/OtherMessageBox/OtherMessageBox';
@@ -7,24 +7,47 @@ import Flex from '@components/common/Flex/Flex';
 import IconButton from '@components/common/IconButton/IconButton';
 import Text from '@components/common/Text/Text';
 import useChatInput from '@hooks/chatting/useChatInput';
+import useChatMessages from '@hooks/chatting/useChatMessages';
 import useChatScroll from '@hooks/chatting/useChatScroll';
 import useChatSubscription from '@hooks/chatting/useChatSubscription';
-import useChatMessageQuery from '@hooks/queries/chat/useChatMesaageQuery';
 import useUserStatusQuery from '@hooks/queries/useUserStatusQuery';
-import useSocketStore from '@stores/socketStore';
 import { getFormattedDate } from '@utils/getFormattedDate';
-import { END_POINTS } from '@constants/api';
 import * as S from './Chatting.styled';
 
 const Chatting = ({ selectedChat }: { selectedChat: number }) => {
 	const { userStatus } = useUserStatusQuery();
-	const { stompClient } = useSocketStore();
+	const [prevHeight, setPrevHeight] = useState(0);
+
+	const {
+		chatHistory,
+		chatRef,
+		isFetching,
+		hasNextPage,
+		setChatHistory,
+		fetchNextPage,
+	} = useChatMessages({
+		selectedChat,
+		userStatus,
+		setPrevHeight,
+	});
+
+	const {
+		isLatestMessageVisible,
+		messageEndRef,
+		handleLatestMessageClick,
+		handleCheckScroll,
+	} = useChatScroll({
+		userStatus,
+		chatHistory,
+		setChatHistory,
+		chatRef,
+		prevHeight,
+	});
 
 	const {
 		chatMessage,
 		inputImageRef,
 		inputFileRef,
-		messageEndRef,
 		handleMessageChange,
 		handleText,
 		handleImageUploadClick,
@@ -32,52 +55,9 @@ const Chatting = ({ selectedChat }: { selectedChat: number }) => {
 		handleImageChange,
 		handleFileChange,
 		handleKeyDown,
-	} = useChatInput(selectedChat, userStatus);
-
-	const {
-		chatRef,
-		chatHistory,
-		isLatestMessageVisible,
-		setChatHistory,
-		setPrevHeight,
-		handleLatestMessageClick,
-		handleCheckScroll,
-	} = useChatScroll(messageEndRef, userStatus);
+	} = useChatInput({ selectedChat, userStatus, messageEndRef });
 
 	useChatSubscription({ selectedChat, userStatus, handleCheckScroll });
-
-	const { messages, fetchNextPage, hasNextPage, isFetching } =
-		useChatMessageQuery(selectedChat, userStatus?.profile.lastSeenTeamspaceId);
-
-	useEffect(() => {
-		if (
-			messages &&
-			messages.pages[0].chatChannelMessages.length > 0 &&
-			userStatus
-		) {
-			stompClient?.send(
-				END_POINTS.READ_MESSAGE(
-					userStatus.profile.lastSeenTeamspaceId,
-					selectedChat,
-					messages.pages[0].chatChannelMessages[0].id
-				)
-			);
-		}
-
-		if (chatRef.current) setPrevHeight(chatRef.current.scrollHeight);
-
-		setChatHistory((prevChatHistory) => {
-			const lastPageMessages =
-				messages?.pages[messages.pages.length - 1]?.chatChannelMessages ?? [];
-
-			return {
-				chatChannelMessages: [
-					...(prevChatHistory?.chatChannelMessages ?? []),
-					...lastPageMessages,
-				],
-			};
-		});
-	}, [messages?.pages]);
 
 	return (
 		<S.ChattingContainer>
