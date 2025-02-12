@@ -1,18 +1,23 @@
-import { useRef, useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { CHAT_AUTO_SCROLL_LIMIT } from '@constants/size';
-import type { ChatData, Message } from '@type/chat';
+import type { Message, ChatData } from '@type/chat';
 import type { UserInformation } from '@type/user';
 
-const useChatScroll = (
-	messageEndRef: React.RefObject<HTMLInputElement>,
-	userStatus: UserInformation | undefined
-) => {
-	const [chatHistory, setChatHistory] = useState<ChatData | null>(null);
+interface useChatScrollProps {
+	userStatus: UserInformation | undefined;
+	chatHistory: ChatData | null;
+	setChatHistory: React.Dispatch<React.SetStateAction<ChatData | null>>;
+	chatRef: React.RefObject<HTMLDivElement>;
+	prevHeight: number;
+}
+
+const useChatScroll = (props: useChatScrollProps) => {
+	const { userStatus, chatHistory, setChatHistory, chatRef, prevHeight } =
+		props;
+	const messageEndRef = useRef<HTMLInputElement | null>(null);
 	const [isScrollAtBottom, setIsScrollAtBottom] = useState(false);
 	const [initialLoad, setInitialLoad] = useState(true);
 	const [isLatestMessageVisible, setIsLatestMessageVisible] = useState(false);
-	const [prevHeight, setPrevHeight] = useState(0);
-	const chatRef = useRef<HTMLDivElement>(null);
 
 	useEffect(() => {
 		if (!chatHistory || chatHistory.chatChannelMessages.length === 0) return;
@@ -106,11 +111,8 @@ const useChatScroll = (
 	};
 
 	return {
-		chatRef,
-		chatHistory,
 		isLatestMessageVisible,
-		setChatHistory,
-		setPrevHeight,
+		messageEndRef,
 		handleLatestMessageClick,
 		handleCheckScroll,
 	};
