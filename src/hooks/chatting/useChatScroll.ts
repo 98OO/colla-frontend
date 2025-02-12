@@ -4,20 +4,20 @@ import type { Message, ChatData } from '@type/chat';
 import type { UserInformation } from '@type/user';
 
 interface useChatScrollProps {
+	prevHeight: number;
 	userStatus: UserInformation | undefined;
 	chatHistory: ChatData | null;
-	setChatHistory: React.Dispatch<React.SetStateAction<ChatData | null>>;
 	chatRef: React.RefObject<HTMLDivElement>;
-	prevHeight: number;
+	setChatHistory: React.Dispatch<React.SetStateAction<ChatData | null>>;
 }
 
 const useChatScroll = (props: useChatScrollProps) => {
 	const { userStatus, chatHistory, setChatHistory, chatRef, prevHeight } =
 		props;
-	const messageEndRef = useRef<HTMLInputElement | null>(null);
 	const [isScrollAtBottom, setIsScrollAtBottom] = useState(false);
 	const [initialLoad, setInitialLoad] = useState(true);
 	const [isLatestMessageVisible, setIsLatestMessageVisible] = useState(false);
+	const messageEndRef = useRef<HTMLInputElement | null>(null);
 
 	useEffect(() => {
 		if (!chatHistory || chatHistory.chatChannelMessages.length === 0) return;
