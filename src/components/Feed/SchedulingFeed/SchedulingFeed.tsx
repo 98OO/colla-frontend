@@ -197,6 +197,7 @@ const SchedulingFeed = ({
 								label={hasExistingResponse ? '일정 변경' : '일정 추가'}
 								variant='primary'
 								size='md'
+								disabled={details.isClosed}
 								onClick={handleAddSchedule}
 							/>
 						)}
