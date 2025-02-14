@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import Avatar from '@components/common/Avatar/Avatar';
 import { Button } from '@components/common/Button/Button';
 import Flex from '@components/common/Flex/Flex';
@@ -43,10 +43,31 @@ const SchedulingFeed = ({
 
 	const { userStatus } = useUserStatusQuery();
 	const teamspaceId = userStatus?.profile.lastSeenTeamspaceId;
+	const userId = userStatus?.profile.userId;
 
-	const { mutateSchedulingAvail } = useSchedulingAvailMutation();
+	const { mutateSchedulingAvail } = useSchedulingAvailMutation(teamspaceId);
 
 	const [isEditable, setIsEditable] = useState(false);
+	const userResponse = responses.find(
+		(response) => response.user.id === userId
+	);
+	const hasExistingResponse = Boolean(userResponse);
+
+	const initialSelectedSlots = useMemo(() => {
+		if (!userResponse) return new Set<string>();
+
+		const slots = new Set<string>();
+		Object.entries(userResponse.availabilities).forEach(([date, segments]) => {
+			segments.forEach((value, index) => {
+				if (value === 1) {
+					// minTimeSegment를 빼서 상대적인 인덱스로 변환
+					const relativeIndex = index - minTimeSegment;
+					slots.add(`${date}:${relativeIndex}`);
+				}
+			});
+		});
+		return slots;
+	}, [userResponse, minTimeSegment]);
 
 	const handleAddSchedule = () => setIsEditable(true);
 	const handleCancelEdit = () => setIsEditable(false);
@@ -58,7 +79,7 @@ const SchedulingFeed = ({
 		handleMouseEnter,
 		handleMouseUp,
 		isSelected,
-	} = useScheduleSelection(isEditable);
+	} = useScheduleSelection(isEditable, initialSelectedSlots);
 
 	const availabilityInRange = getAvailabilityInRange(
 		totalAvailability,
@@ -74,7 +95,11 @@ const SchedulingFeed = ({
 	};
 
 	const handleSubmit = async () => {
-		const availabilites = prepareAvailabilities(selectedSlots, minTimeSegment);
+		const availabilites = prepareAvailabilities(
+			selectedSlots,
+			minTimeSegment,
+			totalAvailability
+		);
 
 		if (!teamspaceId) return;
 
@@ -169,7 +194,7 @@ const SchedulingFeed = ({
 						</S.ParticipantsContainer>
 						{!isEditable && (
 							<Button
-								label='일정 추가'
+								label={hasExistingResponse ? '일정 변경' : '일정 추가'}
 								variant='primary'
 								size='md'
 								onClick={handleAddSchedule}

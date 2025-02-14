@@ -39,20 +39,20 @@ export const getAvailabilityInRange = (
 
 export const prepareAvailabilities = (
 	selectedSlots: Set<string>,
-	minTimeSegment: number
+	minTimeSegment: number,
+	totalAvailability: timeAvailability
 ) => {
 	const availabilities: timeAvailability = {};
+
+	Object.keys(totalAvailability).forEach((date) => {
+		const isoDate = format(new Date(date), 'yyyy-MM-dd');
+		availabilities[isoDate] = Array(48).fill(0);
+	});
 
 	selectedSlots.forEach((slotId) => {
 		const [date, index] = slotId.split(':');
 		const timeIndex = parseInt(index, 10) + minTimeSegment;
-
 		const isoDate = format(new Date(date), 'yyyy-MM-dd');
-
-		if (!availabilities[isoDate]) {
-			availabilities[isoDate] = Array(48).fill(0);
-		}
-
 		availabilities[isoDate][timeIndex] = 1;
 	});
 

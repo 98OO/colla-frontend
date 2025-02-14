@@ -1,24 +1,23 @@
 import { useErrorBoundary } from 'react-error-boundary';
-import { useNavigate } from 'react-router-dom';
 import postSchedulingAvail from '@apis/post/postSchedulingAvail';
+import { useQueryClient } from '@tanstack/react-query';
 import { useMutation } from '@hooks/queries/common/useMutation';
 import useToastStore from '@stores/toastStore';
 import { HTTPError } from '@apis/HTTPError';
-import { PATH } from '@constants/path';
 
-const useSchedulingAvailMutation = () => {
+const useSchedulingAvailMutation = (teamspaceId: number | undefined) => {
 	const { makeToast } = useToastStore();
 	const { showBoundary } = useErrorBoundary();
-	const navigate = useNavigate();
+	const queryClient = useQueryClient();
 
 	const handleSchedulingAvailSuccess = () => {
-		makeToast('일정 추가/수정 성공', 'Success');
-		navigate(PATH.FEED);
+		makeToast('일정을 반영했어요!', 'Success');
+		queryClient.invalidateQueries({ queryKey: ['feeds', teamspaceId] });
 	};
 
 	const handleSchedulingAvailError = (error: Error) => {
 		if (error instanceof HTTPError) {
-			makeToast('일정 추가/수정에 실패했습니다. 다시 시도해주세요', 'Warning');
+			makeToast('일정 추가 및 변경에 실패했어요. 다시 시도해주세요', 'Warning');
 		} else showBoundary(error);
 	};
 
