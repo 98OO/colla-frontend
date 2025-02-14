@@ -20,7 +20,7 @@ const useSchedulingFeedMutation = () => {
 	const handleSchedulingFeedError = (error: Error) => {
 		if (error instanceof HTTPError) {
 			makeToast(
-				'일정 조율 피드 작성을 실패했습니다. 다시 시도해주세요',
+				'일정 조율 피드 작성을 실패했어요. 마감일시를 확인해 주세요',
 				'Warning'
 			);
 		} else showBoundary(error);

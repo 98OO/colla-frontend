@@ -26,15 +26,17 @@ const SetTimeStep = ({
 	);
 
 	const [title, setTitle] = useState('');
-
+	const [titleError, setTitleError] = useState(false);
 	const [amPmFrom, setAmPmFrom] = useState<string>('오전');
 	const [fromTime, setFromTime] = useState<string>('9:00');
-
 	const [amPmTo, setAmPmTo] = useState<string>('오후');
 	const [toTime, setToTime] = useState<string>('6:00');
 
 	const handleTitleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
 		setTitle(event.target.value);
+		if (event.target.value) {
+			setTitleError(false);
+		}
 	};
 
 	const handleAmPmSelect = (index: number, from: boolean = true) => {
@@ -75,17 +77,30 @@ const SetTimeStep = ({
 	}, [title, selectedDays, amPmFrom, fromTime, amPmTo, toTime]);
 
 	const handleSumbit = () => {
+		if (!title.trim()) {
+			setTitleError(true);
+			return;
+		}
 		onSubmit();
 	};
 
 	return (
 		<>
 			<Flex direction='column' gap='60'>
-				<S.PostInput
-					placeholder='제목을 입력해주세요'
-					value={title}
-					onChange={handleTitleChange}
-				/>
+				<Flex direction='column'>
+					<S.PostInput
+						placeholder='제목을 입력해주세요'
+						value={title}
+						onChange={handleTitleChange}
+					/>
+					{titleError && (
+						<Flex direction='column' marginTop='8' width='300'>
+							<Text size='md' weight='regular' color='danger'>
+								제목이 없어요
+							</Text>
+						</Flex>
+					)}
+				</Flex>
 				<Flex direction='column' gap='20'>
 					<Flex align='center' gap='6'>
 						<Icon name='Clock' />
@@ -166,7 +181,7 @@ const SetTimeStep = ({
 					label='등록'
 					variant='primary'
 					size='md'
-					onClick={() => handleSumbit()}
+					onClick={handleSumbit}
 				/>
 			</Flex>
 		</>
