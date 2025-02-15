@@ -1,8 +1,11 @@
 import { useState } from 'react';
 
-const useSelection = (isEditable: boolean) => {
+const useSelection = (
+	isEditable: boolean,
+	initialSlots: Set<string> = new Set()
+) => {
 	const [isDragging, setIsDragging] = useState(false);
-	const [selectedSlots, setSelectedSlots] = useState<Set<string>>(new Set());
+	const [selectedSlots, setSelectedSlots] = useState<Set<string>>(initialSlots);
 
 	const toggleSlotSelection = (slotId: string) => {
 		setSelectedSlots((prev) => {

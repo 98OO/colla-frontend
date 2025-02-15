@@ -80,6 +80,8 @@ export const Table = styled.div`
 	font-size: ${theme.typography.fontSize.body.md};
 	box-sizing: border-box;
 	border-top: 1px solid ${theme.color.border.tertiary};
+	border-right: 0.7px solid ${theme.color.border.tertiary};
+	border-bottom: 0.7px solid ${theme.color.border.tertiary};
 `;
 
 export const Column = styled.div`
@@ -97,8 +99,8 @@ export const SlotGroup = styled.div`
 	height: 40px;
 	display: flex;
 	flex-direction: column;
-	border-bottom: 1px solid ${theme.color.border.tertiary};
-	border-right: 1px solid ${theme.color.border.tertiary};
+	border-bottom: 0.5px solid ${theme.color.border.tertiary};
+	border-right: 0.7px solid ${theme.color.border.tertiary};
 	background-color: ${theme.color.bg.primary};
 `;
 
