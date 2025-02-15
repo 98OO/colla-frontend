@@ -1,4 +1,4 @@
-import { ChangeEvent, useRef, useState, useEffect, KeyboardEvent } from 'react';
+import { useState } from 'react';
 import LatestMessageBox from '@components/Chat/LatestMessageBox/LatestMessageBox';
 import MyMessageBox from '@components/Chat/MyMessageBox/MyMessageBox';
 import OtherMessageBox from '@components/Chat/OtherMessageBox/OtherMessageBox';
@@ -6,327 +6,58 @@ import { Button } from '@components/common/Button/Button';
 import Flex from '@components/common/Flex/Flex';
 import IconButton from '@components/common/IconButton/IconButton';
 import Text from '@components/common/Text/Text';
-import useFileUpload from '@hooks/common/useFileUpload';
-import useChatMessageQuery from '@hooks/queries/chat/useChatMesaageQuery';
-import { queryClient } from '@hooks/queries/common/queryClient';
+import useChatInput from '@hooks/chatting/useChatInput';
+import useChatMessages from '@hooks/chatting/useChatMessages';
+import useChatScroll from '@hooks/chatting/useChatScroll';
+import useChatSubscription from '@hooks/chatting/useChatSubscription';
 import useUserStatusQuery from '@hooks/queries/useUserStatusQuery';
-import { StompSubscription } from '@stomp/stompjs';
-import useSocketStore from '@stores/socketStore';
-import useToastStore from '@stores/toastStore';
 import { getFormattedDate } from '@utils/getFormattedDate';
-import { END_POINTS } from '@constants/api';
-import { CHAT_AUTO_SCROLL_LIMIT } from '@constants/size';
-import type { ChatData } from '@type/chat';
 import * as S from './Chatting.styled';
 
-interface ChattingProps {
-	selectedChat: number;
-}
-
-const Chatting = (props: ChattingProps) => {
+const Chatting = ({ selectedChat }: { selectedChat: number }) => {
 	const { userStatus } = useUserStatusQuery();
-	const { selectedChat } = props;
-	const { stompClient } = useSocketStore();
-	const { makeToast } = useToastStore();
-
-	const { messages, fetchNextPage, hasNextPage, isFetching } =
-		useChatMessageQuery(selectedChat, userStatus?.profile.lastSeenTeamspaceId);
-
-	const [chatHistory, setChatHistory] = useState<ChatData | null>(null);
-	const [chatMessage, setChatMessage] = useState('');
 	const [prevHeight, setPrevHeight] = useState(0);
-	const [isScrollAtBottom, setIsScrollAtBottom] = useState(false);
-	const [isLatestMessageVisible, setIsLatestMessageVisible] = useState(false);
-	const [initialLoad, setInitialLoad] = useState(true);
 
-	const chatRef = useRef<HTMLDivElement>(null);
-	const messageEndRef = useRef<HTMLInputElement | null>(null);
-	const chatSubscribeRef = useRef<StompSubscription | null>(null);
-	const inputImageRef = useRef<HTMLInputElement | null>(null);
-	const inputFileRef = useRef<HTMLInputElement | null>(null);
+	const {
+		chatHistory,
+		chatRef,
+		isFetching,
+		hasNextPage,
+		setChatHistory,
+		fetchNextPage,
+	} = useChatMessages({
+		selectedChat,
+		userStatus,
+		setPrevHeight,
+	});
 
-	useEffect(() => {
-		if (selectedChat && userStatus) {
-			const newChatSubscribe = stompClient?.subscribe(
-				END_POINTS.SUBSCRIBE(
-					userStatus.profile.lastSeenTeamspaceId,
-					selectedChat
-				),
-				(message) => {
-					const parsedMessage = JSON.parse(message.body);
-					stompClient?.send(
-						END_POINTS.READ_MESSAGE(
-							userStatus.profile.lastSeenTeamspaceId,
-							selectedChat,
-							parsedMessage.id
-						)
-					);
+	const {
+		isLatestMessageVisible,
+		messageEndRef,
+		handleLatestMessageClick,
+		handleCheckScroll,
+	} = useChatScroll({
+		userStatus,
+		chatHistory,
+		setChatHistory,
+		chatRef,
+		prevHeight,
+	});
 
-					const isAutoScroll =
-						chatRef.current &&
-						chatRef.current.scrollHeight -
-							chatRef.current.clientHeight -
-							chatRef.current.scrollTop <=
-							CHAT_AUTO_SCROLL_LIMIT;
+	const {
+		chatMessage,
+		inputImageRef,
+		inputFileRef,
+		handleMessageChange,
+		handleText,
+		handleImageUploadClick,
+		handleFileUploadClick,
+		handleImageChange,
+		handleFileChange,
+		handleKeyDown,
+	} = useChatInput({ selectedChat, userStatus, messageEndRef });
 
-					if (parsedMessage.author.id !== userStatus.profile.userId) {
-						if (isAutoScroll) {
-							if (parsedMessage.type === 'TEXT') setIsScrollAtBottom(true);
-							else {
-								setTimeout(() => {
-									messageEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-								}, 500);
-							}
-						} else setIsLatestMessageVisible(true);
-					} else {
-						setIsLatestMessageVisible(false);
-						if (parsedMessage.type === 'TEXT') setIsScrollAtBottom(true);
-					}
-
-					setChatHistory((prevChatHistory) => ({
-						chatChannelMessages: [
-							parsedMessage,
-							...(prevChatHistory?.chatChannelMessages ?? []),
-						],
-					}));
-				}
-			);
-
-			if (newChatSubscribe) chatSubscribeRef.current = newChatSubscribe;
-		}
-
-		return () => {
-			if (chatSubscribeRef.current) {
-				chatSubscribeRef.current.unsubscribe();
-				chatSubscribeRef.current = null;
-			}
-
-			queryClient.removeQueries({
-				queryKey: ['chatMessage', selectedChat],
-			});
-		};
-	}, [selectedChat, stompClient]);
-
-	useEffect(() => {
-		if (
-			messages &&
-			messages.pages[0].chatChannelMessages.length > 0 &&
-			userStatus
-		) {
-			stompClient?.send(
-				END_POINTS.READ_MESSAGE(
-					userStatus.profile.lastSeenTeamspaceId,
-					selectedChat,
-					messages.pages[0].chatChannelMessages[0].id
-				)
-			);
-		}
-
-		if (chatRef.current) setPrevHeight(chatRef.current.scrollHeight);
-
-		setChatHistory((prevChatHistory) => {
-			const lastPageMessages =
-				messages?.pages[messages.pages.length - 1]?.chatChannelMessages ?? [];
-
-			return {
-				chatChannelMessages: [
-					...(prevChatHistory?.chatChannelMessages ?? []),
-					...lastPageMessages,
-				],
-			};
-		});
-	}, [messages?.pages]);
-
-	useEffect(() => {
-		if (!chatHistory || chatHistory.chatChannelMessages.length === 0) return;
-
-		if (isScrollAtBottom) {
-			messageEndRef.current?.scrollIntoView();
-			setIsScrollAtBottom(false);
-		} else if (chatRef.current)
-			window.scrollTo({ top: chatRef.current.scrollHeight - prevHeight });
-	}, [chatHistory]);
-
-	useEffect(() => {
-		const observedElement = chatRef.current;
-		const resizeObserver = new ResizeObserver(() => {
-			if (initialLoad) {
-				messageEndRef.current?.scrollIntoView();
-				setInitialLoad(false);
-			}
-		});
-
-		if (observedElement) resizeObserver.observe(observedElement);
-
-		return () => {
-			if (observedElement) resizeObserver.unobserve(observedElement);
-		};
-	}, []);
-
-	useEffect(() => {
-		const scrollElement = chatRef.current;
-		let ticking = false;
-
-		const handleScroll = () => {
-			if (!ticking && scrollElement) {
-				requestAnimationFrame(() => {
-					const isBottom =
-						scrollElement.scrollHeight -
-							scrollElement.scrollTop -
-							scrollElement.clientHeight <=
-						CHAT_AUTO_SCROLL_LIMIT;
-
-					if (isBottom) setIsLatestMessageVisible(false);
-					ticking = false;
-				});
-
-				ticking = true;
-			}
-		};
-
-		scrollElement?.addEventListener('scroll', handleScroll);
-
-		return () => {
-			scrollElement?.removeEventListener('scroll', handleScroll);
-		};
-	}, []);
-
-	const handleMessageChange = (e: ChangeEvent<HTMLTextAreaElement>) => {
-		const { value } = e.target;
-		if (value.length <= 1000) setChatMessage(value);
-	};
-
-	const handleText = () => {
-		if (userStatus) {
-			stompClient?.send(
-				END_POINTS.SEND_MESSAGE(
-					userStatus.profile.lastSeenTeamspaceId,
-					selectedChat
-				),
-				{},
-				JSON.stringify({
-					chatType: 'TEXT',
-					content: chatMessage,
-					images: [],
-					attachments: [],
-				})
-			);
-		}
-
-		setChatMessage('');
-	};
-
-	const handleImageUploadClick = () => {
-		inputImageRef.current?.click();
-	};
-
-	const handleFileUploadClick = () => {
-		inputFileRef.current?.click();
-	};
-	const { isFileSizeExceedLimit, uploadFiles } = useFileUpload();
-
-	const handleImageChange = async (
-		event: React.ChangeEvent<HTMLInputElement>
-	) => {
-		if (event.target.files && event.target.files[0]) {
-			if (isFileSizeExceedLimit(event.target.files[0])) {
-				makeToast('이미지 크기는 최대 100MB입니다.', 'Warning');
-				return;
-			}
-			if (inputImageRef.current?.files) {
-				const imageUrl = await uploadFiles(
-					inputImageRef.current?.files,
-					'TEAMSPACE',
-					userStatus?.profile.lastSeenTeamspaceId
-				);
-				if (imageUrl && userStatus) {
-					stompClient?.send(
-						END_POINTS.SEND_MESSAGE(
-							userStatus.profile.lastSeenTeamspaceId,
-							selectedChat
-						),
-						{},
-						JSON.stringify({
-							chatType: 'IMAGE',
-							content: null,
-							images: [
-								{
-									name: inputImageRef.current?.files[0].name,
-									fileUrl: imageUrl[0],
-									size: inputImageRef.current?.files[0].size,
-								},
-							],
-							attachments: [],
-						})
-					);
-				}
-
-				setTimeout(() => {
-					messageEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-				}, 500);
-			}
-		}
-	};
-
-	const handleFileChange = async (event: ChangeEvent<HTMLInputElement>) => {
-		if (event.target.files && event.target.files[0]) {
-			if (isFileSizeExceedLimit(event.target.files[0])) {
-				makeToast('파일 크기는 최대 100MB입니다.', 'Warning');
-				return;
-			}
-
-			if (inputFileRef.current?.files) {
-				const fileUrl = await uploadFiles(
-					inputFileRef.current?.files,
-					'TEAMSPACE',
-					userStatus?.profile.lastSeenTeamspaceId
-				);
-				if (fileUrl && userStatus) {
-					stompClient?.send(
-						END_POINTS.SEND_MESSAGE(
-							userStatus.profile.lastSeenTeamspaceId,
-							selectedChat
-						),
-						{},
-						JSON.stringify({
-							chatType: 'FILE',
-							content: null,
-							images: [],
-							attachments: [
-								{
-									name: inputFileRef.current?.files[0].name,
-									fileUrl: fileUrl[0],
-									size: inputFileRef.current?.files[0].size,
-								},
-							],
-						})
-					);
-				}
-
-				setTimeout(() => {
-					messageEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-				}, 500);
-			}
-		}
-	};
-
-	const handleKeyDown = (event: KeyboardEvent<HTMLTextAreaElement>) => {
-		if (event.nativeEvent.isComposing) return;
-
-		if (event.key === 'Enter' && event.shiftKey) {
-			event.preventDefault();
-			setChatMessage((prev) => `${prev}\n`);
-		} else if (event.key === 'Enter' && !event.shiftKey) {
-			event.preventDefault();
-
-			if (chatMessage.trim().length > 0) handleText();
-		}
-	};
-
-	const handleLatestMessageClick = () => {
-		setIsLatestMessageVisible(false);
-		messageEndRef.current?.scrollIntoView();
-	};
+	useChatSubscription({ selectedChat, userStatus, handleCheckScroll });
 
 	return (
 		<S.ChattingContainer>

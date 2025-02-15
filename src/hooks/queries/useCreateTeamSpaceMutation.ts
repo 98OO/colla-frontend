@@ -1,18 +1,20 @@
 import { useNavigate } from 'react-router-dom';
 import postCreateTeamSpace from '@apis/teamspace/postCreateTeamSpace';
-import postUserLastSeen from '@apis/user/postUserLastSeen';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+import useRecordTeamSpace from '@hooks/queries/teamspace/useRecordTeamSpace';
+import { useMutation } from '@tanstack/react-query';
+import useSocketStore from '@stores/socketStore';
 import { PATH } from '@constants/path';
 
 const useCreateTeamSpaceMutation = () => {
 	const navigate = useNavigate();
-	const queryClient = useQueryClient();
+	const { setChatChannelList } = useSocketStore();
+	const { mutateRecordTeamSpace } = useRecordTeamSpace();
 
 	const postCreateTeamSpaceMutation = useMutation({
 		mutationFn: postCreateTeamSpace,
 		onSuccess: (teamspaceId) => {
-			postUserLastSeen(teamspaceId);
-			queryClient.invalidateQueries({ queryKey: ['userStatus'] });
+			mutateRecordTeamSpace(teamspaceId);
+			setChatChannelList([]);
 			navigate(PATH.FEED);
 		},
 		onError: (error) => {
