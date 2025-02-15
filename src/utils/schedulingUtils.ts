@@ -28,31 +28,34 @@ export const getAvailabilityInRange = (
 	minTimeSegment: number,
 	maxTimeSegment: number
 ) => {
-	const entries = Object.entries(total);
+	const entries = Object.entries(total).sort((a, b) => {
+		const dateA = new Date(a[0]);
+		const dateB = new Date(b[0]);
+		return dateA.getTime() - dateB.getTime();
+	});
 
 	return entries.reduce((acc, [date, array]) => {
 		acc[date] = array.slice(minTimeSegment, maxTimeSegment);
-
 		return acc;
 	}, {} as timeAvailability);
 };
 
 export const prepareAvailabilities = (
 	selectedSlots: Set<string>,
-	minTimeSegment: number
+	minTimeSegment: number,
+	totalAvailability: timeAvailability
 ) => {
 	const availabilities: timeAvailability = {};
+
+	Object.keys(totalAvailability).forEach((date) => {
+		const isoDate = format(new Date(date), 'yyyy-MM-dd');
+		availabilities[isoDate] = Array(48).fill(0);
+	});
 
 	selectedSlots.forEach((slotId) => {
 		const [date, index] = slotId.split(':');
 		const timeIndex = parseInt(index, 10) + minTimeSegment;
-
 		const isoDate = format(new Date(date), 'yyyy-MM-dd');
-
-		if (!availabilities[isoDate]) {
-			availabilities[isoDate] = Array(48).fill(0);
-		}
-
 		availabilities[isoDate][timeIndex] = 1;
 	});
 
