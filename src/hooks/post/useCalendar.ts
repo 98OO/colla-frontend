@@ -135,7 +135,18 @@ const useCalendar = () => {
 
 	const getInitialDueAt = (dueAt: string) => {
 		if (dueAt === '') {
-			return [getToday(true)];
+			const threeDaysLater = new Date();
+			threeDaysLater.setDate(threeDaysLater.getDate() + 3);
+
+			return [
+				{
+					year: threeDaysLater.getFullYear(),
+					month: threeDaysLater.getMonth() + 1,
+					day: threeDaysLater.getDate(),
+					hour: threeDaysLater.getHours(),
+					minute: threeDaysLater.getMinutes(),
+				},
+			];
 		}
 
 		return [getDayObject(dueAt, true)];

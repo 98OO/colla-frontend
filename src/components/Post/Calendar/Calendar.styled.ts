@@ -51,6 +51,7 @@ export const Date = styled.div<{ isSelected: boolean }>`
 	align-items: center;
 	width: 40px;
 	height: 40px;
+	cursor: pointer;
 
 	${({ isSelected }) =>
 		isSelected &&
