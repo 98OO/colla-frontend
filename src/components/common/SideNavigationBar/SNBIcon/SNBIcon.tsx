@@ -6,6 +6,7 @@ import Flex from '@components/common/Flex/Flex';
 import FeedMenu from '@components/common/SideNavigationBar/FeedMenu/FeedMenu';
 import MenuItem from '@components/common/SideNavigationBar/MenuItem/MenuItem';
 import useMenu from '@hooks/common/useMenu';
+import useUnreadMessageCountQuery from '@hooks/queries/teamspace/useUnreadMessageCountQuery';
 import useUserStatusQuery from '@hooks/queries/useUserStatusQuery';
 import useSocketStore from '@stores/socketStore';
 import { PATH } from '@constants/path';
@@ -21,9 +22,9 @@ const SNBIcon = () => {
 	const teamRole = teamspaces?.find(
 		(teamspace) => teamspace.teamspaceId === lastSeenTeamspaceId
 	)?.teamspaceRole;
-	const unreadMessageCount = teamspaces?.find(
-		(teamspace) => teamspace.teamspaceId === lastSeenTeamspaceId
-	)?.unreadMessageCount;
+
+	const { unreadMessageCount } =
+		useUnreadMessageCountQuery(lastSeenTeamspaceId);
 
 	const { chatMessageCount } = useSocketStore();
 	const baseRef = useRef<HTMLDivElement>(null);
