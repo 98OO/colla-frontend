@@ -10,6 +10,7 @@ const useRecordTeamSpace = () => {
 		queryClient.removeQueries({ queryKey: ['teamSetting'] });
 		queryClient.removeQueries({ queryKey: ['teamSpaceUsers'] });
 		queryClient.removeQueries({ queryKey: ['chatChannel'] });
+		queryClient.removeQueries({ queryKey: ['unreadMessage'] });
 	};
 
 	const { mutate } = useMutation({
