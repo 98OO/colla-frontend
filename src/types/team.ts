@@ -38,3 +38,7 @@ export interface TeamSettingResult {
 		tagId: number | null;
 	}[];
 }
+
+export interface UnreadMessageCountResponse {
+	unreadMessageCount: number;
+}
