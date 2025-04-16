@@ -33,49 +33,51 @@ const OtherMessageBox = (props: OtherMessageBoxProps) => {
 						{name}
 					</Text>
 				)}
-				<S.OtherMessageBoxWrapper state={state} type={type}>
-					{type === 'TEXT' && (
-						<Text size='lg' weight='regular' color='secondary'>
-							{content}
-						</Text>
-					)}
-					{type === 'IMAGE' && (
-						<S.ImageWrapper>
-							{file?.map((img) => (
-								<a
-									key={img.id}
-									href={img.url}
-									target='_blank'
-									rel='noopener noreferrer'>
-									<img src={img.url} alt={img.filename} />
-								</a>
-							))}
-						</S.ImageWrapper>
-					)}
-					{type === 'FILE' && (
-						<Flex gap='10'>
-							{file?.map((files) => (
-								<ChatAttachments
-									key={files.id}
-									attachment={{
-										id: files.id,
-										name: files.filename,
-										fileUrl: files.url,
-										size: files.size,
-									}}
-								/>
-							))}
-						</Flex>
-					)}
-				</S.OtherMessageBoxWrapper>
+				<Flex gap='8'>
+					<S.OtherMessageBoxWrapper state={state} type={type}>
+						{type === 'TEXT' && (
+							<Text size='lg' weight='regular' color='secondary'>
+								{content}
+							</Text>
+						)}
+						{type === 'IMAGE' && (
+							<S.ImageWrapper>
+								{file?.map((img) => (
+									<a
+										key={img.id}
+										href={img.url}
+										target='_blank'
+										rel='noopener noreferrer'>
+										<img src={img.url} alt={img.filename} />
+									</a>
+								))}
+							</S.ImageWrapper>
+						)}
+						{type === 'FILE' && (
+							<Flex gap='10'>
+								{file?.map((files) => (
+									<ChatAttachments
+										key={files.id}
+										attachment={{
+											id: files.id,
+											name: files.filename,
+											fileUrl: files.url,
+											size: files.size,
+										}}
+									/>
+								))}
+							</Flex>
+						)}
+					</S.OtherMessageBoxWrapper>
+					<S.TimeWrapper>
+						{date && (
+							<Text size='sm' weight='regular' color='subtle'>
+								{date}
+							</Text>
+						)}
+					</S.TimeWrapper>
+				</Flex>
 			</Flex>
-			<S.TimeWrapper>
-				{date && (
-					<Text size='sm' weight='regular' color='subtle'>
-						{date}
-					</Text>
-				)}
-			</S.TimeWrapper>
 			<S.OtherMessageBoxSpacer />
 		</S.OtherMessageBoxContainer>
 	);

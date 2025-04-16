@@ -40,7 +40,6 @@ export const TimeWrapper = styled.div`
 	flex-direction: column;
 	justify-content: flex-end;
 	flex-shrink: 0;
-	width: 54px;
 	min-width: 54px;
 	flex-direction: column;
 	align-items: flex-end;
