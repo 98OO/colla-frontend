@@ -1,30 +1,80 @@
-# React + TypeScript + Vite
+## 대학생을 위한 팀 프로젝트 관리 플랫폼, Colla
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+파편화된 프로젝트 협업 도구를 하나의 플랫폼에서!
 
-Currently, two official plugins are available:
+### 👉🏻 [Colla 바로가기](http://colla.so/)
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+<br />
 
-## Expanding the ESLint configuration
+## 🧑‍💻 Tech Stack
 
-If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
+<img width="2064" alt="stack" src="https://github.com/98OO/.github/assets/70826982/65bad794-ad3a-48ff-a489-867f7cef5aaa">
 
-- Configure the top-level `parserOptions` property like this:
+### 🛠 Frontend Tech Stack
 
-```js
-export default {
-	// other rules...
-	parserOptions: {
-		ecmaVersion: 'latest',
-		sourceType: 'module',
-		project: ['./tsconfig.json', './tsconfig.node.json'],
-		tsconfigRootDir: __dirname,
-	},
-};
-```
+<table>
+  <tr>
+    <th align="left">Category</th>
+    <th align="left">Stack</th>
+  </tr>
+  <tr>
+    <td><strong>Language</strong></td>
+    <td>TypeScript (100%)</td>
+  </tr>
+  <tr>
+    <td><strong>Framework / Library</strong></td>
+    <td>React, TanStack Query, Styled-components</td>
+  </tr>
+  <tr>
+    <td><strong>Testing</strong></td>
+    <td>Storybook, MSW</td>
+  </tr>
+</table>
 
-- Replace `plugin:@typescript-eslint/recommended` to `plugin:@typescript-eslint/recommended-type-checked` or `plugin:@typescript-eslint/strict-type-checked`
-- Optionally add `plugin:@typescript-eslint/stylistic-type-checked`
-- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and add `plugin:react/recommended` & `plugin:react/jsx-runtime` to the `extends` list
+<br />
+
+## 🖥️ 로컬 개발 환경
+
+1. **의존성 설치**
+   ```bash
+   npm install
+   ```
+2. **환경변수 설정**
+   - `.env` 파일에 환경변수 입력
+3. **개발 서버 실행**
+   ```bash
+   npm run dev
+   ```
+
+<br />
+
+## 👨‍👩‍👧‍👦 Frontend Members
+
+<table border="1" cellspacing="0" cellpadding="12">
+  <tr>
+    <td align="center">
+      <a href="https://github.com/ledraco">
+        <img src="https://avatars.githubusercontent.com/u/98178673?v=4" width="120" height="120" alt="오세찬" />
+      </a>
+      <br />
+      <strong>오세찬</strong><br />
+      <a href="https://github.com/ledraco">@ledraco</a>
+    </td>
+    <td align="center">
+      <a href="https://github.com/0Jaemin0">
+        <img src="https://avatars.githubusercontent.com/u/127086869?v=4" width="120" height="120" alt="박재민" />
+      </a>
+      <br />
+      <strong>박재민</strong><br />
+      <a href="https://github.com/0Jaemin0">@0Jaemin0</a>
+    </td>
+    <td align="center">
+      <a href="https://github.com/forever2969">
+        <img src="https://avatars.githubusercontent.com/u/57749824?v=4" width="120" height="120" alt="이태헌" />
+      </a>
+      <br />
+      <strong>이태헌</strong><br />
+      <a href="https://github.com/forever2969">@forever2969</a>
+    </td>
+  </tr>
+</table>
