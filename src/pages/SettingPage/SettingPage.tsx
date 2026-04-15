@@ -6,7 +6,8 @@ import Flex from '@components/common/Flex/Flex';
 import Heading from '@components/common/Heading/Heading';
 import Input from '@components/common/Input/Input';
 import Text from '@components/common/Text/Text';
-import TeamMemberItem from '@components/Setting/TeamMemberItem';
+import RoleAddModal from '@components/Setting/RoleAddModal/RoleAddModal';
+import TeamMemberItem from '@components/Setting/TeamMemberItem/TeamMemberItem';
 import useFileUpload from '@hooks/common/useFileUpload';
 import useDeleteTeamProfileMutation from '@hooks/queries/setting/useDeleteTeamProfileMutation';
 import useSettingMutation from '@hooks/queries/setting/useSettingMutation';
@@ -23,6 +24,7 @@ const SettingPage = () => {
 		users: [],
 	});
 	const [error, setError] = useState('');
+	const [isRoleAddModalOpen, setIsRoleAddModalOpen] = useState(false);
 	const inputRef = useRef<HTMLInputElement | null>(null);
 	const { makeToast } = useToastStore();
 	const { userStatus } = useUserStatusQuery();
@@ -258,6 +260,7 @@ const SettingPage = () => {
 									variant='secondary'
 									size='sm'
 									leadingIcon='Plus'
+									onClick={() => setIsRoleAddModalOpen(true)}
 								/>
 							</Flex>
 							<Divider size='sm' />
@@ -288,11 +291,14 @@ const SettingPage = () => {
 										email={user.email}
 										role={user.role}
 										tag={
-											teamInfo.users[index]?.tagId === null
-												? null
-												: teamSetting.tags.find(
-														(tag) => tag.id === teamInfo.users[index]?.tagId
-													)?.name || null
+											// eslint-disable-next-line no-nested-ternary
+											teamSetting.tags.length === 0
+												? '역할 없음'
+												: teamInfo.users[index]?.tagId === null
+													? '역할 선택'
+													: teamSetting.tags.find(
+															(tag) => tag.id === teamInfo.users[index]?.tagId
+														)?.name || null
 										}
 										tagOption={
 											teamSetting.tags.length > 0
@@ -338,6 +344,9 @@ const SettingPage = () => {
 						</Flex>
 					</Flex>
 				</S.SettingContainer>
+			)}
+			{isRoleAddModalOpen && (
+				<RoleAddModal setIsChatRoomModalOpen={setIsRoleAddModalOpen} />
 			)}
 		</S.Container>
 	);
