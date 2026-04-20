@@ -5,6 +5,7 @@ import Divider from '@components/common/Divider/Divider';
 import Flex from '@components/common/Flex/Flex';
 import Heading from '@components/common/Heading/Heading';
 import Input from '@components/common/Input/Input';
+import Modal from '@components/common/Modal/Modal';
 import Text from '@components/common/Text/Text';
 import RoleAddModal from '@components/Setting/RoleAddModal/RoleAddModal';
 import TeamMemberItem from '@components/Setting/TeamMemberItem/TeamMemberItem';
@@ -345,9 +346,11 @@ const SettingPage = () => {
 					</Flex>
 				</S.SettingContainer>
 			)}
-			{isRoleAddModalOpen && (
+			<Modal
+				isOpen={isRoleAddModalOpen}
+				onClose={() => setIsRoleAddModalOpen(false)}>
 				<RoleAddModal setIsChatRoomModalOpen={setIsRoleAddModalOpen} />
-			)}
+			</Modal>
 		</S.Container>
 	);
 };

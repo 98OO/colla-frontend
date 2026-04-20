@@ -4,7 +4,6 @@ import Flex from '@components/common/Flex/Flex';
 import Heading from '@components/common/Heading/Heading';
 import Input from '@components/common/Input/Input';
 import Text from '@components/common/Text/Text';
-import useOutsideClick from '@hooks/common/useOutSideClick';
 import useCreateChatChannelMutation from '@hooks/queries/chat/useCreateChatChannelMutation';
 import useUserStatusQuery from '@hooks/queries/useUserStatusQuery';
 import * as S from './ChatRoomCreationModal.styled';
@@ -20,9 +19,6 @@ const ChatRoomCreationModal = ({
 	const [nameError, setNameError] = useState('');
 	const { userStatus } = useUserStatusQuery();
 	const { mutateCreateChatChannel } = useCreateChatChannelMutation();
-	const ref = useOutsideClick({
-		onClickOutside: () => setIsChatRoomModalOpen(false),
-	});
 
 	const handleNameChange = (e: ChangeEvent<HTMLInputElement>) => {
 		const { value } = e.target;
@@ -59,7 +55,7 @@ const ChatRoomCreationModal = ({
 	};
 
 	return (
-		<S.ChatRoomCreationModalContainer ref={ref}>
+		<S.ChatRoomCreationModalContainer>
 			<Flex marginLeft='20' marginRight='20' marginBottom='12'>
 				<Heading size='xxs'>채팅방 만들기</Heading>
 			</Flex>

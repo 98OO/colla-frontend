@@ -5,6 +5,7 @@ import Chatting from '@components/Chat/Chatting/Chatting';
 import Flex from '@components/common/Flex/Flex';
 import Heading from '@components/common/Heading/Heading';
 import IconButton from '@components/common/IconButton/IconButton';
+import Modal from '@components/common/Modal/Modal';
 import Text from '@components/common/Text/Text';
 import useChatChannelQuery from '@hooks/queries/chat/useChatChannelQuery';
 import useUserStatusQuery from '@hooks/queries/useUserStatusQuery';
@@ -82,11 +83,13 @@ const ChatPage = () => {
 			{selectedChat !== 0 && (
 				<Chatting selectedChat={selectedChat} key={selectedChat} />
 			)}
-			{isChatRoomModalOpen && (
+			<Modal
+				isOpen={isChatRoomModalOpen}
+				onClose={() => setIsChatRoomModalOpen(false)}>
 				<ChatRoomCreationModal
 					setIsChatRoomModalOpen={setIsChatRoomModalOpen}
 				/>
-			)}
+			</Modal>
 		</Flex>
 	);
 };

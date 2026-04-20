@@ -4,7 +4,6 @@ import Flex from '@components/common/Flex/Flex';
 import Heading from '@components/common/Heading/Heading';
 import Input from '@components/common/Input/Input';
 import Text from '@components/common/Text/Text';
-import useOutsideClick from '@hooks/common/useOutSideClick';
 import useTeamSpaceRoleMutation from '@hooks/queries/teamspace/useTeamSpaceRoleMutation';
 import useUserStatusQuery from '@hooks/queries/useUserStatusQuery';
 import * as S from './RoleAddModal.styled';
@@ -19,9 +18,6 @@ const RoleAddModal = ({ setIsChatRoomModalOpen }: RoleAddModalProps) => {
 	const { userStatus } = useUserStatusQuery();
 	const { mutateAddTeamSpaceRole: mutateCreateRole } =
 		useTeamSpaceRoleMutation();
-	const ref = useOutsideClick({
-		onClickOutside: () => setIsChatRoomModalOpen(false),
-	});
 
 	const handleNameChange = (e: ChangeEvent<HTMLInputElement>) => {
 		const { value } = e.target;
@@ -53,7 +49,7 @@ const RoleAddModal = ({ setIsChatRoomModalOpen }: RoleAddModalProps) => {
 	};
 
 	return (
-		<S.RoleAddModalContainer ref={ref}>
+		<S.RoleAddModalContainer>
 			<Flex marginLeft='20' marginRight='20' marginBottom='12'>
 				<Heading size='xxs'>역할 추가하기</Heading>
 			</Flex>
