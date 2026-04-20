@@ -48,6 +48,16 @@ const SettingPage = () => {
 		}
 	}, [teamSetting]);
 
+	const getTagName = (index: number) => {
+		if (teamSetting?.tags.length === 0) return '역할 없음';
+
+		const userTagId = teamInfo.users[index]?.tagId;
+
+		if (userTagId === null) return '역할 선택';
+
+		return teamSetting?.tags.find((tag) => tag.id === userTagId)?.name || null;
+	};
+
 	const handleUploadClick = () => {
 		inputRef.current?.click();
 	};
@@ -290,16 +300,7 @@ const SettingPage = () => {
 										username={user.username}
 										email={user.email}
 										role={user.role}
-										tag={
-											// eslint-disable-next-line no-nested-ternary
-											teamSetting.tags.length === 0
-												? '역할 없음'
-												: teamInfo.users[index]?.tagId === null
-													? '역할 선택'
-													: teamSetting.tags.find(
-															(tag) => tag.id === teamInfo.users[index]?.tagId
-														)?.name || null
-										}
+										tag={getTagName(index)}
 										tagOption={
 											teamSetting.tags.length > 0
 												? teamSetting.tags.map((tag) => tag.name)
@@ -314,7 +315,6 @@ const SettingPage = () => {
 														info.id === user.id
 															? teamSetting.tags[value - 1].id
 															: info.tagId,
-													// value-1로 해서 배열에서 찾도록
 												})),
 											})
 										}
