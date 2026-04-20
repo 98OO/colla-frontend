@@ -26,7 +26,9 @@ const Modal = ({ isOpen, onClose, children }: ModalProps) => {
 
 	return createPortal(
 		<S.Backdrop onClick={onClose}>
-			<S.ModalWrapper>{children}</S.ModalWrapper>
+			<S.ModalWrapper onClick={(e) => e.stopPropagation()}>
+				{children}
+			</S.ModalWrapper>
 		</S.Backdrop>,
 		modalRoot
 	);
