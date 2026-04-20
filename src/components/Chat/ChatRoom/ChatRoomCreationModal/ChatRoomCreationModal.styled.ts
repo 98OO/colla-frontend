@@ -1,8 +1,5 @@
 import { styled } from 'styled-components';
-import {
-	CHAT_ROOM_CREATION_MODAL_WIDTH,
-	CHAT_ROOM_CREATION_MODAL_HEIGHT,
-} from '@styles/layout';
+import { MODAL_WIDTH, MODAL_HEIGHT } from '@styles/layout';
 import theme from '@styles/theme';
 
 export const ChatRoomCreationModalContainer = styled.div`
@@ -13,8 +10,8 @@ export const ChatRoomCreationModalContainer = styled.div`
 	top: 50%;
 	left: 50%;
 	transform: translate(-50%, -50%);
-	width: ${`${CHAT_ROOM_CREATION_MODAL_WIDTH}px`};
-	height: ${`${CHAT_ROOM_CREATION_MODAL_HEIGHT}px`};
+	width: ${`${MODAL_WIDTH}px`};
+	height: ${`${MODAL_HEIGHT}px`};
 
 	background-color: ${theme.color.bg.primary};
 	border-radius: ${theme.units.radius.radius8};
