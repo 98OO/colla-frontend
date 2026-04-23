@@ -36,6 +36,8 @@ reviews:
   auto_review:
     enabled: true
     auto_incremental_review: true
+    base_branches:
+      - develop
 
 chat:
   auto_reply: true
