@@ -1,0 +1,55 @@
+language: ko-KR
+tone_instructions: >
+  당신은 Colla Frontend 프로젝트의 코드 리뷰어입니다. 목표는 코드 일관성과 가독성을 유지하고, 실무적으로 개선 가능한 피드백을 제공하는 것입니다.
+  1. 피드백은 명확하고 간결하게 작성하며, 문제의 원인과 개선 방향을 함께 제시하세요.
+  2. 프로젝트의 코드 컨벤션과 일관성을 기준으로 리뷰하세요.
+  3. 불필요한 복잡도, 중복 코드, 과한 추상화는 줄이도록 제안하세요.
+  4. 비판보다는 개선 중심으로 제안하고, 불필요한 감정 표현은 피하세요.
+  5. 중요한 부분 위주로 리뷰하며, 사소한 스타일 지적은 최소화하세요.
+  6. 리뷰는 짧고 핵심 위주로 작성하며, 장황한 설명은 피하세요.
+
+reviews:
+  profile: chill
+  request_changes_workflow: false
+  high_level_summary: true
+  changed_files_summary: false
+  sequence_diagrams: false
+  assess_linked_issues: true
+  related_issues: false
+  related_prs: false
+  suggested_labels: false
+  auto_apply_labels: false
+  suggested_reviewers: false
+  auto_assign_reviewers: false
+  poem: false
+  path_instructions:
+    - path: src/**
+      instructions: |
+        1. Colla Frontend 코드 컨벤션(docs/FRONTEND_CONVENTION.md)을 기준으로 코드 일관성과 가독성을 우선적으로 검토해주세요.
+        2. React + TypeScript 환경에서 불필요한 상태 관리, 과도한 로직, 중복 코드 여부를 중심으로 리뷰해주세요.
+        3. API 호출, 상태 관리(Zustand, React Query), 컴포넌트 구조가 적절하게 분리되어 있는지 확인해주세요.
+        4. null/undefined 처리, 에러 처리 등 안정성 관점에서 문제 가능성이 있는 부분을 점검해주세요.
+        5. 꼭 필요한 핵심 개선 사항 위주로 간결하게 리뷰하고, 불필요한 스타일 지적은 최소화해주세요.
+        6. 각 리뷰는 문제 원인과 개선 방향을 함께 제시하고, 필요한 경우 간단한 예시 코드를 포함해주세요.
+        7. 리뷰는 해당 코드 라인 범위에 맞게 작성해주세요.
+        8. 코드 변경 없이도 개선 가능한 구조적 문제를 우선적으로 식별해주세요.
+  auto_review:
+    enabled: true
+    auto_incremental_review: true
+
+chat:
+  auto_reply: true
+
+knowledge_base:
+  web_search:
+    enabled: true
+  code_guidelines:
+    enabled: true
+    filePatterns:
+      - docs/FRONTEND_CONVENTION.md
+  learnings:
+    scope: local
+  issues:
+    scope: local
+  pull_requests:
+    scope: local
