@@ -7,7 +7,7 @@ import Heading from '@components/common/Heading/Heading';
 import Input from '@components/common/Input/Input';
 import Modal from '@components/common/Modal/Modal';
 import Text from '@components/common/Text/Text';
-import RoleAddModal from '@components/Setting/RoleAddModal/RoleAddModal';
+import RoleAddModalContent from '@components/Setting/RoleAddModal/RoleAddModalContent';
 import TeamMemberItem from '@components/Setting/TeamMemberItem/TeamMemberItem';
 import useFileUpload from '@hooks/common/useFileUpload';
 import useDeleteTeamProfileMutation from '@hooks/queries/setting/useDeleteTeamProfileMutation';
@@ -29,9 +29,7 @@ const SettingPage = () => {
 	const inputRef = useRef<HTMLInputElement | null>(null);
 	const { makeToast } = useToastStore();
 	const { userStatus } = useUserStatusQuery();
-	const { teamSetting } = useTeamSettingQuery(
-		userStatus?.profile.lastSeenTeamspaceId
-	);
+	const { teamSetting } = useTeamSettingQuery(userStatus?.profile.lastSeenTeamspaceId);
 	const { mutateSetting } = useSettingMutation();
 	const { uploadFiles, isFileSizeExceedLimit } = useFileUpload();
 	const { mutateDeleteTeamProfile } = useDeleteTeamProfileMutation();
@@ -104,10 +102,8 @@ const SettingPage = () => {
 	};
 
 	const checkTeamName = () => {
-		if (teamInfo.name.length === 0)
-			setError('팀스페이스 이름은 공백일 수 없습니다.');
-		else if (teamInfo.name.length < 2)
-			setError('팀스페이스 이름은 2글자 이상입니다.');
+		if (teamInfo.name.length === 0) setError('팀스페이스 이름은 공백일 수 없습니다.');
+		else if (teamInfo.name.length < 2) setError('팀스페이스 이름은 2글자 이상입니다.');
 		else {
 			setError('');
 			return true;
@@ -154,15 +150,8 @@ const SettingPage = () => {
 		if (Object.keys(result).length !== 0) {
 			if (!teamInfo.profileImageUrl && teamSetting?.profileImageUrl)
 				await mutateDeleteTeamProfile(userStatus!.profile.lastSeenTeamspaceId);
-			else if (
-				files &&
-				teamInfo.profileImageUrl !== teamSetting?.profileImageUrl
-			) {
-				const url = await uploadFiles(
-					files,
-					'TEAMSPACE',
-					userStatus?.profile.lastSeenTeamspaceId
-				);
+			else if (files && teamInfo.profileImageUrl !== teamSetting?.profileImageUrl) {
+				const url = await uploadFiles(files, 'TEAMSPACE', userStatus?.profile.lastSeenTeamspaceId);
 				if (url) [result.profileImageUrl] = url;
 			}
 			mutateSetting(userStatus!.profile.lastSeenTeamspaceId, result);
@@ -176,23 +165,14 @@ const SettingPage = () => {
 					<Heading size='xs'>팀스페이스 설정</Heading>
 					<Flex direction='column' gap='10' paddingTop='10' paddingBottom='10'>
 						<Flex direction='column' gap='4'>
-							<Flex
-								paddingTop='8'
-								paddingBottom='4'
-								paddingLeft='4'
-								paddingRight='12'>
+							<Flex paddingTop='8' paddingBottom='4' paddingLeft='4' paddingRight='12'>
 								<Text size='md' weight='semiBold' color='secondary'>
 									일반
 								</Text>
 							</Flex>
 							<Divider size='sm' />
 						</Flex>
-						<Flex
-							gap='12'
-							paddingTop='6'
-							paddingBottom='6'
-							paddingLeft='12'
-							paddingRight='12'>
+						<Flex gap='12' paddingTop='6' paddingBottom='6' paddingLeft='12' paddingRight='12'>
 							<Flex direction='column'>
 								<Avatar
 									profile={teamInfo.profileImageUrl}
@@ -200,12 +180,7 @@ const SettingPage = () => {
 									size='xl'
 									shape='rect'
 								/>
-								<Button
-									label='이미지 제거'
-									variant='text'
-									size='sm'
-									onClick={handleDeleteClick}
-								/>
+								<Button label='이미지 제거' variant='text' size='sm' onClick={handleDeleteClick} />
 							</Flex>
 							<Flex direction='column' gap='15' paddingTop='4'>
 								<Flex direction='column'>
@@ -303,19 +278,14 @@ const SettingPage = () => {
 										role={user.role}
 										tag={getTagName(index)}
 										tagOption={
-											teamSetting.tags.length > 0
-												? teamSetting.tags.map((tag) => tag.name)
-												: null
+											teamSetting.tags.length > 0 ? teamSetting.tags.map((tag) => tag.name) : null
 										}
 										tagSelect={(value) =>
 											setTeamInfo({
 												...teamInfo,
 												users: teamInfo.users.map((info) => ({
 													id: info.id,
-													tagId:
-														info.id === user.id
-															? teamSetting.tags[value - 1].id
-															: info.tagId,
+													tagId: info.id === user.id ? teamSetting.tags[value - 1].id : info.tagId,
 												})),
 											})
 										}
@@ -334,22 +304,14 @@ const SettingPage = () => {
 								/>
 							</Flex>
 							<Flex width='64'>
-								<Button
-									label='저장'
-									variant='primary'
-									size='sm'
-									isFull
-									onClick={handlSaveClick}
-								/>
+								<Button label='저장' variant='primary' size='sm' isFull onClick={handlSaveClick} />
 							</Flex>
 						</Flex>
 					</Flex>
 				</S.SettingContainer>
 			)}
-			<Modal
-				isOpen={isRoleAddModalOpen}
-				onClose={() => setIsRoleAddModalOpen(false)}>
-				<RoleAddModal setIsChatRoomModalOpen={setIsRoleAddModalOpen} />
+			<Modal isOpen={isRoleAddModalOpen} onClose={() => setIsRoleAddModalOpen(false)}>
+				<RoleAddModalContent setIsRoleAddModalOpen={setIsRoleAddModalOpen} />
 			</Modal>
 		</S.Container>
 	);

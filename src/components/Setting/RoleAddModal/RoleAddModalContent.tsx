@@ -6,33 +6,30 @@ import Input from '@components/common/Input/Input';
 import Text from '@components/common/Text/Text';
 import useTeamSpaceRoleMutation from '@hooks/queries/teamspace/useTeamSpaceRoleMutation';
 import useUserStatusQuery from '@hooks/queries/useUserStatusQuery';
-import * as S from './RoleAddModal.styled';
+import * as S from './RoleAddModalContent.styled';
 
-interface RoleAddModalProps {
-	setIsChatRoomModalOpen: (value: boolean) => void;
+interface RoleAddModalContentProps {
+	setIsRoleAddModalOpen: (value: boolean) => void;
 }
 
-const RoleAddModal = ({ setIsChatRoomModalOpen }: RoleAddModalProps) => {
+const RoleAddModalContent = ({ setIsRoleAddModalOpen }: RoleAddModalContentProps) => {
 	const [roleName, setRoleName] = useState('');
 	const [nameError, setNameError] = useState('');
 	const { userStatus } = useUserStatusQuery();
-	const { mutateAddTeamSpaceRole: mutateCreateRole } =
-		useTeamSpaceRoleMutation();
+	const { mutateAddTeamSpaceRole: mutateCreateRole } = useTeamSpaceRoleMutation();
 
-	const handleNameChange = (e: ChangeEvent<HTMLInputElement>) => {
+	const handleRoleNameChange = (e: ChangeEvent<HTMLInputElement>) => {
 		const { value } = e.target;
 		setRoleName(value);
 	};
 
 	const handleCancelClick = () => {
-		setIsChatRoomModalOpen(false);
+		setIsRoleAddModalOpen(false);
 	};
 
 	const checkRoleName = () => {
-		if (roleName.trim().length < 2)
-			setNameError('역할 이름은 2글자 이상입니다.');
-		else if (roleName.trim().length > 15)
-			setNameError('역할 이름은 15글자 이하입니다.');
+		if (roleName.trim().length < 2) setNameError('역할 이름은 2글자 이상입니다.');
+		else if (roleName.trim().length > 15) setNameError('역할 이름은 15글자 이하입니다.');
 		else {
 			setNameError('');
 			return true;
@@ -41,15 +38,15 @@ const RoleAddModal = ({ setIsChatRoomModalOpen }: RoleAddModalProps) => {
 		return false;
 	};
 
-	const handleCreateClick = () => {
+	const handleAddClick = () => {
 		if (!checkRoleName()) return;
 
 		mutateCreateRole(userStatus!.profile.lastSeenTeamspaceId, roleName);
-		setIsChatRoomModalOpen(false);
+		setIsRoleAddModalOpen(false);
 	};
 
 	return (
-		<S.RoleAddModalContainer>
+		<S.RoleAddModalContentContainer>
 			<Flex marginLeft='20' marginRight='20' marginBottom='12'>
 				<Heading size='xxs'>역할 추가하기</Heading>
 			</Flex>
@@ -60,8 +57,8 @@ const RoleAddModal = ({ setIsChatRoomModalOpen }: RoleAddModalProps) => {
 					isError={!!nameError}
 					maxLength={15}
 					value={roleName}
-					onChange={handleNameChange}
-					onEnterPress={handleCreateClick}
+					onChange={handleRoleNameChange}
+					onEnterPress={handleAddClick}
 				/>
 				<Flex height='14' align='center'>
 					{nameError && (
@@ -73,26 +70,14 @@ const RoleAddModal = ({ setIsChatRoomModalOpen }: RoleAddModalProps) => {
 			</Flex>
 			<Flex gap='6' justify='right' marginRight='20'>
 				<Flex width='60'>
-					<Button
-						label='취소'
-						variant='secondary'
-						size='sm'
-						isFull
-						onClick={handleCancelClick}
-					/>
+					<Button label='취소' variant='secondary' size='sm' isFull onClick={handleCancelClick} />
 				</Flex>
 				<Flex width='60'>
-					<Button
-						label='추가'
-						variant='primary'
-						size='sm'
-						isFull
-						onClick={handleCreateClick}
-					/>
+					<Button label='추가' variant='primary' size='sm' isFull onClick={handleAddClick} />
 				</Flex>
 			</Flex>
-		</S.RoleAddModalContainer>
+		</S.RoleAddModalContentContainer>
 	);
 };
 
-export default RoleAddModal;
+export default RoleAddModalContent;

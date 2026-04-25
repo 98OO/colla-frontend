@@ -2,7 +2,7 @@ import { styled } from 'styled-components';
 import { MODAL_WIDTH, MODAL_HEIGHT } from '@styles/layout';
 import theme from '@styles/theme';
 
-export const RoleAddModalContainer = styled.div`
+export const RoleAddModalContentContainer = styled.div`
 	display: flex;
 	flex-direction: column;
 	justify-content: center;

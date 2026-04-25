@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import ChatRoom from '@components/Chat/ChatRoom/ChatRoom';
-import ChatRoomCreationModal from '@components/Chat/ChatRoom/ChatRoomCreationModal/ChatRoomCreationModal';
+import ChatRoomCreationModalContent from '@components/Chat/ChatRoom/ChatRoomCreationModal/ChatRoomCreationModalContent';
 import Chatting from '@components/Chat/Chatting/Chatting';
 import Flex from '@components/common/Flex/Flex';
 import Heading from '@components/common/Heading/Heading';
@@ -16,9 +16,7 @@ const ChatPage = () => {
 	const [selectedChat, setSelectedChat] = useState(0);
 	const [isChatRoomModalOpen, setIsChatRoomModalOpen] = useState(false);
 	const { userStatus } = useUserStatusQuery();
-	const { chatChannel } = useChatChannelQuery(
-		userStatus?.profile.lastSeenTeamspaceId
-	);
+	const { chatChannel } = useChatChannelQuery(userStatus?.profile.lastSeenTeamspaceId);
 	const { chatChannelList } = useSocketStore();
 
 	return (
@@ -80,15 +78,9 @@ const ChatPage = () => {
 							})}
 				</S.ChatRoomListWrapper>
 			</S.ChatRoomListContainer>
-			{selectedChat !== 0 && (
-				<Chatting selectedChat={selectedChat} key={selectedChat} />
-			)}
-			<Modal
-				isOpen={isChatRoomModalOpen}
-				onClose={() => setIsChatRoomModalOpen(false)}>
-				<ChatRoomCreationModal
-					setIsChatRoomModalOpen={setIsChatRoomModalOpen}
-				/>
+			{selectedChat !== 0 && <Chatting selectedChat={selectedChat} key={selectedChat} />}
+			<Modal isOpen={isChatRoomModalOpen} onClose={() => setIsChatRoomModalOpen(false)}>
+				<ChatRoomCreationModalContent setIsChatRoomModalOpen={setIsChatRoomModalOpen} />
 			</Modal>
 		</Flex>
 	);

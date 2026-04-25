@@ -6,15 +6,15 @@ import Input from '@components/common/Input/Input';
 import Text from '@components/common/Text/Text';
 import useCreateChatChannelMutation from '@hooks/queries/chat/useCreateChatChannelMutation';
 import useUserStatusQuery from '@hooks/queries/useUserStatusQuery';
-import * as S from './ChatRoomCreationModal.styled';
+import * as S from './ChatRoomCreationModalContent.styled';
 
-interface ChatRoomCreationModalProps {
+interface ChatRoomCreationModalContentProps {
 	setIsChatRoomModalOpen: (value: boolean) => void;
 }
 
-const ChatRoomCreationModal = ({
+const ChatRoomCreationModalContent = ({
 	setIsChatRoomModalOpen,
-}: ChatRoomCreationModalProps) => {
+}: ChatRoomCreationModalContentProps) => {
 	const [teamspaceName, setTeamspaceName] = useState('');
 	const [nameError, setNameError] = useState('');
 	const { userStatus } = useUserStatusQuery();
@@ -30,12 +30,9 @@ const ChatRoomCreationModal = ({
 	};
 
 	const checkTeamSpaceName = () => {
-		if (teamspaceName.length === 0)
-			setNameError('채팅방 이름은 공백일 수 없습니다.');
-		else if (teamspaceName.length < 2)
-			setNameError('채팅방 이름은 2글자 이상입니다.');
-		else if (teamspaceName.length > 15)
-			setNameError('채팅방 이름은 15글자 이하입니다.');
+		if (teamspaceName.length === 0) setNameError('채팅방 이름은 공백일 수 없습니다.');
+		else if (teamspaceName.length < 2) setNameError('채팅방 이름은 2글자 이상입니다.');
+		else if (teamspaceName.length > 15) setNameError('채팅방 이름은 15글자 이하입니다.');
 		else {
 			setNameError('');
 			return true;
@@ -46,16 +43,13 @@ const ChatRoomCreationModal = ({
 
 	const handlCreateClick = () => {
 		if (!checkTeamSpaceName()) return;
-		mutateCreateChatChannel(
-			userStatus!.profile.lastSeenTeamspaceId,
-			teamspaceName
-		);
+		mutateCreateChatChannel(userStatus!.profile.lastSeenTeamspaceId, teamspaceName);
 
 		setIsChatRoomModalOpen(false);
 	};
 
 	return (
-		<S.ChatRoomCreationModalContainer>
+		<S.ChatRoomCreationModalContentContainer>
 			<Flex marginLeft='20' marginRight='20' marginBottom='12'>
 				<Heading size='xxs'>채팅방 만들기</Heading>
 			</Flex>
@@ -79,26 +73,14 @@ const ChatRoomCreationModal = ({
 			</Flex>
 			<Flex gap='6' justify='right' marginRight='20'>
 				<Flex width='60'>
-					<Button
-						label='취소'
-						variant='secondary'
-						size='sm'
-						isFull
-						onClick={handleCancleClick}
-					/>
+					<Button label='취소' variant='secondary' size='sm' isFull onClick={handleCancleClick} />
 				</Flex>
 				<Flex width='60'>
-					<Button
-						label='만들기'
-						variant='primary'
-						size='sm'
-						isFull
-						onClick={handlCreateClick}
-					/>
+					<Button label='만들기' variant='primary' size='sm' isFull onClick={handlCreateClick} />
 				</Flex>
 			</Flex>
-		</S.ChatRoomCreationModalContainer>
+		</S.ChatRoomCreationModalContentContainer>
 	);
 };
 
-export default ChatRoomCreationModal;
+export default ChatRoomCreationModalContent;
