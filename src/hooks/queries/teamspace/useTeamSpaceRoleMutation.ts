@@ -8,7 +8,7 @@ const useTeamSpaceRoleMutation = () => {
 	const queryClient = useQueryClient();
 
 	const handleAddTeamSpaceRoleSuccess = () => {
-		makeToast('팀스페이스 역할 추가가 완료됬습니다.', 'Success');
+		makeToast('팀스페이스 역할 추가가 완료되었습니다.', 'Success');
 		queryClient.invalidateQueries({ queryKey: ['teamSetting'] });
 	};
 
@@ -16,10 +16,7 @@ const useTeamSpaceRoleMutation = () => {
 		onSuccess: handleAddTeamSpaceRoleSuccess,
 	});
 
-	const mutateAddTeamSpaceRole = async (
-		teamspaceId: number,
-		roleName: string
-	) => {
+	const mutateAddTeamSpaceRole = async (teamspaceId: number, roleName: string) => {
 		await mutate(() => postAddTeamSpaceRole(teamspaceId, roleName));
 	};
 
