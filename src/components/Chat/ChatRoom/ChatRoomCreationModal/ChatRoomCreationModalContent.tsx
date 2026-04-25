@@ -12,6 +12,12 @@ interface ChatRoomCreationModalContentProps {
 	setIsChatRoomModalOpen: (value: boolean) => void;
 }
 
+const CHAT_ROOM_CREATION_NAME_RULES = {
+	EMPTY: '채팅방 이름은 공백일 수 없습니다.',
+	TOO_SHORT: '채팅방 이름은 2글자 이상입니다.',
+	TOO_LONG: '채팅방 이름은 15글자 이하입니다.',
+};
+
 const ChatRoomCreationModalContent = ({
 	setIsChatRoomModalOpen,
 }: ChatRoomCreationModalContentProps) => {
@@ -30,9 +36,9 @@ const ChatRoomCreationModalContent = ({
 	};
 
 	const checkTeamSpaceName = () => {
-		if (teamspaceName.length === 0) setNameError('채팅방 이름은 공백일 수 없습니다.');
-		else if (teamspaceName.length < 2) setNameError('채팅방 이름은 2글자 이상입니다.');
-		else if (teamspaceName.length > 15) setNameError('채팅방 이름은 15글자 이하입니다.');
+		if (teamspaceName.length === 0) setNameError(CHAT_ROOM_CREATION_NAME_RULES.EMPTY);
+		else if (teamspaceName.length < 2) setNameError(CHAT_ROOM_CREATION_NAME_RULES.TOO_SHORT);
+		else if (teamspaceName.length > 15) setNameError(CHAT_ROOM_CREATION_NAME_RULES.TOO_LONG);
 		else {
 			setNameError('');
 			return true;

@@ -12,6 +12,11 @@ interface RoleAddModalContentProps {
 	setIsRoleAddModalOpen: (value: boolean) => void;
 }
 
+const ROLE_ADD_NAME_RULES = {
+	TOO_SHORT: '역할 이름은 2글자 이상입니다.',
+	TOO_LONG: '역할 이름은 15글자 이하입니다.',
+};
+
 const RoleAddModalContent = ({ setIsRoleAddModalOpen }: RoleAddModalContentProps) => {
 	const [roleName, setRoleName] = useState('');
 	const [nameError, setNameError] = useState('');
@@ -28,8 +33,8 @@ const RoleAddModalContent = ({ setIsRoleAddModalOpen }: RoleAddModalContentProps
 	};
 
 	const checkRoleName = () => {
-		if (roleName.trim().length < 2) setNameError('역할 이름은 2글자 이상입니다.');
-		else if (roleName.trim().length > 15) setNameError('역할 이름은 15글자 이하입니다.');
+		if (roleName.trim().length < 2) setNameError(ROLE_ADD_NAME_RULES.TOO_SHORT);
+		else if (roleName.trim().length > 15) setNameError(ROLE_ADD_NAME_RULES.TOO_LONG);
 		else {
 			setNameError('');
 			return true;
