@@ -12,12 +12,13 @@ interface SelectProps extends SelectContainerProps {
 	options?: string[] | null;
 	select: string | null;
 	setSelect: (index: number) => void;
+	disabled?: boolean;
 }
 
 const Select = (props: SelectProps) => {
 	const [isOpen, setIsOpen] = useState(false);
 	const selectRef = useRef<HTMLDivElement>(null);
-	const { size, select, setSelect, options } = props;
+	const { size, select, setSelect, options, disabled = false } = props;
 
 	const handleClickOutside = (event: MouseEvent) => {
 		if (
@@ -29,6 +30,8 @@ const Select = (props: SelectProps) => {
 	};
 
 	const handleSelectOpen = () => {
+		if (disabled) return;
+
 		setIsOpen((prevIsOpen) => !prevIsOpen);
 	};
 
@@ -46,7 +49,7 @@ const Select = (props: SelectProps) => {
 
 	return (
 		<S.SelectContainer size={size} ref={selectRef}>
-			<S.ButtonWrapper onClick={handleSelectOpen}>
+			<S.ButtonWrapper onClick={handleSelectOpen} disabled={disabled}>
 				<Text size={size} weight='medium'>
 					{select || 'select'}
 				</Text>

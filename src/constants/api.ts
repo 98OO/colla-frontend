@@ -54,6 +54,8 @@ export const END_POINTS = {
 		`/app/teamspaces/${teamspaceId}/users/${userId}/chat-channels/status`,
 	GET_UNREAD_MESSAGE_COUNT: (teamspaceId: number) =>
 		`/teamspaces/${teamspaceId}/unread-count`,
+	POST_TEAMSPACE_ROLE: (teamspaceId: number) =>
+		`teamspaces/${teamspaceId}/tags`,
 } as const;
 
 export const AUTH_ERROR_CODE = {
