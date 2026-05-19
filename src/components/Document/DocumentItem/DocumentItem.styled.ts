@@ -38,10 +38,16 @@ export const DocumentCheckbox = styled.input.attrs({ type: 'checkbox' })`
 `;
 
 export const DocumentNameWrapper = styled.div`
-	width: 75%;
+	flex: 1;
+	min-width: 0;
 	overflow: hidden;
-	white-space: nowrap;
-	text-overflow: ellipsis;
+
+	& > p {
+		overflow: hidden;
+		white-space: nowrap;
+		text-overflow: ellipsis;
+		line-height: 1.5;
+	}
 `;
 
 export const DocumentItemWrapper = styled.div<{ width: string }>`
