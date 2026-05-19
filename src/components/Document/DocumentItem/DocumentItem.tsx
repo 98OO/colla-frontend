@@ -6,7 +6,7 @@ import * as S from './DocumentItem.styled';
 
 interface DocumentItemProps {
 	attachment: Document;
-	selectedDocument: string[];
+	selectedDocument: Set<string>;
 	handleDocumentClick: (fileUrl: string) => void;
 }
 
@@ -17,7 +17,7 @@ const DocumentItem = (props: DocumentItemProps) => {
 		<S.DocumentItemContainer>
 			<S.DocumentNameContainer>
 				<S.DocumentCheckbox
-					checked={selectedDocument.includes(attachment.fileUrl)}
+					checked={selectedDocument.has(attachment.fileUrl)}
 					onChange={() => handleDocumentClick(attachment.fileUrl)}
 				/>
 				<S.DocumentNameWrapper>

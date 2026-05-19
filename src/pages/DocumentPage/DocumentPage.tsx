@@ -16,7 +16,9 @@ const DocumentPage = () => {
 	const { teamDocument } = useDocumentQuery(
 		userStatus?.profile.lastSeenTeamspaceId
 	);
-	const [selectedDocument, setSelectedDocument] = useState<string[]>([]);
+	const [selectedDocument, setSelectedDocument] = useState<Set<string>>(
+		new Set()
+	);
 	const [selectedNumber, setSelectedNumber] = useState(1);
 
 	useEffect(() => {
@@ -32,7 +34,7 @@ const DocumentPage = () => {
 			window.open(fileUrl, '_blank');
 		});
 
-		setSelectedDocument([]);
+		setSelectedDocument(new Set());
 	};
 
 	const handleNumberClick = (number: number) => {
@@ -64,10 +66,12 @@ const DocumentPage = () => {
 
 	const handleDocumentClick = (fileUrl: string) => {
 		setSelectedDocument((prevSelected) => {
-			if (prevSelected.includes(fileUrl))
-				return prevSelected.filter((url) => url !== fileUrl);
+			const nextSelected = new Set(prevSelected);
 
-			return [...prevSelected, fileUrl];
+			if (nextSelected.has(fileUrl)) nextSelected.delete(fileUrl);
+			else nextSelected.add(fileUrl);
+
+			return nextSelected;
 		});
 	};
 
@@ -82,7 +86,7 @@ const DocumentPage = () => {
 					label='다운로드'
 					variant='secondary'
 					size='sm'
-					disabled={selectedDocument.length === 0}
+					disabled={selectedDocument.size === 0}
 					leadingIcon='Download'
 					onClick={handleDownloadClick}
 				/>
