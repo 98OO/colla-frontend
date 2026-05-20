@@ -2,8 +2,7 @@ import { useState } from 'react';
 import SelectDateStep from '@components/Post/SchedulingPost/Step/SelectDateStep';
 import SetTimeStep from '@components/Post/SchedulingPost/Step/SetTimeStep';
 import useHistoryFunnel from '@hooks/common/funnel/useHistoryFunnel';
-import useSchedulingFeedMutation from '@hooks/queries/post/useSchedulingFeedMutation';
-import useUserStatusQuery from '@hooks/queries/useUserStatusQuery';
+import useSchedulingPostMutation from '@hooks/queries/post/useSchedulingPostMutation';
 import { INITIAL_SCHEDULING_FORM } from '@constants/post';
 import type { SchedulingFeedForm } from '@type/feed';
 import * as S from './SchedulingPost.styled';
@@ -13,12 +12,9 @@ const STEPS = ['selectDate', 'setTime'] as const;
 const SchedulingPost = () => {
 	const { Funnel, step, goNext, goPrev } = useHistoryFunnel(STEPS);
 
-	const { userStatus } = useUserStatusQuery();
-	const teamspaceId = userStatus?.profile.lastSeenTeamspaceId;
-
 	const [formData, setFormData] = useState<SchedulingFeedForm>(INITIAL_SCHEDULING_FORM);
 
-	const { mutateSchedulingFeed } = useSchedulingFeedMutation();
+	const { mutateSchedulingPost } = useSchedulingPostMutation();
 
 	const handleTargetDates = (dates: string[]) => {
 		setFormData((prev) => ({
@@ -48,9 +44,7 @@ const SchedulingPost = () => {
 	};
 
 	const handleSubmit = () => {
-		if (!teamspaceId) return;
-
-		mutateSchedulingFeed(formData, teamspaceId);
+		mutateSchedulingPost(formData);
 	};
 
 	return (
