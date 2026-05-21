@@ -1,23 +1,30 @@
+import { useState } from 'react';
 import { Button } from '@components/common/Button/Button';
 import Flex from '@components/common/Flex/Flex';
+import Calendar from '@components/Post/SchedulingPost/Calendar/Calendar';
 import type { DateString } from '@type/post';
 
-export interface SelectDateProps {
+interface SelectDateProps {
 	onNext: () => void;
 	targetDates: Set<DateString>;
-	handleTargetDates: (dates: Set<DateString>) => void;
+	handleTargetDates: (targetDates: Set<DateString>) => void;
 }
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const SelectDateStep = ({ onNext, targetDates, handleTargetDates }: SelectDateProps) => {
+	const [selectedDates, setSelectedDates] = useState<Set<DateString>>(() => new Set(targetDates));
+
 	const handleNext = () => {
+		handleTargetDates(selectedDates);
 		onNext();
 	};
 
 	return (
-		<Flex justify='flex-end'>
-			<Button label='다음' variant='primary' size='md' onClick={handleNext} />
-		</Flex>
+		<>
+			<Calendar selectedDates={selectedDates} setSelectedDates={setSelectedDates} />
+			<Flex justify='flex-end'>
+				<Button label='다음' variant='primary' size='md' onClick={handleNext} />
+			</Flex>
+		</>
 	);
 };
 
