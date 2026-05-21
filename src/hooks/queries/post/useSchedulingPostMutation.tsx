@@ -6,7 +6,7 @@ import { useLastSeenTeamspaceId } from '@hooks/user/useLastSeenTeamspaceId';
 import useToastStore from '@stores/toastStore';
 import { HTTPError } from '@apis/HTTPError';
 import { PATH } from '@constants/path';
-import type { SchedulingFeedForm } from '@type/feed';
+import type { SchedulingPostFormData } from '@type/post';
 
 const useSchedulingPostMutation = () => {
 	const { makeToast } = useToastStore();
@@ -30,10 +30,18 @@ const useSchedulingPostMutation = () => {
 		onError: handleSchedulingFeedError,
 	});
 
-	const mutateSchedulingPost = async (form: SchedulingFeedForm) => {
+	const mutateSchedulingPost = async (formData: SchedulingPostFormData) => {
 		if (!teamspaceId) return;
 
-		await mutate(() => postSchedulingFeed(form, teamspaceId));
+		const convertedFormData = {
+			...formData,
+			details: {
+				...formData.details,
+				targetDates: Array.from(formData.details.targetDates).sort(),
+			},
+		};
+
+		await mutate(() => postSchedulingFeed(convertedFormData, teamspaceId));
 	};
 
 	return { mutateSchedulingPost };

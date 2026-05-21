@@ -1,47 +1,16 @@
-import { useState } from 'react';
 import SelectDateStep from '@components/Post/SchedulingPost/Step/SelectDateStep';
 import SetTimeStep from '@components/Post/SchedulingPost/Step/SetTimeStep';
 import useHistoryFunnel from '@hooks/common/funnel/useHistoryFunnel';
+import useSchedulingPostForm from '@hooks/post/scheduling/useSchedulingPostForm';
 import useSchedulingPostMutation from '@hooks/queries/post/useSchedulingPostMutation';
-import { INITIAL_SCHEDULING_FORM } from '@constants/post';
-import type { SchedulingFeedForm } from '@type/feed';
 import * as S from './SchedulingPost.styled';
 
 const STEPS = ['selectDate', 'setTime'] as const;
 
 const SchedulingPost = () => {
 	const { Funnel, step, goNext, goPrev } = useHistoryFunnel(STEPS);
-
-	const [formData, setFormData] = useState<SchedulingFeedForm>(INITIAL_SCHEDULING_FORM);
-
+	const { formData, handleTargetDates, handleDetail } = useSchedulingPostForm();
 	const { mutateSchedulingPost } = useSchedulingPostMutation();
-
-	const handleTargetDates = (dates: string[]) => {
-		setFormData((prev) => ({
-			...prev,
-			details: {
-				...prev.details,
-				targetDates: dates,
-			},
-		}));
-	};
-
-	const handleDetail = (
-		title: string,
-		minTimeSegment: number,
-		maxTimeSegment: number,
-		dueAt: string
-	) => {
-		setFormData((prev) => ({
-			title,
-			details: {
-				...prev.details,
-				dueAt,
-				minTimeSegment,
-				maxTimeSegment,
-			},
-		}));
-	};
 
 	const handleSubmit = () => {
 		mutateSchedulingPost(formData);

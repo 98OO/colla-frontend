@@ -1,38 +1,23 @@
 import { Button } from '@components/common/Button/Button';
 import Flex from '@components/common/Flex/Flex';
-import Calendar from '@components/Post/Calendar/Calendar';
-import useCalendar from '@hooks/post/useCalendar';
-import useDaySelection from '@hooks/post/useDaySelection';
-import type { SelectDateProps } from '@type/post';
+import type { DateString } from '@type/post';
 
-const SelectDateStep = ({
-	onNext,
-	targetDates,
-	handleTargetDates,
-}: SelectDateProps) => {
-	const { getInitialDays, getFormattedDay } = useCalendar();
-	const initalDays = getInitialDays(targetDates);
-	const { selectedDays, isDaySelected, toggleDaySelection } =
-		useDaySelection(initalDays);
+export interface SelectDateProps {
+	onNext: () => void;
+	targetDates: Set<DateString>;
+	handleTargetDates: (dates: Set<DateString>) => void;
+}
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+const SelectDateStep = ({ onNext, targetDates, handleTargetDates }: SelectDateProps) => {
 	const handleNext = () => {
-		const formattedDates = selectedDays.map((day) => getFormattedDay(day));
-
-		handleTargetDates(formattedDates);
 		onNext();
 	};
 
 	return (
-		<>
-			<Calendar
-				selectedDays={selectedDays}
-				isDaySelected={isDaySelected}
-				toggleDaySelection={toggleDaySelection}
-			/>
-			<Flex justify='flex-end'>
-				<Button label='다음' variant='primary' size='md' onClick={handleNext} />
-			</Flex>
-		</>
+		<Flex justify='flex-end'>
+			<Button label='다음' variant='primary' size='md' onClick={handleNext} />
+		</Flex>
 	);
 };
 

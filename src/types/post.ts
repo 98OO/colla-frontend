@@ -1,3 +1,15 @@
+export type DateString = string & { readonly __brand: 'DateString' };
+
+export interface SchedulingPostFormData {
+	title: string;
+	details: {
+		dueAt: string;
+		minTimeSegment: number;
+		maxTimeSegment: number;
+		targetDates: Set<DateString>;
+	};
+}
+
 export interface Day {
 	year: number;
 	month: number;
@@ -6,8 +18,6 @@ export interface Day {
 	minute?: number;
 }
 
-export type SchedulingPostStep = 'selectDate' | 'setTime';
-
 interface DaySelection {
 	selectedDays: Day[];
 	isDaySelected: (days: Day[], day: Day) => boolean;
@@ -15,12 +25,6 @@ interface DaySelection {
 }
 
 export interface CalendarProps extends DaySelection {}
-
-export interface SelectDateProps {
-	onNext: () => void;
-	targetDates: string[];
-	handleTargetDates: (dates: string[]) => void;
-}
 
 export interface SetTimeProps {
 	onPrev: () => void;
