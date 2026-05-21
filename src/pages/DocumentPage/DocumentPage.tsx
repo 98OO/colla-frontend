@@ -135,12 +135,14 @@ const DocumentPage = () => {
 						ariaLabel='ChevronsLeft'
 						color='iSecondary'
 						onClick={() => handleArrowClick('left', true)}
+						disabled={selectedNumber === 1}
 					/>
 					<IconButton
 						icon='ChevronLeft'
 						ariaLabel='ChevronLeft'
 						color='iSecondary'
 						onClick={() => handleArrowClick('left')}
+						disabled={selectedNumber === 1}
 					/>
 					{teamDocument &&
 						Array.from(
@@ -168,12 +170,18 @@ const DocumentPage = () => {
 						ariaLabel='ChevronRight'
 						color='iSecondary'
 						onClick={() => handleArrowClick('right')}
+						disabled={
+							selectedNumber === Math.ceil(teamDocument.attachments.length / 5)
+						}
 					/>
 					<IconButton
 						icon='ChevronsRight'
 						ariaLabel='ChevronsRight'
 						color='iSecondary'
 						onClick={() => handleArrowClick('right', true)}
+						disabled={
+							selectedNumber === Math.ceil(teamDocument.attachments.length / 5)
+						}
 					/>
 				</Flex>
 			)}
