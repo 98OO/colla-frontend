@@ -12,4 +12,33 @@ export const DateManager = {
 
 		return new Date(year, month, 1).getDay();
 	},
+
+	isSameMonth(targetDate: Date, baseDate: Date): boolean {
+		return (
+			targetDate.getFullYear() === baseDate.getFullYear() &&
+			targetDate.getMonth() === baseDate.getMonth()
+		);
+	},
+
+	isPast(targetDate: Date): boolean {
+		const today = new Date();
+		today.setHours(0, 0, 0, 0);
+
+		const target = new Date(targetDate);
+		target.setHours(0, 0, 0, 0);
+
+		return target.getTime() < today.getTime();
+	},
+
+	isSameDate(targetDate: Date, baseDate: Date): boolean {
+		return (
+			targetDate.getFullYear() === baseDate.getFullYear() &&
+			targetDate.getMonth() === baseDate.getMonth() &&
+			targetDate.getDate() === baseDate.getDate()
+		);
+	},
+
+	isToday(targetDate: Date): boolean {
+		return DateManager.isSameDate(targetDate, new Date());
+	},
 };
