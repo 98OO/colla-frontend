@@ -2,8 +2,9 @@ import { styled } from 'styled-components';
 import theme from '@styles/theme';
 
 interface DateCellWrapperProps {
-	isPast: boolean;
-	isToday: boolean;
+	$isPast: boolean;
+	$isToday: boolean;
+	$isSelected: boolean;
 }
 
 export const EmptyCellWrapper = styled.div`
@@ -29,16 +30,24 @@ export const DateCellWrapper = styled.div<DateCellWrapperProps>`
 		color: ${theme.color.text.iInverse};
 	}
 
-	${({ isPast }) =>
-		isPast &&
+	${({ $isPast }) =>
+		$isPast &&
 		`
 			pointer-events: none;
 			color: ${theme.color.text.disabled};
 		`}
 
-	${({ isToday }) =>
-		isToday &&
+	${({ $isToday, $isSelected }) =>
+		$isToday &&
+		!$isSelected &&
 		`
 			color: ${theme.color.text.iPrimary}
+		`}
+
+	${({ $isSelected }) =>
+		$isSelected &&
+		`
+			background-color: ${theme.color.bg.iPrimary};
+			color: ${theme.color.text.iInverse};
 		`}
 `;

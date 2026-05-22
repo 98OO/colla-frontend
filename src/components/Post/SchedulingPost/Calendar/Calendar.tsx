@@ -1,9 +1,9 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import type { Dispatch, SetStateAction } from 'react';
 import Flex from '@components/common/Flex/Flex';
 import IconButton from '@components/common/IconButton/IconButton';
 import DateCell from '@components/Post/SchedulingPost/Calendar/DateCell/DateCell';
 import { useCalendar } from '@hooks/common/calendar/useCalendar';
+import useDateSelection from '@hooks/post/scheduling/useDateSelection';
 import { DateManager } from '@utils/common/DateManager';
 import { WEEKDAYS } from '@constants/calendar';
 import type { DateString } from '@type/post';
@@ -19,6 +19,8 @@ const Calendar = ({ selectedDates, setSelectedDates }: CalendarProps) => {
 
 	const { current, dateCells, prevMonth, nextMonth } = useCalendar(today);
 	const isSameMonth = DateManager.isSameMonth(current, today);
+	const { handlePointerDown, handlePointerMove, handlePointerUp } =
+		useDateSelection(setSelectedDates);
 
 	return (
 		<S.CalendarContainer>
@@ -40,7 +42,16 @@ const Calendar = ({ selectedDates, setSelectedDates }: CalendarProps) => {
 						<S.WeekDaysWrapper key={day}>{day}</S.WeekDaysWrapper>
 					))}
 					{dateCells.map((date, idx) => {
-						return <DateCell key={date ? date.toISOString() : `EmptyCell-${idx}`} date={date} />;
+						return (
+							<DateCell
+								key={date ? date.toISOString() : `EmptyCell-${idx}`}
+								date={date}
+								selectedDates={selectedDates}
+								onPointerDown={handlePointerDown}
+								onPointerMove={handlePointerMove}
+								onPointerUp={handlePointerUp}
+							/>
+						);
 					})}
 				</S.CalendarGrid>
 				<IconButton ariaLabel='nextMonth' icon='ChevronRight' onClick={nextMonth} />
