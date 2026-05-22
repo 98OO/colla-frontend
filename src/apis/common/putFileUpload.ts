@@ -14,6 +14,7 @@ const putFileUpload = async ({
 	const response = await axiosInstance.put(presignedURL, file, {
 		headers: {
 			'Content-Type': contentType,
+			'Content-Disposition': `attachment; filename="${file.name}"; filename*=UTF-8''${encodeURIComponent(file.name)}`,
 		},
 		authRequired: false,
 	});

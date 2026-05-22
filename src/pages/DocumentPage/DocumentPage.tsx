@@ -24,7 +24,13 @@ const DocumentPage = () => {
 
 	const handleDownloadClick = () => {
 		selectedDocument.forEach((fileUrl) => {
-			window.open(fileUrl, '_blank');
+			const link = document.createElement('a');
+
+			link.href = fileUrl;
+			link.download = '';
+			document.body.appendChild(link);
+			link.click();
+			document.body.removeChild(link);
 		});
 
 		setSelectedDocument(new Set());
