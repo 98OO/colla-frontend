@@ -7,9 +7,9 @@ const useDocumentQuery = (teamspaceId?: number) => {
 		queryKey: ['teamDocument', teamspaceId],
 		queryFn: () => getDocument(teamspaceId!),
 
-		gcTime: 60 * 60 * 60 * 1000,
-		staleTime: 60 * 60 * 60 * 1000,
 		enabled: !!teamspaceId,
+		refetchOnMount: 'always',
+		refetchOnWindowFocus: false,
 	});
 
 	return { teamDocument };

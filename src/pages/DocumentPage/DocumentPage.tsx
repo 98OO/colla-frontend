@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { Button } from '@components/common/Button/Button';
 import Divider from '@components/common/Divider/Divider';
 import Flex from '@components/common/Flex/Flex';
@@ -6,7 +6,6 @@ import Heading from '@components/common/Heading/Heading';
 import IconButton from '@components/common/IconButton/IconButton';
 import Text from '@components/common/Text/Text';
 import DocumentItem from '@components/Document/DocumentItem/DocumentItem';
-import { queryClient } from '@hooks/queries/common/queryClient';
 import useDocumentQuery from '@hooks/queries/document/useDocumentQuery';
 import useUserStatusQuery from '@hooks/queries/useUserStatusQuery';
 import * as S from './DocumentPage.styled';
@@ -22,14 +21,6 @@ const DocumentPage = () => {
 		new Set()
 	);
 	const [selectedNumber, setSelectedNumber] = useState(1);
-
-	useEffect(() => {
-		return () => {
-			queryClient.invalidateQueries({
-				queryKey: ['teamDocument', userStatus?.profile.lastSeenTeamspaceId],
-			});
-		};
-	});
 
 	const handleDownloadClick = () => {
 		selectedDocument.forEach((fileUrl) => {
