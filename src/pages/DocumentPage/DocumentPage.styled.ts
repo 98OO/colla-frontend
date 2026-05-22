@@ -6,9 +6,15 @@ export const DocumentContainer = styled.div`
 	flex-direction: column;
 	width: 920px;
 	height: 100%;
-	padding: ${theme.units.spacing.space20} ${theme.units.spacing.space10};
 	overflow-x: none;
 	gap: ${theme.units.spacing.space16};
+`;
+
+export const DocumentHeader = styled.div`
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	padding: 24px 12px 16px 12px;
 `;
 
 export const DocumentTitleContainer = styled.div`

@@ -11,6 +11,8 @@ import useDocumentQuery from '@hooks/queries/document/useDocumentQuery';
 import useUserStatusQuery from '@hooks/queries/useUserStatusQuery';
 import * as S from './DocumentPage.styled';
 
+type PageDirection = 'prev' | 'next';
+
 const DocumentPage = () => {
 	const { userStatus } = useUserStatusQuery();
 	const { teamDocument } = useDocumentQuery(
@@ -41,27 +43,20 @@ const DocumentPage = () => {
 		if (number !== selectedNumber) setSelectedNumber(number);
 	};
 
-	const handleArrowClick = (direction: string, jump: boolean = false) => {
-		if (direction === 'left' && selectedNumber > 1) {
-			setSelectedNumber((prev) =>
-				jump
-					? Math.max((Math.floor((prev - 1) / 10) - 1) * 10 + 1, 1)
-					: prev - 1
-			);
-		} else if (
-			direction === 'right' &&
-			teamDocument &&
-			selectedNumber < Math.ceil(teamDocument.attachments.length / 5)
-		) {
-			setSelectedNumber((prev) =>
-				jump
-					? Math.min(
-							Math.ceil(prev / 10) * 10 + 1,
-							Math.ceil(teamDocument.attachments.length / 5)
-						)
-					: prev + 1
-			);
-		}
+	const handlePageClick = (direction: PageDirection) => {
+		setSelectedNumber((prev) => (direction === 'prev' ? prev - 1 : prev + 1));
+	};
+
+	const handlePageGroupClick = (direction: PageDirection) => {
+		if (!teamDocument) return;
+
+		const lastPageNumber = Math.ceil(teamDocument.attachments.length / 5);
+
+		setSelectedNumber((prev) =>
+			direction === 'prev'
+				? Math.max((Math.floor((prev - 1) / 10) - 1) * 10 + 1, 1)
+				: Math.min(Math.ceil(prev / 10) * 10 + 1, lastPageNumber)
+		);
 	};
 
 	const handleDocumentClick = (fileUrl: string) => {
@@ -77,19 +72,21 @@ const DocumentPage = () => {
 
 	return (
 		<S.DocumentContainer>
-			<Flex direction='column' gap='10'>
-				<Heading size='xs'>자료 저장소</Heading>
-				<Divider size='sm' padding={4} />
-			</Flex>
-			<Flex gap='16'>
-				<Button
-					label='다운로드'
-					variant='secondary'
-					size='sm'
-					disabled={selectedDocument.size === 0}
-					leadingIcon='Download'
-					onClick={handleDownloadClick}
-				/>
+			<Flex direction='column'>
+				<S.DocumentHeader>
+					<Heading size='xs' color='primary'>
+						자료 저장소
+					</Heading>
+					<Button
+						label='다운로드'
+						variant='secondary'
+						size='sm'
+						disabled={selectedDocument.size === 0}
+						leadingIcon='Download'
+						onClick={handleDownloadClick}
+					/>
+				</S.DocumentHeader>
+				<Divider size='sm' />
 			</Flex>
 			<S.DocumentTitleContainer>
 				<S.DocumentTitleWrapper width='45%'>
@@ -134,14 +131,14 @@ const DocumentPage = () => {
 						icon='ChevronsLeft'
 						ariaLabel='ChevronsLeft'
 						color='iSecondary'
-						onClick={() => handleArrowClick('left', true)}
+						onClick={() => handlePageGroupClick('prev')}
 						disabled={selectedNumber === 1}
 					/>
 					<IconButton
 						icon='ChevronLeft'
 						ariaLabel='ChevronLeft'
 						color='iSecondary'
-						onClick={() => handleArrowClick('left')}
+						onClick={() => handlePageClick('prev')}
 						disabled={selectedNumber === 1}
 					/>
 					{teamDocument &&
@@ -169,7 +166,7 @@ const DocumentPage = () => {
 						icon='ChevronRight'
 						ariaLabel='ChevronRight'
 						color='iSecondary'
-						onClick={() => handleArrowClick('right')}
+						onClick={() => handlePageClick('next')}
 						disabled={
 							selectedNumber === Math.ceil(teamDocument.attachments.length / 5)
 						}
@@ -178,7 +175,7 @@ const DocumentPage = () => {
 						icon='ChevronsRight'
 						ariaLabel='ChevronsRight'
 						color='iSecondary'
-						onClick={() => handleArrowClick('right', true)}
+						onClick={() => handlePageGroupClick('next')}
 						disabled={
 							selectedNumber === Math.ceil(teamDocument.attachments.length / 5)
 						}
