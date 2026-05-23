@@ -22,7 +22,13 @@ const SelectDateStep = ({ onNext, targetDates, handleTargetDates }: SelectDatePr
 		<>
 			<Calendar selectedDates={selectedDates} setSelectedDates={setSelectedDates} />
 			<Flex justify='flex-end'>
-				<Button label='다음' variant='primary' size='md' onClick={handleNext} />
+				<Button
+					label='다음'
+					variant='primary'
+					size='md'
+					disabled={selectedDates.size === 0}
+					onClick={handleNext}
+				/>
 			</Flex>
 		</>
 	);
