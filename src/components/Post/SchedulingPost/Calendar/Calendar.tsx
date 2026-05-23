@@ -1,7 +1,8 @@
+import { useMemo } from 'react';
 import type { Dispatch, SetStateAction } from 'react';
 import Flex from '@components/common/Flex/Flex';
 import IconButton from '@components/common/IconButton/IconButton';
-import DateCell from '@components/Post/SchedulingPost/Calendar/DateCell/DateCell';
+import { DateCell, EmptyCell } from '@components/Post/SchedulingPost/Calendar/DateCell/DateCell';
 import { useCalendar } from '@hooks/common/calendar/useCalendar';
 import useDateSelection from '@hooks/post/scheduling/useDateSelection';
 import { DateManager } from '@utils/common/DateManager';
@@ -15,11 +16,11 @@ interface CalendarProps {
 }
 
 const Calendar = ({ selectedDates, setSelectedDates }: CalendarProps) => {
-	const today = new Date();
+	const today = useMemo(() => new Date(), []);
 
 	const { current, dateCells, prevMonth, nextMonth } = useCalendar(today);
 	const isSameMonth = DateManager.isSameMonth(current, today);
-	const { handlePointerDown, handlePointerMove, handlePointerUp } =
+	const { handlePointerDown, handlePointerEnter, handlePointerUp } =
 		useDateSelection(setSelectedDates);
 
 	return (
@@ -41,14 +42,22 @@ const Calendar = ({ selectedDates, setSelectedDates }: CalendarProps) => {
 					{WEEKDAYS.map((day) => (
 						<S.WeekDaysWrapper key={day}>{day}</S.WeekDaysWrapper>
 					))}
-					{dateCells.map((date, idx) => {
+					{dateCells.map((cell, idx) => {
+						// eslint-disable-next-line react/no-array-index-key
+						if (!cell) return <EmptyCell key={`EmptyCell-${idx}`} />;
+
+						const { date, dateString, isPast, isToday } = cell;
+
 						return (
 							<DateCell
-								key={date ? date.toISOString() : `EmptyCell-${idx}`}
+								key={dateString}
 								date={date}
-								selectedDates={selectedDates}
+								dateString={dateString}
+								isPast={isPast}
+								isToday={isToday}
+								isSelected={selectedDates.has(dateString)}
 								onPointerDown={handlePointerDown}
-								onPointerMove={handlePointerMove}
+								onPointerEnter={handlePointerEnter}
 								onPointerUp={handlePointerUp}
 							/>
 						);

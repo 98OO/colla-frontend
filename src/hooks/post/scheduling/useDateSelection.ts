@@ -1,7 +1,5 @@
-import { useEffect, useRef } from 'react';
+import { useCallback, useEffect, useRef } from 'react';
 import type { Dispatch, SetStateAction } from 'react';
-import { formatDate } from '@utils/calendar/formatDate';
-import { DateManager } from '@utils/common/DateManager';
 import type { DateString } from '@type/post';
 
 type DragMode = 'add' | 'remove';
@@ -19,50 +17,53 @@ const useDateSelection = (setSelectedDates: Dispatch<SetStateAction<Set<DateStri
 		return () => document.removeEventListener('pointerup', handleGlobalPointerUp);
 	}, []);
 
-	const handlePointerDown = (date: Date) => {
-		if (DateManager.isPast(date)) return;
+	const handlePointerDown = useCallback(
+		(dateStr: DateString, isPast: boolean) => {
+			if (isPast) return;
 
-		draggingRef.current = true;
+			draggingRef.current = true;
 
-		setSelectedDates((prev) => {
-			const dateStr = formatDate(date);
-			const next = new Set<DateString>(prev);
+			setSelectedDates((prev) => {
+				const next = new Set<DateString>(prev);
 
-			if (prev.has(dateStr)) {
-				dragModeRef.current = 'remove';
-				next.delete(dateStr);
-			} else {
-				dragModeRef.current = 'add';
-				next.add(dateStr);
-			}
+				if (prev.has(dateStr)) {
+					dragModeRef.current = 'remove';
+					next.delete(dateStr);
+				} else {
+					dragModeRef.current = 'add';
+					next.add(dateStr);
+				}
 
-			return next;
-		});
-	};
+				return next;
+			});
+		},
+		[setSelectedDates]
+	);
 
-	const handlePointerMove = (date: Date) => {
-		if (!draggingRef.current || DateManager.isPast(date)) return;
+	const handlePointerEnter = useCallback(
+		(dateStr: DateString, isPast: boolean) => {
+			if (!draggingRef.current || isPast) return;
 
-		setSelectedDates((prev) => {
-			const dateStr = formatDate(date);
+			setSelectedDates((prev) => {
+				if (dragModeRef.current === 'add' && prev.has(dateStr)) return prev;
+				if (dragModeRef.current === 'remove' && !prev.has(dateStr)) return prev;
 
-			if (dragModeRef.current === 'add' && prev.has(dateStr)) return prev;
-			if (dragModeRef.current === 'remove' && !prev.has(dateStr)) return prev;
+				const next = new Set<DateString>(prev);
 
-			const next = new Set<DateString>(prev);
+				if (dragModeRef.current === 'add') next.add(dateStr);
+				else next.delete(dateStr);
 
-			if (dragModeRef.current === 'add') next.add(dateStr);
-			else next.delete(dateStr);
+				return next;
+			});
+		},
+		[setSelectedDates]
+	);
 
-			return next;
-		});
-	};
-
-	const handlePointerUp = () => {
+	const handlePointerUp = useCallback(() => {
 		draggingRef.current = false;
-	};
+	}, []);
 
-	return { handlePointerDown, handlePointerMove, handlePointerUp };
+	return { handlePointerDown, handlePointerEnter, handlePointerUp };
 };
 
 export default useDateSelection;
