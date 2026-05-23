@@ -1,10 +1,10 @@
-import { useMemo } from 'react';
 import type { Dispatch, SetStateAction } from 'react';
 import Flex from '@components/common/Flex/Flex';
 import IconButton from '@components/common/IconButton/IconButton';
 import { DateCell, EmptyCell } from '@components/Post/SchedulingPost/Calendar/DateCell/DateCell';
 import { useCalendar } from '@hooks/common/calendar/useCalendar';
 import useDateSelection from '@hooks/post/scheduling/useDateSelection';
+import { formatDate } from '@utils/calendar/formatDate';
 import { DateManager } from '@utils/common/DateManager';
 import { WEEKDAYS } from '@constants/calendar';
 import type { DateString } from '@type/post';
@@ -16,7 +16,7 @@ interface CalendarProps {
 }
 
 const Calendar = ({ selectedDates, setSelectedDates }: CalendarProps) => {
-	const today = useMemo(() => new Date(), []);
+	const today = new Date();
 
 	const { current, dateCells, prevMonth, nextMonth } = useCalendar(today);
 	const isSameMonth = DateManager.isSameMonth(current, today);
@@ -42,19 +42,19 @@ const Calendar = ({ selectedDates, setSelectedDates }: CalendarProps) => {
 					{WEEKDAYS.map((day) => (
 						<S.WeekDaysWrapper key={day}>{day}</S.WeekDaysWrapper>
 					))}
-					{dateCells.map((cell, idx) => {
+					{dateCells.map((date, idx) => {
 						// eslint-disable-next-line react/no-array-index-key
-						if (!cell) return <EmptyCell key={`EmptyCell-${idx}`} />;
+						if (!date) return <EmptyCell key={`EmptyCell-${idx}`} />;
 
-						const { date, dateString, isPast, isToday } = cell;
+						const dateString = formatDate(date);
 
 						return (
 							<DateCell
-								key={dateString}
-								date={date}
+								key={date.toISOString()}
+								date={date.getDate()}
 								dateString={dateString}
-								isPast={isPast}
-								isToday={isToday}
+								isPast={DateManager.isPast(date)}
+								isToday={DateManager.isToday(date)}
 								isSelected={selectedDates.has(dateString)}
 								onPointerDown={handlePointerDown}
 								onPointerEnter={handlePointerEnter}
