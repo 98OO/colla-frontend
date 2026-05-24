@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from '@storybook/react';
+import type { Meta, StoryObj } from '@storybook/react-vite';
 import Badge from './Badge';
 
 const meta: Meta = {
@@ -6,10 +6,8 @@ const meta: Meta = {
 	component: Badge,
 	parameters: {
 		layout: 'centered',
-		componentSubtitle:
-			'Badge 컴포넌트는 상태, 알림 또는 숫자 정보를 표시하는 컴포넌트입니다.',
+		componentSubtitle: 'Badge 컴포넌트는 상태, 알림 또는 숫자 정보를 표시하는 컴포넌트입니다.',
 	},
-	tags: ['autodocs'],
 	argTypes: {
 		type: {
 			control: {

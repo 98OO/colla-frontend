@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from '@storybook/react';
+import type { Meta, StoryObj } from '@storybook/react-vite';
 
 import Avatar from './Avatar';
 
@@ -7,10 +7,8 @@ const meta: Meta = {
 	component: Avatar,
 	parameters: {
 		layout: 'centered',
-		componentSubtitle:
-			'Avatar 컴포넌트는 프로필 이미지를 나타내는 공용 컴포넌트입니다.',
+		componentSubtitle: 'Avatar 컴포넌트는 프로필 이미지를 나타내는 공용 컴포넌트입니다.',
 	},
-	tags: ['autodocs'],
 	argTypes: {
 		profile: {
 			control: {

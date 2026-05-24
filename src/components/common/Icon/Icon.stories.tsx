@@ -1,15 +1,13 @@
 import Icon from '@components/common/Icon/Icon';
-import type { Meta, StoryObj } from '@storybook/react';
+import type { Meta, StoryObj } from '@storybook/react-vite';
 
 const meta = {
 	title: 'common/Icon',
 	component: Icon,
 	parameters: {
 		layout: 'centered',
-		componentSubtitle:
-			'Icon은 이름, 색상, 크기를 받아 아이콘을 나타내는 공용 컴포넌트입니다.',
+		componentSubtitle: 'Icon은 이름, 색상, 크기를 받아 아이콘을 나타내는 공용 컴포넌트입니다.',
 	},
-	tags: ['autodocs'],
 	argTypes: {
 		name: {
 			control: 'select',

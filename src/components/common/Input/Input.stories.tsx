@@ -1,5 +1,5 @@
 import Input from '@components/common/Input/Input';
-import type { Meta, StoryObj } from '@storybook/react';
+import type { Meta, StoryObj } from '@storybook/react-vite';
 
 const meta = {
 	title: 'common/Input',
@@ -9,7 +9,6 @@ const meta = {
 		componentSubtitle:
 			'Input 컴포넌트는 사용자로부터 정보를 입력받을 수 있는 입력 필드를 생성하는 공용 컴포넌트입니다.',
 	},
-	tags: ['autodocs'],
 	argTypes: {
 		size: {
 			control: {
@@ -64,8 +63,7 @@ const meta = {
 		},
 		onChange: {
 			action: 'changed',
-			description:
-				'Input의 입력 필드 값이 변경될 때 호출되는 이벤트 핸들러입니다.',
+			description: 'Input의 입력 필드 값이 변경될 때 호출되는 이벤트 핸들러입니다.',
 		},
 	},
 } satisfies Meta<typeof Input>;

@@ -17,7 +17,6 @@
 	},
 	"dependencies": {
 		"@stomp/stompjs": "^7.0.0",
-		"@storybook/test": "^8.0.9",
 		"@svgr/rollup": "^8.1.0",
 		"@tanstack/react-query": "^5.29.0",
 		"@tanstack/react-query-devtools": "^5.29.0",
@@ -47,17 +46,13 @@
 		"zustand": "^4.5.2"
 	},
 	"devDependencies": {
-		"@chromatic-com/storybook": "^1.2.26",
+		"@chromatic-com/storybook": "^5.2.1",
 		"@commitlint/cli": "^19.2.2",
 		"@commitlint/config-conventional": "^19.2.2",
-		"@storybook/addon-essentials": "^8.0.9",
-		"@storybook/addon-interactions": "^8.0.9",
-		"@storybook/addon-links": "^8.0.9",
-		"@storybook/addon-onboarding": "^8.0.9",
-		"@storybook/addon-themes": "^8.0.9",
-		"@storybook/blocks": "^8.0.9",
-		"@storybook/react": "^8.0.9",
-		"@storybook/react-vite": "^8.0.9",
+		"@storybook/addon-links": "^10.4.1",
+		"@storybook/addon-onboarding": "^10.4.1",
+		"@storybook/addon-themes": "^10.4.1",
+		"@storybook/react-vite": "^10.4.1",
 		"@testing-library/jest-dom": "^6.5.0",
 		"@testing-library/react": "^16.0.1",
 		"@testing-library/user-event": "^14.5.2",
@@ -80,14 +75,15 @@
 		"eslint-plugin-react": "^7.34.1",
 		"eslint-plugin-react-hooks": "^4.6.0",
 		"eslint-plugin-react-refresh": "^0.4.6",
-		"eslint-plugin-storybook": "^0.8.0",
+		"eslint-plugin-storybook": "^10.4.1",
 		"husky": "^8.0.0",
 		"jsdom": "^25.0.1",
 		"lint-staged": "^15.2.2",
 		"msw-storybook-addon": "^1.10.0",
 		"prettier": "^3.2.5",
-		"storybook": "^8.0.9",
-		"typescript": "^5.4.4"
+		"storybook": "^10.4.1",
+		"typescript": "^5.4.4",
+		"@storybook/addon-docs": "^10.4.1"
 	},
 	"msw": {
 		"workerDirectory": "public"

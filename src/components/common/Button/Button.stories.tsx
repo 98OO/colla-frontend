@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from '@storybook/react';
+import type { Meta, StoryObj } from '@storybook/react-vite';
 import { Button } from './Button';
 
 const meta = {
@@ -6,18 +6,15 @@ const meta = {
 	component: Button,
 	parameters: {
 		layout: 'centered',
-		componentSubtitle:
-			'Button 컴포넌트는 사용자의 상호작용 동작을 트리거하는 공용 컴포넌트입니다.',
+		componentSubtitle: 'Button 컴포넌트는 사용자의 상호작용 동작을 트리거하는 공용 컴포넌트입니다.',
 	},
 	decorators: [
 		(Story) => (
-			<div
-				style={{ width: '360px', display: 'flex', justifyContent: 'center' }}>
+			<div style={{ width: '360px', display: 'flex', justifyContent: 'center' }}>
 				<Story />
 			</div>
 		),
 	],
-	tags: ['autodocs'],
 	argTypes: {
 		label: {
 			control: {

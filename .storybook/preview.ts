@@ -1,5 +1,5 @@
 import { initialize, mswLoader } from 'msw-storybook-addon';
-import type { Preview } from '@storybook/react';
+import type { Preview } from '@storybook/react-vite';
 import { handlers } from '../src/mocks/handlers/index';
 import { ThemeProvider } from 'styled-components';
 import { withThemeFromJSXProvider } from '@storybook/addon-themes';
@@ -9,6 +9,8 @@ import GlobalStyle from '../src/styles/GlobalStyle';
 initialize();
 
 const preview: Preview = {
+	tags: ['autodocs'],
+
 	parameters: {
 		controls: {
 			matchers: {
@@ -16,17 +18,19 @@ const preview: Preview = {
 				date: /Date$/i,
 			},
 		},
-		msw: handlers,
+		msw: {
+			handlers: handlers,
+		},
 	},
-	loaders: mswLoader,
-};
+	loaders: [mswLoader],
 
-export const decorators = [
-	withThemeFromJSXProvider({
-		themes: { theme },
-		Provider: ThemeProvider,
-		GlobalStyles: GlobalStyle,
-	}),
-];
+	decorators: [
+		withThemeFromJSXProvider({
+			themes: { default: theme },
+			Provider: ThemeProvider,
+			GlobalStyles: GlobalStyle,
+		}),
+	],
+};
 
 export default preview;
