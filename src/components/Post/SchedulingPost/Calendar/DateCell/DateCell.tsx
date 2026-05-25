@@ -30,6 +30,8 @@ export const DateCell = memo(
 	}: DateCellProps) => {
 		return (
 			<S.DateCellWrapper
+				role='gridcell'
+				aria-selected={isSelected}
 				$isPast={isPast}
 				$isToday={isToday}
 				$isSelected={isSelected}
