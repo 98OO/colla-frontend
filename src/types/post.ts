@@ -26,16 +26,4 @@ interface DaySelection {
 
 export interface CalendarProps extends DaySelection {}
 
-export interface SetTimeProps {
-	onPrev: () => void;
-	onSubmit: () => void;
-	dueAt: string;
-	handleDetail: (
-		title: string,
-		minTimeSegment: number,
-		maxTimeSegment: number,
-		dueAt: string
-	) => void;
-}
-
 export type SelectionMode = 'multi' | 'single';

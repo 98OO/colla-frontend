@@ -24,7 +24,7 @@ const useSchedulingPostForm = () => {
 		}));
 	};
 
-	const handleDetail = (
+	const handleCondition = (
 		title: string,
 		minTimeSegment: number,
 		maxTimeSegment: number,
@@ -41,7 +41,7 @@ const useSchedulingPostForm = () => {
 		}));
 	};
 
-	return { formData, handleTargetDates, handleDetail };
+	return { formData, handleTargetDates, handleCondition };
 };
 
 export default useSchedulingPostForm;

@@ -9,15 +9,21 @@ import DatePicker from '@components/Post/DatePicker/DatePicker';
 import useCalendar from '@hooks/post/useCalendar';
 import useDaySelection from '@hooks/post/useDaySelection';
 import { AMPM_OPTIONS, TIME_OPTIONS } from '@constants/post';
-import type { SetTimeProps } from '@type/post';
 import * as S from '../SchedulingPost.styled';
 
-const SetTimeStep = ({
-	onPrev,
-	onSubmit,
-	dueAt,
-	handleDetail,
-}: SetTimeProps) => {
+interface SetConditionProps {
+	onPrev: () => void;
+	onSubmit: () => void;
+	dueAt: string;
+	handleCondition: (
+		title: string,
+		minTimeSegment: number,
+		maxTimeSegment: number,
+		dueAt: string
+	) => void;
+}
+
+const SetConditionStep = ({ onPrev, onSubmit, dueAt, handleCondition }: SetConditionProps) => {
 	const { getInitialDueAt, getFormattedDay } = useCalendar();
 	const initalDueAt = getInitialDueAt(dueAt);
 	const { selectedDays, isDaySelected, toggleDaySelection } = useDaySelection(
@@ -68,12 +74,7 @@ const SetTimeStep = ({
 		const minTimeSegment = calcTimeSegment(amPmFrom, fromTime);
 		const maxTimeSegment = calcTimeSegment(amPmTo, toTime);
 
-		handleDetail(
-			title,
-			minTimeSegment,
-			maxTimeSegment,
-			getFormattedDay(selectedDays[0], true)
-		);
+		handleCondition(title, minTimeSegment, maxTimeSegment, getFormattedDay(selectedDays[0], true));
 	}, [title, selectedDays, amPmFrom, fromTime, amPmTo, toTime]);
 
 	const handleSumbit = () => {
@@ -177,15 +178,10 @@ const SetTimeStep = ({
 			</Flex>
 			<Flex justify='flex-end' gap='12'>
 				<Button label='이전' variant='secondary' size='md' onClick={onPrev} />
-				<Button
-					label='등록'
-					variant='primary'
-					size='md'
-					onClick={handleSumbit}
-				/>
+				<Button label='등록' variant='primary' size='md' onClick={handleSumbit} />
 			</Flex>
 		</>
 	);
 };
 
-export default SetTimeStep;
+export default SetConditionStep;
