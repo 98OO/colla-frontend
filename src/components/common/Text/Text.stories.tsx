@@ -1,5 +1,5 @@
 import Text from '@components/common/Text/Text';
-import type { Meta, StoryObj } from '@storybook/react';
+import type { Meta, StoryObj } from '@storybook/react-vite';
 
 const meta = {
 	title: 'common/Text',
@@ -9,7 +9,6 @@ const meta = {
 		componentSubtitle:
 			'Text는 태그, 크기, 두께, 색상을 받아 본문의 텍스트를 나타내는 공용 컴포넌트입니다.',
 	},
-	tags: ['autodocs'],
 	argTypes: {
 		as: {
 			control: {

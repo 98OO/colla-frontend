@@ -1,5 +1,5 @@
 import IconButton from '@components/common/IconButton/IconButton';
-import type { Meta, StoryObj } from '@storybook/react';
+import type { Meta, StoryObj } from '@storybook/react-vite';
 
 const meta = {
 	title: 'common/IconButton',
@@ -9,7 +9,6 @@ const meta = {
 		componentSubtitle:
 			'IconButton은 이름, 라벨, 색상, 크기를 받아 아이콘 형태의 버튼을 나타내는 공용 컴포넌트입니다.',
 	},
-	tags: ['autodocs'],
 	argTypes: {
 		icon: {
 			control: 'select',

@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from '@storybook/react';
+import type { Meta, StoryObj } from '@storybook/react-vite';
 import Select from './Select';
 
 const meta = {
@@ -11,14 +11,12 @@ const meta = {
 	},
 	decorators: [
 		(Story) => (
-			<div
-				style={{ width: '200px', display: 'flex', justifyContent: 'center' }}>
+			<div style={{ width: '200px', display: 'flex', justifyContent: 'center' }}>
 				<Story />
 			</div>
 		),
 	],
 
-	tags: ['autodocs'],
 	argTypes: {
 		size: {
 			control: {
