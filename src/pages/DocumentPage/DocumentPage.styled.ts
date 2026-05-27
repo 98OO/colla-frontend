@@ -82,7 +82,9 @@ export const DocumentStateContainer = styled.div`
 	gap: ${theme.units.spacing.space16};
 `;
 
-export const NumberButtonWrapper = styled.div<{ active: boolean }>`
+export const NumberButtonWrapper = styled.div.withConfig({
+	shouldForwardProp: (prop) => prop !== 'active',
+})<{ active: boolean }>`
 	button {
 		color: ${({ active }) =>
 			active ? `${theme.color.text.iPrimary}` : `${theme.color.text.tertiary}`};
