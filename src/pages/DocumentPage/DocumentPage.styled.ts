@@ -6,7 +6,7 @@ export const DocumentContainer = styled.div`
 	flex-direction: column;
 	width: 920px;
 	height: 100%;
-	overflow-x: none;
+	overflow-x: hidden;
 	gap: ${theme.units.spacing.space16};
 `;
 
