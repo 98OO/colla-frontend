@@ -1,15 +1,5 @@
 export type DateString = string & { readonly __brand: 'DateString' };
 
-export interface SchedulingPostFormData {
-	title: string;
-	details: {
-		dueAt: string;
-		minTimeSegment: number;
-		maxTimeSegment: number;
-		targetDates: Set<DateString>;
-	};
-}
-
 export type Period = '오전' | '오후';
 
 export type TimeString = string & { readonly __brand: 'TimeString' };
@@ -22,6 +12,23 @@ export interface TimePoint {
 export interface TimeRange {
 	from: TimePoint;
 	to: TimePoint;
+}
+
+export interface SchedulingPostFormData {
+	title: string;
+	dueAt: string;
+	timeRange: TimeRange;
+	targetDates: Set<DateString>;
+}
+
+export interface SchedulingPostRequest {
+	title: string;
+	details: {
+		dueAt: string;
+		minTimeSegment: number;
+		maxTimeSegment: number;
+		targetDates: string[];
+	};
 }
 
 export interface Day {

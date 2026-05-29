@@ -8,7 +8,6 @@ import Text from '@components/common/Text/Text';
 import DatePicker from '@components/Post/DatePicker/DatePicker';
 import useCalendar from '@hooks/post/useCalendar';
 import useDaySelection from '@hooks/post/useDaySelection';
-import { calcTimeSegment } from '@utils/post/scheduling/timeOptionUtils';
 import { PERIOD_OPTIONS, DEFAULT_TIME_OPTIONS, DEFAULT_TIME_RANGE } from '@constants/post';
 import type { TimePoint, TimeRange } from '@type/post';
 import * as S from '../SchedulingPost.styled';
@@ -17,12 +16,15 @@ interface SetConditionProps {
 	onPrev: () => void;
 	onSubmit: () => void;
 	dueAt: string;
-	handleCondition: (
-		title: string,
-		minTimeSegment: number,
-		maxTimeSegment: number,
-		dueAt: string
-	) => void;
+	handleCondition: ({
+		title,
+		dueAt,
+		timeRange,
+	}: {
+		title: string;
+		dueAt: string;
+		timeRange: TimeRange;
+	}) => void;
 }
 
 const SetConditionStep = ({ onPrev, onSubmit, dueAt, handleCondition }: SetConditionProps) => {
@@ -52,10 +54,9 @@ const SetConditionStep = ({ onPrev, onSubmit, dueAt, handleCondition }: SetCondi
 	};
 
 	useEffect(() => {
-		const minTimeSegment = calcTimeSegment(timeRange.from);
-		const maxTimeSegment = calcTimeSegment(timeRange.to);
+		const convertedDueAt = getFormattedDay(selectedDays[0], true);
 
-		handleCondition(title, minTimeSegment, maxTimeSegment, getFormattedDay(selectedDays[0], true));
+		handleCondition({ title, dueAt: convertedDueAt, timeRange });
 	}, [title, selectedDays, timeRange]);
 
 	const handleSubmit = () => {

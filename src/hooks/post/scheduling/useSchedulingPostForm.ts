@@ -1,14 +1,12 @@
 import { useState } from 'react';
-import type { SchedulingPostFormData, DateString } from '@type/post';
+import { DEFAULT_TIME_RANGE } from '@constants/post';
+import type { SchedulingPostFormData, DateString, TimeRange } from '@type/post';
 
 const createInitialSchedulingPostForm = (): SchedulingPostFormData => ({
 	title: '',
-	details: {
-		dueAt: '',
-		minTimeSegment: 0,
-		maxTimeSegment: 1,
-		targetDates: new Set<DateString>(),
-	},
+	dueAt: '',
+	timeRange: DEFAULT_TIME_RANGE,
+	targetDates: new Set<DateString>(),
 });
 
 const useSchedulingPostForm = () => {
@@ -17,27 +15,24 @@ const useSchedulingPostForm = () => {
 	const handleTargetDates = (dates: Set<DateString>) => {
 		setFormData((prev) => ({
 			...prev,
-			details: {
-				...prev.details,
-				targetDates: dates,
-			},
+			targetDates: dates,
 		}));
 	};
 
-	const handleCondition = (
-		title: string,
-		minTimeSegment: number,
-		maxTimeSegment: number,
-		dueAt: string
-	) => {
+	const handleCondition = ({
+		title,
+		dueAt,
+		timeRange,
+	}: {
+		title: string;
+		dueAt: string;
+		timeRange: TimeRange;
+	}) => {
 		setFormData((prev) => ({
+			...prev,
 			title,
-			details: {
-				...prev.details,
-				dueAt,
-				minTimeSegment,
-				maxTimeSegment,
-			},
+			dueAt,
+			timeRange,
 		}));
 	};
 

@@ -22,14 +22,14 @@ const SchedulingPost = () => {
 				<Funnel.Step name='selectDate'>
 					<SelectDateStep
 						onNext={goNext}
-						targetDates={formData.details.targetDates}
+						targetDates={formData.targetDates}
 						handleTargetDates={handleTargetDates}
 					/>
 				</Funnel.Step>
 				<Funnel.Step name='setCondition'>
 					<SetConditionStep
 						onPrev={goPrev}
-						dueAt={formData.details.dueAt}
+						dueAt={formData.dueAt}
 						onSubmit={handleSubmit}
 						handleCondition={handleCondition}
 					/>
