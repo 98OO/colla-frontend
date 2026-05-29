@@ -1,29 +1,13 @@
-export const USER_CONFIRM_MESSAGE = '작성 중인 내용이 있습니다. 정말 취소하시겠습니까?';
+import { makeDefaultTimeOptions } from '@utils/post/scheduling/makeDefaultTimeOptions';
+import type { Period, TimeRange } from '@type/post';
 
-export const AMPM_OPTIONS = ['오전', '오후'];
-export const TIME_OPTIONS = [
-	'12:00',
-	'12:30',
-	'01:00',
-	'01:30',
-	'02:00',
-	'02:30',
-	'03:00',
-	'03:30',
-	'04:00',
-	'04:30',
-	'05:00',
-	'05:30',
-	'06:00',
-	'06:30',
-	'07:00',
-	'07:30',
-	'08:00',
-	'08:30',
-	'09:00',
-	'09:30',
-	'10:00',
-	'10:30',
-	'11:00',
-	'11:30',
-];
+export const PERIOD_OPTIONS = ['오전', '오후'] as const satisfies Period[];
+
+export const DEFAULT_TIME_OPTIONS = makeDefaultTimeOptions();
+
+export const DEFAULT_TIME_RANGE: TimeRange = {
+	from: { period: '오전', time: DEFAULT_TIME_OPTIONS[18] },
+	to: { period: '오후', time: DEFAULT_TIME_OPTIONS[36] },
+};
+
+export const USER_CONFIRM_MESSAGE = '작성 중인 내용이 있습니다. 정말 취소하시겠습니까?';
