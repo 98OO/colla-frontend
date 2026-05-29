@@ -9,7 +9,7 @@ export interface SelectContainerProps {
 }
 
 interface SelectProps extends SelectContainerProps {
-	options?: string[] | null;
+	options?: readonly string[] | null;
 	select: string | null;
 	setSelect: (index: number) => void;
 	disabled?: boolean;
@@ -21,10 +21,7 @@ const Select = (props: SelectProps) => {
 	const { size, select, setSelect, options, disabled = false } = props;
 
 	const handleClickOutside = (event: MouseEvent) => {
-		if (
-			selectRef.current &&
-			!selectRef.current.contains(event.target as Node)
-		) {
+		if (selectRef.current && !selectRef.current.contains(event.target as Node)) {
 			setIsOpen(false);
 		}
 	};
@@ -58,9 +55,7 @@ const Select = (props: SelectProps) => {
 			{isOpen && options && (
 				<S.SelectOptionContainer>
 					{options?.map((option, index) => (
-						<S.SelectOptionWrapper
-							key={option}
-							onClick={() => handleSelect(index + 1)}>
+						<S.SelectOptionWrapper key={option} onClick={() => handleSelect(index + 1)}>
 							<Text size='md' weight='medium'>
 								{option}
 							</Text>

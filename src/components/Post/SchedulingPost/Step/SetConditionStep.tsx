@@ -8,7 +8,9 @@ import Text from '@components/common/Text/Text';
 import DatePicker from '@components/Post/DatePicker/DatePicker';
 import useCalendar from '@hooks/post/useCalendar';
 import useDaySelection from '@hooks/post/useDaySelection';
-import { AMPM_OPTIONS, TIME_OPTIONS } from '@constants/post';
+import { calcTimeSegment } from '@utils/post/scheduling/timeOptionUtils';
+import { PERIOD_OPTIONS, DEFAULT_TIME_OPTIONS, DEFAULT_TIME_RANGE } from '@constants/post';
+import type { TimePoint, TimeRange } from '@type/post';
 import * as S from '../SchedulingPost.styled';
 
 interface SetConditionProps {
@@ -33,10 +35,7 @@ const SetConditionStep = ({ onPrev, onSubmit, dueAt, handleCondition }: SetCondi
 
 	const [title, setTitle] = useState('');
 	const [titleError, setTitleError] = useState(false);
-	const [amPmFrom, setAmPmFrom] = useState<string>('오전');
-	const [fromTime, setFromTime] = useState<string>('9:00');
-	const [amPmTo, setAmPmTo] = useState<string>('오후');
-	const [toTime, setToTime] = useState<string>('6:00');
+	const [timeRange, setTimeRange] = useState<TimeRange>(DEFAULT_TIME_RANGE);
 
 	const handleTitleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
 		setTitle(event.target.value);
@@ -45,39 +44,21 @@ const SetConditionStep = ({ onPrev, onSubmit, dueAt, handleCondition }: SetCondi
 		}
 	};
 
-	const handleAmPmSelect = (index: number, from: boolean = true) => {
-		const select = AMPM_OPTIONS[index - 1];
-		if (from) setAmPmFrom(select);
-		else setAmPmTo(select);
-	};
-
-	const handleTimeSelect = (index: number, from: boolean = true) => {
-		const select = TIME_OPTIONS[index - 1];
-		if (from) setFromTime(select);
-		else setToTime(select);
-	};
-
-	const calcTimeSegment = (ampm: string, time: string) => {
-		const [hour, minute] = time.split(':').map(Number);
-		let adjustedHour = hour;
-
-		if (ampm === '오후' && hour !== 12) {
-			adjustedHour += 12;
-		}
-		if (ampm === '오전' && hour === 12) {
-			adjustedHour = 0;
-		}
-		return adjustedHour * 2 + (minute === 30 ? 1 : 0);
+	const handleTimeRange = (bound: keyof TimeRange, patch: Partial<TimePoint>) => {
+		setTimeRange((prev) => ({
+			...prev,
+			[bound]: { ...prev[bound], ...patch },
+		}));
 	};
 
 	useEffect(() => {
-		const minTimeSegment = calcTimeSegment(amPmFrom, fromTime);
-		const maxTimeSegment = calcTimeSegment(amPmTo, toTime);
+		const minTimeSegment = calcTimeSegment(timeRange.from);
+		const maxTimeSegment = calcTimeSegment(timeRange.to);
 
 		handleCondition(title, minTimeSegment, maxTimeSegment, getFormattedDay(selectedDays[0], true));
-	}, [title, selectedDays, amPmFrom, fromTime, amPmTo, toTime]);
+	}, [title, selectedDays, timeRange]);
 
-	const handleSumbit = () => {
+	const handleSubmit = () => {
 		if (!title.trim()) {
 			setTitleError(true);
 			return;
@@ -135,17 +116,19 @@ const SetConditionStep = ({ onPrev, onSubmit, dueAt, handleCondition }: SetCondi
 							<S.SelectedWrapper>
 								<Select
 									size='sm'
-									options={AMPM_OPTIONS}
-									select={amPmFrom}
-									setSelect={handleAmPmSelect}
+									options={PERIOD_OPTIONS}
+									select={timeRange.from.period}
+									setSelect={(idx) => handleTimeRange('from', { period: PERIOD_OPTIONS[idx - 1] })}
 								/>
 							</S.SelectedWrapper>
 							<S.SelectedWrapper>
 								<Select
 									size='sm'
-									options={TIME_OPTIONS}
-									select={fromTime}
-									setSelect={handleTimeSelect}
+									options={DEFAULT_TIME_OPTIONS}
+									select={timeRange.from.time}
+									setSelect={(idx) =>
+										handleTimeRange('from', { time: DEFAULT_TIME_OPTIONS[idx - 1] })
+									}
 								/>
 							</S.SelectedWrapper>
 							<Text size='md' weight='regular'>
@@ -156,17 +139,19 @@ const SetConditionStep = ({ onPrev, onSubmit, dueAt, handleCondition }: SetCondi
 							<S.SelectedWrapper>
 								<Select
 									size='sm'
-									options={AMPM_OPTIONS}
-									select={amPmTo}
-									setSelect={(idx) => handleAmPmSelect(idx, false)}
+									options={PERIOD_OPTIONS}
+									select={timeRange.to.period}
+									setSelect={(idx) => handleTimeRange('to', { period: PERIOD_OPTIONS[idx - 1] })}
 								/>
 							</S.SelectedWrapper>
 							<S.SelectedWrapper>
 								<Select
 									size='sm'
-									options={TIME_OPTIONS}
-									select={toTime}
-									setSelect={(idx) => handleTimeSelect(idx, false)}
+									options={DEFAULT_TIME_OPTIONS}
+									select={timeRange.to.time}
+									setSelect={(idx) =>
+										handleTimeRange('to', { time: DEFAULT_TIME_OPTIONS[idx - 1] })
+									}
 								/>
 							</S.SelectedWrapper>
 							<Text size='md' weight='regular'>
@@ -178,7 +163,7 @@ const SetConditionStep = ({ onPrev, onSubmit, dueAt, handleCondition }: SetCondi
 			</Flex>
 			<Flex justify='flex-end' gap='12'>
 				<Button label='이전' variant='secondary' size='md' onClick={onPrev} />
-				<Button label='등록' variant='primary' size='md' onClick={handleSumbit} />
+				<Button label='등록' variant='primary' size='md' onClick={handleSubmit} />
 			</Flex>
 		</>
 	);
