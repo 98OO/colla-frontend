@@ -10,6 +10,20 @@ export interface SchedulingPostFormData {
 	};
 }
 
+export type Period = '오전' | '오후';
+
+export type TimeString = string & { readonly __brand: 'TimeString' };
+
+export interface TimePoint {
+	period: Period;
+	time: TimeString;
+}
+
+export interface TimeRange {
+	from: TimePoint;
+	to: TimePoint;
+}
+
 export interface Day {
 	year: number;
 	month: number;
