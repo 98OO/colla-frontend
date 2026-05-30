@@ -8,14 +8,16 @@ import Text from '@components/common/Text/Text';
 import DatePicker from '@components/Post/DatePicker/DatePicker';
 import useCalendar from '@hooks/post/useCalendar';
 import useDaySelection from '@hooks/post/useDaySelection';
-import { PERIOD_OPTIONS, DEFAULT_TIME_OPTIONS, DEFAULT_TIME_RANGE } from '@constants/post';
+import { PERIOD_OPTIONS, DEFAULT_TIME_OPTIONS } from '@constants/post';
 import type { TimePoint, TimeRange } from '@type/post';
 import * as S from '../SchedulingPost.styled';
 
 interface SetConditionProps {
+	initialTitle: string;
+	initialDueAt: string;
+	initialTimeRange: TimeRange;
 	onPrev: () => void;
 	onSubmit: () => void;
-	dueAt: string;
 	handleCondition: ({
 		title,
 		dueAt,
@@ -27,17 +29,24 @@ interface SetConditionProps {
 	}) => void;
 }
 
-const SetConditionStep = ({ onPrev, onSubmit, dueAt, handleCondition }: SetConditionProps) => {
+const SetConditionStep = ({
+	initialTitle,
+	initialDueAt,
+	initialTimeRange,
+	onPrev,
+	onSubmit,
+	handleCondition,
+}: SetConditionProps) => {
 	const { getInitialDueAt, getFormattedDay } = useCalendar();
-	const initalDueAt = getInitialDueAt(dueAt);
+	const initalDueAt = getInitialDueAt(initialDueAt);
 	const { selectedDays, isDaySelected, toggleDaySelection } = useDaySelection(
 		initalDueAt,
 		'single'
 	);
 
-	const [title, setTitle] = useState('');
+	const [title, setTitle] = useState(initialTitle);
 	const [titleError, setTitleError] = useState(false);
-	const [timeRange, setTimeRange] = useState<TimeRange>(DEFAULT_TIME_RANGE);
+	const [timeRange, setTimeRange] = useState<TimeRange>(initialTimeRange);
 
 	const handleTitleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
 		setTitle(event.target.value);

@@ -28,8 +28,10 @@ const SchedulingPost = () => {
 				</Funnel.Step>
 				<Funnel.Step name='setCondition'>
 					<SetConditionStep
+						initialTitle={formData.title}
+						initialDueAt={formData.dueAt}
+						initialTimeRange={formData.timeRange}
 						onPrev={goPrev}
-						dueAt={formData.dueAt}
 						onSubmit={handleSubmit}
 						handleCondition={handleCondition}
 					/>
