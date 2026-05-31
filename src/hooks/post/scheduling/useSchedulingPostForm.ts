@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { DEFAULT_TIME_RANGE } from '@constants/post';
-import type { SchedulingPostFormData, DateString, TimeRange } from '@type/post';
+import type { SchedulingPostFormData, DateString, SchedulingCondition } from '@type/post';
 
 const createInitialSchedulingPostForm = (): SchedulingPostFormData => ({
 	title: '',
@@ -19,20 +19,10 @@ const useSchedulingPostForm = () => {
 		}));
 	};
 
-	const handleCondition = ({
-		title,
-		dueAt,
-		timeRange,
-	}: {
-		title: string;
-		dueAt: string;
-		timeRange: TimeRange;
-	}) => {
+	const handleCondition = (condition: SchedulingCondition) => {
 		setFormData((prev) => ({
 			...prev,
-			title,
-			dueAt,
-			timeRange,
+			...condition,
 		}));
 	};
 

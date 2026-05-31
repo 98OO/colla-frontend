@@ -21,6 +21,8 @@ export interface SchedulingPostFormData {
 	targetDates: Set<DateString>;
 }
 
+export type SchedulingCondition = Omit<SchedulingPostFormData, 'targetDates'>;
+
 export interface SchedulingPostRequest {
 	title: string;
 	details: {

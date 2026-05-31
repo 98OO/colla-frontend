@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { Button } from '@components/common/Button/Button';
 import Flex from '@components/common/Flex/Flex';
 import Heading from '@components/common/Heading/Heading';
@@ -9,7 +9,7 @@ import DatePicker from '@components/Post/DatePicker/DatePicker';
 import useCalendar from '@hooks/post/useCalendar';
 import useDaySelection from '@hooks/post/useDaySelection';
 import { PERIOD_OPTIONS, DEFAULT_TIME_OPTIONS } from '@constants/post';
-import type { TimePoint, TimeRange } from '@type/post';
+import type { SchedulingCondition, TimePoint, TimeRange } from '@type/post';
 import * as S from '../SchedulingPost.styled';
 
 interface SetConditionProps {
@@ -17,16 +17,8 @@ interface SetConditionProps {
 	initialDueAt: string;
 	initialTimeRange: TimeRange;
 	onPrev: () => void;
-	onSubmit: () => void;
-	handleCondition: ({
-		title,
-		dueAt,
-		timeRange,
-	}: {
-		title: string;
-		dueAt: string;
-		timeRange: TimeRange;
-	}) => void;
+	onSave: (condition: SchedulingCondition) => void;
+	onSubmit: (condition: SchedulingCondition) => void;
 }
 
 const SetConditionStep = ({
@@ -34,8 +26,8 @@ const SetConditionStep = ({
 	initialDueAt,
 	initialTimeRange,
 	onPrev,
+	onSave,
 	onSubmit,
-	handleCondition,
 }: SetConditionProps) => {
 	const { getInitialDueAt, getFormattedDay } = useCalendar();
 	const initalDueAt = getInitialDueAt(initialDueAt);
@@ -62,18 +54,26 @@ const SetConditionStep = ({
 		}));
 	};
 
-	useEffect(() => {
-		const convertedDueAt = getFormattedDay(selectedDays[0], true);
+	const getCondition = (): SchedulingCondition => ({
+		title,
+		dueAt: getFormattedDay(selectedDays[0], true),
+		timeRange,
+	});
 
-		handleCondition({ title, dueAt: convertedDueAt, timeRange });
-	}, [title, selectedDays, timeRange]);
+	const handlePrev = () => {
+		onSave(getCondition());
+		onPrev();
+	};
 
 	const handleSubmit = () => {
 		if (!title.trim()) {
 			setTitleError(true);
 			return;
 		}
-		onSubmit();
+
+		const condition = getCondition();
+		onSave(condition);
+		onSubmit(condition);
 	};
 
 	return (
@@ -172,7 +172,7 @@ const SetConditionStep = ({
 				</Flex>
 			</Flex>
 			<Flex justify='flex-end' gap='12'>
-				<Button label='이전' variant='secondary' size='md' onClick={onPrev} />
+				<Button label='이전' variant='secondary' size='md' onClick={handlePrev} />
 				<Button label='등록' variant='primary' size='md' onClick={handleSubmit} />
 			</Flex>
 		</>
