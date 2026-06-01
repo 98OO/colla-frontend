@@ -1,16 +1,10 @@
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { Button } from '@components/common/Button/Button';
 import Flex from '@components/common/Flex/Flex';
-import Heading from '@components/common/Heading/Heading';
-import Icon from '@components/common/Icon/Icon';
-import Select from '@components/common/Select/Select';
-import Text from '@components/common/Text/Text';
-import DatePicker from '@components/Post/DatePicker/DatePicker';
-import useCalendar from '@hooks/post/useCalendar';
-import useDaySelection from '@hooks/post/useDaySelection';
-import { PERIOD_OPTIONS, DEFAULT_TIME_OPTIONS } from '@constants/post';
-import type { SchedulingCondition, TimePoint, TimeRange } from '@type/post';
-import * as S from '../SchedulingPost.styled';
+import DueAtSection from '@components/Post/SchedulingPost/Section/DueAtSection';
+import TimeRangeSection from '@components/Post/SchedulingPost/Section/TimeRangeSection';
+import TitleSection from '@components/Post/SchedulingPost/Section/TitleSection';
+import type { SchedulingCondition, TimeRange } from '@type/post';
 
 interface SetConditionProps {
 	initialTitle: string;
@@ -29,147 +23,46 @@ const SetConditionStep = ({
 	onSave,
 	onSubmit,
 }: SetConditionProps) => {
-	const { getInitialDueAt, getFormattedDay } = useCalendar();
-	const initalDueAt = getInitialDueAt(initialDueAt);
-	const { selectedDays, isDaySelected, toggleDaySelection } = useDaySelection(
-		initalDueAt,
-		'single'
-	);
+	const [isSubmitAttempted, setIsSubmitAttempted] = useState(false);
 
-	const [title, setTitle] = useState(initialTitle);
-	const [titleError, setTitleError] = useState(false);
-	const [timeRange, setTimeRange] = useState<TimeRange>(initialTimeRange);
-
-	const handleTitleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-		setTitle(event.target.value);
-		if (event.target.value) {
-			setTitleError(false);
-		}
-	};
-
-	const handleTimeRange = (bound: keyof TimeRange, patch: Partial<TimePoint>) => {
-		setTimeRange((prev) => ({
-			...prev,
-			[bound]: { ...prev[bound], ...patch },
-		}));
-	};
-
-	const getCondition = (): SchedulingCondition => ({
-		title,
-		dueAt: getFormattedDay(selectedDays[0], true),
-		timeRange,
+	const conditionRef = useRef<SchedulingCondition>({
+		title: initialTitle,
+		dueAt: initialDueAt,
+		timeRange: initialTimeRange,
 	});
 
+	const updateCondition = (patch: Partial<SchedulingCondition>) => {
+		conditionRef.current = {
+			...conditionRef.current,
+			...patch,
+		};
+	};
+
 	const handlePrev = () => {
-		onSave(getCondition());
+		onSave(conditionRef.current);
 		onPrev();
 	};
 
 	const handleSubmit = () => {
-		if (!title.trim()) {
-			setTitleError(true);
+		if (!conditionRef.current.title.trim()) {
+			setIsSubmitAttempted(true);
 			return;
 		}
 
-		const condition = getCondition();
-		onSave(condition);
-		onSubmit(condition);
+		onSave(conditionRef.current);
+		onSubmit(conditionRef.current);
 	};
 
 	return (
 		<>
 			<Flex direction='column' gap='60'>
-				<Flex direction='column'>
-					<S.PostInput
-						placeholder='제목을 입력해주세요'
-						value={title}
-						onChange={handleTitleChange}
-					/>
-					{titleError && (
-						<Flex direction='column' marginTop='8' width='300'>
-							<Text size='md' weight='regular' color='danger'>
-								제목이 없어요
-							</Text>
-						</Flex>
-					)}
-				</Flex>
-				<Flex direction='column' gap='20'>
-					<Flex align='center' gap='6'>
-						<Icon name='Clock' />
-						<Heading size='xs' color='secondary'>
-							마감 일시
-						</Heading>
-					</Flex>
-					<Text size='md' weight='regular' color='tertiary'>
-						일정 조율이 마감될 일시를 선택해주세요
-					</Text>
-					<S.DatePickerWrapper>
-						<DatePicker
-							selectedDays={selectedDays}
-							isDaySelected={isDaySelected}
-							toggleDaySelection={toggleDaySelection}
-						/>
-					</S.DatePickerWrapper>
-				</Flex>
-				<Flex direction='column' gap='20'>
-					<Flex align='center' gap='6'>
-						<Icon name='Calendar' />
-						<Heading size='xs' color='secondary'>
-							시간 범위
-						</Heading>
-					</Flex>
-					<Text size='md' weight='regular' color='tertiary'>
-						일정이 이뤄진 시간 범위를 선택해주세요
-					</Text>
-					<S.TimePickerContainer>
-						<S.TimePickerWrapper>
-							<S.SelectedWrapper>
-								<Select
-									size='sm'
-									options={PERIOD_OPTIONS}
-									select={timeRange.from.period}
-									setSelect={(idx) => handleTimeRange('from', { period: PERIOD_OPTIONS[idx - 1] })}
-								/>
-							</S.SelectedWrapper>
-							<S.SelectedWrapper>
-								<Select
-									size='sm'
-									options={DEFAULT_TIME_OPTIONS}
-									select={timeRange.from.time}
-									setSelect={(idx) =>
-										handleTimeRange('from', { time: DEFAULT_TIME_OPTIONS[idx - 1] })
-									}
-								/>
-							</S.SelectedWrapper>
-							<Text size='md' weight='regular'>
-								부터
-							</Text>
-						</S.TimePickerWrapper>
-						<S.TimePickerWrapper>
-							<S.SelectedWrapper>
-								<Select
-									size='sm'
-									options={PERIOD_OPTIONS}
-									select={timeRange.to.period}
-									setSelect={(idx) => handleTimeRange('to', { period: PERIOD_OPTIONS[idx - 1] })}
-								/>
-							</S.SelectedWrapper>
-							<S.SelectedWrapper>
-								<Select
-									size='sm'
-									options={DEFAULT_TIME_OPTIONS}
-									select={timeRange.to.time}
-									setSelect={(idx) =>
-										handleTimeRange('to', { time: DEFAULT_TIME_OPTIONS[idx - 1] })
-									}
-								/>
-							</S.SelectedWrapper>
-							<Text size='md' weight='regular'>
-								까지
-							</Text>
-						</S.TimePickerWrapper>
-					</S.TimePickerContainer>
-				</Flex>
+				<TitleSection
+					isSubmitAttempted={isSubmitAttempted}
+					initialTitle={initialTitle}
+					updateCondition={updateCondition}
+				/>
+				<DueAtSection initialDueAt={initialDueAt} updateCondition={updateCondition} />
+				<TimeRangeSection initialTimeRange={initialTimeRange} updateCondition={updateCondition} />
 			</Flex>
 			<Flex justify='flex-end' gap='12'>
 				<Button label='이전' variant='secondary' size='md' onClick={handlePrev} />
