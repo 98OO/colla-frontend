@@ -1,10 +1,22 @@
-import type { TimePoint } from '@type/post';
+import { DEFAULT_TIME_OPTIONS } from '@constants/post';
+import type { TimeString } from '@type/post';
 
-const calcTimeSegment = ({ period, time }: TimePoint) => {
+const calcTimeSegment = (time: TimeString) => {
 	const [hour, minute] = time.split(':').map(Number);
-	const convertedHour = period === '오후' ? hour + 12 : hour;
 
-	return convertedHour * 2 + (minute === 30 ? 1 : 0);
+	return hour * 2 + (minute === 30 ? 1 : 0);
 };
 
-export { calcTimeSegment };
+const filterTimeOptions = (criteria: TimeString, condition: 'earlier' | 'later') => {
+	const criteriaSegment = calcTimeSegment(criteria);
+
+	return DEFAULT_TIME_OPTIONS.filter((timeOption) => {
+		const timeOptionSegment = calcTimeSegment(timeOption);
+
+		return condition === 'earlier'
+			? criteriaSegment > timeOptionSegment
+			: criteriaSegment < timeOptionSegment;
+	});
+};
+
+export { calcTimeSegment, filterTimeOptions };

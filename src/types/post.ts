@@ -1,17 +1,10 @@
 export type DateString = string & { readonly __brand: 'DateString' };
 
-export type Period = '오전' | '오후';
-
 export type TimeString = string & { readonly __brand: 'TimeString' };
 
-export interface TimePoint {
-	period: Period;
-	time: TimeString;
-}
-
 export interface TimeRange {
-	from: TimePoint;
-	to: TimePoint;
+	from: TimeString;
+	to: TimeString;
 }
 
 export interface SchedulingPostFormData {

@@ -4,8 +4,8 @@ import Heading from '@components/common/Heading/Heading';
 import Icon from '@components/common/Icon/Icon';
 import Select from '@components/common/Select/Select';
 import Text from '@components/common/Text/Text';
-import { PERIOD_OPTIONS, DEFAULT_TIME_OPTIONS } from '@constants/post';
-import type { SchedulingCondition, TimePoint, TimeRange } from '@type/post';
+import { filterTimeOptions } from '@utils/post/scheduling/timeOptionUtils';
+import type { SchedulingCondition, TimeRange, TimeString } from '@type/post';
 import * as S from '../SchedulingPost.styled';
 
 interface TimeRangeProps {
@@ -16,17 +16,16 @@ interface TimeRangeProps {
 const TimeRangeSection = ({ initialTimeRange, updateCondition }: TimeRangeProps) => {
 	const [timeRange, setTimeRange] = useState<TimeRange>(initialTimeRange);
 
-	const handleTimeRange = (bound: keyof TimeRange, patch: Partial<TimePoint>) => {
+	const handleTimeRange = (bound: keyof TimeRange, time: TimeString) => {
 		setTimeRange((prev) => {
-			const updated = {
-				...prev,
-				[bound]: { ...prev[bound], ...patch },
-			};
-
+			const updated = { ...prev, [bound]: time };
 			updateCondition({ timeRange: updated });
 			return updated;
 		});
 	};
+
+	const fromTimeOptions = filterTimeOptions(timeRange.to, 'earlier');
+	const toTimeOptions = filterTimeOptions(timeRange.from, 'later');
 
 	return (
 		<Flex direction='column' gap='20'>
@@ -44,17 +43,9 @@ const TimeRangeSection = ({ initialTimeRange, updateCondition }: TimeRangeProps)
 					<S.SelectedWrapper>
 						<Select
 							size='sm'
-							options={PERIOD_OPTIONS}
-							select={timeRange.from.period}
-							setSelect={(idx) => handleTimeRange('from', { period: PERIOD_OPTIONS[idx - 1] })}
-						/>
-					</S.SelectedWrapper>
-					<S.SelectedWrapper>
-						<Select
-							size='sm'
-							options={DEFAULT_TIME_OPTIONS}
-							select={timeRange.from.time}
-							setSelect={(idx) => handleTimeRange('from', { time: DEFAULT_TIME_OPTIONS[idx - 1] })}
+							options={fromTimeOptions}
+							select={timeRange.from}
+							setSelect={(idx) => handleTimeRange('from', fromTimeOptions[idx - 1])}
 						/>
 					</S.SelectedWrapper>
 					<Text size='md' weight='regular'>
@@ -65,17 +56,9 @@ const TimeRangeSection = ({ initialTimeRange, updateCondition }: TimeRangeProps)
 					<S.SelectedWrapper>
 						<Select
 							size='sm'
-							options={PERIOD_OPTIONS}
-							select={timeRange.to.period}
-							setSelect={(idx) => handleTimeRange('to', { period: PERIOD_OPTIONS[idx - 1] })}
-						/>
-					</S.SelectedWrapper>
-					<S.SelectedWrapper>
-						<Select
-							size='sm'
-							options={DEFAULT_TIME_OPTIONS}
-							select={timeRange.to.time}
-							setSelect={(idx) => handleTimeRange('to', { time: DEFAULT_TIME_OPTIONS[idx - 1] })}
+							options={toTimeOptions}
+							select={timeRange.to}
+							setSelect={(idx) => handleTimeRange('to', toTimeOptions[idx - 1])}
 						/>
 					</S.SelectedWrapper>
 					<Text size='md' weight='regular'>
