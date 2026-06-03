@@ -65,7 +65,7 @@ export const DocumentCheckbox = styled.input.attrs({ type: 'checkbox' })`
 
 	&:checked::after {
 		content: '✓';
-		font-size: ${theme.typography.fontSize.body.lg};
+		font-size: ${theme.typography.fontSize.body.md};
 		color: white;
 		display: flex;
 		justify-content: center;
