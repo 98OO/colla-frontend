@@ -41,4 +41,14 @@ export const DateManager = {
 	isToday(targetDate: Date): boolean {
 		return DateManager.isSameDate(targetDate, new Date());
 	},
+
+	isAfter(targetDate: Date, limitDate: Date): boolean {
+		const target = new Date(targetDate);
+		target.setHours(0, 0, 0, 0);
+
+		const limit = new Date(limitDate);
+		limit.setHours(0, 0, 0, 0);
+
+		return target.getTime() > limit.getTime();
+	},
 };
