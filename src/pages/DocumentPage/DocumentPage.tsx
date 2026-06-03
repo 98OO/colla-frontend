@@ -33,10 +33,7 @@ const DocumentPage = () => {
 		() => [...(teamDocument?.attachments ?? [])].reverse(),
 		[teamDocument]
 	);
-	const usedStorageCapacity = useMemo(
-		() => attachments.reduce((total, attachment) => total + attachment.size, 0),
-		[attachments]
-	);
+	const usedStorageCapacity = teamDocument?.totalStorageCapacity ?? 0;
 	const visibleAttachments = useMemo(
 		() =>
 			attachments.slice(
