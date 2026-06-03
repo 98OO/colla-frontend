@@ -3,20 +3,20 @@ import theme from '@styles/theme';
 
 export const DocumentItemContainer = styled.div`
 	display: flex;
-	height: 55px;
+	min-height: 36px;
 `;
 
 export const DocumentNameContainer = styled.div`
 	display: flex;
 	align-items: center;
 	width: 45%;
-	gap: ${theme.units.spacing.space16};
+	gap: ${theme.units.spacing.space12};
 	padding: 0 ${theme.units.spacing.space6};
 `;
 
 export const DocumentCheckbox = styled.input.attrs({ type: 'checkbox' })`
-	width: 20px;
-	height: 20px;
+	width: 18px;
+	height: 18px;
 	cursor: pointer;
 	appearance: none;
 	border: 1.5px solid ${theme.color.border.iSecondary};
@@ -29,7 +29,7 @@ export const DocumentCheckbox = styled.input.attrs({ type: 'checkbox' })`
 
 	&:checked::after {
 		content: '✓';
-		font-size: ${theme.typography.fontSize.body.lg};
+		font-size: ${theme.typography.fontSize.body.md};
 		color: white;
 		display: flex;
 		justify-content: center;

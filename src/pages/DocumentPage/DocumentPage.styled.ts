@@ -45,8 +45,8 @@ export const DocumentTitleName = styled.div`
 `;
 
 export const DocumentCheckbox = styled.input.attrs({ type: 'checkbox' })`
-	width: 20px;
-	height: 20px;
+	width: 18px;
+	height: 18px;
 	cursor: pointer;
 	appearance: none;
 	border: 1.5px solid ${theme.color.border.iSecondary};
@@ -75,6 +75,7 @@ export const DocumentCheckbox = styled.input.attrs({ type: 'checkbox' })`
 
 export const DocumentStateContainer = styled.div`
 	display: flex;
+	grid-row: 1 / -1;
 	flex-direction: column;
 	justify-content: center;
 	align-items: center;
@@ -82,12 +83,26 @@ export const DocumentStateContainer = styled.div`
 	gap: ${theme.units.spacing.space16};
 `;
 
-export const NumberButtonWrapper = styled.div.withConfig({
-	shouldForwardProp: (prop) => prop !== 'active',
-})<{ active: boolean }>`
+export const DocumentListContainer = styled.div`
+	display: grid;
+	flex: 1;
+	grid-template-rows: repeat(10, minmax(36px, 1fr));
+	min-height: 396px;
+	gap: ${theme.units.spacing.space4};
+`;
+
+export const PaginationContainer = styled.div`
+	display: flex;
+	justify-content: center;
+	padding-bottom: ${theme.units.spacing.space24};
+`;
+
+export const NumberButtonWrapper = styled.div<{ $active: boolean }>`
 	button {
-		color: ${({ active }) =>
-			active ? `${theme.color.text.iPrimary}` : `${theme.color.text.tertiary}`};
+		color: ${({ $active }) =>
+			$active
+				? `${theme.color.text.iPrimary}`
+				: `${theme.color.text.tertiary}`};
 
 		&:hover {
 			color: ${theme.color.text.iPrimary};

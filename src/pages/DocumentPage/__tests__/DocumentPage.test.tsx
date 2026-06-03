@@ -127,7 +127,7 @@ describe('DocumentPage', () => {
 	test('전체 선택은 현재 페이지 파일을 모두 선택하고 다시 누르면 해제해야 한다', async () => {
 		const user = userEvent.setup();
 		mockDocumentQuery(
-			Array.from({ length: 6 }, (_, index) =>
+			Array.from({ length: 11 }, (_, index) =>
 				createAttachment(
 					index + 1,
 					`${index + 1}번 파일.pdf`,
@@ -143,12 +143,12 @@ describe('DocumentPage', () => {
 
 		await user.click(selectAllCheckbox);
 
-		expect(screen.getByText('5개 선택됨')).toBeInTheDocument();
+		expect(screen.getByText('10개 선택됨')).toBeInTheDocument();
 		expect(selectAllCheckbox).toBeChecked();
 
 		await user.click(selectAllCheckbox);
 
-		expect(screen.queryByText('5개 선택됨')).not.toBeInTheDocument();
+		expect(screen.queryByText('10개 선택됨')).not.toBeInTheDocument();
 		expect(selectAllCheckbox).not.toBeChecked();
 	});
 });

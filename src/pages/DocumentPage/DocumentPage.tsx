@@ -12,12 +12,12 @@ import useUserStatusQuery from '@hooks/queries/useUserStatusQuery';
 import { getUnitFormattedSize } from '@utils/getUnitFormattedSize';
 import * as S from './DocumentPage.styled';
 
-type PageDirection = 'prev' | 'next';
-
-const ITEMS_PER_PAGE = 5;
+const ITEMS_PER_PAGE = 10;
 const PAGE_GROUP_SIZE = 10;
 const DOWNLOAD_INTERVAL_MS = 300;
 const TOTAL_STORAGE_CAPACITY = 300 * 1024 * 1024 * 1024;
+
+type PageDirection = 'prev' | 'next';
 
 const DocumentPage = () => {
 	const { userStatus } = useUserStatusQuery();
@@ -140,7 +140,7 @@ const DocumentPage = () => {
 					</Flex>
 					<S.DocumentHeaderActions>
 						{selectedDocument.size > 0 && (
-							<Text size='sm' weight='medium' color='iPrimary'>
+							<Text size='sm' weight='medium' color='primary'>
 								{`${selectedDocument.size}개 선택됨`}
 							</Text>
 						)}
@@ -186,7 +186,7 @@ const DocumentPage = () => {
 					</Text>
 				</S.DocumentTitleWrapper>
 			</S.DocumentTitleContainer>
-			<Flex direction='column' gap='16' height='350'>
+			<S.DocumentListContainer>
 				{!isPending && attachments.length === 0 && (
 					<S.DocumentStateContainer>
 						<Icon name='Folder' color='tertiary' size='lg' />
@@ -209,9 +209,9 @@ const DocumentPage = () => {
 							selectedDocument={selectedDocument}
 						/>
 					))}
-			</Flex>
+			</S.DocumentListContainer>
 			{attachments.length > 0 && (
-				<Flex justify='center'>
+				<S.PaginationContainer>
 					<IconButton
 						icon='ChevronsLeft'
 						ariaLabel='ChevronsLeft'
@@ -236,7 +236,7 @@ const DocumentPage = () => {
 						)
 						.map((number) => (
 							<S.NumberButtonWrapper
-								active={selectedNumber === number}
+								$active={selectedNumber === number}
 								key={number}>
 								<Button
 									label={number.toString()}
@@ -260,7 +260,7 @@ const DocumentPage = () => {
 						onClick={() => handlePageGroupClick('next')}
 						disabled={selectedNumber === lastPageNumber}
 					/>
-				</Flex>
+				</S.PaginationContainer>
 			)}
 		</S.DocumentContainer>
 	);
