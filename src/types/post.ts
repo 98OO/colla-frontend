@@ -2,6 +2,11 @@ export type DateString = string & { readonly __brand: 'DateString' };
 
 export type TimeString = string & { readonly __brand: 'TimeString' };
 
+export interface Time {
+	hours: number;
+	minutes: number;
+}
+
 export interface TimeRange {
 	from: TimeString;
 	to: TimeString;
@@ -9,7 +14,8 @@ export interface TimeRange {
 
 export interface SchedulingPostFormData {
 	title: string;
-	dueAt: string;
+	dueAtDate: DateString;
+	dueAtTime: Time | null;
 	timeRange: TimeRange;
 	targetDates: Set<DateString>;
 }

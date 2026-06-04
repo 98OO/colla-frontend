@@ -1,9 +1,6 @@
-import type { DateString } from '@type/post';
+import type { DateString, Time } from '@type/post';
 
-export const formatDueAt = (
-	date: DateString,
-	time: { hours: number; minutes: number } | null
-): string => {
+export const formatDueAt = (date: DateString, time: Time | null): string => {
 	if (!time) return `${date} 23:59`;
 
 	const HH = String(time.hours).padStart(2, '0');

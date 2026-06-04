@@ -4,11 +4,12 @@ import Flex from '@components/common/Flex/Flex';
 import DueAtSection from '@components/Post/SchedulingPost/Section/DueAtSection';
 import TimeRangeSection from '@components/Post/SchedulingPost/Section/TimeRangeSection';
 import TitleSection from '@components/Post/SchedulingPost/Section/TitleSection';
-import type { SchedulingCondition, TimeRange } from '@type/post';
+import type { DateString, SchedulingCondition, Time, TimeRange } from '@type/post';
 
 interface SetConditionProps {
 	initialTitle: string;
-	initialDueAt: string;
+	initialDueAtDate: DateString;
+	initialDueAtTime: Time | null;
 	initialTimeRange: TimeRange;
 	onPrev: () => void;
 	onSave: (condition: SchedulingCondition) => void;
@@ -17,7 +18,8 @@ interface SetConditionProps {
 
 const SetConditionStep = ({
 	initialTitle,
-	initialDueAt,
+	initialDueAtDate,
+	initialDueAtTime,
 	initialTimeRange,
 	onPrev,
 	onSave,
@@ -27,7 +29,8 @@ const SetConditionStep = ({
 
 	const conditionRef = useRef<SchedulingCondition>({
 		title: initialTitle,
-		dueAt: initialDueAt,
+		dueAtDate: initialDueAtDate,
+		dueAtTime: initialDueAtTime,
 		timeRange: initialTimeRange,
 	});
 
@@ -61,7 +64,11 @@ const SetConditionStep = ({
 					initialTitle={initialTitle}
 					updateCondition={updateCondition}
 				/>
-				<DueAtSection initialDueAt={initialDueAt} updateCondition={updateCondition} />
+				<DueAtSection
+					initialDueAtDate={initialDueAtDate}
+					initialDueAtTime={initialDueAtTime}
+					updateCondition={updateCondition}
+				/>
 				<TimeRangeSection initialTimeRange={initialTimeRange} updateCondition={updateCondition} />
 			</Flex>
 			<Flex justify='flex-end' gap='12'>

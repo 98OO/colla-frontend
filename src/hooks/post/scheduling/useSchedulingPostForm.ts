@@ -1,10 +1,12 @@
 import { useState } from 'react';
+import { formatDate } from '@utils/calendar/formatDate';
 import { DEFAULT_TIME_RANGE } from '@constants/post';
 import type { SchedulingPostFormData, DateString, SchedulingCondition } from '@type/post';
 
 const createInitialSchedulingPostForm = (): SchedulingPostFormData => ({
 	title: '',
-	dueAt: '',
+	dueAtDate: formatDate(new Date()),
+	dueAtTime: null,
 	timeRange: DEFAULT_TIME_RANGE,
 	targetDates: new Set<DateString>(),
 });
