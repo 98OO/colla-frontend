@@ -19,8 +19,7 @@ export const TimeInput = styled.input<{ isError: boolean }>`
 	outline: none;
 
 	border: 1px solid
-		${({ isError }) =>
-			isError ? theme.color.border.danger : theme.color.border.tertiary};
+		${({ isError }) => (isError ? theme.color.border.danger : theme.color.border.tertiary)};
 `;
 
 export const TimeToggleWrapper = styled.div`
@@ -64,6 +63,11 @@ export const WeeksWrapper = styled.div`
 	display: grid;
 	grid-template-columns: repeat(7, 1fr);
 	grid-gap: ${theme.units.spacing.space6};
+`;
+
+export const EmptyCell = styled.div`
+	width: ${theme.units.spacing.space32};
+	height: ${theme.units.spacing.space32};
 `;
 
 export const Cell = styled.div`
