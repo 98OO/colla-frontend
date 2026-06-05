@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { useState } from 'react';
 import Flex from '@components/common/Flex/Flex';
 import IconButton from '@components/common/IconButton/IconButton';
@@ -15,31 +16,33 @@ import * as S from './DatePicker.styled';
 
 interface DatePickerProps {
 	selectedDate: DateString;
-	onDateChange: (date: DateString) => void;
 	time: Time | null;
+	isTimeIncluded: boolean;
+	onDateChange: (date: DateString) => void;
 	onTimeChange: (time: Time | null) => void;
+	onTimeInclusionChange: (included: boolean) => void;
 }
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-const DatePicker = ({ selectedDate, onDateChange, time, onTimeChange }: DatePickerProps) => {
+const DatePicker = ({
+	selectedDate,
+	time,
+	isTimeIncluded,
+	onDateChange,
+	onTimeChange,
+	onTimeInclusionChange,
+}: DatePickerProps) => {
 	const today = new Date();
-	const oneYearLimit = new Date(today.getFullYear() + 1, today.getMonth(), today.getDate());
-
 	const { current, dateCells, prevMonth, nextMonth } = useCalendar(today);
-	const { isOpen, open, close } = useOverlay();
 
+	const { isOpen, open, close } = useOverlay();
 	const ref = useOutsideClick({ onClickOutside: close });
 
+	const oneYearLimit = DateManager.getDateAfter(today, { years: 1 });
 	const isPrevDisabled = DateManager.isSameMonth(current, today);
 	const isNextDisabled = DateManager.isAfter(current, oneYearLimit);
 
-	const [toggleState, setToggleState] = useState(false);
 	const [timeInput, setTimeInput] = useState('오전 12:00');
 	const [timeError, setTimeError] = useState(false);
-
-	const handleToggle = () => {
-		setToggleState((prev) => !prev);
-	};
 
 	const handleTimeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 		const inputValue = e.target.value;
@@ -60,7 +63,7 @@ const DatePicker = ({ selectedDate, onDateChange, time, onTimeChange }: DatePick
 		<Flex justify='space-between'>
 			<S.DatePickerButton onClick={open}>{selectedDate}</S.DatePickerButton>
 			<S.CalendarContainer ref={ref} isOpen={isOpen}>
-				{toggleState && (
+				{isTimeIncluded && (
 					<S.TimeInput
 						type='text'
 						value={timeInput}
@@ -116,7 +119,7 @@ const DatePicker = ({ selectedDate, onDateChange, time, onTimeChange }: DatePick
 					<Text size='md' weight='regular' color='tertiary'>
 						시간 포함
 					</Text>
-					<Toggle state={toggleState} onToggle={handleToggle} />
+					<Toggle state={isTimeIncluded} onToggle={() => onTimeInclusionChange(!isTimeIncluded)} />
 				</S.TimeToggleWrapper>
 			</S.CalendarContainer>
 		</Flex>

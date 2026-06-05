@@ -20,6 +20,7 @@ const DueAtSection = ({
 }: DueAtSectionProps) => {
 	const [selectedDate, setSelectedDate] = useState<DateString>(initialDueAtDate);
 	const [time, setTime] = useState<Time | null>(initialDueAtTime);
+	const [isTimeIncluded, setIsTimeIncluded] = useState(initialDueAtTime !== null);
 
 	const handleDateChange = (newDate: DateString) => {
 		setSelectedDate(newDate);
@@ -29,6 +30,15 @@ const DueAtSection = ({
 	const handleTimeChange = (newTime: Time | null) => {
 		setTime(newTime);
 		updateCondition({ dueAtTime: newTime });
+	};
+
+	const handleTimeInclusionChange = (included: boolean) => {
+		setIsTimeIncluded(included);
+
+		if (!included) {
+			setTime(null);
+			updateCondition({ dueAtTime: null });
+		}
 	};
 
 	return (
@@ -45,9 +55,11 @@ const DueAtSection = ({
 			<S.DatePickerWrapper>
 				<DatePicker
 					selectedDate={selectedDate}
-					onDateChange={handleDateChange}
 					time={time}
+					isTimeIncluded={isTimeIncluded}
+					onDateChange={handleDateChange}
 					onTimeChange={handleTimeChange}
+					onTimeInclusionChange={handleTimeInclusionChange}
 				/>
 			</S.DatePickerWrapper>
 		</Flex>
