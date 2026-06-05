@@ -4,7 +4,7 @@ import type { DateString } from '@type/post';
 
 export const getDateCellState = (date: Date, selectedDates: Set<DateString>) => {
 	return {
-		isPast: DateManager.isPast(date),
+		isPast: DateManager.isPastDate(date),
 		isToday: DateManager.isToday(date),
 		isSelected: selectedDates.has(formatDate(date)),
 	};
