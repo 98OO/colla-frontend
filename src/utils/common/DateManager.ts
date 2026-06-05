@@ -13,6 +13,13 @@ export const DateManager = {
 		return new Date(year, month, 1).getDay();
 	},
 
+	getDateAfter(
+		date: Date,
+		{ years = 0, months = 0, days = 0 }: { years?: number; months?: number; days?: number }
+	): Date {
+		return new Date(date.getFullYear() + years, date.getMonth() + months, date.getDate() + days);
+	},
+
 	isSameMonth(targetDate: Date, baseDate: Date): boolean {
 		return (
 			targetDate.getFullYear() === baseDate.getFullYear() &&
