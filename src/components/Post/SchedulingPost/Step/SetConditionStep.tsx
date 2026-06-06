@@ -4,12 +4,12 @@ import Flex from '@components/common/Flex/Flex';
 import DueAtSection from '@components/Post/SchedulingPost/Section/DueAtSection';
 import TimeRangeSection from '@components/Post/SchedulingPost/Section/TimeRangeSection';
 import TitleSection from '@components/Post/SchedulingPost/Section/TitleSection';
-import type { DateString, SchedulingCondition, Time, TimeRange } from '@type/post';
+import type { DateString, SchedulingCondition, TimeString, TimeRange } from '@type/post';
 
 interface SetConditionProps {
 	initialTitle: string;
 	initialDueAtDate: DateString;
-	initialDueAtTime: Time | null;
+	initialDueAtTime: TimeString;
 	initialTimeRange: TimeRange;
 	onPrev: () => void;
 	onSave: (condition: SchedulingCondition) => void;

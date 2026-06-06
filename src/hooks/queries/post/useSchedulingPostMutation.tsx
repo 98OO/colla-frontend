@@ -3,7 +3,6 @@ import { useNavigate } from 'react-router-dom';
 import postSchedulingFeed from '@apis/post/postSchedulingFeed';
 import { useMutation } from '@hooks/queries/common/useMutation';
 import { useLastSeenTeamspaceId } from '@hooks/user/useLastSeenTeamspaceId';
-import { formatDueAt } from '@utils/post/scheduling/formatDueAt';
 import { calcTimeSegment } from '@utils/post/scheduling/timeOptionUtils';
 import useToastStore from '@stores/toastStore';
 import { HTTPError } from '@apis/HTTPError';
@@ -38,7 +37,7 @@ const useSchedulingPostMutation = () => {
 		const convertedFormData: SchedulingPostRequest = {
 			title: formData.title,
 			details: {
-				dueAt: formatDueAt(formData.dueAtDate, formData.dueAtTime),
+				dueAt: `${formData.dueAtDate} ${formData.dueAtTime}`,
 				minTimeSegment: calcTimeSegment(formData.timeRange.from),
 				maxTimeSegment: calcTimeSegment(formData.timeRange.to),
 				targetDates: Array.from(formData.targetDates).sort(),

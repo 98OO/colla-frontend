@@ -4,12 +4,12 @@ import Heading from '@components/common/Heading/Heading';
 import Icon from '@components/common/Icon/Icon';
 import Text from '@components/common/Text/Text';
 import DatePicker from '@components/Post/DatePicker/DatePicker';
-import type { DateString, SchedulingCondition, Time } from '@type/post';
+import type { DateString, SchedulingCondition, TimeString } from '@type/post';
 import * as S from '../SchedulingPost.styled';
 
 interface DueAtSectionProps {
 	initialDueAtDate: DateString;
-	initialDueAtTime: Time | null;
+	initialDueAtTime: TimeString;
 	updateCondition: (patch: Partial<SchedulingCondition>) => void;
 }
 
@@ -19,26 +19,16 @@ const DueAtSection = ({
 	updateCondition,
 }: DueAtSectionProps) => {
 	const [selectedDate, setSelectedDate] = useState<DateString>(initialDueAtDate);
-	const [time, setTime] = useState<Time | null>(initialDueAtTime);
-	const [isTimeIncluded, setIsTimeIncluded] = useState(initialDueAtTime !== null);
+	const [time, setTime] = useState<TimeString>(initialDueAtTime);
 
 	const handleDateChange = (newDate: DateString) => {
 		setSelectedDate(newDate);
 		updateCondition({ dueAtDate: newDate });
 	};
 
-	const handleTimeChange = (newTime: Time | null) => {
+	const handleTimeChange = (newTime: TimeString) => {
 		setTime(newTime);
 		updateCondition({ dueAtTime: newTime });
-	};
-
-	const handleTimeInclusionChange = (included: boolean) => {
-		setIsTimeIncluded(included);
-
-		if (!included) {
-			setTime(null);
-			updateCondition({ dueAtTime: null });
-		}
 	};
 
 	return (
@@ -56,10 +46,8 @@ const DueAtSection = ({
 				<DatePicker
 					selectedDate={selectedDate}
 					time={time}
-					isTimeIncluded={isTimeIncluded}
 					onDateChange={handleDateChange}
 					onTimeChange={handleTimeChange}
-					onTimeInclusionChange={handleTimeInclusionChange}
 				/>
 			</S.DatePickerWrapper>
 		</Flex>
