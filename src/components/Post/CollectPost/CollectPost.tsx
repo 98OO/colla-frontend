@@ -31,7 +31,7 @@ const CollectPost = () => {
 	const [title, setTitle] = useState('');
 	const [time, setTime] = useState<TimeString>(DEFAULT_DUE_TIME);
 	const [selectedDate, setSelectedDate] = useState<DateString>(
-		formatDate(DateManager.getDateAfter(new Date(), { days: 3 }))
+		formatDate(DateManager.getDateAfter(new Date(), { days: 1 }))
 	);
 
 	const handleTitleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
