@@ -30,7 +30,30 @@ const DatePicker = ({ selectedDate, time, onDateChange, onTimeChange }: DatePick
 	const isPrevDisabled = DateManager.isSameMonth(current, today);
 	const isNextDisabled = DateManager.isAfterDate(current, oneYearLimit);
 
-	const timeOptions = DEFAULT_TIME_OPTIONS.filter((option) => !isPastTime(selectedDate, option));
+	const getAvailableTimeOptions = (date: DateString) => {
+		return DEFAULT_TIME_OPTIONS.filter((option) => !isPastTime(date, option));
+	};
+
+	const handleDateSelect = (date: DateString) => {
+		onDateChange(date);
+
+		const nextTimeOptions = getAvailableTimeOptions(date);
+
+		// 날짜를 변경했을 때 기존에 고른 시간이 유효하지 않을 경우 첫 유효 옵션으로 보정
+		if (!nextTimeOptions.includes(time)) {
+			onTimeChange(nextTimeOptions[0]);
+		}
+	};
+
+	const isDateDisabled = (date: Date) => {
+		return (
+			DateManager.isPastDate(date) ||
+			DateManager.isAfterDate(date, oneYearLimit) ||
+			(DateManager.isToday(date) && getAvailableTimeOptions(formatDate(date)).length === 0)
+		);
+	};
+
+	const timeOptions = getAvailableTimeOptions(selectedDate);
 
 	return (
 		<Flex gap='12' align='flex-start'>
@@ -67,15 +90,14 @@ const DatePicker = ({ selectedDate, time, onDateChange, onTimeChange }: DatePick
 
 								const dateString = formatDate(date);
 								const isSelected = selectedDate === dateString;
-								const isDisabled =
-									DateManager.isPastDate(date) || DateManager.isAfterDate(date, oneYearLimit);
+								const isDisabled = isDateDisabled(date);
 
 								return (
 									<S.DateCell
 										key={dateString}
 										isDisabled={isDisabled}
 										isSelected={isSelected}
-										onClick={() => onDateChange(dateString)}>
+										onClick={() => handleDateSelect(dateString)}>
 										{date.getDate()}
 									</S.DateCell>
 								);
