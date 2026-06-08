@@ -48,7 +48,7 @@ export const Month = styled.div`
 	font-weight: ${theme.typography.fontWeight.medium};
 `;
 
-export const WeeksWrapper = styled.div`
+export const CalendarGrid = styled.div`
 	display: grid;
 	grid-template-columns: repeat(7, 1fr);
 	grid-gap: ${theme.units.spacing.space6};
@@ -67,6 +67,7 @@ export const Cell = styled.div`
 	width: ${theme.units.spacing.space32};
 	height: ${theme.units.spacing.space32};
 	font-size: ${theme.typography.fontSize.body.md};
+	user-select: none;
 `;
 
 export const DateCell = styled(Cell)<{

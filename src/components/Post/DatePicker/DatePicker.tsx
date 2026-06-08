@@ -78,7 +78,7 @@ const DatePicker = ({ selectedDate, time, onDateChange, onTimeChange }: DatePick
 								disabled={isNextDisabled}
 							/>
 						</S.CalendarHeader>
-						<S.WeeksWrapper>
+						<S.CalendarGrid>
 							{WEEKDAYS.map((day) => (
 								<S.Cell key={day}>{day}</S.Cell>
 							))}
@@ -102,7 +102,7 @@ const DatePicker = ({ selectedDate, time, onDateChange, onTimeChange }: DatePick
 									</S.DateCell>
 								);
 							})}
-						</S.WeeksWrapper>
+						</S.CalendarGrid>
 					</S.CalendarContainer>
 				</S.DateField>
 			</Flex>
