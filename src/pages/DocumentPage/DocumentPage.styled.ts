@@ -23,6 +23,10 @@ export const DocumentHeaderActions = styled.div`
 	gap: ${theme.units.spacing.space12};
 `;
 
+export const SelectWrapper = styled.div`
+	width: 120px;
+`;
+
 export const DocumentTitleContainer = styled.div`
 	display: flex;
 	background-color: ${theme.color.bg.secondary};

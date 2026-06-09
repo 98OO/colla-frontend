@@ -105,6 +105,29 @@ describe('DocumentPage', () => {
 		);
 	});
 
+	test('정렬 옵션을 오래된순으로 변경하면 오래된 자료부터 보여줘야 한다', async () => {
+		const user = userEvent.setup();
+		mockDocumentQuery([
+			createAttachment(1, 'old-file.pdf', '2026-05-01T00:00:00'),
+			createAttachment(2, 'new-file.pdf', '2026-05-02T00:00:00'),
+		]);
+
+		const { container } = render(
+			<ThemeProvider theme={theme}>
+				<DocumentPage />
+			</ThemeProvider>
+		);
+
+		await user.click(screen.getByRole('button', { name: '최신순' }));
+		await user.click(screen.getByText('오래된순'));
+
+		const pageText = container.textContent ?? '';
+
+		expect(pageText.indexOf('old-file.pdf')).toBeLessThan(
+			pageText.indexOf('new-file.pdf')
+		);
+	});
+
 	test('파일을 선택하면 선택 개수를 보여주고 다운로드 버튼을 활성화해야 한다', async () => {
 		const user = userEvent.setup();
 		mockDocumentQuery([

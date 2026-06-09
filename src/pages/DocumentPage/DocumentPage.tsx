@@ -1,10 +1,11 @@
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { Button } from '@components/common/Button/Button';
 import Divider from '@components/common/Divider/Divider';
 import Flex from '@components/common/Flex/Flex';
 import Heading from '@components/common/Heading/Heading';
 import Icon from '@components/common/Icon/Icon';
 import IconButton from '@components/common/IconButton/IconButton';
+import Select from '@components/common/Select/Select';
 import Text from '@components/common/Text/Text';
 import DocumentItem from '@components/Document/DocumentItem/DocumentItem';
 import useDocumentDownload from '@hooks/document/useDocumentDownload';
@@ -12,7 +13,10 @@ import useDocumentPagination from '@hooks/document/useDocumentPagination';
 import useDocumentSelection from '@hooks/document/useDocumentSelection';
 import useDocumentQuery from '@hooks/queries/document/useDocumentQuery';
 import useUserStatusQuery from '@hooks/queries/useUserStatusQuery';
-import { getLatestDocuments } from '@utils/document/documentSort';
+import {
+	type DocumentSortOrder,
+	getDocumentsBySortOrder,
+} from '@utils/document/getDocumentsBySortOrder';
 import { getUnitFormattedSize } from '@utils/getUnitFormattedSize';
 import * as S from './DocumentPage.styled';
 
@@ -20,15 +24,24 @@ const ITEMS_PER_PAGE = 10;
 const PAGE_GROUP_SIZE = 10;
 const DOWNLOAD_INTERVAL_MS = 300;
 const TOTAL_STORAGE_CAPACITY = 300 * 1024 * 1024 * 1024;
+const DOCUMENT_SORT_ORDER_MAP: Record<string, DocumentSortOrder> = {
+	최신순: 'latest',
+	오래된순: 'oldest',
+};
 
 const DocumentPage = () => {
+	const [selectedSortOption, setSelectedSortOption] = useState('최신순');
 	const { userStatus } = useUserStatusQuery();
 	const { teamDocument, isPending } = useDocumentQuery(
 		userStatus?.profile.lastSeenTeamspaceId
 	);
 	const attachments = useMemo(
-		() => getLatestDocuments(teamDocument?.attachments ?? []),
-		[teamDocument]
+		() =>
+			getDocumentsBySortOrder(
+				teamDocument?.attachments ?? [],
+				DOCUMENT_SORT_ORDER_MAP[selectedSortOption]
+			),
+		[teamDocument, selectedSortOption]
 	);
 	const usedStorageCapacity = teamDocument?.totalStorageCapacity ?? 0;
 	const {
@@ -56,6 +69,13 @@ const DocumentPage = () => {
 		downloadIntervalMs: DOWNLOAD_INTERVAL_MS,
 		onAfterDownload: clearSelectedDocument,
 	});
+
+	const handleSortSelect = (index: number) => {
+		setSelectedSortOption(
+			Object.keys(DOCUMENT_SORT_ORDER_MAP)[index - 1] ??
+				Object.keys(DOCUMENT_SORT_ORDER_MAP)[0]
+		);
+	};
 
 	return (
 		<S.DocumentContainer>
@@ -85,6 +105,14 @@ const DocumentPage = () => {
 							leadingIcon='Download'
 							onClick={handleDownloadClick}
 						/>
+						<S.SelectWrapper>
+							<Select
+								size='sm'
+								options={Object.keys(DOCUMENT_SORT_ORDER_MAP)}
+								select={selectedSortOption}
+								setSelect={handleSortSelect}
+							/>
+						</S.SelectWrapper>
 					</S.DocumentHeaderActions>
 				</S.DocumentHeader>
 				<Divider size='sm' />
