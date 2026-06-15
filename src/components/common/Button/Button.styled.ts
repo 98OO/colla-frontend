@@ -98,6 +98,7 @@ export const ButtonWrapper = styled.button.withConfig({
 	padding: ${(props) =>
 		`${props.theme.units.spacing.space8} ${btnPaddingSizeMap[props.size]}`};
 	gap: ${(props) => props.theme.units.spacing.space4};
+	cursor: ${({ disabled }) => (disabled ? 'default' : 'pointer')};
 
 	svg {
 		width: ${(props) => btnIconSizeMap[props.size]};
@@ -117,8 +118,4 @@ export const ButtonWrapper = styled.button.withConfig({
 			${variantStyle[variant]}
 		`;
 	}};
-
-	&:hover {
-		cursor: pointer;
-	}
 `;

@@ -6,9 +6,25 @@ export const DocumentContainer = styled.div`
 	flex-direction: column;
 	width: 920px;
 	height: 100%;
-	padding: ${theme.units.spacing.space20} ${theme.units.spacing.space10};
-	overflow-x: none;
+	overflow-x: hidden;
 	gap: ${theme.units.spacing.space16};
+`;
+
+export const DocumentHeader = styled.div`
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	padding: 24px 12px 16px 12px;
+`;
+
+export const DocumentHeaderActions = styled.div`
+	display: flex;
+	align-items: center;
+	gap: ${theme.units.spacing.space12};
+`;
+
+export const SelectWrapper = styled.div`
+	width: 120px;
 `;
 
 export const DocumentTitleContainer = styled.div`
@@ -24,10 +40,73 @@ export const DocumentTitleWrapper = styled.div<{ width: string }>`
 	width: ${(props) => props.width || 'auto'};
 `;
 
-export const NumberButtonWrapper = styled.div<{ active: boolean }>`
+export const DocumentTitleName = styled.div`
+	display: flex;
+	align-items: center;
+	width: 100%;
+	gap: ${theme.units.spacing.space16};
+	padding: 0 ${theme.units.spacing.space6};
+`;
+
+export const DocumentCheckbox = styled.input.attrs({ type: 'checkbox' })`
+	width: 18px;
+	height: 18px;
+	cursor: pointer;
+	appearance: none;
+	border: 1.5px solid ${theme.color.border.iSecondary};
+	border-radius: ${theme.units.radius.radius2};
+
+	&:disabled {
+		cursor: default;
+		border-color: ${theme.color.border.disabled};
+		background-color: ${theme.color.bg.disabled};
+	}
+
+	&:checked {
+		background-color: ${theme.color.bg.iPrimary};
+		border-color: ${theme.color.border.iPrimary};
+	}
+
+	&:checked::after {
+		content: '✓';
+		font-size: ${theme.typography.fontSize.body.md};
+		color: white;
+		display: flex;
+		justify-content: center;
+		align-items: center;
+	}
+`;
+
+export const DocumentStateContainer = styled.div`
+	display: flex;
+	grid-row: 1 / -1;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+	height: 100%;
+	gap: ${theme.units.spacing.space16};
+`;
+
+export const DocumentListContainer = styled.div`
+	display: grid;
+	flex: 1;
+	grid-template-rows: repeat(10, minmax(36px, 1fr));
+	min-height: 396px;
+	gap: ${theme.units.spacing.space4};
+`;
+
+export const PaginationContainer = styled.div`
+	display: flex;
+	justify-content: center;
+	padding-bottom: ${theme.units.spacing.space24};
+`;
+
+export const NumberButtonWrapper = styled.div<{ $active: boolean }>`
 	button {
-		color: ${({ active }) =>
-			active ? `${theme.color.text.iPrimary}` : `${theme.color.text.tertiary}`};
+		color: ${({ $active }) =>
+			$active
+				? `${theme.color.text.iPrimary}`
+				: `${theme.color.text.tertiary}`};
 
 		&:hover {
 			color: ${theme.color.text.iPrimary};

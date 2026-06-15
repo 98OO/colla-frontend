@@ -3,16 +3,16 @@ import { useQuery } from '@tanstack/react-query';
 import { storageResponse } from '@type/document';
 
 const useDocumentQuery = (teamspaceId?: number) => {
-	const { data: teamDocument } = useQuery<storageResponse>({
+	const { data: teamDocument, isPending } = useQuery<storageResponse>({
 		queryKey: ['teamDocument', teamspaceId],
 		queryFn: () => getDocument(teamspaceId!),
 
-		gcTime: 60 * 60 * 60 * 1000,
-		staleTime: 60 * 60 * 60 * 1000,
 		enabled: !!teamspaceId,
+		refetchOnMount: 'always',
+		refetchOnWindowFocus: false,
 	});
 
-	return { teamDocument };
+	return { teamDocument, isPending };
 };
 
 export default useDocumentQuery;
