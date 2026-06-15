@@ -1,7 +1,9 @@
 import { makeDefaultTimeOptions } from '@utils/post/scheduling/makeDefaultTimeOptions';
 import type { TimeRange } from '@type/post';
 
-export const DEFAULT_TIME_OPTIONS = makeDefaultTimeOptions();
+export const INTERVAL_MINUTES = 30;
+
+export const DEFAULT_TIME_OPTIONS = makeDefaultTimeOptions(INTERVAL_MINUTES);
 
 export const DEFAULT_TIME_RANGE: TimeRange = {
 	from: DEFAULT_TIME_OPTIONS[18],

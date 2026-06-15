@@ -1,15 +1,16 @@
-import { TimeString } from '@type/post';
+import { formatTime } from '@utils/post/scheduling/formatTime';
+import type { TimeString } from '@type/post';
 
-const toTimeString = (time: string): TimeString => time as unknown as TimeString;
+const MINUTES_IN_DAY = 24 * 60;
 
-export const makeDefaultTimeOptions = () => {
+export const makeDefaultTimeOptions = (intervalMinutes: number) => {
 	const timeOptions: TimeString[] = [];
 
-	for (let h = 0; h < 24; h += 1) {
-		const HH = String(h).padStart(2, '0');
+	for (let minutes = 0; minutes < MINUTES_IN_DAY; minutes += intervalMinutes) {
+		const hour = Math.floor(minutes / 60);
+		const minute = minutes % 60;
 
-		timeOptions.push(toTimeString(`${HH}:00`));
-		timeOptions.push(toTimeString(`${HH}:30`));
+		timeOptions.push(formatTime(hour, minute));
 	}
 
 	return timeOptions;
