@@ -8,10 +8,9 @@ import Text from '@components/common/Text/Text';
 import DatePicker from '@components/Post/DatePicker/DatePicker';
 import Editor from '@components/Post/Editor/Editor';
 import usePostEditor from '@hooks/post/usePostEditor';
-import { formatDate } from '@utils/calendar/formatDate';
-import { DateManager } from '@utils/common/DateManager';
+import getDefaultDueAt from '@utils/post/scheduling/getDefaultDueAt';
 import { PATH } from '@constants/path';
-import { DEFAULT_DUE_TIME, USER_CONFIRM_MESSAGE } from '@constants/post';
+import { USER_CONFIRM_MESSAGE } from '@constants/post';
 import type { DateString, TimeString } from '@type/post';
 import * as S from './CollectPost.styled';
 
@@ -28,11 +27,11 @@ const CollectPost = () => {
 		handleSubmit: submitCollectFeedForm,
 	} = usePostEditor();
 
+	const { dueAtDate, dueAtTime } = getDefaultDueAt();
+
 	const [title, setTitle] = useState('');
-	const [time, setTime] = useState<TimeString>(DEFAULT_DUE_TIME);
-	const [selectedDate, setSelectedDate] = useState<DateString>(
-		formatDate(DateManager.getDateAfter(new Date(), { days: 1 }))
-	);
+	const [time, setTime] = useState<TimeString>(dueAtTime);
+	const [selectedDate, setSelectedDate] = useState<DateString>(dueAtDate);
 
 	const handleTitleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
 		setTitle(event.target.value);
