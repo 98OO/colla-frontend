@@ -32,7 +32,10 @@ const useSchedulingPostMutation = () => {
 	});
 
 	const mutateSchedulingPost = async (formData: SchedulingPostFormData) => {
-		if (!teamspaceId) return;
+		if (teamspaceId === undefined) {
+			makeToast('팀스페이스 정보를 찾을 수 없어요. 다시 시도해 주세요', 'Warning');
+			return;
+		}
 
 		const convertedFormData: SchedulingPostRequest = {
 			title: formData.title,
