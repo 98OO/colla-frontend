@@ -53,7 +53,7 @@ const Calendar = ({ selectedDates, setSelectedDates }: CalendarProps) => {
 								key={date.toISOString()}
 								date={date.getDate()}
 								dateString={dateString}
-								isPast={DateManager.isPast(date)}
+								isPast={DateManager.isPastDate(date)}
 								isToday={DateManager.isToday(date)}
 								isSelected={selectedDates.has(dateString)}
 								onPointerDown={handlePointerDown}

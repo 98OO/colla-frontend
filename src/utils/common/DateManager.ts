@@ -13,6 +13,13 @@ export const DateManager = {
 		return new Date(year, month, 1).getDay();
 	},
 
+	getDateAfter(
+		date: Date,
+		{ years = 0, months = 0, days = 0 }: { years?: number; months?: number; days?: number }
+	): Date {
+		return new Date(date.getFullYear() + years, date.getMonth() + months, date.getDate() + days);
+	},
+
 	isSameMonth(targetDate: Date, baseDate: Date): boolean {
 		return (
 			targetDate.getFullYear() === baseDate.getFullYear() &&
@@ -20,14 +27,14 @@ export const DateManager = {
 		);
 	},
 
-	isPast(targetDate: Date): boolean {
-		const today = new Date();
-		today.setHours(0, 0, 0, 0);
+	isPastDate(targetDate: Date, today = new Date()): boolean {
+		const base = new Date(today);
+		base.setHours(0, 0, 0, 0);
 
 		const target = new Date(targetDate);
 		target.setHours(0, 0, 0, 0);
 
-		return target.getTime() < today.getTime();
+		return target.getTime() < base.getTime();
 	},
 
 	isSameDate(targetDate: Date, baseDate: Date): boolean {
@@ -38,7 +45,17 @@ export const DateManager = {
 		);
 	},
 
-	isToday(targetDate: Date): boolean {
-		return DateManager.isSameDate(targetDate, new Date());
+	isToday(targetDate: Date, today = new Date()): boolean {
+		return DateManager.isSameDate(targetDate, today);
+	},
+
+	isAfterDate(targetDate: Date, baseDate: Date): boolean {
+		const target = new Date(targetDate);
+		target.setHours(0, 0, 0, 0);
+
+		const base = new Date(baseDate);
+		base.setHours(0, 0, 0, 0);
+
+		return target.getTime() > base.getTime();
 	},
 };

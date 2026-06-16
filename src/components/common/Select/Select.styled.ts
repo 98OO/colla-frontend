@@ -28,8 +28,7 @@ export const ButtonWrapper = styled.button<{ disabled?: boolean }>`
 	border-radius: ${theme.units.radius.radius4};
 	padding: ${theme.units.spacing.space8};
 	cursor: pointer;
-	color: ${({ disabled }) =>
-		disabled ? theme.color.text.disabled : theme.color.text.primary};
+	color: ${({ disabled }) => (disabled ? theme.color.text.disabled : theme.color.text.primary)};
 
 	&:disabled {
 		cursor: default;
@@ -43,7 +42,7 @@ export const SelectOptionContainer = styled.ul`
 	flex-direction: column;
 	position: absolute;
 	top: 110%;
-	max-height: 400px;
+	max-height: 172px;
 	overflow-y: scroll;
 	z-index: ${theme.elevation.zIndex.MENU};
 	gap: ${theme.units.spacing.space4};
