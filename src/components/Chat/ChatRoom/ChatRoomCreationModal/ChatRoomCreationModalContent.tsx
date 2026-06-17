@@ -5,7 +5,7 @@ import Heading from '@components/common/Heading/Heading';
 import Input from '@components/common/Input/Input';
 import Text from '@components/common/Text/Text';
 import useCreateChatChannelMutation from '@hooks/queries/chat/useCreateChatChannelMutation';
-import useUserStatusQuery from '@hooks/queries/useUserStatusQuery';
+import { useLastSeenTeamspaceId } from '@hooks/user/useLastSeenTeamspaceId';
 import * as S from './ChatRoomCreationModalContent.styled';
 
 interface ChatRoomCreationModalContentProps {
@@ -23,7 +23,7 @@ const ChatRoomCreationModalContent = ({
 }: ChatRoomCreationModalContentProps) => {
 	const [teamspaceName, setTeamspaceName] = useState('');
 	const [nameError, setNameError] = useState('');
-	const { userStatus } = useUserStatusQuery();
+	const lastSeenTeamspaceId = useLastSeenTeamspaceId();
 	const { mutateCreateChatChannel } = useCreateChatChannelMutation();
 
 	const handleNameChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -51,7 +51,9 @@ const ChatRoomCreationModalContent = ({
 
 	const handlCreateClick = () => {
 		if (!checkTeamSpaceName()) return;
-		mutateCreateChatChannel(userStatus!.profile.lastSeenTeamspaceId, teamspaceName.trim());
+		if (!lastSeenTeamspaceId) return;
+
+		mutateCreateChatChannel(lastSeenTeamspaceId, teamspaceName.trim());
 
 		setIsChatRoomModalOpen(false);
 	};
