@@ -36,9 +36,11 @@ const ChatRoomCreationModalContent = ({
 	};
 
 	const checkTeamSpaceName = () => {
-		if (teamspaceName.length === 0) setNameError(CHAT_ROOM_CREATION_NAME_RULES.EMPTY);
-		else if (teamspaceName.length < 2) setNameError(CHAT_ROOM_CREATION_NAME_RULES.TOO_SHORT);
-		else if (teamspaceName.length > 15) setNameError(CHAT_ROOM_CREATION_NAME_RULES.TOO_LONG);
+		const trimmedTeamspaceName = teamspaceName.trim();
+
+		if (trimmedTeamspaceName.length === 0) setNameError(CHAT_ROOM_CREATION_NAME_RULES.EMPTY);
+		else if (trimmedTeamspaceName.length < 2) setNameError(CHAT_ROOM_CREATION_NAME_RULES.TOO_SHORT);
+		else if (trimmedTeamspaceName.length > 15) setNameError(CHAT_ROOM_CREATION_NAME_RULES.TOO_LONG);
 		else {
 			setNameError('');
 			return true;
@@ -49,7 +51,7 @@ const ChatRoomCreationModalContent = ({
 
 	const handlCreateClick = () => {
 		if (!checkTeamSpaceName()) return;
-		mutateCreateChatChannel(userStatus!.profile.lastSeenTeamspaceId, teamspaceName);
+		mutateCreateChatChannel(userStatus!.profile.lastSeenTeamspaceId, teamspaceName.trim());
 
 		setIsChatRoomModalOpen(false);
 	};

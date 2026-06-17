@@ -102,8 +102,10 @@ const SettingPage = () => {
 	};
 
 	const checkTeamName = () => {
-		if (teamInfo.name.length === 0) setError('팀스페이스 이름은 공백일 수 없습니다.');
-		else if (teamInfo.name.length < 2) setError('팀스페이스 이름은 2글자 이상입니다.');
+		const trimmedTeamName = teamInfo.name.trim();
+
+		if (trimmedTeamName.length === 0) setError('팀스페이스 이름은 공백일 수 없습니다.');
+		else if (trimmedTeamName.length < 2) setError('팀스페이스 이름은 2글자 이상입니다.');
 		else {
 			setError('');
 			return true;
@@ -113,10 +115,12 @@ const SettingPage = () => {
 
 	const checkTeamSetting = () => {
 		const settingResult: TeamSettingResult = {};
+		const trimmedTeamName = teamInfo.name.trim();
+
 		if (teamInfo.profileImageUrl !== teamSetting?.profileImageUrl)
 			settingResult.profileImageUrl = teamInfo.profileImageUrl!;
 
-		if (teamInfo.name !== teamSetting?.name) settingResult.name = teamInfo.name;
+		if (trimmedTeamName !== teamSetting?.name) settingResult.name = trimmedTeamName;
 
 		teamInfo.users.forEach((teamUser, index) => {
 			if (teamSetting?.users[index]?.tag === null) {
