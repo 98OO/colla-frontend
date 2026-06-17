@@ -246,7 +246,7 @@ const SettingPage = () => {
 									</Text>
 								</Flex>
 								<Button
-									label='역할 추가히기'
+									label='역할 추가하기'
 									variant='secondary'
 									size='sm'
 									leadingIcon='Plus'
