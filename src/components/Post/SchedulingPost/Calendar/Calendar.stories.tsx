@@ -34,13 +34,6 @@ const CalendarStateWrapper = ({ initialDates = [] }: { initialDates?: string[] }
 	return <Calendar selectedDates={selectedDates} setSelectedDates={setSelectedDates} />;
 };
 
-const getFutureDate = (daysFromNow: number) => {
-	const date = new Date();
-	date.setDate(date.getDate() + daysFromNow);
-
-	return date;
-};
-
 // --- Visual states ---
 
 export const Default: Story = {
@@ -63,7 +56,9 @@ export const ClickSelect: Story = {
 	render: () => <CalendarStateWrapper />,
 	play: async ({ canvasElement }) => {
 		const canvas = within(canvasElement);
-		const cell = canvas.getByText(getFutureDate(1).getDate().toString());
+
+		await userEvent.click(canvas.getByLabelText('nextMonth'));
+		const cell = canvas.getByText('1');
 
 		await userEvent.click(cell);
 		await expect(cell).toHaveAttribute('aria-selected', 'true');
@@ -77,17 +72,19 @@ export const DragSelect: Story = {
 	render: () => <CalendarStateWrapper />,
 	play: async ({ canvasElement }) => {
 		const canvas = within(canvasElement);
-		const cell1 = canvas.getByText(getFutureDate(1).getDate().toString());
-		const cell2 = canvas.getByText(getFutureDate(2).getDate().toString());
-		const cell3 = canvas.getByText(getFutureDate(3).getDate().toString());
 
-		fireEvent.pointerDown(cell1);
-		fireEvent.pointerOver(cell2);
-		fireEvent.pointerOver(cell3);
-		fireEvent.pointerUp(cell3);
+		await userEvent.click(canvas.getByLabelText('nextMonth'));
+		const startCell = canvas.getByText('1');
+		const midCell = canvas.getByText('2');
+		const endCell = canvas.getByText('3');
 
-		await expect(cell1).toHaveAttribute('aria-selected', 'true');
-		await expect(cell2).toHaveAttribute('aria-selected', 'true');
-		await expect(cell3).toHaveAttribute('aria-selected', 'true');
+		fireEvent.pointerDown(startCell);
+		fireEvent.pointerOver(midCell);
+		fireEvent.pointerOver(endCell);
+		fireEvent.pointerUp(endCell);
+
+		await expect(startCell).toHaveAttribute('aria-selected', 'true');
+		await expect(midCell).toHaveAttribute('aria-selected', 'true');
+		await expect(endCell).toHaveAttribute('aria-selected', 'true');
 	},
 };
