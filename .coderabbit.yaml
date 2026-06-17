@@ -42,7 +42,7 @@ knowledge_base:
   code_guidelines:
     enabled: true
     filePatterns:
-      - docs/FRONTEND_CONVENTION.md
+      - src/docs/FRONTEND_CONVENTION.md
   learnings:
     scope: local
   issues:
