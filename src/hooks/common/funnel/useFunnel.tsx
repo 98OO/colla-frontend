@@ -34,7 +34,8 @@ const useFunnel = <T extends string>(steps: readonly [T, ...T[]]) => {
 		setStep((curStep) => {
 			const curIndex = stepIndexMap.get(curStep);
 
-			if (curIndex === undefined || curIndex <= 0) return curStep;
+			if (curIndex === undefined) return steps[0];
+			if (curIndex <= 0) return curStep;
 
 			return steps[curIndex - 1];
 		});
@@ -44,7 +45,8 @@ const useFunnel = <T extends string>(steps: readonly [T, ...T[]]) => {
 		setStep((curStep) => {
 			const curIndex = stepIndexMap.get(curStep);
 
-			if (curIndex === undefined || curIndex >= steps.length - 1) return curStep;
+			if (curIndex === undefined) return steps[0];
+			if (curIndex >= steps.length - 1) return curStep;
 
 			return steps[curIndex + 1];
 		});
