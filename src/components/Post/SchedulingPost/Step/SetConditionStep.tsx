@@ -4,6 +4,8 @@ import Flex from '@components/common/Flex/Flex';
 import DueAtSection from '@components/Post/SchedulingPost/Section/DueAtSection';
 import TimeRangeSection from '@components/Post/SchedulingPost/Section/TimeRangeSection';
 import TitleSection from '@components/Post/SchedulingPost/Section/TitleSection';
+import isPastTime from '@utils/post/scheduling/isPastTime';
+import useToastStore from '@stores/toastStore';
 import type { DateString, SchedulingCondition, TimeString, TimeRange } from '@type/post';
 
 interface SetConditionProps {
@@ -26,6 +28,7 @@ const SetConditionStep = ({
 	onSubmit,
 }: SetConditionProps) => {
 	const [isSubmitAttempted, setIsSubmitAttempted] = useState(false);
+	const { makeToast } = useToastStore();
 
 	const conditionRef = useRef<SchedulingCondition>({
 		title: initialTitle,
@@ -49,6 +52,13 @@ const SetConditionStep = ({
 	const handleSubmit = () => {
 		if (!conditionRef.current.title.trim()) {
 			setIsSubmitAttempted(true);
+			return;
+		}
+
+		const { dueAtDate, dueAtTime } = conditionRef.current;
+
+		if (isPastTime(dueAtDate, dueAtTime)) {
+			makeToast('마감 일시가 이미 지났어요. 날짜를 다시 선택해 주세요', 'Warning');
 			return;
 		}
 

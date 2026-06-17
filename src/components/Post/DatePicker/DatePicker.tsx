@@ -39,7 +39,6 @@ const DatePicker = ({ selectedDate, time, onDateChange, onTimeChange }: DatePick
 
 		const nextTimeOptions = getAvailableTimeOptions(date);
 
-		// 날짜를 변경했을 때 기존에 고른 시간이 유효하지 않을 경우 첫 유효 옵션으로 보정
 		if (!nextTimeOptions.includes(time)) {
 			onTimeChange(nextTimeOptions[0]);
 		}
@@ -111,6 +110,7 @@ const DatePicker = ({ selectedDate, time, onDateChange, onTimeChange }: DatePick
 					size='sm'
 					options={timeOptions}
 					select={time}
+					disabled={timeOptions.length === 0}
 					setSelect={(idx) => onTimeChange(timeOptions[idx - 1])}
 				/>
 			</Flex>
