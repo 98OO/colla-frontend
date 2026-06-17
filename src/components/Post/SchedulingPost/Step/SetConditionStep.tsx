@@ -6,6 +6,7 @@ import TimeRangeSection from '@components/Post/SchedulingPost/Section/TimeRangeS
 import TitleSection from '@components/Post/SchedulingPost/Section/TitleSection';
 import isPastTime from '@utils/post/scheduling/isPastTime';
 import useToastStore from '@stores/toastStore';
+import { DUE_AT_PAST_MESSAGE } from '@constants/post';
 import type { DateString, SchedulingCondition, TimeString, TimeRange } from '@type/post';
 
 interface SetConditionProps {
@@ -58,7 +59,7 @@ const SetConditionStep = ({
 		const { dueAtDate, dueAtTime } = conditionRef.current;
 
 		if (isPastTime(dueAtDate, dueAtTime)) {
-			makeToast('마감 일시가 이미 지났어요. 날짜를 다시 선택해 주세요', 'Warning');
+			makeToast(DUE_AT_PAST_MESSAGE, 'Warning');
 			return;
 		}
 
