@@ -13,7 +13,7 @@ import useFileUpload from '@hooks/common/useFileUpload';
 import useDeleteTeamProfileMutation from '@hooks/queries/setting/useDeleteTeamProfileMutation';
 import useSettingMutation from '@hooks/queries/setting/useSettingMutation';
 import useTeamSettingQuery from '@hooks/queries/setting/useTeamSettingQuery';
-import useUserStatusQuery from '@hooks/queries/useUserStatusQuery';
+import { useLastSeenTeamspaceId } from '@hooks/user/useLastSeenTeamspaceId';
 import { TeamState, TeamSettingResult } from '@type/team';
 import useToastStore from '@stores/toastStore';
 import * as S from './SettingPage.styled';
@@ -28,8 +28,8 @@ const SettingPage = () => {
 	const [isRoleAddModalOpen, setIsRoleAddModalOpen] = useState(false);
 	const inputRef = useRef<HTMLInputElement | null>(null);
 	const { makeToast } = useToastStore();
-	const { userStatus } = useUserStatusQuery();
-	const { teamSetting } = useTeamSettingQuery(userStatus?.profile.lastSeenTeamspaceId);
+	const lastSeenTeamspaceId = useLastSeenTeamspaceId();
+	const { teamSetting } = useTeamSettingQuery(lastSeenTeamspaceId);
 	const { mutateSetting } = useSettingMutation();
 	const { uploadFiles, isFileSizeExceedLimit } = useFileUpload();
 	const { mutateDeleteTeamProfile } = useDeleteTeamProfileMutation();
@@ -148,17 +148,20 @@ const SettingPage = () => {
 
 	const handlSaveClick = async () => {
 		if (!checkTeamName()) return;
+		if (!lastSeenTeamspaceId) return;
+
 		const result = checkTeamSetting();
 		const files = inputRef.current?.files;
 
 		if (Object.keys(result).length !== 0) {
-			if (!teamInfo.profileImageUrl && teamSetting?.profileImageUrl)
-				await mutateDeleteTeamProfile(userStatus!.profile.lastSeenTeamspaceId);
-			else if (files && teamInfo.profileImageUrl !== teamSetting?.profileImageUrl) {
-				const url = await uploadFiles(files, 'TEAMSPACE', userStatus?.profile.lastSeenTeamspaceId);
+			if (!teamInfo.profileImageUrl && teamSetting?.profileImageUrl) {
+				await mutateDeleteTeamProfile(lastSeenTeamspaceId);
+			} else if (files && teamInfo.profileImageUrl !== teamSetting?.profileImageUrl) {
+				const url = await uploadFiles(files, 'TEAMSPACE', lastSeenTeamspaceId);
+
 				if (url) [result.profileImageUrl] = url;
 			}
-			mutateSetting(userStatus!.profile.lastSeenTeamspaceId, result);
+			mutateSetting(lastSeenTeamspaceId, result);
 		}
 	};
 
