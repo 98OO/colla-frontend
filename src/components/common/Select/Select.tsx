@@ -9,26 +9,26 @@ export interface SelectContainerProps {
 }
 
 interface SelectProps extends SelectContainerProps {
-	options?: string[] | null;
+	options?: readonly string[] | null;
 	select: string | null;
 	setSelect: (index: number) => void;
+	disabled?: boolean;
 }
 
 const Select = (props: SelectProps) => {
 	const [isOpen, setIsOpen] = useState(false);
 	const selectRef = useRef<HTMLDivElement>(null);
-	const { size, select, setSelect, options } = props;
+	const { size, select, setSelect, options, disabled = false } = props;
 
 	const handleClickOutside = (event: MouseEvent) => {
-		if (
-			selectRef.current &&
-			!selectRef.current.contains(event.target as Node)
-		) {
+		if (selectRef.current && !selectRef.current.contains(event.target as Node)) {
 			setIsOpen(false);
 		}
 	};
 
 	const handleSelectOpen = () => {
+		if (disabled) return;
+
 		setIsOpen((prevIsOpen) => !prevIsOpen);
 	};
 
@@ -46,7 +46,7 @@ const Select = (props: SelectProps) => {
 
 	return (
 		<S.SelectContainer size={size} ref={selectRef}>
-			<S.ButtonWrapper onClick={handleSelectOpen}>
+			<S.ButtonWrapper onClick={handleSelectOpen} disabled={disabled}>
 				<Text size={size} weight='medium'>
 					{select || 'select'}
 				</Text>
@@ -55,9 +55,7 @@ const Select = (props: SelectProps) => {
 			{isOpen && options && (
 				<S.SelectOptionContainer>
 					{options?.map((option, index) => (
-						<S.SelectOptionWrapper
-							key={option}
-							onClick={() => handleSelect(index + 1)}>
+						<S.SelectOptionWrapper key={option} onClick={() => handleSelect(index + 1)}>
 							<Text size='md' weight='medium'>
 								{option}
 							</Text>

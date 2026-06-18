@@ -1,37 +1,28 @@
-export interface Day {
-	year: number;
-	month: number;
-	day: number;
-	hour?: number;
-	minute?: number;
+export type DateString = string & { readonly __brand: 'DateString' };
+
+export type TimeString = string & { readonly __brand: 'TimeString' };
+
+export interface TimeRange {
+	from: TimeString;
+	to: TimeString;
 }
 
-export type SchedulingPostStep = 'selectDate' | 'setTime';
-
-interface DaySelection {
-	selectedDays: Day[];
-	isDaySelected: (days: Day[], day: Day) => boolean;
-	toggleDaySelection: (day: Day) => void;
+export interface SchedulingPostFormData {
+	title: string;
+	dueAtDate: DateString;
+	dueAtTime: TimeString;
+	timeRange: TimeRange;
+	targetDates: Set<DateString>;
 }
 
-export interface CalendarProps extends DaySelection {}
+export type SchedulingCondition = Omit<SchedulingPostFormData, 'targetDates'>;
 
-export interface SelectDateProps {
-	onNext: () => void;
-	targetDates: string[];
-	handleTargetDates: (dates: string[]) => void;
+export interface SchedulingPostRequest {
+	title: string;
+	details: {
+		dueAt: string;
+		minTimeSegment: number;
+		maxTimeSegment: number;
+		targetDates: string[];
+	};
 }
-
-export interface SetTimeProps {
-	onPrev: () => void;
-	onSubmit: () => void;
-	dueAt: string;
-	handleDetail: (
-		title: string,
-		minTimeSegment: number,
-		maxTimeSegment: number,
-		dueAt: string
-	) => void;
-}
-
-export type SelectionMode = 'multi' | 'single';

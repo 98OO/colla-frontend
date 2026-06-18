@@ -1,39 +1,27 @@
 import { styled, css } from 'styled-components';
 import theme from '@styles/theme';
 
+export const DateField = styled.div`
+	position: relative;
+`;
+
 export const DatePickerButton = styled.button`
-	width: 260px;
-	height: ${theme.units.spacing.space28};
-	background-color: ${theme.color.bg.tertiary};
+	width: 280px;
+	height: ${theme.units.spacing.space32};
+	background-color: ${theme.color.bg.primary};
 	border: 1px solid ${theme.color.border.tertiary};
 	border-radius: ${theme.units.radius.radius6};
-`;
+	cursor: pointer;
 
-export const TimeInput = styled.input<{ isError: boolean }>`
-	width: 90%;
-	height: ${theme.units.spacing.space28};
-	padding: ${theme.units.spacing.space6};
-	background-color: ${theme.color.bg.tertiary};
-	border: 1px solid ${theme.color.border.tertiary};
-	border-radius: ${theme.units.radius.radius6};
-	outline: none;
-
-	border: 1px solid
-		${({ isError }) =>
-			isError ? theme.color.border.danger : theme.color.border.tertiary};
-`;
-
-export const TimeToggleWrapper = styled.div`
-	display: flex;
-	justify-content: space-between;
-	align-items: center;
-	width: 100%;
-	padding: 0 ${theme.units.spacing.space4};
+	&:hover {
+		background-color: ${theme.color.bg.secondary};
+	}
 `;
 
 export const CalendarContainer = styled.div<{ isOpen: boolean }>`
 	position: absolute;
-	right: 0;
+	top: calc(100% + ${theme.units.spacing.space4});
+	left: 0;
 	display: ${({ isOpen }) => (isOpen ? 'flex' : 'none')};
 	flex-direction: column;
 	align-items: center;
@@ -60,10 +48,15 @@ export const Month = styled.div`
 	font-weight: ${theme.typography.fontWeight.medium};
 `;
 
-export const WeeksWrapper = styled.div`
+export const CalendarGrid = styled.div`
 	display: grid;
 	grid-template-columns: repeat(7, 1fr);
 	grid-gap: ${theme.units.spacing.space6};
+`;
+
+export const EmptyCell = styled.div`
+	width: ${theme.units.spacing.space32};
+	height: ${theme.units.spacing.space32};
 `;
 
 export const Cell = styled.div`
@@ -74,6 +67,7 @@ export const Cell = styled.div`
 	width: ${theme.units.spacing.space32};
 	height: ${theme.units.spacing.space32};
 	font-size: ${theme.typography.fontSize.body.md};
+	user-select: none;
 `;
 
 export const DateCell = styled(Cell)<{
@@ -92,5 +86,15 @@ export const DateCell = styled(Cell)<{
 		css`
 			color: ${theme.color.text.iInverse};
 			background-color: ${theme.color.bg.iPrimary};
+		`}
+
+	${({ isSelected }) =>
+		!isSelected &&
+		css`
+			cursor: pointer;
+
+			&:hover {
+				background-color: ${theme.color.bg.secondary};
+			}
 		`}
 `;

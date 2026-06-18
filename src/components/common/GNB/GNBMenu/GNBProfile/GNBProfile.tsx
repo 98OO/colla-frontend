@@ -16,7 +16,7 @@ const GNBProfile = () => {
 	const handleLogOut = () => {
 		localStorage.removeItem(ACCESS_TOKEN);
 		navigate(PATH.SIGNIN);
-		queryClient.invalidateQueries({ queryKey: ['userStatus'] });
+		queryClient.removeQueries({ queryKey: ['userStatus'] });
 	};
 
 	return (
@@ -42,20 +42,10 @@ const GNBProfile = () => {
 							selected={false}
 							onClick={() => navigate(PATH.MYPAGE)}
 						/>
-						<MenuItem
-							leadingIcon='Mail'
-							title='문의하기'
-							selected={false}
-							onClick={() => ''}
-						/>
+						<MenuItem leadingIcon='Mail' title='문의하기' selected={false} onClick={() => ''} />
 					</Flex>
 					<Divider size='sm' padding={4} />
-					<MenuItem
-						leadingIcon='LogOut'
-						title='로그아웃'
-						selected={false}
-						onClick={handleLogOut}
-					/>
+					<MenuItem leadingIcon='LogOut' title='로그아웃' selected={false} onClick={handleLogOut} />
 				</>
 			)}
 		</S.GNBProfileContainer>

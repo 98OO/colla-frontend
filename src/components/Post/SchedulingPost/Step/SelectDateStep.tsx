@@ -1,36 +1,34 @@
+import { useState } from 'react';
 import { Button } from '@components/common/Button/Button';
 import Flex from '@components/common/Flex/Flex';
-import Calendar from '@components/Post/Calendar/Calendar';
-import useCalendar from '@hooks/post/useCalendar';
-import useDaySelection from '@hooks/post/useDaySelection';
-import type { SelectDateProps } from '@type/post';
+import Calendar from '@components/Post/SchedulingPost/Calendar/Calendar';
+import type { DateString } from '@type/post';
 
-const SelectDateStep = ({
-	onNext,
-	targetDates,
-	handleTargetDates,
-}: SelectDateProps) => {
-	const { getInitialDays, getFormattedDay } = useCalendar();
-	const initalDays = getInitialDays(targetDates);
-	const { selectedDays, isDaySelected, toggleDaySelection } =
-		useDaySelection(initalDays);
+interface SelectDateProps {
+	onNext: () => void;
+	targetDates: Set<DateString>;
+	handleTargetDates: (targetDates: Set<DateString>) => void;
+}
+
+const SelectDateStep = ({ onNext, targetDates, handleTargetDates }: SelectDateProps) => {
+	const [selectedDates, setSelectedDates] = useState<Set<DateString>>(() => new Set(targetDates));
 
 	const handleNext = () => {
-		const formattedDates = selectedDays.map((day) => getFormattedDay(day));
-
-		handleTargetDates(formattedDates);
+		handleTargetDates(selectedDates);
 		onNext();
 	};
 
 	return (
 		<>
-			<Calendar
-				selectedDays={selectedDays}
-				isDaySelected={isDaySelected}
-				toggleDaySelection={toggleDaySelection}
-			/>
+			<Calendar selectedDates={selectedDates} setSelectedDates={setSelectedDates} />
 			<Flex justify='flex-end'>
-				<Button label='다음' variant='primary' size='md' onClick={handleNext} />
+				<Button
+					label='다음'
+					variant='primary'
+					size='md'
+					disabled={selectedDates.size === 0}
+					onClick={handleNext}
+				/>
 			</Flex>
 		</>
 	);

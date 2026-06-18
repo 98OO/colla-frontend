@@ -17,7 +17,7 @@ export const SelectContainer = styled.div<SelectContainerProps>`
 	border: 1px solid ${theme.color.border.primary};
 `;
 
-export const ButtonWrapper = styled.button`
+export const ButtonWrapper = styled.button<{ disabled?: boolean }>`
 	width: 100%;
 	height: 100%;
 	border: none;
@@ -27,6 +27,13 @@ export const ButtonWrapper = styled.button`
 	background-color: transparent;
 	border-radius: ${theme.units.radius.radius4};
 	padding: ${theme.units.spacing.space8};
+	cursor: pointer;
+	color: ${({ disabled }) => (disabled ? theme.color.text.disabled : theme.color.text.primary)};
+
+	&:disabled {
+		cursor: default;
+		background-color: ${theme.color.bg.disabled};
+	}
 `;
 
 export const SelectOptionContainer = styled.ul`
@@ -35,7 +42,7 @@ export const SelectOptionContainer = styled.ul`
 	flex-direction: column;
 	position: absolute;
 	top: 110%;
-	max-height: 400px;
+	max-height: 172px;
 	overflow-y: scroll;
 	z-index: ${theme.elevation.zIndex.MENU};
 	gap: ${theme.units.spacing.space4};
@@ -65,6 +72,7 @@ export const SelectOptionWrapper = styled.li`
 	font-weight: ${theme.typography.fontWeight.medium};
 	color: ${theme.color.text.primary};
 	padding: 0 ${theme.units.spacing.space12};
+	cursor: pointer;
 
 	&:hover {
 		background-color: ${theme.color.bg.iSecondaryHover};

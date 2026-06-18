@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from '@storybook/react';
+import type { Meta, StoryObj } from '@storybook/react-vite';
 import Profile from './Profile';
 
 const meta = {
@@ -6,18 +6,15 @@ const meta = {
 	component: Profile,
 	parameters: {
 		layout: 'centered',
-		componentSubtitle:
-			'Profile 컴포넌트는 사용자 정보를 표시하는 공용 컴포넌트입니다.',
+		componentSubtitle: 'Profile 컴포넌트는 사용자 정보를 표시하는 공용 컴포넌트입니다.',
 	},
 	decorators: [
 		(Story) => (
-			<div
-				style={{ width: '300px', display: 'flex', justifyContent: 'center' }}>
+			<div style={{ width: '300px', display: 'flex', justifyContent: 'center' }}>
 				<Story />
 			</div>
 		),
 	],
-	tags: ['autodocs'],
 	argTypes: {
 		profile: {
 			control: 'text',

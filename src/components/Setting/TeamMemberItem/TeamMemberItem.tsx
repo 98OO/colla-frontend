@@ -41,6 +41,7 @@ const TeamMemberItem = (props: TeamMemberItemProps) => {
 					options={tagOption}
 					select={tag}
 					setSelect={tagSelect}
+					disabled={!tagOption || tagOption.length === 0}
 				/>
 			</Flex>
 		</S.ProfileContainer>

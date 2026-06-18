@@ -1,15 +1,13 @@
 import Heading from '@components/common/Heading/Heading';
-import type { Meta, StoryObj } from '@storybook/react';
+import type { Meta, StoryObj } from '@storybook/react-vite';
 
 const meta = {
 	title: 'common/Heading',
 	component: Heading,
 	parameters: {
 		layout: 'centered',
-		componentSubtitle:
-			'Heading는 크기, 색상을 받아 제목의 텍스트를 나타내는 공용 컴포넌트입니다.',
+		componentSubtitle: 'Heading는 크기, 색상을 받아 제목의 텍스트를 나타내는 공용 컴포넌트입니다.',
 	},
-	tags: ['autodocs'],
 	argTypes: {
 		size: {
 			control: {

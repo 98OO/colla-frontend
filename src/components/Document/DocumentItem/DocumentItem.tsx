@@ -1,4 +1,3 @@
-import Icon from '@components/common/Icon/Icon';
 import Text from '@components/common/Text/Text';
 import { getFormattedDate } from '@utils/getFormattedDate';
 import { getUnitFormattedSize } from '@utils/getUnitFormattedSize';
@@ -7,28 +6,23 @@ import * as S from './DocumentItem.styled';
 
 interface DocumentItemProps {
 	attachment: Document;
-	selectedDocument: string[];
+	selectedDocument: Set<string>;
 	handleDocumentClick: (fileUrl: string) => void;
 }
 
 const DocumentItem = (props: DocumentItemProps) => {
 	const { attachment, selectedDocument, handleDocumentClick } = props;
 
-	const removeFileExtension = (fileName: string) => {
-		return fileName.substring(0, fileName.lastIndexOf('.'));
-	};
-
 	return (
 		<S.DocumentItemContainer>
 			<S.DocumentNameContainer>
 				<S.DocumentCheckbox
-					checked={selectedDocument.includes(attachment.fileUrl)}
+					checked={selectedDocument.has(attachment.fileUrl)}
 					onChange={() => handleDocumentClick(attachment.fileUrl)}
 				/>
-				<Icon name='PDF' />
 				<S.DocumentNameWrapper>
 					<Text size='lg' weight='regular'>
-						{removeFileExtension(attachment.name)}
+						{attachment.name}
 					</Text>
 				</S.DocumentNameWrapper>
 			</S.DocumentNameContainer>

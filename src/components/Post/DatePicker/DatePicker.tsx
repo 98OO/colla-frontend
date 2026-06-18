@@ -1,137 +1,119 @@
-import { useEffect, useState } from 'react';
 import Flex from '@components/common/Flex/Flex';
 import IconButton from '@components/common/IconButton/IconButton';
-import Text from '@components/common/Text/Text';
-import Toggle from '@components/common/Toggle/Toggle';
+import Select from '@components/common/Select/Select';
+import { useCalendar } from '@hooks/common/calendar/useCalendar';
 import useOutsideClick from '@hooks/common/useOutSideClick';
 import { useOverlay } from '@hooks/common/useOverlay';
-import useCalendar from '@hooks/post/useCalendar';
-import { CalendarProps } from '@type/post';
-import getParsedTime from '@utils/getParsedTime';
+import { formatDate } from '@utils/calendar/formatDate';
+import { DateManager } from '@utils/common/DateManager';
+import isPastTime from '@utils/post/scheduling/isPastTime';
+import { WEEKDAYS } from '@constants/calendar';
+import { DEFAULT_TIME_OPTIONS } from '@constants/post';
+import type { DateString, TimeString } from '@type/post';
 import * as S from './DatePicker.styled';
 
-const DatePicker = ({
-	selectedDays,
-	isDaySelected,
-	toggleDaySelection,
-}: CalendarProps) => {
-	const HEADER_DAYS = ['일', '월', '화', '수', '목', '금', '토'];
-	const {
-		curMonth,
-		calendarDays,
-		movePrevMonth,
-		moveNextMonth,
-		isPrevDisabled,
-		isNextDisabled,
-		isDayDisabled,
-		getFormattedDay,
-	} = useCalendar();
+interface DatePickerProps {
+	selectedDate: DateString;
+	time: TimeString;
+	onDateChange: (date: DateString) => void;
+	onTimeChange: (time: TimeString) => void;
+}
+
+const DatePicker = ({ selectedDate, time, onDateChange, onTimeChange }: DatePickerProps) => {
+	const today = new Date();
+	const { current, dateCells, prevMonth, nextMonth } = useCalendar(today);
 
 	const { isOpen, open, close } = useOverlay();
+	const ref = useOutsideClick({ onClickOutside: close });
 
-	const ref = useOutsideClick({
-		onClickOutside: close,
-	});
+	const oneYearLimit = DateManager.getDateAfter(today, { years: 1 });
+	const isPrevDisabled = DateManager.isSameMonth(current, today);
+	const isNextDisabled = DateManager.isAfterDate(current, oneYearLimit);
 
-	const [toggleState, setToggleState] = useState(false);
-	const [pickedDay, setPickedDay] = useState(getFormattedDay(selectedDays[0]));
-	const [timeInput, setTimeInput] = useState('오전 12:00');
-	const [timeError, setTimeError] = useState(false);
-
-	const handleToggle = () => {
-		setToggleState((prev) => !prev);
+	const getAvailableTimeOptions = (date: DateString) => {
+		return DEFAULT_TIME_OPTIONS.filter((option) => !isPastTime(date, option));
 	};
 
-	const handleTimeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-		const inputValue = e.target.value;
-		setTimeInput(inputValue);
-	};
+	const handleDateSelect = (date: DateString) => {
+		onDateChange(date);
 
-	const handleSelectedDayTime = (hour: number = 0, minute: number = 0) => {
-		const { year, month, day } = selectedDays[0];
-		const timeIncludedDay = { year, month, day, hour, minute };
+		const nextTimeOptions = getAvailableTimeOptions(date);
 
-		toggleDaySelection(timeIncludedDay);
-	};
-
-	const handleTimeBlur = () => {
-		const parsedTime = getParsedTime(timeInput);
-
-		if (parsedTime.isSuccess) {
-			const hour = parsedTime.data?.hours;
-			const minutes = parsedTime.data?.minutes;
-
-			handleSelectedDayTime(hour, minutes);
-			setTimeError(false);
-		} else {
-			setTimeError(true);
+		if (!nextTimeOptions.includes(time)) {
+			onTimeChange(nextTimeOptions[0]);
 		}
 	};
 
-	useEffect(() => {
-		setPickedDay(getFormattedDay(selectedDays[0], toggleState));
-	}, [selectedDays, toggleState]);
+	const isDateDisabled = (date: Date) => {
+		return (
+			DateManager.isPastDate(date) ||
+			DateManager.isAfterDate(date, oneYearLimit) ||
+			(DateManager.isToday(date) && getAvailableTimeOptions(formatDate(date)).length === 0)
+		);
+	};
 
-	useEffect(() => {
-		if (!toggleState) {
-			handleSelectedDayTime();
-		}
-	}, [toggleState]);
+	const timeOptions = getAvailableTimeOptions(selectedDate);
 
 	return (
-		<Flex justify='space-between'>
-			<S.DatePickerButton onClick={open}>{pickedDay}</S.DatePickerButton>
-			<S.CalendarContainer ref={ref} isOpen={isOpen}>
-				{toggleState && (
-					<S.TimeInput
-						type='text'
-						value={timeInput}
-						onChange={handleTimeChange}
-						onBlur={handleTimeBlur}
-						placeholder='오전 12:00'
-						isError={timeError}
-					/>
-				)}
-				<S.CalendarHeader>
-					<IconButton
-						ariaLabel='prevMonth'
-						icon='ChevronLeft'
-						onClick={movePrevMonth}
-						disabled={isPrevDisabled()}
-					/>
-					<S.Month>{curMonth}월</S.Month>
-					<IconButton
-						ariaLabel='nextMonth'
-						icon='ChevronRight'
-						onClick={moveNextMonth}
-						disabled={isNextDisabled()}
-					/>
-				</S.CalendarHeader>
-				<S.WeeksWrapper>
-					{HEADER_DAYS.map((day) => (
-						<S.Cell key={day}>{day}</S.Cell>
-					))}
-					{calendarDays.map((calendarDay) => {
-						const isDisabled = isDayDisabled(calendarDay);
-						const isSelected = isDaySelected(selectedDays, calendarDay);
-						return (
-							<S.DateCell
-								key={`${calendarDay.year}-${calendarDay.month}-${calendarDay.day}`}
-								isDisabled={isDisabled}
-								isSelected={isSelected}
-								onClick={() => toggleDaySelection(calendarDay)}>
-								{calendarDay.day}
-							</S.DateCell>
-						);
-					})}
-				</S.WeeksWrapper>
-				<S.TimeToggleWrapper>
-					<Text size='md' weight='regular' color='tertiary'>
-						시간 포함
-					</Text>
-					<Toggle state={toggleState} onToggle={handleToggle} />
-				</S.TimeToggleWrapper>
-			</S.CalendarContainer>
+		<Flex gap='12' align='flex-start'>
+			<Flex direction='column' gap='6'>
+				<S.DateField ref={ref}>
+					<S.DatePickerButton onClick={open}>{selectedDate}</S.DatePickerButton>
+					<S.CalendarContainer isOpen={isOpen}>
+						<S.CalendarHeader>
+							<IconButton
+								ariaLabel='prevMonth'
+								icon='ChevronLeft'
+								onClick={prevMonth}
+								disabled={isPrevDisabled}
+							/>
+							<S.Month>
+								{current.toLocaleDateString('ko-KR', { year: 'numeric', month: 'long' })}
+							</S.Month>
+							<IconButton
+								ariaLabel='nextMonth'
+								icon='ChevronRight'
+								onClick={nextMonth}
+								disabled={isNextDisabled}
+							/>
+						</S.CalendarHeader>
+						<S.CalendarGrid>
+							{WEEKDAYS.map((day) => (
+								<S.Cell key={day}>{day}</S.Cell>
+							))}
+							{dateCells.map((date, idx) => {
+								if (!date) {
+									// eslint-disable-next-line react/no-array-index-key
+									return <S.EmptyCell key={`empty-${idx}`} />;
+								}
+
+								const dateString = formatDate(date);
+								const isSelected = selectedDate === dateString;
+								const isDisabled = isDateDisabled(date);
+
+								return (
+									<S.DateCell
+										key={dateString}
+										isDisabled={isDisabled}
+										isSelected={isSelected}
+										onClick={() => handleDateSelect(dateString)}>
+										{date.getDate()}
+									</S.DateCell>
+								);
+							})}
+						</S.CalendarGrid>
+					</S.CalendarContainer>
+				</S.DateField>
+			</Flex>
+			<Flex direction='column' gap='6' width='120'>
+				<Select
+					size='sm'
+					options={timeOptions}
+					select={time}
+					disabled={timeOptions.length === 0}
+					setSelect={(idx) => onTimeChange(timeOptions[idx - 1])}
+				/>
+			</Flex>
 		</Flex>
 	);
 };

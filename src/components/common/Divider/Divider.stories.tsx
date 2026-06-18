@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from '@storybook/react';
+import type { Meta, StoryObj } from '@storybook/react-vite';
 import Divider from './Divider';
 
 const meta: Meta = {
@@ -6,8 +6,7 @@ const meta: Meta = {
 	component: Divider,
 	parameters: {
 		layout: 'centered',
-		componentSubtitle:
-			'Divider 컴포넌트는 컨텐츠를 구분하는 선을 나타내는 컴포넌트입니다.',
+		componentSubtitle: 'Divider 컴포넌트는 컨텐츠를 구분하는 선을 나타내는 컴포넌트입니다.',
 	},
 	decorators: [
 		(Story) => (
@@ -16,7 +15,6 @@ const meta: Meta = {
 			</div>
 		),
 	],
-	tags: ['autodocs'],
 	argTypes: {
 		size: {
 			control: {

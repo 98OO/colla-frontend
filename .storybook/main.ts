@@ -5,20 +5,20 @@ const config: StorybookConfig = {
 		name: '@storybook/react-vite',
 		options: {},
 	},
+
 	stories: ['../src/**/*.mdx', '../src/**/*.stories.@(js|jsx|mjs|ts|tsx)'],
 	staticDirs: ['../public', '../src/assets'],
+
 	addons: [
 		'@storybook/addon-onboarding',
 		'@storybook/addon-links',
-		'@storybook/addon-essentials',
 		'@chromatic-com/storybook',
-		'@storybook/addon-interactions',
 		'@storybook/addon-themes',
+		'@storybook/addon-docs',
 	],
-	docs: {
-		autodocs: 'tag',
-	},
+
 	core: {},
+
 	typescript: {
 		reactDocgen: 'react-docgen-typescript',
 	},

@@ -1,74 +1,47 @@
-import { useState } from 'react';
 import SelectDateStep from '@components/Post/SchedulingPost/Step/SelectDateStep';
-import SetTimeStep from '@components/Post/SchedulingPost/Step/SetTimeStep';
-import useSchedulingFeedMutation from '@hooks/queries/post/useSchedulingFeedMutation';
-import useUserStatusQuery from '@hooks/queries/useUserStatusQuery';
-import { INITIAL_SCHEDULING_FORM } from '@constants/post';
-import type { SchedulingFeedForm } from '@type/feed';
-import type { SchedulingPostStep } from '@type/post';
+import SetConditionStep from '@components/Post/SchedulingPost/Step/SetConditionStep';
+import useHistoryFunnel from '@hooks/common/funnel/useHistoryFunnel';
+import useSchedulingPostForm from '@hooks/post/scheduling/useSchedulingPostForm';
+import useSchedulingPostMutation from '@hooks/queries/post/useSchedulingPostMutation';
+import type { SchedulingCondition } from '@type/post';
 import * as S from './SchedulingPost.styled';
 
+const STEPS = ['selectDate', 'setCondition'] as const;
+
 const SchedulingPost = () => {
-	const { userStatus } = useUserStatusQuery();
-	const teamspaceId = userStatus?.profile.lastSeenTeamspaceId;
+	const { Funnel, step, goNext, goPrev } = useHistoryFunnel(STEPS);
+	const { formData, handleTargetDates, handleCondition } = useSchedulingPostForm();
+	const { mutateSchedulingPost } = useSchedulingPostMutation();
 
-	const [step, setStep] = useState<SchedulingPostStep>('selectDate');
-	const [formData, setFormData] = useState<SchedulingFeedForm>(
-		INITIAL_SCHEDULING_FORM
-	);
-
-	const { mutateSchedulingFeed } = useSchedulingFeedMutation();
-
-	const handleTargetDates = (dates: string[]) => {
-		setFormData((prev) => ({
-			...prev,
-			details: {
-				...prev.details,
-				targetDates: dates,
-			},
-		}));
-	};
-
-	const handleDetail = (
-		title: string,
-		minTimeSegment: number,
-		maxTimeSegment: number,
-		dueAt: string
-	) => {
-		setFormData((prev) => ({
-			title,
-			details: {
-				...prev.details,
-				dueAt,
-				minTimeSegment,
-				maxTimeSegment,
-			},
-		}));
-	};
-
-	const handleSubmit = () => {
-		if (!teamspaceId) return;
-
-		mutateSchedulingFeed(formData, teamspaceId);
+	const handleSubmit = (condition: SchedulingCondition) => {
+		mutateSchedulingPost({
+			...condition,
+			targetDates: formData.targetDates,
+		});
 	};
 
 	return (
 		<S.SchedulingPostContainer>
-			{step === 'selectDate' && (
-				<SelectDateStep
-					onNext={() => setStep('setTime')}
-					targetDates={formData.details.targetDates}
-					handleTargetDates={handleTargetDates}
-				/>
-			)}
-			{step === 'setTime' && (
-				<SetTimeStep
-					onPrev={() => setStep('selectDate')}
-					dueAt={formData.details.dueAt}
-					handleDetail={handleDetail}
-					onSubmit={handleSubmit}
-				/>
-			)}
+			<Funnel step={step}>
+				<Funnel.Step name='selectDate'>
+					<SelectDateStep
+						onNext={goNext}
+						targetDates={formData.targetDates}
+						handleTargetDates={handleTargetDates}
+					/>
+				</Funnel.Step>
+				<Funnel.Step name='setCondition'>
+					<SetConditionStep
+						initialTitle={formData.title}
+						initialDueAtDate={formData.dueAtDate}
+						initialDueAtTime={formData.dueAtTime}
+						initialTimeRange={formData.timeRange}
+						onPrev={goPrev}
+						onSave={handleCondition}
+						onSubmit={handleSubmit}
+					/>
+				</Funnel.Step>
+			</Funnel>
 		</S.SchedulingPostContainer>
 	);
 };

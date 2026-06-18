@@ -7,15 +7,18 @@ import Icon from '@components/common/Icon/Icon';
 import Text from '@components/common/Text/Text';
 import DatePicker from '@components/Post/DatePicker/DatePicker';
 import Editor from '@components/Post/Editor/Editor';
-import useCalendar from '@hooks/post/useCalendar';
-import useDaySelection from '@hooks/post/useDaySelection';
 import usePostEditor from '@hooks/post/usePostEditor';
+import getDefaultDueAt from '@utils/post/scheduling/getDefaultDueAt';
+import isPastTime from '@utils/post/scheduling/isPastTime';
+import useToastStore from '@stores/toastStore';
 import { PATH } from '@constants/path';
-import { USER_CONFIRM_MESSAGE } from '@constants/post';
+import { DUE_AT_PAST_MESSAGE, USER_CONFIRM_MESSAGE } from '@constants/post';
+import type { DateString, TimeString } from '@type/post';
 import * as S from './CollectPost.styled';
 
 const CollectPost = () => {
 	const navigate = useNavigate();
+	const { makeToast } = useToastStore();
 	const {
 		editorRef,
 		attachmentFiles,
@@ -26,20 +29,24 @@ const CollectPost = () => {
 		handleDragOver,
 		handleSubmit: submitCollectFeedForm,
 	} = usePostEditor();
+
+	const { dueAtDate, dueAtTime } = getDefaultDueAt();
+
 	const [title, setTitle] = useState('');
-	const { getInitialDueAt, getFormattedDay } = useCalendar();
-	const initalDueAt = getInitialDueAt('');
-	const { selectedDays, isDaySelected, toggleDaySelection } = useDaySelection(
-		initalDueAt,
-		'single'
-	);
+	const [time, setTime] = useState<TimeString>(dueAtTime);
+	const [selectedDate, setSelectedDate] = useState<DateString>(dueAtDate);
 
 	const handleTitleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
 		setTitle(event.target.value);
 	};
 
 	const handleSubmit = async () => {
-		await submitCollectFeedForm(title, getFormattedDay(selectedDays[0], true));
+		if (isPastTime(selectedDate, time)) {
+			makeToast(DUE_AT_PAST_MESSAGE, 'Warning');
+			return;
+		}
+
+		await submitCollectFeedForm(title, `${selectedDate} ${time}`);
 	};
 
 	const handleCancel = () => {
@@ -55,20 +62,17 @@ const CollectPost = () => {
 	return (
 		<S.CollectPostContainer>
 			<Flex direction='column' gap='12'>
-				<S.PostInput
-					placeholder='제목을 입력해주세요'
-					value={title}
-					onChange={handleTitleChange}
-				/>
+				<S.PostInput placeholder='제목을 입력해주세요' value={title} onChange={handleTitleChange} />
 				<Flex align='center' gap='14' position='relative'>
 					<Icon name='Clock' />
 					<Text size='md' weight='regular'>
 						마감 일시
 					</Text>
 					<DatePicker
-						selectedDays={selectedDays}
-						isDaySelected={isDaySelected}
-						toggleDaySelection={toggleDaySelection}
+						selectedDate={selectedDate}
+						time={time}
+						onDateChange={setSelectedDate}
+						onTimeChange={setTime}
 					/>
 				</Flex>
 			</Flex>
@@ -83,18 +87,8 @@ const CollectPost = () => {
 				handleFileDelete={deleteAttachmentFile}
 			/>
 			<S.ButtonContainer>
-				<Button
-					label='등록'
-					size='md'
-					variant='primary'
-					onClick={handleSubmit}
-				/>
-				<Button
-					label='취소'
-					size='md'
-					variant='secondary'
-					onClick={handleCancel}
-				/>
+				<Button label='등록' size='md' variant='primary' onClick={handleSubmit} />
+				<Button label='취소' size='md' variant='secondary' onClick={handleCancel} />
 			</S.ButtonContainer>
 		</S.CollectPostContainer>
 	);
