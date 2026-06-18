@@ -9,13 +9,16 @@ import DatePicker from '@components/Post/DatePicker/DatePicker';
 import Editor from '@components/Post/Editor/Editor';
 import usePostEditor from '@hooks/post/usePostEditor';
 import getDefaultDueAt from '@utils/post/scheduling/getDefaultDueAt';
+import isPastTime from '@utils/post/scheduling/isPastTime';
+import useToastStore from '@stores/toastStore';
 import { PATH } from '@constants/path';
-import { USER_CONFIRM_MESSAGE } from '@constants/post';
+import { DUE_AT_PAST_MESSAGE, USER_CONFIRM_MESSAGE } from '@constants/post';
 import type { DateString, TimeString } from '@type/post';
 import * as S from './CollectPost.styled';
 
 const CollectPost = () => {
 	const navigate = useNavigate();
+	const { makeToast } = useToastStore();
 	const {
 		editorRef,
 		attachmentFiles,
@@ -38,6 +41,11 @@ const CollectPost = () => {
 	};
 
 	const handleSubmit = async () => {
+		if (isPastTime(selectedDate, time)) {
+			makeToast(DUE_AT_PAST_MESSAGE, 'Warning');
+			return;
+		}
+
 		await submitCollectFeedForm(title, `${selectedDate} ${time}`);
 	};
 

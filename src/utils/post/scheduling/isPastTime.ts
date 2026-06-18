@@ -2,8 +2,11 @@ import { DateManager } from '@utils/common/DateManager';
 import type { DateString, TimeString } from '@type/post';
 
 const isPastTime = (target: DateString, time: TimeString, base = new Date()): boolean => {
-	if (DateManager.isPastDate(new Date(target), base)) return true;
-	if (!DateManager.isToday(new Date(target), base)) return false;
+	const [year, month, day] = target.split('-').map(Number);
+	const targetDate = new Date(year, month - 1, day);
+
+	if (DateManager.isPastDate(targetDate, base)) return true;
+	if (!DateManager.isToday(targetDate, base)) return false;
 
 	const [hours, minutes] = time.split(':').map(Number);
 	const baseMinutes = base.getHours() * 60 + base.getMinutes();
