@@ -10,7 +10,11 @@ const useDocumentDownload = ({
 	onAfterDownload,
 }: UseDocumentDownloadParams) => {
 	const handleDownloadClick = () => {
-		Array.from(selectedDocument).forEach((fileUrl, index) => {
+		const selectedFileUrls = Array.from(selectedDocument);
+
+		if (selectedFileUrls.length === 0) return;
+
+		selectedFileUrls.forEach((fileUrl, index) => {
 			window.setTimeout(() => {
 				const link = document.createElement('a');
 
@@ -20,10 +24,10 @@ const useDocumentDownload = ({
 				document.body.appendChild(link);
 				link.click();
 				document.body.removeChild(link);
+
+				if (index === selectedFileUrls.length - 1) onAfterDownload();
 			}, index * downloadIntervalMs);
 		});
-
-		onAfterDownload();
 	};
 
 	return { handleDownloadClick };

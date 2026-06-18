@@ -13,7 +13,7 @@ import useFileUpload from '@hooks/common/useFileUpload';
 import useDeleteTeamProfileMutation from '@hooks/queries/setting/useDeleteTeamProfileMutation';
 import useSettingMutation from '@hooks/queries/setting/useSettingMutation';
 import useTeamSettingQuery from '@hooks/queries/setting/useTeamSettingQuery';
-import useUserStatusQuery from '@hooks/queries/useUserStatusQuery';
+import { useLastSeenTeamspaceId } from '@hooks/user/useLastSeenTeamspaceId';
 import { TeamState, TeamSettingResult } from '@type/team';
 import useToastStore from '@stores/toastStore';
 import * as S from './SettingPage.styled';
@@ -28,8 +28,8 @@ const SettingPage = () => {
 	const [isRoleAddModalOpen, setIsRoleAddModalOpen] = useState(false);
 	const inputRef = useRef<HTMLInputElement | null>(null);
 	const { makeToast } = useToastStore();
-	const { userStatus } = useUserStatusQuery();
-	const { teamSetting } = useTeamSettingQuery(userStatus?.profile.lastSeenTeamspaceId);
+	const lastSeenTeamspaceId = useLastSeenTeamspaceId();
+	const { teamSetting } = useTeamSettingQuery(lastSeenTeamspaceId);
 	const { mutateSetting } = useSettingMutation();
 	const { uploadFiles, isFileSizeExceedLimit } = useFileUpload();
 	const { mutateDeleteTeamProfile } = useDeleteTeamProfileMutation();
@@ -102,8 +102,10 @@ const SettingPage = () => {
 	};
 
 	const checkTeamName = () => {
-		if (teamInfo.name.length === 0) setError('팀스페이스 이름은 공백일 수 없습니다.');
-		else if (teamInfo.name.length < 2) setError('팀스페이스 이름은 2글자 이상입니다.');
+		const trimmedTeamName = teamInfo.name.trim();
+
+		if (trimmedTeamName.length === 0) setError('팀스페이스 이름은 공백일 수 없습니다.');
+		else if (trimmedTeamName.length < 2) setError('팀스페이스 이름은 2글자 이상입니다.');
 		else {
 			setError('');
 			return true;
@@ -113,10 +115,12 @@ const SettingPage = () => {
 
 	const checkTeamSetting = () => {
 		const settingResult: TeamSettingResult = {};
+		const trimmedTeamName = teamInfo.name.trim();
+
 		if (teamInfo.profileImageUrl !== teamSetting?.profileImageUrl)
 			settingResult.profileImageUrl = teamInfo.profileImageUrl!;
 
-		if (teamInfo.name !== teamSetting?.name) settingResult.name = teamInfo.name;
+		if (trimmedTeamName !== teamSetting?.name) settingResult.name = trimmedTeamName;
 
 		teamInfo.users.forEach((teamUser, index) => {
 			if (teamSetting?.users[index]?.tag === null) {
@@ -144,17 +148,20 @@ const SettingPage = () => {
 
 	const handlSaveClick = async () => {
 		if (!checkTeamName()) return;
+		if (!lastSeenTeamspaceId) return;
+
 		const result = checkTeamSetting();
 		const files = inputRef.current?.files;
 
 		if (Object.keys(result).length !== 0) {
-			if (!teamInfo.profileImageUrl && teamSetting?.profileImageUrl)
-				await mutateDeleteTeamProfile(userStatus!.profile.lastSeenTeamspaceId);
-			else if (files && teamInfo.profileImageUrl !== teamSetting?.profileImageUrl) {
-				const url = await uploadFiles(files, 'TEAMSPACE', userStatus?.profile.lastSeenTeamspaceId);
+			if (!teamInfo.profileImageUrl && teamSetting?.profileImageUrl) {
+				await mutateDeleteTeamProfile(lastSeenTeamspaceId);
+			} else if (files && teamInfo.profileImageUrl !== teamSetting?.profileImageUrl) {
+				const url = await uploadFiles(files, 'TEAMSPACE', lastSeenTeamspaceId);
+
 				if (url) [result.profileImageUrl] = url;
 			}
-			mutateSetting(userStatus!.profile.lastSeenTeamspaceId, result);
+			mutateSetting(lastSeenTeamspaceId, result);
 		}
 	};
 
@@ -242,7 +249,7 @@ const SettingPage = () => {
 									</Text>
 								</Flex>
 								<Button
-									label='역할 추가히기'
+									label='역할 추가하기'
 									variant='secondary'
 									size='sm'
 									leadingIcon='Plus'

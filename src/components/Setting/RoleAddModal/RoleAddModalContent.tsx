@@ -5,7 +5,7 @@ import Heading from '@components/common/Heading/Heading';
 import Input from '@components/common/Input/Input';
 import Text from '@components/common/Text/Text';
 import useTeamSpaceRoleMutation from '@hooks/queries/teamspace/useTeamSpaceRoleMutation';
-import useUserStatusQuery from '@hooks/queries/useUserStatusQuery';
+import { useLastSeenTeamspaceId } from '@hooks/user/useLastSeenTeamspaceId';
 import * as S from './RoleAddModalContent.styled';
 
 interface RoleAddModalContentProps {
@@ -20,7 +20,7 @@ const ROLE_ADD_NAME_RULES = {
 const RoleAddModalContent = ({ setIsRoleAddModalOpen }: RoleAddModalContentProps) => {
 	const [roleName, setRoleName] = useState('');
 	const [nameError, setNameError] = useState('');
-	const { userStatus } = useUserStatusQuery();
+	const lastSeenTeamspaceId = useLastSeenTeamspaceId();
 	const { mutateAddTeamSpaceRole: mutateCreateRole } = useTeamSpaceRoleMutation();
 
 	const handleRoleNameChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -45,8 +45,9 @@ const RoleAddModalContent = ({ setIsRoleAddModalOpen }: RoleAddModalContentProps
 
 	const handleAddClick = () => {
 		if (!checkRoleName()) return;
+		if (!lastSeenTeamspaceId) return;
 
-		mutateCreateRole(userStatus!.profile.lastSeenTeamspaceId, roleName);
+		mutateCreateRole(lastSeenTeamspaceId, roleName.trim());
 		setIsRoleAddModalOpen(false);
 	};
 

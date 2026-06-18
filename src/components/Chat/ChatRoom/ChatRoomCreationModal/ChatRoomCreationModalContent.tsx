@@ -5,7 +5,7 @@ import Heading from '@components/common/Heading/Heading';
 import Input from '@components/common/Input/Input';
 import Text from '@components/common/Text/Text';
 import useCreateChatChannelMutation from '@hooks/queries/chat/useCreateChatChannelMutation';
-import useUserStatusQuery from '@hooks/queries/useUserStatusQuery';
+import { useLastSeenTeamspaceId } from '@hooks/user/useLastSeenTeamspaceId';
 import * as S from './ChatRoomCreationModalContent.styled';
 
 interface ChatRoomCreationModalContentProps {
@@ -21,24 +21,26 @@ const CHAT_ROOM_CREATION_NAME_RULES = {
 const ChatRoomCreationModalContent = ({
 	setIsChatRoomModalOpen,
 }: ChatRoomCreationModalContentProps) => {
-	const [teamspaceName, setTeamspaceName] = useState('');
+	const [chatRoomName, setChatRoomName] = useState('');
 	const [nameError, setNameError] = useState('');
-	const { userStatus } = useUserStatusQuery();
+	const lastSeenTeamspaceId = useLastSeenTeamspaceId();
 	const { mutateCreateChatChannel } = useCreateChatChannelMutation();
 
 	const handleNameChange = (e: ChangeEvent<HTMLInputElement>) => {
 		const { value } = e.target;
-		setTeamspaceName(value);
+		setChatRoomName(value);
 	};
 
-	const handleCancleClick = () => {
+	const handleCancelClick = () => {
 		setIsChatRoomModalOpen(false);
 	};
 
-	const checkTeamSpaceName = () => {
-		if (teamspaceName.length === 0) setNameError(CHAT_ROOM_CREATION_NAME_RULES.EMPTY);
-		else if (teamspaceName.length < 2) setNameError(CHAT_ROOM_CREATION_NAME_RULES.TOO_SHORT);
-		else if (teamspaceName.length > 15) setNameError(CHAT_ROOM_CREATION_NAME_RULES.TOO_LONG);
+	const checkChatRoomName = () => {
+		const trimmedChatRoomName = chatRoomName.trim();
+
+		if (trimmedChatRoomName.length === 0) setNameError(CHAT_ROOM_CREATION_NAME_RULES.EMPTY);
+		else if (trimmedChatRoomName.length < 2) setNameError(CHAT_ROOM_CREATION_NAME_RULES.TOO_SHORT);
+		else if (trimmedChatRoomName.length > 15) setNameError(CHAT_ROOM_CREATION_NAME_RULES.TOO_LONG);
 		else {
 			setNameError('');
 			return true;
@@ -47,9 +49,11 @@ const ChatRoomCreationModalContent = ({
 		return false;
 	};
 
-	const handlCreateClick = () => {
-		if (!checkTeamSpaceName()) return;
-		mutateCreateChatChannel(userStatus!.profile.lastSeenTeamspaceId, teamspaceName);
+	const handleCreateClick = () => {
+		if (!checkChatRoomName()) return;
+		if (!lastSeenTeamspaceId) return;
+
+		mutateCreateChatChannel(lastSeenTeamspaceId, chatRoomName.trim());
 
 		setIsChatRoomModalOpen(false);
 	};
@@ -65,9 +69,9 @@ const ChatRoomCreationModalContent = ({
 					placeholder='채팅방 이름을 입력하세요'
 					isError={!!nameError}
 					maxLength={15}
-					value={teamspaceName}
+					value={chatRoomName}
 					onChange={handleNameChange}
-					onEnterPress={handlCreateClick}
+					onEnterPress={handleCreateClick}
 				/>
 				<Flex height='14' align='center'>
 					{nameError && (
@@ -79,10 +83,10 @@ const ChatRoomCreationModalContent = ({
 			</Flex>
 			<Flex gap='6' justify='right' marginRight='20'>
 				<Flex width='60'>
-					<Button label='취소' variant='secondary' size='sm' isFull onClick={handleCancleClick} />
+					<Button label='취소' variant='secondary' size='sm' isFull onClick={handleCancelClick} />
 				</Flex>
 				<Flex width='60'>
-					<Button label='만들기' variant='primary' size='sm' isFull onClick={handlCreateClick} />
+					<Button label='만들기' variant='primary' size='sm' isFull onClick={handleCreateClick} />
 				</Flex>
 			</Flex>
 		</S.ChatRoomCreationModalContentContainer>
