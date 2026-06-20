@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useCallback, useRef, useState } from 'react';
 import LatestMessageBox from '@components/Chat/LatestMessageBox/LatestMessageBox';
 import MyMessageBox from '@components/Chat/MyMessageBox/MyMessageBox';
 import OtherMessageBox from '@components/Chat/OtherMessageBox/OtherMessageBox';
@@ -6,6 +6,7 @@ import { Button } from '@components/common/Button/Button';
 import Flex from '@components/common/Flex/Flex';
 import IconButton from '@components/common/IconButton/IconButton';
 import Text from '@components/common/Text/Text';
+import useChatInfiniteScroll from '@hooks/chatting/useChatInfiniteScroll';
 import useChatInput from '@hooks/chatting/useChatInput';
 import useChatMessages from '@hooks/chatting/useChatMessages';
 import useChatScroll from '@hooks/chatting/useChatScroll';
@@ -16,22 +17,23 @@ import * as S from './Chatting.styled';
 
 const Chatting = ({ selectedChat }: { selectedChat: number }) => {
 	const { userStatus } = useUserStatusQuery();
-	const [prevHeight, setPrevHeight] = useState(0);
+	const chatRef = useRef<HTMLDivElement | null>(null);
+	const [chatContainer, setChatContainer] = useState<HTMLDivElement | null>(null);
 
 	const {
 		chatHistory,
-		chatRef,
-		isFetching,
+		isFetchingNextPage,
 		hasNextPage,
+		paginationVersion,
 		setChatHistory,
 		fetchNextPage,
 	} = useChatMessages({
 		selectedChat,
 		userStatus,
-		setPrevHeight,
 	});
 
 	const {
+		isInitialScrollComplete,
 		isLatestMessageVisible,
 		messageEndRef,
 		handleLatestMessageClick,
@@ -41,7 +43,15 @@ const Chatting = ({ selectedChat }: { selectedChat: number }) => {
 		chatHistory,
 		setChatHistory,
 		chatRef,
-		prevHeight,
+	});
+
+	const { topSentinelRef } = useChatInfiniteScroll({
+		chatContainer,
+		hasNextPage,
+		isFetchingNextPage,
+		isInitialScrollComplete,
+		paginationVersion,
+		fetchNextPage,
 	});
 
 	const {
@@ -59,21 +69,19 @@ const Chatting = ({ selectedChat }: { selectedChat: number }) => {
 
 	useChatSubscription({ selectedChat, userStatus, handleCheckScroll });
 
+	const handleChatContainerRef = useCallback((element: HTMLDivElement | null) => {
+		chatRef.current = element;
+
+		setChatContainer(element);
+	}, []);
+
 	return (
 		<S.ChattingContainer>
-			<S.ChattingListContainer ref={chatRef}>
-				<S.InfiniteScrollContainer
-					loadMore={() => {
-						if (!isFetching) fetchNextPage();
-					}}
-					isReverse
-					hasMore={hasNextPage}
-					useWindow={false}
-					initialLoad={false}>
+			<S.ChattingListContainer ref={handleChatContainerRef}>
+				<S.ChatMessageList>
 					{chatHistory &&
 						chatHistory.chatChannelMessages.map((msg, index, array) => {
-							const previousMsg =
-								index < array.length - 1 ? array[index + 1] : null;
+							const previousMsg = index < array.length - 1 ? array[index + 1] : null;
 							const nextMsg = index > 0 ? array[index - 1] : null;
 
 							return (
@@ -149,7 +157,8 @@ const Chatting = ({ selectedChat }: { selectedChat: number }) => {
 								</Flex>
 							);
 						})}
-				</S.InfiniteScrollContainer>
+					<S.ChatTopSentinel ref={topSentinelRef} />
+				</S.ChatMessageList>
 				<S.MessageEndWrapper ref={messageEndRef} />
 			</S.ChattingListContainer>
 			{isLatestMessageVisible && chatHistory && (
@@ -166,12 +175,7 @@ const Chatting = ({ selectedChat }: { selectedChat: number }) => {
 					maxLength={1000}
 					placeholder='메세지 입력'
 				/>
-				<Flex
-					height='38'
-					paddingLeft='4'
-					paddingRight='4'
-					justify='space-between'
-					align='center'>
+				<Flex height='38' paddingLeft='4' paddingRight='4' justify='space-between' align='center'>
 					<Flex paddingLeft='3' paddingRight='3' gap='4'>
 						<IconButton
 							icon='Image'
@@ -193,11 +197,7 @@ const Chatting = ({ selectedChat }: { selectedChat: number }) => {
 							size='md'
 							onClick={handleFileUploadClick}
 						/>
-						<S.ImgUploadWrapper
-							type='file'
-							onChange={handleFileChange}
-							ref={inputFileRef}
-						/>
+						<S.ImgUploadWrapper type='file' onChange={handleFileChange} ref={inputFileRef} />
 					</Flex>
 					<Flex paddingLeft='4' paddingRight='4' gap='10' align='center'>
 						<Text size='sm' weight='semiBold' color='tertiary'>

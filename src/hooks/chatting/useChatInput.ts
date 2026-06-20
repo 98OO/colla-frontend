@@ -8,7 +8,7 @@ import type { UserInformation } from '@type/user';
 interface useChatInputProps {
 	selectedChat: number;
 	userStatus: UserInformation | undefined;
-	messageEndRef: React.RefObject<HTMLInputElement>;
+	messageEndRef: React.RefObject<HTMLDivElement>;
 }
 
 const useChatInput = (props: useChatInputProps) => {
@@ -28,10 +28,7 @@ const useChatInput = (props: useChatInputProps) => {
 	const handleText = () => {
 		if (userStatus) {
 			stompClient?.send(
-				END_POINTS.SEND_MESSAGE(
-					userStatus.profile.lastSeenTeamspaceId,
-					selectedChat
-				),
+				END_POINTS.SEND_MESSAGE(userStatus.profile.lastSeenTeamspaceId, selectedChat),
 				{},
 				JSON.stringify({
 					chatType: 'TEXT',
@@ -53,9 +50,7 @@ const useChatInput = (props: useChatInputProps) => {
 		inputFileRef.current?.click();
 	};
 
-	const handleImageChange = async (
-		event: React.ChangeEvent<HTMLInputElement>
-	) => {
+	const handleImageChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
 		if (event.target.files && event.target.files[0]) {
 			if (isFileSizeExceedLimit(event.target.files[0])) {
 				makeToast('이미지 크기는 최대 100MB입니다.', 'Warning');
@@ -69,10 +64,7 @@ const useChatInput = (props: useChatInputProps) => {
 				);
 				if (imageUrl && userStatus) {
 					stompClient?.send(
-						END_POINTS.SEND_MESSAGE(
-							userStatus.profile.lastSeenTeamspaceId,
-							selectedChat
-						),
+						END_POINTS.SEND_MESSAGE(userStatus.profile.lastSeenTeamspaceId, selectedChat),
 						{},
 						JSON.stringify({
 							chatType: 'IMAGE',
@@ -111,10 +103,7 @@ const useChatInput = (props: useChatInputProps) => {
 				);
 				if (fileUrl && userStatus) {
 					stompClient?.send(
-						END_POINTS.SEND_MESSAGE(
-							userStatus.profile.lastSeenTeamspaceId,
-							selectedChat
-						),
+						END_POINTS.SEND_MESSAGE(userStatus.profile.lastSeenTeamspaceId, selectedChat),
 						{},
 						JSON.stringify({
 							chatType: 'FILE',

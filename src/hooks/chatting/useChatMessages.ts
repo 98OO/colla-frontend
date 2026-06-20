@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import useChatMessageQuery from '@hooks/queries/chat/useChatMesaageQuery';
 import useSocketStore from '@stores/socketStore';
 import { END_POINTS } from '@constants/api';
@@ -8,52 +8,51 @@ import type { UserInformation } from '@type/user';
 interface useChatMessagesProps {
 	selectedChat: number;
 	userStatus: UserInformation | undefined;
-	setPrevHeight: React.Dispatch<React.SetStateAction<number>>;
 }
 
 const useChatMessages = (props: useChatMessagesProps) => {
-	const { selectedChat, userStatus, setPrevHeight } = props;
+	const { selectedChat, userStatus } = props;
 	const [chatHistory, setChatHistory] = useState<ChatData | null>(null);
-	const chatRef = useRef<HTMLDivElement>(null);
+	const [paginationVersion, setPaginationVersion] = useState(0);
 	const { stompClient } = useSocketStore();
-	const { messages, fetchNextPage, hasNextPage, isFetching } =
-		useChatMessageQuery(selectedChat, userStatus?.profile.lastSeenTeamspaceId);
+	const { messages, fetchNextPage, hasNextPage, isFetchingNextPage } = useChatMessageQuery(
+		selectedChat,
+		userStatus?.profile.lastSeenTeamspaceId
+	);
+	const messagePages = messages?.pages;
 
 	useEffect(() => {
-		if (
-			messages &&
-			messages.pages[0].chatChannelMessages.length > 0 &&
-			userStatus
-		) {
+		if (!messagePages) return;
+
+		if (messagePages[0].chatChannelMessages.length > 0 && userStatus) {
 			stompClient?.send(
 				END_POINTS.READ_MESSAGE(
 					userStatus.profile.lastSeenTeamspaceId,
 					selectedChat,
-					messages.pages[0].chatChannelMessages[0].id
+					messagePages[0].chatChannelMessages[0].id
 				)
 			);
 		}
+	}, [messagePages, selectedChat, stompClient, userStatus]);
 
-		if (chatRef.current) setPrevHeight(chatRef.current.scrollHeight);
+	useEffect(() => {
+		if (!messagePages) return;
 
 		setChatHistory((prevChatHistory) => {
-			const lastPageMessages =
-				messages?.pages[messages.pages.length - 1]?.chatChannelMessages ?? [];
+			const lastPageMessages = messagePages[messagePages.length - 1]?.chatChannelMessages ?? [];
 
 			return {
-				chatChannelMessages: [
-					...(prevChatHistory?.chatChannelMessages ?? []),
-					...lastPageMessages,
-				],
+				chatChannelMessages: [...(prevChatHistory?.chatChannelMessages ?? []), ...lastPageMessages],
 			};
 		});
-	}, [messages?.pages]);
+		setPaginationVersion((version) => version + 1);
+	}, [messagePages]);
 
 	return {
 		chatHistory,
-		chatRef,
-		isFetching,
+		isFetchingNextPage,
 		hasNextPage,
+		paginationVersion,
 		setChatHistory,
 		fetchNextPage,
 	};

@@ -1,10 +1,9 @@
-import { useState, useEffect, useRef } from 'react';
+import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { CHAT_AUTO_SCROLL_LIMIT } from '@constants/size';
 import type { Message, ChatData } from '@type/chat';
 import type { UserInformation } from '@type/user';
 
 interface useChatScrollProps {
-	prevHeight: number;
 	userStatus: UserInformation | undefined;
 	chatHistory: ChatData | null;
 	chatRef: React.RefObject<HTMLDivElement>;
@@ -12,38 +11,29 @@ interface useChatScrollProps {
 }
 
 const useChatScroll = (props: useChatScrollProps) => {
-	const { userStatus, chatHistory, setChatHistory, chatRef, prevHeight } =
-		props;
+	const { userStatus, chatHistory, setChatHistory, chatRef } = props;
 	const [isScrollAtBottom, setIsScrollAtBottom] = useState(false);
-	const [initialLoad, setInitialLoad] = useState(true);
+	const [isInitialScrollComplete, setIsInitialScrollComplete] = useState(false);
 	const [isLatestMessageVisible, setIsLatestMessageVisible] = useState(false);
-	const messageEndRef = useRef<HTMLInputElement | null>(null);
+	const messageEndRef = useRef<HTMLDivElement | null>(null);
 
 	useEffect(() => {
-		if (!chatHistory || chatHistory.chatChannelMessages.length === 0) return;
+		if (!chatHistory || chatHistory.chatChannelMessages.length === 0 || !isScrollAtBottom) {
+			return;
+		}
 
-		if (isScrollAtBottom) {
-			messageEndRef.current?.scrollIntoView();
-			setIsScrollAtBottom(false);
-		} else if (chatRef.current)
-			window.scrollTo({ top: chatRef.current.scrollHeight - prevHeight });
-	}, [chatHistory]);
+		messageEndRef.current?.scrollIntoView();
+		setIsScrollAtBottom(false);
+	}, [chatHistory, isScrollAtBottom]);
 
-	useEffect(() => {
-		const observedElement = chatRef.current;
-		const resizeObserver = new ResizeObserver(() => {
-			if (initialLoad) {
-				messageEndRef.current?.scrollIntoView();
-				setInitialLoad(false);
-			}
-		});
+	useLayoutEffect(() => {
+		if (isInitialScrollComplete || !chatHistory || chatHistory.chatChannelMessages.length === 0) {
+			return;
+		}
 
-		if (observedElement) resizeObserver.observe(observedElement);
-
-		return () => {
-			if (observedElement) resizeObserver.unobserve(observedElement);
-		};
-	}, []);
+		messageEndRef.current?.scrollIntoView();
+		setIsInitialScrollComplete(true);
+	}, [chatHistory, isInitialScrollComplete]);
 
 	useEffect(() => {
 		const scrollElement = chatRef.current;
@@ -53,9 +43,7 @@ const useChatScroll = (props: useChatScrollProps) => {
 			if (!ticking && scrollElement) {
 				requestAnimationFrame(() => {
 					const isBottom =
-						scrollElement.scrollHeight -
-							scrollElement.scrollTop -
-							scrollElement.clientHeight <=
+						scrollElement.scrollHeight - scrollElement.scrollTop - scrollElement.clientHeight <=
 						CHAT_AUTO_SCROLL_LIMIT;
 
 					if (isBottom) setIsLatestMessageVisible(false);
@@ -71,7 +59,7 @@ const useChatScroll = (props: useChatScrollProps) => {
 		return () => {
 			scrollElement?.removeEventListener('scroll', handleScroll);
 		};
-	}, []);
+	}, [chatRef]);
 
 	const handleLatestMessageClick = () => {
 		setIsLatestMessageVisible(false);
@@ -82,9 +70,7 @@ const useChatScroll = (props: useChatScrollProps) => {
 		if (userStatus) {
 			const isAutoScroll =
 				chatRef.current &&
-				chatRef.current.scrollHeight -
-					chatRef.current.clientHeight -
-					chatRef.current.scrollTop <=
+				chatRef.current.scrollHeight - chatRef.current.clientHeight - chatRef.current.scrollTop <=
 					CHAT_AUTO_SCROLL_LIMIT;
 
 			if (parsedMessage.author.id !== userStatus.profile.userId) {
@@ -102,15 +88,13 @@ const useChatScroll = (props: useChatScrollProps) => {
 			}
 
 			setChatHistory((prevChatHistory) => ({
-				chatChannelMessages: [
-					parsedMessage,
-					...(prevChatHistory?.chatChannelMessages ?? []),
-				],
+				chatChannelMessages: [parsedMessage, ...(prevChatHistory?.chatChannelMessages ?? [])],
 			}));
 		}
 	};
 
 	return {
+		isInitialScrollComplete,
 		isLatestMessageVisible,
 		messageEndRef,
 		handleLatestMessageClick,

@@ -1,4 +1,3 @@
-import InfiniteScroll from 'react-infinite-scroller';
 import styled from 'styled-components';
 import theme from '@styles/theme';
 
@@ -31,9 +30,13 @@ export const ChattingListContainer = styled.div`
 	}
 `;
 
-export const InfiniteScrollContainer = styled(InfiniteScroll)`
+export const ChatMessageList = styled.div`
 	display: flex;
 	flex-direction: column-reverse;
+`;
+
+export const ChatTopSentinel = styled.div`
+	min-height: 1px;
 `;
 
 export const ChattingInputContainer = styled.div`
