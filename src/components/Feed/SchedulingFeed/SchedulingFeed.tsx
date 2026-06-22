@@ -33,13 +33,8 @@ const SchedulingFeed = ({
 	closeDetail,
 }: SchedulingFeedProps) => {
 	const { feedId, details } = feedData;
-	const {
-		minTimeSegment,
-		maxTimeSegment,
-		totalAvailability,
-		responses,
-		numOfParticipants,
-	} = details;
+	const { minTimeSegment, maxTimeSegment, totalAvailability, responses, numOfParticipants } =
+		details;
 
 	const { userStatus } = useUserStatusQuery();
 	const teamspaceId = userStatus?.profile.lastSeenTeamspaceId;
@@ -48,9 +43,7 @@ const SchedulingFeed = ({
 	const { mutateSchedulingAvail } = useSchedulingAvailMutation(teamspaceId);
 
 	const [isEditable, setIsEditable] = useState(false);
-	const userResponse = responses.find(
-		(response) => response.user.id === userId
-	);
+	const userResponse = responses.find((response) => response.user.id === userId);
 	const hasExistingResponse = Boolean(userResponse);
 
 	const initialSelectedSlots = useMemo(() => {
@@ -75,9 +68,9 @@ const SchedulingFeed = ({
 	const {
 		setIsDragging,
 		selectedSlots,
-		handleMouseDown,
-		handleMouseEnter,
-		handleMouseUp,
+		handlePointerDown,
+		handlePointerEnter,
+		handlePointerUp,
 		isSelected,
 	} = useScheduleSelection(isEditable, initialSelectedSlots);
 
@@ -90,16 +83,12 @@ const SchedulingFeed = ({
 
 	const columnData = Object.entries(availabilityInRange);
 
-	const handleMouseLeave = () => {
+	const handlePointerLeave = () => {
 		setIsDragging(false);
 	};
 
 	const handleSubmit = async () => {
-		const availabilites = prepareAvailabilities(
-			selectedSlots,
-			minTimeSegment,
-			totalAvailability
-		);
+		const availabilites = prepareAvailabilities(selectedSlots, minTimeSegment, totalAvailability);
 
 		if (!teamspaceId) return;
 
@@ -109,11 +98,8 @@ const SchedulingFeed = ({
 
 	const renderTable = () => {
 		return (
-			<S.TableContainer onMouseLeave={handleMouseLeave}>
-				<TimeColumn
-					minTimeSegment={minTimeSegment}
-					maxTimeSegment={maxTimeSegment}
-				/>
+			<S.TableContainer onPointerLeave={handlePointerLeave}>
+				<TimeColumn minTimeSegment={minTimeSegment} maxTimeSegment={maxTimeSegment} />
 				<S.Table>
 					{columnData.map(([date, availArray]) => (
 						<S.Column key={`column-${date}`}>
@@ -126,16 +112,16 @@ const SchedulingFeed = ({
 									<S.SlotGroup key={slotGroupId}>
 										<S.Slot
 											key={firstSlotId}
-											onMouseDown={() => handleMouseDown(firstSlotId)}
-											onMouseEnter={() => handleMouseEnter(firstSlotId)}
-											onMouseUp={handleMouseUp}
+											onPointerDown={() => handlePointerDown(firstSlotId)}
+											onPointerEnter={() => handlePointerEnter(firstSlotId)}
+											onPointerUp={handlePointerUp}
 											isSelected={isSelected(firstSlotId)}
 										/>
 										<S.Slot
 											key={secondSlotId}
-											onMouseDown={() => handleMouseDown(secondSlotId)}
-											onMouseEnter={() => handleMouseEnter(secondSlotId)}
-											onMouseUp={handleMouseUp}
+											onPointerDown={() => handlePointerDown(secondSlotId)}
+											onPointerEnter={() => handlePointerEnter(secondSlotId)}
+											onPointerUp={handlePointerUp}
 											isSelected={isSelected(secondSlotId)}
 										/>
 									</S.SlotGroup>
@@ -203,18 +189,8 @@ const SchedulingFeed = ({
 						)}
 						{isEditable && (
 							<Flex gap='16'>
-								<Button
-									label='취소'
-									variant='secondary'
-									size='md'
-									onClick={handleCancelEdit}
-								/>
-								<Button
-									label='등록'
-									variant='primary'
-									size='md'
-									onClick={handleSubmit}
-								/>
+								<Button label='취소' variant='secondary' size='md' onClick={handleCancelEdit} />
+								<Button label='등록' variant='primary' size='md' onClick={handleSubmit} />
 							</Flex>
 						)}
 					</Flex>

@@ -1,9 +1,6 @@
 import { useState } from 'react';
 
-const useSelection = (
-	isEditable: boolean,
-	initialSlots: Set<string> = new Set()
-) => {
+const useSelection = (isEditable: boolean, initialSlots: Set<string> = new Set()) => {
 	const [isDragging, setIsDragging] = useState(false);
 	const [selectedSlots, setSelectedSlots] = useState<Set<string>>(initialSlots);
 
@@ -21,20 +18,20 @@ const useSelection = (
 		});
 	};
 
-	const handleMouseDown = (slotId: string) => {
+	const handlePointerDown = (slotId: string) => {
 		if (isEditable) {
 			setIsDragging(true);
 			toggleSlotSelection(slotId);
 		}
 	};
 
-	const handleMouseEnter = (slotId: string) => {
+	const handlePointerEnter = (slotId: string) => {
 		if (isDragging && isEditable) {
 			toggleSlotSelection(slotId);
 		}
 	};
 
-	const handleMouseUp = () => {
+	const handlePointerUp = () => {
 		if (isEditable) {
 			setIsDragging(false);
 		}
@@ -46,9 +43,9 @@ const useSelection = (
 		setIsDragging,
 		selectedSlots,
 		toggleSlotSelection,
-		handleMouseDown,
-		handleMouseEnter,
-		handleMouseUp,
+		handlePointerDown,
+		handlePointerEnter,
+		handlePointerUp,
 		isSelected,
 	};
 };
