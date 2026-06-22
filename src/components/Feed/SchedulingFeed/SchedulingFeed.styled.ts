@@ -47,6 +47,7 @@ export const TableContainer = styled.div`
 	display: flex;
 	flex-grow: 1;
 	margin-bottom: ${theme.units.spacing.space32};
+	user-select: none;
 `;
 
 export const TimeColumn = styled.div`
@@ -106,10 +107,11 @@ export const SlotGroup = styled.div`
 
 export const Slot = styled.div<{ isSelected: boolean }>`
 	height: 20px;
-	background-color: ${({ isSelected }) =>
-		isSelected ? theme.color.bg.iSelected : 'transparent'};
+	background-color: ${({ isSelected }) => (isSelected ? theme.color.bg.iSelected : 'transparent')};
 	cursor: pointer;
+	touch-action: none;
 `;
+
 export const HeaderContainer = styled.div`
 	display: flex;
 	flex-grow: 1;
