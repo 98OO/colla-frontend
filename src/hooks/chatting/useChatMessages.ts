@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import useChatMessageQuery from '@hooks/queries/chat/useChatMessageQuery';
 import useSocketStore from '@stores/socketStore';
 import { END_POINTS } from '@constants/api';
@@ -14,6 +14,7 @@ const useChatMessages = (props: useChatMessagesProps) => {
 	const { selectedChat, userStatus } = props;
 	const [chatHistory, setChatHistory] = useState<ChatData | null>(null);
 	const [paginationVersion, setPaginationVersion] = useState(0);
+	const lastReadMessageIdRef = useRef<number | null>(null);
 	const { stompClient } = useSocketStore();
 	const { messages, fetchNextPage, hasNextPage, isFetchingNextPage } = useChatMessageQuery(
 		selectedChat,
@@ -24,19 +25,26 @@ const useChatMessages = (props: useChatMessagesProps) => {
 	useEffect(() => {
 		setChatHistory(null);
 		setPaginationVersion(0);
+		lastReadMessageIdRef.current = null;
 	}, [selectedChat]);
 
 	useEffect(() => {
 		if (!messagePages) return;
 
-		if (messagePages[0].chatChannelMessages.length > 0 && userStatus) {
+		const latestMessageId = messagePages[0].chatChannelMessages[0]?.id;
+
+		if (!latestMessageId || !userStatus) return;
+		if (lastReadMessageIdRef.current === latestMessageId) return;
+
+		if (messagePages[0].chatChannelMessages.length > 0) {
 			stompClient?.send(
 				END_POINTS.READ_MESSAGE(
 					userStatus.profile.lastSeenTeamspaceId,
 					selectedChat,
-					messagePages[0].chatChannelMessages[0].id
+					latestMessageId
 				)
 			);
+			lastReadMessageIdRef.current = latestMessageId;
 		}
 	}, [messagePages, selectedChat, stompClient, userStatus]);
 
