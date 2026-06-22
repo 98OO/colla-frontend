@@ -1,11 +1,9 @@
 import { useInView, type IntersectionOptions } from 'react-intersection-observer';
 
-type UseIntersectionObserverProps = Pick<
-	IntersectionOptions,
-	'root' | 'rootMargin' | 'threshold'
-> & {
+interface UseIntersectionObserverProps
+	extends Pick<IntersectionOptions, 'root' | 'rootMargin' | 'threshold'> {
 	enabled?: boolean;
-};
+}
 
 const useIntersectionObserver = ({
 	root = null,
