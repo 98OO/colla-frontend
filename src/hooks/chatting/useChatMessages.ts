@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import useChatMessageQuery from '@hooks/queries/chat/useChatMesaageQuery';
+import useChatMessageQuery from '@hooks/queries/chat/useChatMessageQuery';
 import useSocketStore from '@stores/socketStore';
 import { END_POINTS } from '@constants/api';
 import type { ChatData } from '@type/chat';
@@ -20,6 +20,11 @@ const useChatMessages = (props: useChatMessagesProps) => {
 		userStatus?.profile.lastSeenTeamspaceId
 	);
 	const messagePages = messages?.pages;
+
+	useEffect(() => {
+		setChatHistory(null);
+		setPaginationVersion(0);
+	}, [selectedChat]);
 
 	useEffect(() => {
 		if (!messagePages) return;
