@@ -31,21 +31,16 @@ const useChatMessages = (props: useChatMessagesProps) => {
 	useEffect(() => {
 		if (!messagePages) return;
 
-		const latestMessageId = messagePages[0].chatChannelMessages[0]?.id;
+		const latestMessages = messagePages[0]?.chatChannelMessages ?? [];
+		const latestMessageId = latestMessages[0]?.id;
 
 		if (!latestMessageId || !userStatus) return;
 		if (lastReadMessageIdRef.current === latestMessageId) return;
 
-		if (messagePages[0].chatChannelMessages.length > 0) {
-			stompClient?.send(
-				END_POINTS.READ_MESSAGE(
-					userStatus.profile.lastSeenTeamspaceId,
-					selectedChat,
-					latestMessageId
-				)
-			);
-			lastReadMessageIdRef.current = latestMessageId;
-		}
+		stompClient?.send(
+			END_POINTS.READ_MESSAGE(userStatus.profile.lastSeenTeamspaceId, selectedChat, latestMessageId)
+		);
+		lastReadMessageIdRef.current = latestMessageId;
 	}, [messagePages, selectedChat, stompClient, userStatus]);
 
 	useEffect(() => {
