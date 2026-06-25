@@ -1,60 +1,68 @@
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 type DragMode = 'add' | 'remove';
 
 const useSelection = (isEditable: boolean, initialSlots: Set<string> = new Set()) => {
-	const [isDragging, setIsDragging] = useState(false);
 	const [selectedSlots, setSelectedSlots] = useState<Set<string>>(initialSlots);
 
+	const draggingRef = useRef(false);
 	const dragModeRef = useRef<DragMode>('add');
+	const dragSelectionRef = useRef<Set<string>>(new Set());
 
-	const updateSelection = (slotId: string) => {
-		setSelectedSlots((prev) => {
-			const isSelected = prev.has(slotId);
+	const updateSelection = (slotId: string, slotEl: Element) => {
+		const isSelected = dragSelectionRef.current.has(slotId);
 
-			if (dragModeRef.current === 'add' && isSelected) return prev;
-			if (dragModeRef.current === 'remove' && !isSelected) return prev;
+		if (dragModeRef.current === 'add' && isSelected) return;
+		if (dragModeRef.current === 'remove' && !isSelected) return;
 
-			const updated = new Set(prev);
-
-			if (dragModeRef.current === 'add') {
-				updated.add(slotId);
-			} else {
-				updated.delete(slotId);
-			}
-
-			return updated;
-		});
+		if (dragModeRef.current === 'add') {
+			dragSelectionRef.current.add(slotId);
+			slotEl.classList.add('selected');
+		} else {
+			dragSelectionRef.current.delete(slotId);
+			slotEl.classList.remove('selected');
+		}
 	};
 
-	const handlePointerDown = (slotId: string) => {
+	const handlePointerDown = (slotId: string, slotEl: Element) => {
 		if (!isEditable) return;
 
-		setIsDragging(true);
+		draggingRef.current = true;
+		dragSelectionRef.current = new Set(selectedSlots);
 		dragModeRef.current = selectedSlots.has(slotId) ? 'remove' : 'add';
-		updateSelection(slotId);
+
+		updateSelection(slotId, slotEl);
 	};
 
-	const handlePointerEnter = (slotId: string) => {
-		if (!isDragging || !isEditable) return;
+	const handlePointerEnter = (slotId: string, slotEl: Element) => {
+		if (!draggingRef.current || !isEditable) return;
 
-		updateSelection(slotId);
+		updateSelection(slotId, slotEl);
 	};
 
-	const handlePointerUp = () => {
-		if (!isEditable) return;
+	useEffect(() => {
+		const commitSelection = () => {
+			if (!draggingRef.current) return;
 
-		setIsDragging(false);
-	};
+			draggingRef.current = false;
+			setSelectedSlots(new Set(dragSelectionRef.current));
+		};
+
+		document.addEventListener('pointerup', commitSelection);
+		document.addEventListener('pointercancel', commitSelection);
+
+		return () => {
+			document.removeEventListener('pointerup', commitSelection);
+			document.removeEventListener('pointercancel', commitSelection);
+		};
+	}, []);
 
 	const isSelected = (slotId: string) => selectedSlots.has(slotId);
 
 	return {
 		selectedSlots,
-		setIsDragging,
 		handlePointerDown,
 		handlePointerEnter,
-		handlePointerUp,
 		isSelected,
 	};
 };

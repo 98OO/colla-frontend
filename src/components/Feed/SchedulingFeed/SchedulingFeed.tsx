@@ -65,14 +65,10 @@ const SchedulingFeed = ({
 	const handleAddSchedule = () => setIsEditable(true);
 	const handleCancelEdit = () => setIsEditable(false);
 
-	const {
-		setIsDragging,
-		selectedSlots,
-		handlePointerDown,
-		handlePointerEnter,
-		handlePointerUp,
-		isSelected,
-	} = useScheduleSelection(isEditable, initialSelectedSlots);
+	const { selectedSlots, handlePointerDown, handlePointerEnter, isSelected } = useScheduleSelection(
+		isEditable,
+		initialSelectedSlots
+	);
 
 	const availabilityInRange = getAvailabilityInRange(
 		totalAvailability,
@@ -82,10 +78,6 @@ const SchedulingFeed = ({
 	const availabilitySlots = convertAvailabilityToSlots(availabilityInRange);
 
 	const columnData = Object.entries(availabilityInRange);
-
-	const handlePointerLeave = () => {
-		setIsDragging(false);
-	};
 
 	const handleSubmit = async () => {
 		const availabilites = prepareAvailabilities(selectedSlots, minTimeSegment, totalAvailability);
@@ -98,7 +90,7 @@ const SchedulingFeed = ({
 
 	const renderTable = () => {
 		return (
-			<S.TableContainer onPointerLeave={handlePointerLeave}>
+			<S.TableContainer>
 				<TimeColumn minTimeSegment={minTimeSegment} maxTimeSegment={maxTimeSegment} />
 				<S.Table>
 					{columnData.map(([date, availArray]) => (
@@ -112,17 +104,15 @@ const SchedulingFeed = ({
 									<S.SlotGroup key={slotGroupId}>
 										<S.Slot
 											key={firstSlotId}
-											onPointerDown={() => handlePointerDown(firstSlotId)}
-											onPointerEnter={() => handlePointerEnter(firstSlotId)}
-											onPointerUp={handlePointerUp}
-											isSelected={isSelected(firstSlotId)}
+											className={isSelected(firstSlotId) ? 'selected' : ''}
+											onPointerDown={(e) => handlePointerDown(firstSlotId, e.currentTarget)}
+											onPointerEnter={(e) => handlePointerEnter(firstSlotId, e.currentTarget)}
 										/>
 										<S.Slot
 											key={secondSlotId}
-											onPointerDown={() => handlePointerDown(secondSlotId)}
-											onPointerEnter={() => handlePointerEnter(secondSlotId)}
-											onPointerUp={handlePointerUp}
-											isSelected={isSelected(secondSlotId)}
+											className={isSelected(secondSlotId) ? 'selected' : ''}
+											onPointerDown={(e) => handlePointerDown(secondSlotId, e.currentTarget)}
+											onPointerEnter={(e) => handlePointerEnter(secondSlotId, e.currentTarget)}
 										/>
 									</S.SlotGroup>
 								);
