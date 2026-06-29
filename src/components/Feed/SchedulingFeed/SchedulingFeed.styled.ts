@@ -75,7 +75,7 @@ export const TimeSlot = styled.div`
 	box-sizing: border-box;
 `;
 
-export const Table = styled.div`
+export const Grid = styled.div`
 	display: flex;
 	flex-grow: 1;
 	font-size: ${theme.typography.fontSize.body.md};

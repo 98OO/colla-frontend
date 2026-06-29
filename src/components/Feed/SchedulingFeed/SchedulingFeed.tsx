@@ -65,10 +65,14 @@ const SchedulingFeed = ({
 	const handleAddSchedule = () => setIsEditable(true);
 	const handleCancelEdit = () => setIsEditable(false);
 
-	const { selectedSlots, handlePointerDown, handlePointerEnter, isSelected } = useScheduleSelection(
-		isEditable,
-		initialSelectedSlots
-	);
+	const {
+		gridRef,
+		selectedSlots,
+		isSelected,
+		commitSelection,
+		handlePointerDown,
+		handlePointerMove,
+	} = useScheduleSelection(isEditable, initialSelectedSlots);
 
 	const availabilityInRange = getAvailabilityInRange(
 		totalAvailability,
@@ -92,7 +96,13 @@ const SchedulingFeed = ({
 		return (
 			<S.TableContainer>
 				<TimeColumn minTimeSegment={minTimeSegment} maxTimeSegment={maxTimeSegment} />
-				<S.Table>
+				<S.Grid
+					ref={gridRef}
+					onPointerDown={handlePointerDown}
+					onPointerMove={handlePointerMove}
+					onPointerUp={commitSelection}
+					onPointerLeave={commitSelection}
+					onPointerCancel={commitSelection}>
 					{columnData.map(([date, availArray]) => (
 						<S.Column key={`column-${date}`}>
 							{Array.from({ length: availArray.length / 2 }).map((_, idx) => {
@@ -104,22 +114,20 @@ const SchedulingFeed = ({
 									<S.SlotGroup key={slotGroupId}>
 										<S.Slot
 											key={firstSlotId}
+											data-slot-id={firstSlotId}
 											className={isSelected(firstSlotId) ? 'selected' : ''}
-											onPointerDown={(e) => handlePointerDown(firstSlotId, e.currentTarget)}
-											onPointerEnter={(e) => handlePointerEnter(firstSlotId, e.currentTarget)}
 										/>
 										<S.Slot
 											key={secondSlotId}
+											data-slot-id={secondSlotId}
 											className={isSelected(secondSlotId) ? 'selected' : ''}
-											onPointerDown={(e) => handlePointerDown(secondSlotId, e.currentTarget)}
-											onPointerEnter={(e) => handlePointerEnter(secondSlotId, e.currentTarget)}
 										/>
 									</S.SlotGroup>
 								);
 							})}
 						</S.Column>
 					))}
-				</S.Table>
+				</S.Grid>
 			</S.TableContainer>
 		);
 	};
