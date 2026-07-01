@@ -17,8 +17,7 @@ export const MyMessageBoxWrapper = styled.div<{ state: boolean; type: string }>`
 		props.type === 'TEXT'
 			? `${theme.units.spacing.space10} ${theme.units.spacing.space14}`
 			: `${theme.units.spacing.space10} 0 0 0`};
-	background-color: ${(props) =>
-		props.type === 'TEXT' ? theme.color.bg.iPrimary : 'none'};
+	background-color: ${(props) => (props.type === 'TEXT' ? theme.color.bg.iPrimary : 'none')};
 	border-radius: ${(props) =>
 		props.state
 			? `${theme.units.radius.radius20} 0 ${theme.units.radius.radius20} ${theme.units.radius.radius20}`
@@ -47,11 +46,6 @@ export const TimeWrapper = styled.div`
 
 export const ImageWrapper = styled.div`
 	display: flex;
+	flex-wrap: wrap;
 	gap: ${theme.units.spacing.space10};
-
-	img {
-		width: 100%;
-		height: 100%;
-		object-fit: cover;
-	}
 `;

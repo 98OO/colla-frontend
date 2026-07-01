@@ -7,9 +7,7 @@ export const OtherMessageBoxContainer = styled.div<{
 	display: flex;
 	width: 100%;
 	padding-top: ${(props) =>
-		props.state
-			? `${theme.units.spacing.space16}`
-			: `${theme.units.spacing.space6}`};
+		props.state ? `${theme.units.spacing.space16}` : `${theme.units.spacing.space6}`};
 	gap: ${theme.units.spacing.space8};
 `;
 
@@ -25,8 +23,7 @@ export const OtherMessageBoxWrapper = styled.div<{
 		props.type === 'TEXT'
 			? `${theme.units.spacing.space10} ${theme.units.spacing.space14}`
 			: `${theme.units.spacing.space10} 0 0 0`};
-	background-color: ${(props) =>
-		props.type === 'TEXT' ? theme.color.bg.secondary : 'none'};
+	background-color: ${(props) => (props.type === 'TEXT' ? theme.color.bg.secondary : 'none')};
 	border-radius: ${(props) =>
 		props.state
 			? `0 ${theme.units.radius.radius20} ${theme.units.radius.radius20} ${theme.units.radius.radius20}`
@@ -62,11 +59,6 @@ export const AvatarSpacer = styled.div`
 
 export const ImageWrapper = styled.div`
 	display: flex;
+	flex-wrap: wrap;
 	gap: ${theme.units.spacing.space10};
-
-	img {
-		width: 100%;
-		height: 100%;
-		object-fit: cover;
-	}
 `;
