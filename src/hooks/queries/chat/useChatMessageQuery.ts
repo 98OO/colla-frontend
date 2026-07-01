@@ -1,19 +1,15 @@
 import getChatMessage from '@apis/chat/getChatMessage';
 import { useInfiniteQuery } from '@tanstack/react-query';
 
-const useChatMessageQuery = (
-	chatChannelId: number,
-	teamspaceId: number | undefined
-) => {
+const useChatMessageQuery = (chatChannelId: number, teamspaceId: number | undefined) => {
 	const {
 		data: messages,
 		hasNextPage,
-		isFetching,
+		isFetchingNextPage,
 		fetchNextPage,
 	} = useInfiniteQuery({
 		queryKey: ['chatMessage', chatChannelId, teamspaceId],
-		queryFn: ({ pageParam }) =>
-			getChatMessage({ teamspaceId, chatChannelId, before: pageParam }),
+		queryFn: ({ pageParam }) => getChatMessage({ teamspaceId, chatChannelId, before: pageParam }),
 		initialPageParam: undefined,
 		getNextPageParam: (lastPage) => {
 			const lastChat = lastPage.chatChannelMessages;
@@ -31,7 +27,7 @@ const useChatMessageQuery = (
 		messages,
 		fetchNextPage,
 		hasNextPage,
-		isFetching,
+		isFetchingNextPage,
 	};
 };
 
