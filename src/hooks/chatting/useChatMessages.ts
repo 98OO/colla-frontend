@@ -23,12 +23,6 @@ const useChatMessages = (props: useChatMessagesProps) => {
 	const messagePages = messages?.pages;
 
 	useEffect(() => {
-		setChatHistory(null);
-		setPaginationVersion(0);
-		lastReadMessageIdRef.current = null;
-	}, [selectedChat]);
-
-	useEffect(() => {
 		if (!messagePages) return;
 
 		const latestMessages = messagePages[0]?.chatChannelMessages ?? [];
