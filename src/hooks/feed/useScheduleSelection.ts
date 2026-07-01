@@ -1,8 +1,16 @@
 import { useRef, useState, type PointerEvent } from 'react';
 
+const SLOT_SELECTOR = '[data-slot-id]';
+
 type DragMode = 'add' | 'remove';
 type Position = { x: number; y: number };
 type Area = { left: number; right: number; top: number; bottom: number };
+type SlotSnapshot = { slotId: string; slotEl: Element; slotArea: Area };
+
+const toGridPosition = (e: PointerEvent<HTMLDivElement>, gridRect: DOMRect): Position => ({
+	x: e.clientX - gridRect.left,
+	y: e.clientY - gridRect.top,
+});
 
 const getDragArea = (a: Position, b: Position): Area => ({
 	left: Math.min(a.x, b.x),
@@ -23,6 +31,29 @@ const useSelection = (isEditable: boolean, initialSlots: Set<string> = new Set()
 
 	const gridRef = useRef<HTMLDivElement>(null);
 	const startPointRef = useRef<Position | null>(null);
+
+	const gridRectRef = useRef<DOMRect | null>(null);
+	const slotSnapshotsRef = useRef<SlotSnapshot[]>([]);
+
+	const captureSlotSnapshots = (gridRect: DOMRect) => {
+		const grid = gridRef.current;
+		if (!grid) return;
+
+		slotSnapshotsRef.current = Array.from(grid.querySelectorAll(SLOT_SELECTOR)).map((slotEl) => {
+			const slotRect = slotEl.getBoundingClientRect();
+
+			return {
+				slotId: (slotEl as HTMLElement).dataset.slotId ?? '',
+				slotEl,
+				slotArea: {
+					left: slotRect.left - gridRect.left,
+					right: slotRect.right - gridRect.left,
+					top: slotRect.top - gridRect.top,
+					bottom: slotRect.bottom - gridRect.top,
+				},
+			};
+		});
+	};
 
 	const updateSelection = (slotId: string, slotEl: Element) => {
 		const isSelected = dragSelectionRef.current.has(slotId);
@@ -45,13 +76,16 @@ const useSelection = (isEditable: boolean, initialSlots: Set<string> = new Set()
 		const gridRect = gridRef.current?.getBoundingClientRect();
 		if (!gridRect) return;
 
-		startPointRef.current = { x: e.clientX - gridRect.left, y: e.clientY - gridRect.top };
-
-		const startSlotEl = document.elementFromPoint(e.clientX, e.clientY)?.closest('[data-slot-id]');
+		const startSlotEl = document.elementFromPoint(e.clientX, e.clientY)?.closest(SLOT_SELECTOR);
 		if (!startSlotEl) return;
 
 		const { slotId } = (startSlotEl as HTMLElement).dataset;
 		if (!slotId) return;
+
+		gridRectRef.current = gridRect;
+		startPointRef.current = toGridPosition(e, gridRect);
+
+		captureSlotSnapshots(gridRect);
 
 		draggingRef.current = true;
 		dragSelectionRef.current = new Set(selectedSlots);
@@ -63,26 +97,19 @@ const useSelection = (isEditable: boolean, initialSlots: Set<string> = new Set()
 	const handlePointerMove = (e: PointerEvent<HTMLDivElement>) => {
 		if (!isEditable || !draggingRef.current) return;
 
-		const gridRect = gridRef.current?.getBoundingClientRect();
-		const startPoint = startPointRef.current;
-		if (!gridRect || !startPoint) return;
+		const gridRect = gridRectRef.current;
+		if (!gridRect) return;
 
-		const curPoint = { x: e.clientX - gridRect.left, y: e.clientY - gridRect.top };
+		const startPoint = startPointRef.current;
+		if (!startPoint) return;
+
+		const curPoint = toGridPosition(e, gridRect);
 		const dragArea = getDragArea(startPoint, curPoint);
 
-		gridRef.current?.querySelectorAll('[data-slot-id]').forEach((slotEl) => {
-			const slotRect = slotEl.getBoundingClientRect();
-			const slotArea = {
-				left: slotRect.left - gridRect.left,
-				right: slotRect.right - gridRect.left,
-				top: slotRect.top - gridRect.top,
-				bottom: slotRect.bottom - gridRect.top,
-			};
+		slotSnapshotsRef.current.forEach(({ slotId, slotEl, slotArea }) => {
+			if (!isOverlapping(dragArea, slotArea) || !slotId) return;
 
-			if (!isOverlapping(dragArea, slotArea)) return;
-
-			const { slotId } = (slotEl as HTMLElement).dataset;
-			if (slotId) updateSelection(slotId, slotEl);
+			updateSelection(slotId, slotEl);
 		});
 	};
 
@@ -91,6 +118,9 @@ const useSelection = (isEditable: boolean, initialSlots: Set<string> = new Set()
 
 		draggingRef.current = false;
 		setSelectedSlots(new Set(dragSelectionRef.current));
+
+		slotSnapshotsRef.current = [];
+		gridRectRef.current = null;
 	};
 
 	const isSelected = (slotId: string) => selectedSlots.has(slotId);
