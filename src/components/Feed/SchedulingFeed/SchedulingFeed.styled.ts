@@ -107,12 +107,23 @@ export const SlotGroup = styled.div`
 
 export const Slot = styled.div`
 	height: 20px;
-	background-color: transparent;
 	cursor: pointer;
 	touch-action: none;
+	position: relative;
 
-	&.selected {
+	&::after {
+		content: '';
+		position: absolute;
+		inset: 0;
+		opacity: 0;
+		will-change: opacity;
+		transition: opacity 0.15s cubic-bezier(0.2, 0, 0, 1);
+		pointer-events: none;
 		background-color: ${theme.color.bg.iSelected};
+	}
+
+	&.selected::after {
+		opacity: 1;
 	}
 `;
 
