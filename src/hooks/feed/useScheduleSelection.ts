@@ -22,7 +22,7 @@ const getDragArea = (a: Position, b: Position): Area => ({
 const isOverlapping = (a: Area, b: Area) =>
 	a.left < b.right && a.right > b.left && a.top < b.bottom && a.bottom > b.top;
 
-const useSelection = (isEditable: boolean, initialSlots: Set<string> = new Set()) => {
+const useSelection = (initialSlots: Set<string> = new Set()) => {
 	const [selectedSlots, setSelectedSlots] = useState<Set<string>>(initialSlots);
 
 	const draggingRef = useRef(false);
@@ -71,8 +71,6 @@ const useSelection = (isEditable: boolean, initialSlots: Set<string> = new Set()
 	};
 
 	const handlePointerDown = (e: PointerEvent<HTMLDivElement>) => {
-		if (!isEditable) return;
-
 		const gridRect = gridRef.current?.getBoundingClientRect();
 		if (!gridRect) return;
 
@@ -95,7 +93,7 @@ const useSelection = (isEditable: boolean, initialSlots: Set<string> = new Set()
 	};
 
 	const handlePointerMove = (e: PointerEvent<HTMLDivElement>) => {
-		if (!isEditable || !draggingRef.current) return;
+		if (!draggingRef.current) return;
 
 		const gridRect = gridRectRef.current;
 		if (!gridRect) return;

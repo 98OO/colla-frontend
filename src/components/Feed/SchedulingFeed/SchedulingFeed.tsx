@@ -6,9 +6,8 @@ import Text from '@components/common/Text/Text';
 import BaseFeed from '@components/Feed/BaseFeed/BaseFeed';
 import SchedulingDetail from '@components/Feed/Detail/Scheduling/SchedulingDetail';
 import AvailabilityTable from '@components/Feed/SchedulingFeed/AvailabilityTable';
+import ScheduleEditView from '@components/Feed/SchedulingFeed/ScheduleEditView';
 import TableHeader from '@components/Feed/SchedulingFeed/TableHeader';
-import TimeColumn from '@components/Feed/SchedulingFeed/TimeColumn';
-import useScheduleSelection from '@hooks/feed/useScheduleSelection';
 import useSchedulingAvailMutation from '@hooks/queries/post/useSchedulingAvailMutation';
 import useUserStatusQuery from '@hooks/queries/useUserStatusQuery';
 import {
@@ -65,72 +64,43 @@ const SchedulingFeed = ({
 	const handleAddSchedule = () => setIsEditable(true);
 	const handleCancelEdit = () => setIsEditable(false);
 
-	const {
-		gridRef,
-		selectedSlots,
-		isSelected,
-		commitSelection,
-		handlePointerDown,
-		handlePointerMove,
-	} = useScheduleSelection(isEditable, initialSelectedSlots);
-
 	const availabilityInRange = getAvailabilityInRange(
 		totalAvailability,
 		minTimeSegment,
 		maxTimeSegment
 	);
 	const availabilitySlots = convertAvailabilityToSlots(availabilityInRange);
-
 	const columnData = Object.entries(availabilityInRange);
 
-	const handleSubmit = async () => {
-		const availabilites = prepareAvailabilities(selectedSlots, minTimeSegment, totalAvailability);
-
+	const handleSubmit = (selectedSlots: Set<string>) => {
 		if (!teamspaceId) return;
 
+		const availabilites = prepareAvailabilities(selectedSlots, minTimeSegment, totalAvailability);
 		mutateSchedulingAvail(teamspaceId, feedId, availabilites);
 		setIsEditable(false);
 	};
 
-	const renderTable = () => {
-		return (
-			<S.TableContainer>
-				<TimeColumn minTimeSegment={minTimeSegment} maxTimeSegment={maxTimeSegment} />
-				<S.Grid
-					ref={gridRef}
-					onPointerDown={handlePointerDown}
-					onPointerMove={handlePointerMove}
-					onPointerUp={commitSelection}
-					onPointerLeave={commitSelection}
-					onPointerCancel={commitSelection}>
-					{columnData.map(([date, availArray]) => (
-						<S.Column key={`column-${date}`}>
-							{Array.from({ length: availArray.length / 2 }).map((_, idx) => {
-								const slotGroupId = `${date}:${idx}`;
-								const firstSlotId = `${date}:${idx * 2}`;
-								const secondSlotId = `${date}:${idx * 2 + 1}`;
+	const participantsSlot = (
+		<S.ParticipantsContainer>
+			<S.Participants>{`일정 작성 인원 (${numOfParticipants})`}</S.Participants>
+			{numOfParticipants === 0 && (
+				<Text size='md' weight='medium' color='tertiary'>
+					가능한 일정을 작성해주세요
+				</Text>
+			)}
+			{numOfParticipants !== 0 && (
+				<Flex gap='6'>
+					{responses.map(({ user }) => {
+						const { profileImageUrl, username } = user;
 
-								return (
-									<S.SlotGroup key={slotGroupId}>
-										<S.Slot
-											key={firstSlotId}
-											data-slot-id={firstSlotId}
-											className={isSelected(firstSlotId) ? 'selected' : ''}
-										/>
-										<S.Slot
-											key={secondSlotId}
-											data-slot-id={secondSlotId}
-											className={isSelected(secondSlotId) ? 'selected' : ''}
-										/>
-									</S.SlotGroup>
-								);
-							})}
-						</S.Column>
-					))}
-				</S.Grid>
-			</S.TableContainer>
-		);
-	};
+						return (
+							<Avatar profile={profileImageUrl} initial={username} size='mlg' shape='circle' />
+						);
+					})}
+				</Flex>
+			)}
+		</S.ParticipantsContainer>
+	);
 
 	return (
 		<BaseFeed
@@ -142,56 +112,36 @@ const SchedulingFeed = ({
 			{details && (
 				<S.DetailWrapper>
 					<TableHeader columnData={columnData} />
-					{isEditable && renderTable()}
-					{!isEditable && (
-						<AvailabilityTable
+					{isEditable ? (
+						<ScheduleEditView
+							columnData={columnData}
 							minTimeSegment={minTimeSegment}
 							maxTimeSegment={maxTimeSegment}
-							availabilitySlots={availabilitySlots}
-							numOfParticipants={numOfParticipants}
+							initialSlots={initialSelectedSlots}
+							participantsSlot={participantsSlot}
+							onSubmit={handleSubmit}
+							onCancel={handleCancelEdit}
 						/>
-					)}
-					<Flex justify='space-between'>
-						<S.ParticipantsContainer>
-							<S.Participants>{`일정 작성 인원 (${numOfParticipants})`}</S.Participants>
-							{numOfParticipants === 0 && (
-								<Text size='md' weight='medium' color='tertiary'>
-									가능한 일정을 작성해주세요
-								</Text>
-							)}
-							{numOfParticipants !== 0 && (
-								<Flex gap='6'>
-									{responses.map(({ user }) => {
-										const { profileImageUrl, username } = user;
-
-										return (
-											<Avatar
-												profile={profileImageUrl}
-												initial={username}
-												size='mlg'
-												shape='circle'
-											/>
-										);
-									})}
-								</Flex>
-							)}
-						</S.ParticipantsContainer>
-						{!isEditable && (
-							<Button
-								label={hasExistingResponse ? '일정 변경' : '일정 추가'}
-								variant='primary'
-								size='md'
-								disabled={details.isClosed}
-								onClick={handleAddSchedule}
+					) : (
+						<>
+							<AvailabilityTable
+								minTimeSegment={minTimeSegment}
+								maxTimeSegment={maxTimeSegment}
+								availabilitySlots={availabilitySlots}
+								numOfParticipants={numOfParticipants}
 							/>
-						)}
-						{isEditable && (
-							<Flex gap='16'>
-								<Button label='취소' variant='secondary' size='md' onClick={handleCancelEdit} />
-								<Button label='등록' variant='primary' size='md' onClick={handleSubmit} />
+							<Flex justify='space-between'>
+								{participantsSlot}
+								<Button
+									label={hasExistingResponse ? '일정 변경' : '일정 추가'}
+									variant='primary'
+									size='md'
+									disabled={details.isClosed}
+									onClick={handleAddSchedule}
+								/>
 							</Flex>
-						)}
-					</Flex>
+						</>
+					)}
 				</S.DetailWrapper>
 			)}
 		</BaseFeed>
