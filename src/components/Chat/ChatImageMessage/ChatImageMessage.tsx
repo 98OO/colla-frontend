@@ -23,16 +23,20 @@ const ChatImageMessage = ({ src, alt }: ChatImageMessageProps) => {
 		setIsLoaded(true);
 	};
 
+	const handleImageClick = (event: React.MouseEvent<HTMLAnchorElement>) => {
+		if (event.ctrlKey || event.metaKey || event.shiftKey) return;
+
+		event.preventDefault();
+		openImagePreviewWindow({ src, alt });
+	};
+
 	return (
 		<S.ImageLink
 			href={src}
 			target='_blank'
 			rel='noopener noreferrer'
 			aria-label={`${alt} 이미지 새 탭에서 보기`}
-			onClick={(event) => {
-				event.preventDefault();
-				openImagePreviewWindow({ src, alt });
-			}}
+			onClick={handleImageClick}
 			$isLoaded={isLoaded}
 			$orientation={orientation}>
 			<S.PreviewImage
