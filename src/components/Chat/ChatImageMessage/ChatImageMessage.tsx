@@ -13,7 +13,7 @@ const ChatImageMessage = ({ src, alt }: ChatImageMessageProps) => {
 	const [isLoaded, setIsLoaded] = useState(false);
 	const [orientation, setOrientation] = useState<Orientation>('portrait');
 
-	const updateImageMeta = (event: React.SyntheticEvent<HTMLImageElement>) => {
+	const handleImageLoad = (event: React.SyntheticEvent<HTMLImageElement>) => {
 		const { naturalWidth, naturalHeight } = event.currentTarget;
 
 		if (naturalWidth > naturalHeight) setOrientation('landscape');
@@ -43,7 +43,7 @@ const ChatImageMessage = ({ src, alt }: ChatImageMessageProps) => {
 				src={src}
 				alt={alt}
 				loading='lazy'
-				onLoad={updateImageMeta}
+				onLoad={handleImageLoad}
 				$isLoaded={isLoaded}
 			/>
 		</S.ImageLink>
