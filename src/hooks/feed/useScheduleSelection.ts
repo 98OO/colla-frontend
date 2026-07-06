@@ -71,10 +71,12 @@ const useSelection = (initialSlots: Set<string> = new Set()) => {
 	};
 
 	const handlePointerDown = (e: PointerEvent<HTMLDivElement>) => {
+		if (draggingRef.current) return;
+
 		const gridRect = gridRef.current?.getBoundingClientRect();
 		if (!gridRect) return;
 
-		const startSlotEl = document.elementFromPoint(e.clientX, e.clientY)?.closest(SLOT_SELECTOR);
+		const startSlotEl = (e.target as Element).closest(SLOT_SELECTOR);
 		if (!startSlotEl) return;
 
 		const { slotId } = (startSlotEl as HTMLElement).dataset;
