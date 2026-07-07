@@ -35,7 +35,7 @@ const useSelection = (initialSlots: Set<string> = new Set()) => {
 	const dragSelectionRef = useRef<Set<string>>(new Set());
 
 	const gridRef = useRef<HTMLDivElement>(null);
-	const startPointRef = useRef<Position | null>(null);
+	const startPositionRef = useRef<Position | null>(null);
 
 	const gridRectRef = useRef<DOMRect | null>(null);
 	const slotSnapshotsRef = useRef<SlotSnapshot[]>([]);
@@ -61,12 +61,13 @@ const useSelection = (initialSlots: Set<string> = new Set()) => {
 	};
 
 	const updateSelection = (slotId: string, slotEl: Element) => {
+		const dragMode = dragModeRef.current;
 		const isSelected = dragSelectionRef.current.has(slotId);
 
-		if (dragModeRef.current === 'add' && isSelected) return;
-		if (dragModeRef.current === 'remove' && !isSelected) return;
+		if (dragMode === 'add' && isSelected) return;
+		if (dragMode === 'remove' && !isSelected) return;
 
-		if (dragModeRef.current === 'add') {
+		if (dragMode === 'add') {
 			dragSelectionRef.current.add(slotId);
 			slotEl.classList.add('selected');
 		} else {
@@ -81,14 +82,15 @@ const useSelection = (initialSlots: Set<string> = new Set()) => {
 		const grid = gridRef.current;
 		if (!grid) return;
 
-		const gridRect = grid?.getBoundingClientRect();
-		if (!gridRect) return;
+		if (!(e.target instanceof Element)) return;
 
-		const startSlotEl = (e.target as Element).closest(SLOT_SELECTOR);
+		const startSlotEl = e.target.closest(SLOT_SELECTOR);
 		if (!startSlotEl) return;
 
 		const { slotId } = (startSlotEl as HTMLElement).dataset;
 		if (!slotId) return;
+
+		const gridRect = grid.getBoundingClientRect();
 
 		// 포인터 캡처는 그리드 밖에서도 이벤트를 계속 받고 pointerover/out 발생을 줄이기 위한 최적화입니다.
 		// 실패해도 드래그는 정상 동작하며, 그리드를 벗어난 경우에는 onPointerLeave를 통해 드래그를 종료합니다.
@@ -99,7 +101,7 @@ const useSelection = (initialSlots: Set<string> = new Set()) => {
 		}
 
 		gridRectRef.current = gridRect;
-		startPointRef.current = toGridPosition(e, gridRect);
+		startPositionRef.current = toGridPosition(e, gridRect);
 
 		captureSlotSnapshots(gridRect);
 
@@ -116,11 +118,12 @@ const useSelection = (initialSlots: Set<string> = new Set()) => {
 		const gridRect = gridRectRef.current;
 		if (!gridRect) return;
 
-		const startPoint = startPointRef.current;
-		if (!startPoint) return;
+		const startPosition = startPositionRef.current;
+		if (!startPosition) return;
 
-		const curPoint = clampPositionToGrid(toGridPosition(e, gridRect), gridRect);
-		const dragArea = getDragArea(startPoint, curPoint);
+		const curPosition = toGridPosition(e, gridRect);
+		const clampedPosition = clampPositionToGrid(curPosition, gridRect);
+		const dragArea = getDragArea(startPosition, clampedPosition);
 
 		slotSnapshotsRef.current.forEach(({ slotId, slotEl, slotArea }) => {
 			if (!isOverlapping(dragArea, slotArea) || !slotId) return;
