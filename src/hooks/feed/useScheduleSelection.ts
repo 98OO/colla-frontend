@@ -22,6 +22,11 @@ const getDragArea = (a: Position, b: Position): Area => ({
 const isOverlapping = (a: Area, b: Area) =>
 	a.left < b.right && a.right > b.left && a.top < b.bottom && a.bottom > b.top;
 
+const clampPositionToGrid = (position: Position, rect: DOMRect): Position => ({
+	x: Math.min(Math.max(position.x, 0), rect.width),
+	y: Math.min(Math.max(position.y, 0), rect.height),
+});
+
 const useSelection = (initialSlots: Set<string> = new Set()) => {
 	const [selectedSlots, setSelectedSlots] = useState<Set<string>>(initialSlots);
 
@@ -73,7 +78,10 @@ const useSelection = (initialSlots: Set<string> = new Set()) => {
 	const handlePointerDown = (e: PointerEvent<HTMLDivElement>) => {
 		if (draggingRef.current) return;
 
-		const gridRect = gridRef.current?.getBoundingClientRect();
+		const grid = gridRef.current;
+		if (!grid) return;
+
+		const gridRect = grid?.getBoundingClientRect();
 		if (!gridRect) return;
 
 		const startSlotEl = (e.target as Element).closest(SLOT_SELECTOR);
@@ -81,6 +89,14 @@ const useSelection = (initialSlots: Set<string> = new Set()) => {
 
 		const { slotId } = (startSlotEl as HTMLElement).dataset;
 		if (!slotId) return;
+
+		// 포인터 캡처는 그리드 밖에서도 이벤트를 계속 받고 pointerover/out 발생을 줄이기 위한 최적화입니다.
+		// 실패해도 드래그는 정상 동작하며, 그리드를 벗어난 경우에는 onPointerLeave를 통해 드래그를 종료합니다.
+		try {
+			grid.setPointerCapture(e.pointerId);
+		} catch {
+			// no-op
+		}
 
 		gridRectRef.current = gridRect;
 		startPointRef.current = toGridPosition(e, gridRect);
@@ -103,7 +119,7 @@ const useSelection = (initialSlots: Set<string> = new Set()) => {
 		const startPoint = startPointRef.current;
 		if (!startPoint) return;
 
-		const curPoint = toGridPosition(e, gridRect);
+		const curPoint = clampPositionToGrid(toGridPosition(e, gridRect), gridRect);
 		const dragArea = getDragArea(startPoint, curPoint);
 
 		slotSnapshotsRef.current.forEach(({ slotId, slotEl, slotArea }) => {
