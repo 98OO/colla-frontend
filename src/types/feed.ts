@@ -63,15 +63,21 @@ interface CollectDetails {
 	responses: CollectResponse[];
 }
 
+export type AvailabilityFlag = 0 | 1;
+
+export type UserAvailability = Record<string, AvailabilityFlag[]>;
+
+export type TotalAvailability = Record<string, number[]>;
+
 interface SchedulingDetails {
 	dueAt: string;
 	isClosed: boolean;
 	minTimeSegment: number;
 	maxTimeSegment: number;
 	numOfParticipants: number;
-	totalAvailability: Record<string, number[]>;
+	totalAvailability: TotalAvailability;
 	responses: {
-		availabilities: Record<string, number[]>;
+		availabilities: UserAvailability;
 		createdAt: string;
 		user: {
 			id: number;

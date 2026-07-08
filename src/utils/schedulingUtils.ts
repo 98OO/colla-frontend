@@ -1,7 +1,6 @@
 import { format } from 'date-fns';
 import { ko } from 'date-fns/locale';
-
-type timeAvailability = Record<string, number[]>;
+import type { AvailabilityFlag, TotalAvailability, UserAvailability } from '@type/feed';
 
 export const convertTimeString = (num: number) => {
 	let hour = (num % 24) % 12;
@@ -24,7 +23,7 @@ export const getDayAndDate = (dateString: string) => {
 };
 
 export const getAvailabilityInRange = (
-	total: timeAvailability,
+	total: TotalAvailability,
 	minTimeSegment: number,
 	maxTimeSegment: number
 ) => {
@@ -37,19 +36,19 @@ export const getAvailabilityInRange = (
 	return entries.reduce((acc, [date, array]) => {
 		acc[date] = array.slice(minTimeSegment, maxTimeSegment);
 		return acc;
-	}, {} as timeAvailability);
+	}, {} as TotalAvailability);
 };
 
 export const prepareAvailabilities = (
 	selectedSlots: Set<string>,
 	minTimeSegment: number,
-	totalAvailability: timeAvailability
+	totalAvailability: TotalAvailability
 ) => {
-	const availabilities: timeAvailability = {};
+	const availabilities: UserAvailability = {};
 
 	Object.keys(totalAvailability).forEach((date) => {
 		const isoDate = format(new Date(date), 'yyyy-MM-dd');
-		availabilities[isoDate] = Array(48).fill(0);
+		availabilities[isoDate] = Array<AvailabilityFlag>(48).fill(0);
 	});
 
 	selectedSlots.forEach((slotId) => {
@@ -62,7 +61,7 @@ export const prepareAvailabilities = (
 	return availabilities;
 };
 
-export const convertAvailabilityToSlots = (availability: timeAvailability) => {
+export const convertAvailabilityToSlots = (availability: TotalAvailability) => {
 	const entries = Object.entries(availability);
 
 	return entries.reduce(
@@ -82,16 +81,10 @@ export const convertAvailabilityToSlots = (availability: timeAvailability) => {
 };
 
 const adjustBrightness = (colorValue: number, ratio: number) => {
-	return Math.min(
-		255,
-		Math.max(0, colorValue + (255 - colorValue) * (1 - ratio))
-	);
+	return Math.min(255, Math.max(0, colorValue + (255 - colorValue) * (1 - ratio)));
 };
 
-export const getSlotColor = (
-	totalParticipants: number,
-	availability: number
-): string => {
+export const getSlotColor = (totalParticipants: number, availability: number): string => {
 	const baseColor = { r: 84, g: 151, b: 255 };
 
 	const ratio = availability / totalParticipants;
