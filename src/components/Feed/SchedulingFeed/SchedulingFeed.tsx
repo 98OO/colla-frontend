@@ -76,7 +76,7 @@ const SchedulingFeed = ({
 		if (!teamspaceId) return;
 
 		const availabilites = prepareAvailabilities(selectedSlots, minTimeSegment, totalAvailability);
-		mutateSchedulingAvail(teamspaceId, feedId, availabilites);
+		mutateSchedulingAvail(feedId, availabilites);
 		setIsEditable(false);
 	};
 

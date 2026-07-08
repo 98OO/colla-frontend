@@ -1,9 +1,10 @@
 import { useErrorBoundary } from 'react-error-boundary';
-import postSchedulingAvail from '@apis/post/postSchedulingAvail';
-import { useQueryClient } from '@tanstack/react-query';
+import putSchedulingAvailability from '@apis/Feed/Scheduling/putSchedulingAvailability';
 import { useMutation } from '@hooks/queries/common/useMutation';
+import { useQueryClient } from '@tanstack/react-query';
 import useToastStore from '@stores/toastStore';
 import { HTTPError } from '@apis/HTTPError';
+import type { UserAvailability } from '@type/feed';
 
 const useSchedulingAvailMutation = (teamspaceId: number | undefined) => {
 	const { makeToast } = useToastStore();
@@ -26,14 +27,10 @@ const useSchedulingAvailMutation = (teamspaceId: number | undefined) => {
 		onError: handleSchedulingAvailError,
 	});
 
-	const mutateSchedulingAvail = async (
-		teamspaceId: number,
-		feedId: number,
-		availabilities: Record<string, number[]>
-	) => {
-		await mutate(() =>
-			postSchedulingAvail(teamspaceId, feedId, availabilities)
-		);
+	const mutateSchedulingAvail = async (feedId: number, availabilities: UserAvailability) => {
+		if (!teamspaceId) return;
+
+		await mutate(() => putSchedulingAvailability(teamspaceId, feedId, availabilities));
 	};
 
 	return { mutateSchedulingAvail };
