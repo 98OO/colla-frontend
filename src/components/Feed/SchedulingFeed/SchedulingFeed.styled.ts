@@ -1,4 +1,4 @@
-import { styled } from 'styled-components';
+import { styled, css } from 'styled-components';
 import theme from '@styles/theme';
 
 export const FeedContainer = styled.div`
@@ -89,24 +89,21 @@ export const Column = styled.div`
 	width: 100%;
 	display: flex;
 	flex-direction: column;
-`;
-
-export const Slots = styled.div`
-	cursor: pointer;
-`;
-
-export const SlotGroup = styled.div`
-	box-sizing: border-box;
-	height: 40px;
-	display: flex;
-	flex-direction: column;
-	border-bottom: 0.5px solid ${theme.color.border.tertiary};
 	border-right: 0.7px solid ${theme.color.border.tertiary};
 	background-color: ${theme.color.bg.primary};
 `;
 
-export const Slot = styled.div`
+const slotBase = css`
 	height: 20px;
+	box-sizing: border-box;
+
+	&:nth-child(even) {
+		border-bottom: 0.5px solid ${theme.color.border.tertiary};
+	}
+`;
+
+export const Slot = styled.div`
+	${slotBase}
 	cursor: pointer;
 	touch-action: none;
 	position: relative;
@@ -168,7 +165,7 @@ export const DayOfMonth = styled.div`
 `;
 
 export const AvailabilitySlot = styled.div<{ slotColor: string }>`
-	height: 20px;
+	${slotBase}
 	background-color: ${({ slotColor }) => slotColor || 'transparent'};
 
 	&:hover {

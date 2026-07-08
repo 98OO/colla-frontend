@@ -61,25 +61,6 @@ export const prepareAvailabilities = (
 	return availabilities;
 };
 
-export const convertAvailabilityToSlots = (availability: TotalAvailability) => {
-	const entries = Object.entries(availability);
-
-	return entries.reduce(
-		(acc, [date, segments]) => {
-			const availabilitySlots = [];
-
-			for (let i = 0; i < segments.length; i += 2) {
-				availabilitySlots.push(segments.slice(i, i + 2));
-			}
-
-			acc[date] = availabilitySlots;
-
-			return acc;
-		},
-		{} as Record<string, number[][]>
-	);
-};
-
 const adjustBrightness = (colorValue: number, ratio: number) => {
 	return Math.min(255, Math.max(0, colorValue + (255 - colorValue) * (1 - ratio)));
 };

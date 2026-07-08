@@ -45,24 +45,17 @@ const ScheduleEditView = ({
 					onPointerLeave={commitSelection}
 					onPointerCancel={commitSelection}
 					onLostPointerCapture={commitSelection}>
-					{columnData.map(([date, availArray]) => (
+					{columnData.map(([date, segments]) => (
 						<S.Column key={`column-${date}`}>
-							{Array.from({ length: availArray.length / 2 }).map((_, idx) => {
-								const slotGroupId = `${date}:${idx}`;
-								const firstSlotId = `${date}:${idx * 2}`;
-								const secondSlotId = `${date}:${idx * 2 + 1}`;
+							{segments.map((_, idx) => {
+								const slotId = `${date}:${idx}`;
 
 								return (
-									<S.SlotGroup key={slotGroupId}>
-										<S.Slot
-											data-slot-id={firstSlotId}
-											className={isSelected(firstSlotId) ? 'selected' : ''}
-										/>
-										<S.Slot
-											data-slot-id={secondSlotId}
-											className={isSelected(secondSlotId) ? 'selected' : ''}
-										/>
-									</S.SlotGroup>
+									<S.Slot
+										key={slotId}
+										data-slot-id={slotId}
+										className={isSelected(slotId) ? 'selected' : ''}
+									/>
 								);
 							})}
 						</S.Column>

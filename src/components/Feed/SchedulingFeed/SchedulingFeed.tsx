@@ -10,11 +10,7 @@ import ScheduleEditView from '@components/Feed/SchedulingFeed/ScheduleEditView';
 import TableHeader from '@components/Feed/SchedulingFeed/TableHeader';
 import useSchedulingAvailMutation from '@hooks/queries/post/useSchedulingAvailMutation';
 import useUserStatusQuery from '@hooks/queries/useUserStatusQuery';
-import {
-	getAvailabilityInRange,
-	prepareAvailabilities,
-	convertAvailabilityToSlots,
-} from '@utils/schedulingUtils';
+import { getAvailabilityInRange, prepareAvailabilities } from '@utils/schedulingUtils';
 import type { SchedulingFeed } from '@type/feed';
 import * as S from './SchedulingFeed.styled';
 
@@ -69,7 +65,6 @@ const SchedulingFeed = ({
 		minTimeSegment,
 		maxTimeSegment
 	);
-	const availabilitySlots = convertAvailabilityToSlots(availabilityInRange);
 	const columnData = Object.entries(availabilityInRange);
 
 	const handleSubmit = (selectedSlots: Set<string>) => {
@@ -127,7 +122,7 @@ const SchedulingFeed = ({
 							<AvailabilityTable
 								minTimeSegment={minTimeSegment}
 								maxTimeSegment={maxTimeSegment}
-								availabilitySlots={availabilitySlots}
+								totalAvailability={availabilityInRange}
 								numOfParticipants={numOfParticipants}
 							/>
 							<Flex justify='space-between'>

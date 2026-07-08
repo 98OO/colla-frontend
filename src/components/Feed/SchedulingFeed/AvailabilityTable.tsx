@@ -1,51 +1,42 @@
 import TimeColumn from '@components/Feed/SchedulingFeed/TimeColumn';
 import { getSlotColor } from '@utils/schedulingUtils';
+import type { TotalAvailability } from '@type/feed';
 import * as S from './SchedulingFeed.styled';
 
 interface AvailabilityTableProps {
 	minTimeSegment: number;
 	maxTimeSegment: number;
-	availabilitySlots: Record<string, number[][]>;
+	totalAvailability: TotalAvailability;
 	numOfParticipants: number;
 }
 
 const AvailabilityTable = ({
 	minTimeSegment,
 	maxTimeSegment,
-	availabilitySlots,
+	totalAvailability,
 	numOfParticipants,
 }: AvailabilityTableProps) => {
-	const columnData = Object.entries(availabilitySlots);
+	const columnData = Object.entries(totalAvailability);
 
 	return (
 		<S.TableContainer>
-			<TimeColumn
-				minTimeSegment={minTimeSegment}
-				maxTimeSegment={maxTimeSegment}
-			/>
-			<S.Table>
-				{columnData.map(([date, slotGroups]) => (
+			<TimeColumn minTimeSegment={minTimeSegment} maxTimeSegment={maxTimeSegment} />
+			<S.Grid>
+				{columnData.map(([date, segments]) => (
 					<S.Column key={date}>
-						{slotGroups.map((slotGroup) => {
-							const firstSlotColor = getSlotColor(
-								numOfParticipants,
-								slotGroup[0]
-							);
-							const secondSlotColor = getSlotColor(
-								numOfParticipants,
-								slotGroup[1]
-							);
+						{segments.map((count, idx) => {
+							const slotId = `${date}:${idx}`;
 
 							return (
-								<S.SlotGroup>
-									<S.AvailabilitySlot slotColor={firstSlotColor} />
-									<S.AvailabilitySlot slotColor={secondSlotColor} />
-								</S.SlotGroup>
+								<S.AvailabilitySlot
+									key={slotId}
+									slotColor={getSlotColor(numOfParticipants, count)}
+								/>
 							);
 						})}
 					</S.Column>
 				))}
-			</S.Table>
+			</S.Grid>
 		</S.TableContainer>
 	);
 };
