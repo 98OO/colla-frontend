@@ -1,14 +1,5 @@
 import { format } from 'date-fns';
-import { ko } from 'date-fns/locale';
 import type { AvailabilityFlag, TotalAvailability, UserAvailability } from '@type/feed';
-
-export const getDayAndDate = (dateString: string) => {
-	const date = new Date(dateString);
-	const dayOfWeek = format(date, 'EEEEEE', { locale: ko });
-	const dayOfMonth = format(date, 'd');
-
-	return { dayOfWeek, dayOfMonth };
-};
 
 export const getAvailabilityInRange = (
 	total: TotalAvailability,

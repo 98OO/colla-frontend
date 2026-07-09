@@ -1,22 +1,22 @@
-import { getDayAndDate } from '@utils/schedulingUtils';
+import { WEEKDAYS } from '@constants/calendar';
 import * as S from './SchedulingFeed.styled';
 
 interface GridHeaderProps {
-	columnData: [string, number[]][];
+	dates: string[];
 }
 
-const GridHeader = ({ columnData }: GridHeaderProps) => {
+const GridHeader = ({ dates }: GridHeaderProps) => {
 	return (
 		<S.HeaderContainer>
 			<S.TimeHeader />
 			<S.HeaderWrapper>
-				{columnData.map(([date]) => {
-					const { dayOfWeek, dayOfMonth } = getDayAndDate(date);
+				{dates.map((dateString) => {
+					const date = new Date(dateString);
 
 					return (
-						<S.Header key={`header-${date}`}>
-							<S.Day>{dayOfWeek}</S.Day>
-							<S.Date>{dayOfMonth}</S.Date>
+						<S.Header key={dateString}>
+							<S.Day>{WEEKDAYS[date.getDay()]}</S.Day>
+							<S.Date>{`${date.getMonth() + 1}.${date.getDate()}`}</S.Date>
 						</S.Header>
 					);
 				})}

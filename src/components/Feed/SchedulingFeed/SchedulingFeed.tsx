@@ -106,7 +106,7 @@ const SchedulingFeed = ({
 			renderDetail={() => <SchedulingDetail feedData={feedData} />}>
 			{details && (
 				<S.DetailWrapper>
-					<GridHeader columnData={columnData} />
+					<GridHeader dates={Object.keys(availabilityInRange)} />
 					{isEditable ? (
 						<ScheduleEditView
 							columnData={columnData}
