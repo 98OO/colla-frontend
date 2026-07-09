@@ -69,6 +69,8 @@ export type UserAvailability = Record<string, AvailabilityFlag[]>;
 
 export type TotalAvailability = Record<string, number[]>;
 
+export type AvailabilityColumn = [string, number[]];
+
 interface SchedulingDetails {
 	dueAt: string;
 	isClosed: boolean;

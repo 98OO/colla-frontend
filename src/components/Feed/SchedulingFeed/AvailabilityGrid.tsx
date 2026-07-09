@@ -1,28 +1,26 @@
 import TimeColumn from '@components/Feed/SchedulingFeed/TimeColumn';
 import { getSlotColor } from '@utils/schedulingUtils';
-import type { TotalAvailability } from '@type/feed';
+import type { AvailabilityColumn } from '@type/feed';
 import * as S from './SchedulingFeed.styled';
 
 interface AvailabilityGridProps {
 	minTimeSegment: number;
 	maxTimeSegment: number;
-	totalAvailability: TotalAvailability;
+	availabilityColumns: AvailabilityColumn[];
 	numOfParticipants: number;
 }
 
 const AvailabilityGrid = ({
 	minTimeSegment,
 	maxTimeSegment,
-	totalAvailability,
+	availabilityColumns,
 	numOfParticipants,
 }: AvailabilityGridProps) => {
-	const columnData = Object.entries(totalAvailability);
-
 	return (
 		<S.GridContainer>
 			<TimeColumn minTimeSegment={minTimeSegment} maxTimeSegment={maxTimeSegment} />
 			<S.Grid>
-				{columnData.map(([date, segments]) => (
+				{availabilityColumns.map(([date, segments]) => (
 					<S.Column key={date}>
 						{segments.map((count, idx) => {
 							const slotId = `${date}:${idx}`;

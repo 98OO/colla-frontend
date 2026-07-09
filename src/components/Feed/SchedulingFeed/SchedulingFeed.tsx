@@ -10,7 +10,8 @@ import GridHeader from '@components/Feed/SchedulingFeed/GridHeader';
 import ScheduleEditView from '@components/Feed/SchedulingFeed/ScheduleEditView';
 import useSchedulingAvailMutation from '@hooks/queries/post/useSchedulingAvailMutation';
 import useUserStatusQuery from '@hooks/queries/useUserStatusQuery';
-import { getAvailabilityInRange, prepareAvailabilities } from '@utils/schedulingUtils';
+import { getAvailabilityColumnsInRange } from '@utils/feed/scheduling/schedulingUtils';
+import { prepareAvailabilities } from '@utils/schedulingUtils';
 import type { SchedulingFeed } from '@type/feed';
 import * as S from './SchedulingFeed.styled';
 
@@ -60,12 +61,12 @@ const SchedulingFeed = ({
 	const handleAddSchedule = () => setIsEditable(true);
 	const handleCancelEdit = () => setIsEditable(false);
 
-	const availabilityInRange = getAvailabilityInRange(
+	const availabilityColumns = getAvailabilityColumnsInRange(
 		totalAvailability,
 		minTimeSegment,
 		maxTimeSegment
 	);
-	const columnData = Object.entries(availabilityInRange);
+	const dates = availabilityColumns.map(([date]) => date);
 
 	const handleSubmit = (selectedSlots: Set<string>) => {
 		if (!teamspaceId) return;
@@ -106,10 +107,10 @@ const SchedulingFeed = ({
 			renderDetail={() => <SchedulingDetail feedData={feedData} />}>
 			{details && (
 				<S.DetailWrapper>
-					<GridHeader dates={Object.keys(availabilityInRange)} />
+					<GridHeader dates={dates} />
 					{isEditable ? (
 						<ScheduleEditView
-							columnData={columnData}
+							availabilityColumns={availabilityColumns}
 							minTimeSegment={minTimeSegment}
 							maxTimeSegment={maxTimeSegment}
 							initialSlots={initialSelectedSlots}
@@ -122,7 +123,7 @@ const SchedulingFeed = ({
 							<AvailabilityGrid
 								minTimeSegment={minTimeSegment}
 								maxTimeSegment={maxTimeSegment}
-								totalAvailability={availabilityInRange}
+								availabilityColumns={availabilityColumns}
 								numOfParticipants={numOfParticipants}
 							/>
 							<Flex justify='space-between'>

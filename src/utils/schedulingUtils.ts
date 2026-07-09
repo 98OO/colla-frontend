@@ -1,23 +1,6 @@
 import { format } from 'date-fns';
 import type { AvailabilityFlag, TotalAvailability, UserAvailability } from '@type/feed';
 
-export const getAvailabilityInRange = (
-	total: TotalAvailability,
-	minTimeSegment: number,
-	maxTimeSegment: number
-) => {
-	const entries = Object.entries(total).sort((a, b) => {
-		const dateA = new Date(a[0]);
-		const dateB = new Date(b[0]);
-		return dateA.getTime() - dateB.getTime();
-	});
-
-	return entries.reduce((acc, [date, array]) => {
-		acc[date] = array.slice(minTimeSegment, maxTimeSegment);
-		return acc;
-	}, {} as TotalAvailability);
-};
-
 export const prepareAvailabilities = (
 	selectedSlots: Set<string>,
 	minTimeSegment: number,
