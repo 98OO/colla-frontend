@@ -60,16 +60,8 @@ export const TimeColumn = styled.div`
 	box-sizing: border-box;
 `;
 
-export const TimeGroup = styled.div`
-	display: flex;
-	flex-direction: column;
-	justify-content: space-between;
+export const TimeLabel = styled.div`
 	height: 40px;
-	box-sizing: border-box;
-`;
-
-export const TimeSlot = styled.div`
-	height: 20px;
 	padding-right: ${theme.units.spacing.space4};
 	text-align: right;
 	box-sizing: border-box;

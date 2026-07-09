@@ -1,4 +1,4 @@
-import { convertTimeString } from '@utils/schedulingUtils';
+import { convertSegmentToTimeLabel } from '@utils/feed/scheduling/schedulingUtils';
 import * as S from './SchedulingFeed.styled';
 
 interface TimeColumnProps {
@@ -11,12 +11,12 @@ const TimeColumn = ({ minTimeSegment, maxTimeSegment }: TimeColumnProps) => {
 
 	return (
 		<S.TimeColumn>
-			{Array.from({ length: rowCount / 2 }).map((_, idx) => (
-				<S.TimeGroup>
-					<S.TimeSlot>{`${convertTimeString(minTimeSegment + idx)}`}</S.TimeSlot>
-					<S.TimeSlot />
-				</S.TimeGroup>
-			))}
+			{Array.from({ length: rowCount / 2 }).map((_, idx) => {
+				const segment = minTimeSegment + idx * 2;
+				const timeLabel = convertSegmentToTimeLabel(segment);
+
+				return <S.TimeLabel key={segment}>{timeLabel}</S.TimeLabel>;
+			})}
 		</S.TimeColumn>
 	);
 };

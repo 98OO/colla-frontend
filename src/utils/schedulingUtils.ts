@@ -2,18 +2,6 @@ import { format } from 'date-fns';
 import { ko } from 'date-fns/locale';
 import type { AvailabilityFlag, TotalAvailability, UserAvailability } from '@type/feed';
 
-export const convertTimeString = (num: number) => {
-	let hour = (num % 24) % 12;
-
-	if (hour === 0) {
-		hour = 12;
-	}
-
-	const period = num < 24 ? 'AM' : 'PM';
-
-	return `${hour} ${period}`;
-};
-
 export const getDayAndDate = (dateString: string) => {
 	const date = new Date(dateString);
 	const dayOfWeek = format(date, 'EEEEEE', { locale: ko });
