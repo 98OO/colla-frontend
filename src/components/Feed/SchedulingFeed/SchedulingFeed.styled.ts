@@ -43,7 +43,7 @@ export const Participants = styled.div`
 	font-weight: ${theme.typography.fontWeight.semiBold};
 `;
 
-export const TableContainer = styled.div`
+export const GridContainer = styled.div`
 	display: flex;
 	flex-grow: 1;
 	margin-bottom: ${theme.units.spacing.space32};
@@ -135,6 +135,7 @@ export const HeaderWrapper = styled.div`
 	display: flex;
 	flex-grow: 1;
 	box-sizing: border-box;
+	padding-bottom: ${theme.units.spacing.space4};
 `;
 
 export const Header = styled.div`
@@ -144,14 +145,14 @@ export const Header = styled.div`
 	justify-content: center;
 	width: 100%;
 	height: 42px;
-	gap: ${theme.units.spacing.space4};
+	gap: ${theme.units.spacing.space8};
 `;
 
-export const DayOfWeek = styled.div`
+export const Day = styled.div`
 	font-size: ${theme.typography.fontSize.body.md};
 `;
 
-export const DayOfMonth = styled.div`
+export const Date = styled.div`
 	font-size: ${theme.typography.fontSize.body.sm};
 	color: ${theme.color.text.secondary};
 `;

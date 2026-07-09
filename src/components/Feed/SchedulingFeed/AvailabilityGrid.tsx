@@ -3,23 +3,23 @@ import { getSlotColor } from '@utils/schedulingUtils';
 import type { TotalAvailability } from '@type/feed';
 import * as S from './SchedulingFeed.styled';
 
-interface AvailabilityTableProps {
+interface AvailabilityGridProps {
 	minTimeSegment: number;
 	maxTimeSegment: number;
 	totalAvailability: TotalAvailability;
 	numOfParticipants: number;
 }
 
-const AvailabilityTable = ({
+const AvailabilityGrid = ({
 	minTimeSegment,
 	maxTimeSegment,
 	totalAvailability,
 	numOfParticipants,
-}: AvailabilityTableProps) => {
+}: AvailabilityGridProps) => {
 	const columnData = Object.entries(totalAvailability);
 
 	return (
-		<S.TableContainer>
+		<S.GridContainer>
 			<TimeColumn minTimeSegment={minTimeSegment} maxTimeSegment={maxTimeSegment} />
 			<S.Grid>
 				{columnData.map(([date, segments]) => (
@@ -37,8 +37,8 @@ const AvailabilityTable = ({
 					</S.Column>
 				))}
 			</S.Grid>
-		</S.TableContainer>
+		</S.GridContainer>
 	);
 };
 
-export default AvailabilityTable;
+export default AvailabilityGrid;

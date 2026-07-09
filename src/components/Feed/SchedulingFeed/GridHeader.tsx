@@ -1,11 +1,11 @@
 import { getDayAndDate } from '@utils/schedulingUtils';
 import * as S from './SchedulingFeed.styled';
 
-interface TableHeaderProps {
+interface GridHeaderProps {
 	columnData: [string, number[]][];
 }
 
-const TableHeader = ({ columnData }: TableHeaderProps) => {
+const GridHeader = ({ columnData }: GridHeaderProps) => {
 	return (
 		<S.HeaderContainer>
 			<S.TimeHeader />
@@ -15,8 +15,8 @@ const TableHeader = ({ columnData }: TableHeaderProps) => {
 
 					return (
 						<S.Header key={`header-${date}`}>
-							<S.DayOfWeek>{dayOfWeek}</S.DayOfWeek>
-							<S.DayOfMonth>{dayOfMonth}</S.DayOfMonth>
+							<S.Day>{dayOfWeek}</S.Day>
+							<S.Date>{dayOfMonth}</S.Date>
 						</S.Header>
 					);
 				})}
@@ -25,4 +25,4 @@ const TableHeader = ({ columnData }: TableHeaderProps) => {
 	);
 };
 
-export default TableHeader;
+export default GridHeader;

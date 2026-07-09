@@ -5,9 +5,9 @@ import Flex from '@components/common/Flex/Flex';
 import Text from '@components/common/Text/Text';
 import BaseFeed from '@components/Feed/BaseFeed/BaseFeed';
 import SchedulingDetail from '@components/Feed/Detail/Scheduling/SchedulingDetail';
-import AvailabilityTable from '@components/Feed/SchedulingFeed/AvailabilityTable';
+import AvailabilityGrid from '@components/Feed/SchedulingFeed/AvailabilityGrid';
+import GridHeader from '@components/Feed/SchedulingFeed/GridHeader';
 import ScheduleEditView from '@components/Feed/SchedulingFeed/ScheduleEditView';
-import TableHeader from '@components/Feed/SchedulingFeed/TableHeader';
 import useSchedulingAvailMutation from '@hooks/queries/post/useSchedulingAvailMutation';
 import useUserStatusQuery from '@hooks/queries/useUserStatusQuery';
 import { getAvailabilityInRange, prepareAvailabilities } from '@utils/schedulingUtils';
@@ -106,7 +106,7 @@ const SchedulingFeed = ({
 			renderDetail={() => <SchedulingDetail feedData={feedData} />}>
 			{details && (
 				<S.DetailWrapper>
-					<TableHeader columnData={columnData} />
+					<GridHeader columnData={columnData} />
 					{isEditable ? (
 						<ScheduleEditView
 							columnData={columnData}
@@ -119,7 +119,7 @@ const SchedulingFeed = ({
 						/>
 					) : (
 						<>
-							<AvailabilityTable
+							<AvailabilityGrid
 								minTimeSegment={minTimeSegment}
 								maxTimeSegment={maxTimeSegment}
 								totalAvailability={availabilityInRange}

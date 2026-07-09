@@ -35,7 +35,7 @@ const ScheduleEditView = ({
 
 	return (
 		<>
-			<S.TableContainer>
+			<S.GridContainer>
 				<TimeColumn minTimeSegment={minTimeSegment} maxTimeSegment={maxTimeSegment} />
 				<S.Grid
 					ref={gridRef}
@@ -61,7 +61,7 @@ const ScheduleEditView = ({
 						</S.Column>
 					))}
 				</S.Grid>
-			</S.TableContainer>
+			</S.GridContainer>
 			<Flex justify='space-between'>
 				{participantsSlot}
 				<Flex gap='16'>
