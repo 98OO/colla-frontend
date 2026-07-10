@@ -10,8 +10,11 @@ import GridHeader from '@components/Feed/SchedulingFeed/GridHeader';
 import ScheduleEditView from '@components/Feed/SchedulingFeed/ScheduleEditView';
 import useSchedulingAvailMutation from '@hooks/queries/post/useSchedulingAvailMutation';
 import useUserStatusQuery from '@hooks/queries/useUserStatusQuery';
-import { getAvailabilityColumnsInRange } from '@utils/feed/scheduling/schedulingUtils';
-import { prepareAvailabilities } from '@utils/schedulingUtils';
+import {
+	getAvailabilityColumnsInRange,
+	makeSlotId,
+	toUserAvailability,
+} from '@utils/feed/scheduling/schedulingUtils';
 import type { SchedulingFeed } from '@type/feed';
 import * as S from './SchedulingFeed.styled';
 
@@ -47,16 +50,15 @@ const SchedulingFeed = ({
 
 		const slots = new Set<string>();
 		Object.entries(userResponse.availabilities).forEach(([date, segments]) => {
-			segments.forEach((value, index) => {
+			segments.forEach((value, segment) => {
 				if (value === 1) {
-					// minTimeSegment를 빼서 상대적인 인덱스로 변환
-					const relativeIndex = index - minTimeSegment;
-					slots.add(`${date}:${relativeIndex}`);
+					const slotId = makeSlotId(date, segment);
+					slots.add(slotId);
 				}
 			});
 		});
 		return slots;
-	}, [userResponse, minTimeSegment]);
+	}, [userResponse]);
 
 	const handleAddSchedule = () => setIsEditable(true);
 	const handleCancelEdit = () => setIsEditable(false);
@@ -71,8 +73,8 @@ const SchedulingFeed = ({
 	const handleSubmit = (selectedSlots: Set<string>) => {
 		if (!teamspaceId) return;
 
-		const availabilites = prepareAvailabilities(selectedSlots, minTimeSegment, totalAvailability);
-		mutateSchedulingAvail(feedId, availabilites);
+		const userAvailabilities = toUserAvailability(selectedSlots, dates);
+		mutateSchedulingAvail(feedId, userAvailabilities);
 		setIsEditable(false);
 	};
 

@@ -3,6 +3,7 @@ import { Button } from '@components/common/Button/Button';
 import Flex from '@components/common/Flex/Flex';
 import TimeColumn from '@components/Feed/SchedulingFeed/TimeColumn';
 import useScheduleSelection from '@hooks/feed/useScheduleSelection';
+import { makeSlotId } from '@utils/feed/scheduling/schedulingUtils';
 import type { AvailabilityColumn } from '@type/feed';
 import * as S from './SchedulingFeed.styled';
 
@@ -49,7 +50,7 @@ const ScheduleEditView = ({
 					{availabilityColumns.map(([date, segments]) => (
 						<S.Column key={`column-${date}`}>
 							{segments.map((_, idx) => {
-								const slotId = `${date}:${idx}`;
+								const slotId = makeSlotId(date, idx, minTimeSegment);
 
 								return (
 									<S.Slot
