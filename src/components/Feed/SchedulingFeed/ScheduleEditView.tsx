@@ -3,7 +3,7 @@ import { Button } from '@components/common/Button/Button';
 import Flex from '@components/common/Flex/Flex';
 import TimeColumn from '@components/Feed/SchedulingFeed/TimeColumn';
 import useScheduleSelection from '@hooks/feed/useScheduleSelection';
-import { makeSlotId } from '@utils/feed/scheduling/schedulingUtils';
+import { isPastSlot, makeSlotId } from '@utils/feed/scheduling/schedulingUtils';
 import type { AvailabilityColumn } from '@type/feed';
 import * as S from './SchedulingFeed.styled';
 
@@ -50,13 +50,17 @@ const ScheduleEditView = ({
 					{availabilityColumns.map(([date, segments]) => (
 						<S.Column key={`column-${date}`}>
 							{segments.map((_, idx) => {
-								const slotId = makeSlotId(date, idx, minTimeSegment);
+								const segment = idx + minTimeSegment;
+								const slotId = makeSlotId(date, segment);
+								const isPast = isPastSlot(date, segment);
+								// eslint-disable-next-line no-nested-ternary
+								const className = isPast ? 'isPast' : isSelected(slotId) ? 'selected' : '';
 
 								return (
 									<S.Slot
 										key={slotId}
-										data-slot-id={slotId}
-										className={isSelected(slotId) ? 'selected' : ''}
+										className={className}
+										data-slot-id={isPast ? null : slotId}
 									/>
 								);
 							})}

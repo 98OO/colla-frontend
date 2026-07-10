@@ -1,3 +1,4 @@
+import { DateManager } from '@utils/common/DateManager';
 import type {
 	AvailabilityColumn,
 	AvailabilityFlag,
@@ -7,6 +8,7 @@ import type {
 
 const SEGMENTS_PER_HOUR = 2;
 const SEGMENTS_PER_DAY = 24 * SEGMENTS_PER_HOUR;
+const MINUTES_PER_SEGMENT = 60 / SEGMENTS_PER_HOUR;
 const HOURS_PER_PERIOD = 12;
 
 const SLOT_BASE_COLOR = { r: 84, g: 151, b: 255 };
@@ -41,6 +43,17 @@ export const parseSlotId = (slotId: string): { date: string; segment: number } =
 	const [date, segment] = slotId.split(':');
 
 	return { date, segment: Number(segment) };
+};
+export const isPastSlot = (date: string, segment: number, base = new Date()): boolean => {
+	const [year, month, day] = date.split('-').map(Number);
+	const slotDate = new Date(year, month - 1, day);
+
+	if (DateManager.isPastDate(slotDate, base)) return true;
+	if (!DateManager.isToday(slotDate, base)) return false;
+
+	const baseMinutes = base.getHours() * 60 + base.getMinutes();
+
+	return segment * MINUTES_PER_SEGMENT <= baseMinutes;
 };
 
 const createEmptyUserAvailability = (dates: string[]): UserAvailability =>

@@ -114,6 +114,11 @@ export const Slot = styled.div`
 	&.selected::after {
 		opacity: 1;
 	}
+
+	&.isPast {
+		pointer-events: none;
+		background-color: ${theme.color.bg.tertiary};
+	}
 `;
 
 export const HeaderContainer = styled.div`
@@ -163,5 +168,10 @@ export const AvailabilitySlot = styled.div<{ slotColor: string }>`
 
 	&:hover {
 		border: 2px dotted ${theme.color.border.iSecondaryHover};
+	}
+
+	&.isPast {
+		pointer-events: none;
+		background-color: ${theme.color.bg.tertiary};
 	}
 `;
