@@ -56,6 +56,17 @@ export const isPastSlot = (date: string, segment: number, base = new Date()): bo
 	return segment * MINUTES_PER_SEGMENT <= baseMinutes;
 };
 
+export const excludePastSlots = (selectedSlots: Set<string>, base = new Date()): Set<string> => {
+	const validSlots = new Set<string>();
+
+	selectedSlots.forEach((slotId) => {
+		const { date, segment } = parseSlotId(slotId);
+		if (!isPastSlot(date, segment, base)) validSlots.add(slotId);
+	});
+
+	return validSlots;
+};
+
 const createEmptyUserAvailability = (dates: string[]): UserAvailability =>
 	Object.fromEntries(
 		dates.map((date) => [date, Array<AvailabilityFlag>(SEGMENTS_PER_DAY).fill(0)])

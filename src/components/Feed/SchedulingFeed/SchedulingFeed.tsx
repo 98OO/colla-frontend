@@ -11,6 +11,7 @@ import ScheduleEditView from '@components/Feed/SchedulingFeed/ScheduleEditView';
 import useSchedulingAvailMutation from '@hooks/queries/post/useSchedulingAvailMutation';
 import useUserStatusQuery from '@hooks/queries/useUserStatusQuery';
 import {
+	excludePastSlots,
 	getAvailabilityColumnsInRange,
 	makeSlotId,
 	toUserAvailability,
@@ -73,7 +74,8 @@ const SchedulingFeed = ({
 	const handleSubmit = (selectedSlots: Set<string>) => {
 		if (!teamspaceId) return;
 
-		const userAvailabilities = toUserAvailability(selectedSlots, dates);
+		const validSlots = excludePastSlots(selectedSlots);
+		const userAvailabilities = toUserAvailability(validSlots, dates);
 		mutateSchedulingAvail(feedId, userAvailabilities);
 		setIsEditable(false);
 	};
