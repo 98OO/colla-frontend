@@ -170,9 +170,4 @@ export const AvailabilitySlot = styled.div<{ slotColor: string }>`
 	&:hover {
 		border: 2px dotted ${theme.color.border.iSecondaryHover};
 	}
-
-	&.isPast {
-		pointer-events: none;
-		background-color: ${theme.color.bg.tertiary};
-	}
 `;

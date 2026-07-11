@@ -1,5 +1,4 @@
 import TimeColumn from '@components/Feed/SchedulingFeed/TimeColumn';
-import { isPastSlot } from '@utils/feed/scheduling/pastSlot';
 import { getSlotColor } from '@utils/feed/scheduling/slotColor';
 import { makeSlotId } from '@utils/feed/scheduling/slotId';
 import type { AvailabilityColumn } from '@type/feed';
@@ -27,12 +26,10 @@ const AvailabilityGrid = ({
 						{segments.map((availableCount, idx) => {
 							const segment = idx + minTimeSegment;
 							const slotId = makeSlotId(date, segment);
-							const isPast = isPastSlot(date, segment);
 
 							return (
 								<S.AvailabilitySlot
 									key={slotId}
-									className={isPast ? 'isPast' : ''}
 									slotColor={getSlotColor(numOfParticipants, availableCount)}
 								/>
 							);

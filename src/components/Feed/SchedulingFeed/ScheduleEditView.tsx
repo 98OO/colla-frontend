@@ -3,7 +3,7 @@ import { Button } from '@components/common/Button/Button';
 import Flex from '@components/common/Flex/Flex';
 import TimeColumn from '@components/Feed/SchedulingFeed/TimeColumn';
 import useScheduleSelection from '@hooks/feed/useScheduleSelection';
-import { isPastSlot } from '@utils/feed/scheduling/pastSlot';
+import { isPastSlot } from '@utils/feed/scheduling/past';
 import { makeSlotId } from '@utils/feed/scheduling/slotId';
 import type { AvailabilityColumn } from '@type/feed';
 import * as S from './SchedulingFeed.styled';

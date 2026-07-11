@@ -24,3 +24,6 @@ export const excludePastSlots = (selectedSlots: Set<string>, base = new Date()):
 
 	return validSlots;
 };
+
+export const isDuePassed = (dueAt: string, base = new Date()): boolean =>
+	new Date(dueAt).getTime() <= base.getTime();

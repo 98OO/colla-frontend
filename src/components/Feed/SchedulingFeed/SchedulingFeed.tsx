@@ -15,7 +15,7 @@ import {
 	getUserScheduleInfo,
 	toUserAvailability,
 } from '@utils/feed/scheduling/availability';
-import { excludePastSlots } from '@utils/feed/scheduling/pastSlot';
+import { excludePastSlots, isDuePassed } from '@utils/feed/scheduling/past';
 import type { SchedulingFeed } from '@type/feed';
 import * as S from './SchedulingFeed.styled';
 
@@ -127,7 +127,7 @@ const SchedulingFeed = ({
 									label={isParticipating ? '일정 변경' : '일정 추가'}
 									variant='primary'
 									size='md'
-									disabled={details.isClosed}
+									disabled={details.isClosed || isDuePassed(details.dueAt)}
 									onClick={handleAddSchedule}
 								/>
 							</Flex>
