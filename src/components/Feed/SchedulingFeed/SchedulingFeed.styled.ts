@@ -125,6 +125,7 @@ export const HeaderContainer = styled.div`
 	display: flex;
 	flex-grow: 1;
 	box-sizing: border-box;
+	user-select: none;
 `;
 
 export const TimeHeader = styled.div`
