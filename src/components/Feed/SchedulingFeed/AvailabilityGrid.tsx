@@ -1,5 +1,7 @@
 import TimeColumn from '@components/Feed/SchedulingFeed/TimeColumn';
-import { getSlotColor, isPastSlot, makeSlotId } from '@utils/feed/scheduling/schedulingUtils';
+import { isPastSlot } from '@utils/feed/scheduling/pastSlot';
+import { getSlotColor } from '@utils/feed/scheduling/slotColor';
+import { makeSlotId } from '@utils/feed/scheduling/slotId';
 import type { AvailabilityColumn } from '@type/feed';
 import * as S from './SchedulingFeed.styled';
 

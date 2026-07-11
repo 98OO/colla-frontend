@@ -1,4 +1,4 @@
-import { convertSegmentToTimeLabel } from '@utils/feed/scheduling/schedulingUtils';
+import { convertSegmentToTimeLabel } from '@utils/feed/scheduling/segment';
 import * as S from './SchedulingFeed.styled';
 
 interface TimeColumnProps {

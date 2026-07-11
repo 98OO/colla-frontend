@@ -11,11 +11,11 @@ import ScheduleEditView from '@components/Feed/SchedulingFeed/ScheduleEditView';
 import useSchedulingAvailMutation from '@hooks/queries/post/useSchedulingAvailMutation';
 import useUserStatusQuery from '@hooks/queries/useUserStatusQuery';
 import {
-	excludePastSlots,
 	getAvailabilityColumnsInRange,
 	getUserScheduleInfo,
 	toUserAvailability,
-} from '@utils/feed/scheduling/schedulingUtils';
+} from '@utils/feed/scheduling/availability';
+import { excludePastSlots } from '@utils/feed/scheduling/pastSlot';
 import type { SchedulingFeed } from '@type/feed';
 import * as S from './SchedulingFeed.styled';
 
