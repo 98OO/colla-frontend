@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState } from 'react';
 import Avatar from '@components/common/Avatar/Avatar';
 import { Button } from '@components/common/Button/Button';
 import Flex from '@components/common/Flex/Flex';
@@ -13,7 +13,7 @@ import useUserStatusQuery from '@hooks/queries/useUserStatusQuery';
 import {
 	excludePastSlots,
 	getAvailabilityColumnsInRange,
-	makeSlotId,
+	getUserScheduleInfo,
 	toUserAvailability,
 } from '@utils/feed/scheduling/schedulingUtils';
 import type { SchedulingFeed } from '@type/feed';
@@ -42,27 +42,12 @@ const SchedulingFeed = ({
 
 	const { mutateSchedulingAvail } = useSchedulingAvailMutation(teamspaceId);
 
-	const [isEditable, setIsEditable] = useState(false);
-	const userResponse = responses.find((response) => response.user.id === userId);
-	const hasExistingResponse = Boolean(userResponse);
-
-	const initialSelectedSlots = useMemo(() => {
-		if (!userResponse) return new Set<string>();
-
-		const slots = new Set<string>();
-		Object.entries(userResponse.availabilities).forEach(([date, segments]) => {
-			segments.forEach((value, segment) => {
-				if (value === 1) {
-					const slotId = makeSlotId(date, segment);
-					slots.add(slotId);
-				}
-			});
-		});
-		return slots;
-	}, [userResponse]);
-
-	const handleAddSchedule = () => setIsEditable(true);
-	const handleCancelEdit = () => setIsEditable(false);
+	const { isParticipating, initialSelectedSlots } = getUserScheduleInfo(
+		responses,
+		userId,
+		minTimeSegment,
+		maxTimeSegment
+	);
 
 	const availabilityColumns = getAvailabilityColumnsInRange(
 		totalAvailability,
@@ -71,11 +56,17 @@ const SchedulingFeed = ({
 	);
 	const dates = availabilityColumns.map(([date]) => date);
 
+	const [isEditable, setIsEditable] = useState(false);
+
+	const handleAddSchedule = () => setIsEditable(true);
+	const handleCancelEdit = () => setIsEditable(false);
+
 	const handleSubmit = (selectedSlots: Set<string>) => {
 		if (!teamspaceId) return;
 
 		const validSlots = excludePastSlots(selectedSlots);
 		const userAvailabilities = toUserAvailability(validSlots, dates);
+
 		mutateSchedulingAvail(feedId, userAvailabilities);
 		setIsEditable(false);
 	};
@@ -133,7 +124,7 @@ const SchedulingFeed = ({
 							<Flex justify='space-between'>
 								{participantsSlot}
 								<Button
-									label={hasExistingResponse ? '일정 변경' : '일정 추가'}
+									label={isParticipating ? '일정 변경' : '일정 추가'}
 									variant='primary'
 									size='md'
 									disabled={details.isClosed}

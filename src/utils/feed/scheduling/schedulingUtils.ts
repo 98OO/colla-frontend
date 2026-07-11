@@ -2,6 +2,7 @@ import { DateManager } from '@utils/common/DateManager';
 import type {
 	AvailabilityColumn,
 	AvailabilityFlag,
+	SchedulingResponse,
 	TotalAvailability,
 	UserAvailability,
 } from '@type/feed';
@@ -81,6 +82,44 @@ export const toUserAvailability = (selectedSlots: Set<string>, dates: string[]) 
 	});
 
 	return userAvailabilities;
+};
+
+const toSelectedSlots = (
+	userAvailabilities: UserAvailability,
+	minTimeSegment: number,
+	maxTimeSegment: number
+): Set<string> => {
+	const selectedSlots = new Set<string>();
+
+	Object.entries(userAvailabilities).forEach(([date, segments]) => {
+		const segmentsInRange = segments.slice(minTimeSegment, maxTimeSegment);
+
+		segmentsInRange.forEach((availabilityFlag, idx) => {
+			const isAvailable = availabilityFlag === 1;
+			if (!isAvailable) return;
+
+			const slotId = makeSlotId(date, idx, minTimeSegment);
+			selectedSlots.add(slotId);
+		});
+	});
+
+	return selectedSlots;
+};
+
+export const getUserScheduleInfo = (
+	responses: SchedulingResponse[],
+	userId: number | undefined,
+	minTimeSegment: number,
+	maxTimeSegment: number
+) => {
+	const userResponse = responses.find(({ user }) => user.id === userId);
+
+	const isParticipating = userResponse !== undefined;
+	const initialSelectedSlots = userResponse
+		? toSelectedSlots(userResponse.availabilities, minTimeSegment, maxTimeSegment)
+		: new Set<string>();
+
+	return { isParticipating, initialSelectedSlots };
 };
 
 const adjustBrightness = (colorValue: number, ratio: number) =>

@@ -71,6 +71,16 @@ export type TotalAvailability = Record<string, number[]>;
 
 export type AvailabilityColumn = [string, number[]];
 
+export type SchedulingResponse = {
+	availabilities: UserAvailability;
+	createdAt: string;
+	user: {
+		id: number;
+		profileImageUrl: string;
+		username: string;
+	};
+};
+
 interface SchedulingDetails {
 	dueAt: string;
 	isClosed: boolean;
@@ -78,15 +88,7 @@ interface SchedulingDetails {
 	maxTimeSegment: number;
 	numOfParticipants: number;
 	totalAvailability: TotalAvailability;
-	responses: {
-		availabilities: UserAvailability;
-		createdAt: string;
-		user: {
-			id: number;
-			profileImageUrl: string;
-			username: string;
-		};
-	}[];
+	responses: SchedulingResponse[];
 }
 
 interface FeedBase {
