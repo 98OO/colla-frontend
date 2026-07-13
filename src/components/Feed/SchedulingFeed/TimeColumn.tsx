@@ -1,4 +1,4 @@
-import { convertSegmentToTimeLabel } from '@utils/feed/scheduling/segment';
+import { convertSegmentToHourLabel } from '@utils/feed/scheduling/segment';
 import * as S from './SchedulingFeed.styled';
 
 interface TimeColumnProps {
@@ -13,7 +13,7 @@ const TimeColumn = ({ minTimeSegment, maxTimeSegment }: TimeColumnProps) => {
 		<S.TimeColumn>
 			{Array.from({ length: rowCount / 2 }).map((_, idx) => {
 				const segment = minTimeSegment + idx * 2;
-				const timeLabel = convertSegmentToTimeLabel(segment);
+				const timeLabel = convertSegmentToHourLabel(segment);
 
 				return <S.TimeLabel key={segment}>{timeLabel}</S.TimeLabel>;
 			})}

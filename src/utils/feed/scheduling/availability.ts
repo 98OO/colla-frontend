@@ -75,3 +75,12 @@ export const getUserScheduleInfo = (
 
 	return { isParticipating, initialSelectedSlots };
 };
+
+export const getAvailableParticipants = (
+	responses: SchedulingResponse[],
+	date: string,
+	segment: number
+): SchedulingResponse['user'][] =>
+	responses
+		.filter(({ availabilities }) => availabilities[date]?.[segment] === 1)
+		.map(({ user }) => user);

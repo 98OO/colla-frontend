@@ -1,12 +1,11 @@
 import { useState } from 'react';
-import Avatar from '@components/common/Avatar/Avatar';
 import { Button } from '@components/common/Button/Button';
 import Flex from '@components/common/Flex/Flex';
-import Text from '@components/common/Text/Text';
 import BaseFeed from '@components/Feed/BaseFeed/BaseFeed';
 import SchedulingDetail from '@components/Feed/Detail/Scheduling/SchedulingDetail';
 import AvailabilityGrid from '@components/Feed/SchedulingFeed/AvailabilityGrid';
 import GridHeader from '@components/Feed/SchedulingFeed/GridHeader';
+import Participants from '@components/Feed/SchedulingFeed/Participants';
 import ScheduleEditView from '@components/Feed/SchedulingFeed/ScheduleEditView';
 import useSchedulingAvailMutation from '@hooks/queries/post/useSchedulingAvailMutation';
 import useUserStatusQuery from '@hooks/queries/useUserStatusQuery';
@@ -16,7 +15,7 @@ import {
 	toUserAvailability,
 } from '@utils/feed/scheduling/availability';
 import { excludePastSlots, isDuePassed } from '@utils/feed/scheduling/past';
-import type { SchedulingFeed } from '@type/feed';
+import type { SchedulingFeed, SlotData } from '@type/feed';
 import * as S from './SchedulingFeed.styled';
 
 interface SchedulingFeedProps {
@@ -57,8 +56,12 @@ const SchedulingFeed = ({
 	const dates = availabilityColumns.map(([date]) => date);
 
 	const [isEditable, setIsEditable] = useState(false);
+	const [currentSlot, setCurrentSlot] = useState<SlotData | null>(null);
 
-	const handleAddSchedule = () => setIsEditable(true);
+	const handleAddSchedule = () => {
+		setCurrentSlot(null);
+		setIsEditable(true);
+	};
 	const handleCancelEdit = () => setIsEditable(false);
 
 	const handleSubmit = (selectedSlots: Set<string>) => {
@@ -70,28 +73,6 @@ const SchedulingFeed = ({
 		mutateSchedulingAvail(feedId, userAvailabilities);
 		setIsEditable(false);
 	};
-
-	const participantsSlot = (
-		<S.ParticipantsContainer>
-			<S.Participants>{`일정 작성 인원 (${numOfParticipants})`}</S.Participants>
-			{numOfParticipants === 0 && (
-				<Text size='md' weight='medium' color='tertiary'>
-					가능한 일정을 작성해주세요
-				</Text>
-			)}
-			{numOfParticipants !== 0 && (
-				<Flex gap='6'>
-					{responses.map(({ user }) => {
-						const { profileImageUrl, username } = user;
-
-						return (
-							<Avatar profile={profileImageUrl} initial={username} size='mlg' shape='circle' />
-						);
-					})}
-				</Flex>
-			)}
-		</S.ParticipantsContainer>
-	);
 
 	return (
 		<BaseFeed
@@ -109,7 +90,9 @@ const SchedulingFeed = ({
 							minTimeSegment={minTimeSegment}
 							maxTimeSegment={maxTimeSegment}
 							initialSlots={initialSelectedSlots}
-							participantsSlot={participantsSlot}
+							participantsSlot={
+								<Participants responses={responses} numOfParticipants={numOfParticipants} />
+							}
 							onSubmit={handleSubmit}
 							onCancel={handleCancelEdit}
 						/>
@@ -120,9 +103,14 @@ const SchedulingFeed = ({
 								maxTimeSegment={maxTimeSegment}
 								availabilityColumns={availabilityColumns}
 								numOfParticipants={numOfParticipants}
+								onCurrentSlotChange={setCurrentSlot}
 							/>
 							<Flex justify='space-between'>
-								{participantsSlot}
+								<Participants
+									responses={responses}
+									numOfParticipants={numOfParticipants}
+									currentSlot={currentSlot}
+								/>
 								<Button
 									label={isParticipating ? '일정 변경' : '일정 추가'}
 									variant='primary'

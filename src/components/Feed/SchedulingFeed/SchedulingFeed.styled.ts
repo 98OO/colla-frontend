@@ -38,9 +38,23 @@ export const ParticipantsContainer = styled.div`
 	font-weight: ${theme.typography.fontWeight.semiBold};
 `;
 
-export const Participants = styled.div`
+export const Caption = styled.div`
 	font-size: ${theme.typography.fontSize.header.xxs};
-	font-weight: ${theme.typography.fontWeight.semiBold};
+	font-weight: ${theme.typography.fontWeight.medium};
+`;
+
+export const ParticipantWrapper = styled.div`
+	display: flex;
+	flex-wrap: wrap;
+	gap: ${theme.units.spacing.space8} ${theme.units.spacing.space16};
+`;
+
+export const ParticipantChip = styled.div`
+	display: flex;
+	align-items: center;
+	gap: ${theme.units.spacing.space6};
+	font-size: ${theme.typography.fontSize.body.md};
+	font-weight: ${theme.typography.fontWeight.regular};
 `;
 
 export const GridContainer = styled.div`
@@ -163,11 +177,8 @@ export const Date = styled.div`
 	color: ${theme.color.text.secondary};
 `;
 
-export const AvailabilitySlot = styled.div<{ slotColor: string }>`
+export const AvailabilitySlot = styled.div<{ $slotColor: string; $hasParticipants: boolean }>`
 	${slotBase}
-	background-color: ${({ slotColor }) => slotColor || 'transparent'};
-
-	&:hover {
-		border: 2px dotted ${theme.color.border.iSecondaryHover};
-	}
+	background-color: ${({ $slotColor }) => $slotColor || 'transparent'};
+	cursor: ${({ $hasParticipants }) => ($hasParticipants ? 'pointer' : 'default')};
 `;

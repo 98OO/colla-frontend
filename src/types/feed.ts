@@ -71,6 +71,8 @@ export type TotalAvailability = Record<string, number[]>;
 
 export type AvailabilityColumn = [string, number[]];
 
+export type SlotData = { date: string; segment: number };
+
 export type SchedulingResponse = {
 	availabilities: UserAvailability;
 	createdAt: string;
