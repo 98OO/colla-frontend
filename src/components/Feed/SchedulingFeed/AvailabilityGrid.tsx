@@ -21,6 +21,8 @@ const AvailabilityGrid = memo(
 		numOfParticipants,
 		onCurrentSlotChange,
 	}: AvailabilityGridProps) => {
+		const dayCount = availabilityColumns.length;
+
 		const handleGridLeave = () => onCurrentSlotChange(null);
 
 		const handleSlotHover = (e: MouseEvent<HTMLDivElement>) => {
@@ -32,7 +34,7 @@ const AvailabilityGrid = memo(
 		return (
 			<S.GridContainer>
 				<TimeColumn minTimeSegment={minTimeSegment} maxTimeSegment={maxTimeSegment} />
-				<S.Grid onMouseLeave={handleGridLeave} onMouseOver={handleSlotHover}>
+				<S.Grid $dayCount={dayCount} onMouseLeave={handleGridLeave} onMouseOver={handleSlotHover}>
 					{availabilityColumns.map(([date, segments]) => (
 						<S.Column key={date}>
 							{segments.map((availableCount, idx) => {

@@ -67,6 +67,8 @@ export const GridContainer = styled.div`
 export const TimeColumn = styled.div`
 	display: flex;
 	flex-direction: column;
+	flex-shrink: 0;
+	width: 50px;
 	padding-right: ${theme.units.spacing.space10};
 	border-right: 1px solid ${theme.color.border.tertiary};
 	font-size: ${theme.typography.fontSize.body.sm};
@@ -81,8 +83,9 @@ export const TimeLabel = styled.div`
 	box-sizing: border-box;
 `;
 
-export const Grid = styled.div`
-	display: flex;
+export const Grid = styled.div<{ $dayCount: number }>`
+	display: grid;
+	grid-template-columns: repeat(${({ $dayCount }) => $dayCount}, minmax(0, 1fr));
 	flex-grow: 1;
 	font-size: ${theme.typography.fontSize.body.md};
 	box-sizing: border-box;
@@ -92,11 +95,11 @@ export const Grid = styled.div`
 `;
 
 export const Column = styled.div`
-	width: 100%;
 	display: flex;
 	flex-direction: column;
 	border-right: 0.7px solid ${theme.color.border.tertiary};
 	background-color: ${theme.color.bg.primary};
+	box-sizing: border-box;
 `;
 
 const slotBase = css`
@@ -144,6 +147,7 @@ export const HeaderContainer = styled.div`
 
 export const TimeHeader = styled.div`
 	display: flex;
+	flex-shrink: 0;
 	align-items: center;
 	justify-content: center;
 	height: 42px;
@@ -151,8 +155,9 @@ export const TimeHeader = styled.div`
 	padding-right: ${theme.units.spacing.space4};
 `;
 
-export const HeaderWrapper = styled.div`
-	display: flex;
+export const HeaderWrapper = styled.div<{ $dayCount: number }>`
+	display: grid;
+	grid-template-columns: repeat(${({ $dayCount }) => $dayCount}, minmax(0, 1fr));
 	flex-grow: 1;
 	box-sizing: border-box;
 	padding-bottom: ${theme.units.spacing.space4};
@@ -163,7 +168,6 @@ export const Header = styled.div`
 	flex-direction: column;
 	align-items: center;
 	justify-content: center;
-	width: 100%;
 	height: 42px;
 	gap: ${theme.units.spacing.space8};
 `;

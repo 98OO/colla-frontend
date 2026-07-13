@@ -6,10 +6,12 @@ interface GridHeaderProps {
 }
 
 const GridHeader = ({ dates }: GridHeaderProps) => {
+	const dayCount = dates.length;
+
 	return (
 		<S.HeaderContainer>
 			<S.TimeHeader />
-			<S.HeaderWrapper>
+			<S.HeaderWrapper $dayCount={dayCount}>
 				{dates.map((dateString) => {
 					const date = new Date(dateString);
 

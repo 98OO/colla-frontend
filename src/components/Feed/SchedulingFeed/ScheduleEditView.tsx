@@ -35,12 +35,14 @@ const ScheduleEditView = ({
 		handlePointerDown,
 		handlePointerMove,
 	} = useScheduleSelection(initialSlots);
+	const dayCount = availabilityColumns.length;
 
 	return (
 		<>
 			<S.GridContainer>
 				<TimeColumn minTimeSegment={minTimeSegment} maxTimeSegment={maxTimeSegment} />
 				<S.Grid
+					$dayCount={dayCount}
 					ref={gridRef}
 					onPointerDown={handlePointerDown}
 					onPointerMove={handlePointerMove}
