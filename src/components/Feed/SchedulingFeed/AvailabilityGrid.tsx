@@ -1,4 +1,4 @@
-import type { MouseEvent } from 'react';
+import { memo, type MouseEvent } from 'react';
 import TimeColumn from '@components/Feed/SchedulingFeed/TimeColumn';
 import { getSlotColor } from '@utils/feed/scheduling/slotColor';
 import { makeSlotId, parseSlotId } from '@utils/feed/scheduling/slotId';
@@ -13,47 +13,49 @@ interface AvailabilityGridProps {
 	onCurrentSlotChange: (slot: SlotData | null) => void;
 }
 
-const AvailabilityGrid = ({
-	minTimeSegment,
-	maxTimeSegment,
-	availabilityColumns,
-	numOfParticipants,
-	onCurrentSlotChange,
-}: AvailabilityGridProps) => {
-	const handleGridLeave = () => onCurrentSlotChange(null);
+const AvailabilityGrid = memo(
+	({
+		minTimeSegment,
+		maxTimeSegment,
+		availabilityColumns,
+		numOfParticipants,
+		onCurrentSlotChange,
+	}: AvailabilityGridProps) => {
+		const handleGridLeave = () => onCurrentSlotChange(null);
 
-	const handleSlotHover = (e: MouseEvent<HTMLDivElement>) => {
-		const { slotId } = (e.target as HTMLElement).dataset;
+		const handleSlotHover = (e: MouseEvent<HTMLDivElement>) => {
+			const { slotId } = (e.target as HTMLElement).dataset;
 
-		onCurrentSlotChange(slotId ? parseSlotId(slotId) : null);
-	};
+			onCurrentSlotChange(slotId ? parseSlotId(slotId) : null);
+		};
 
-	return (
-		<S.GridContainer>
-			<TimeColumn minTimeSegment={minTimeSegment} maxTimeSegment={maxTimeSegment} />
-			<S.Grid onMouseLeave={handleGridLeave} onMouseOver={handleSlotHover}>
-				{availabilityColumns.map(([date, segments]) => (
-					<S.Column key={date}>
-						{segments.map((availableCount, idx) => {
-							const segment = idx + minTimeSegment;
-							const hasParticipants = availableCount > 0;
-							const slotId = makeSlotId(date, segment);
-							const slotColor = getSlotColor(numOfParticipants, availableCount);
+		return (
+			<S.GridContainer>
+				<TimeColumn minTimeSegment={minTimeSegment} maxTimeSegment={maxTimeSegment} />
+				<S.Grid onMouseLeave={handleGridLeave} onMouseOver={handleSlotHover}>
+					{availabilityColumns.map(([date, segments]) => (
+						<S.Column key={date}>
+							{segments.map((availableCount, idx) => {
+								const segment = idx + minTimeSegment;
+								const hasParticipants = availableCount > 0;
+								const slotId = makeSlotId(date, segment);
+								const slotColor = getSlotColor(numOfParticipants, availableCount);
 
-							return (
-								<S.AvailabilitySlot
-									key={slotId}
-									data-slot-id={hasParticipants ? slotId : null}
-									$hasParticipants={hasParticipants}
-									$slotColor={slotColor}
-								/>
-							);
-						})}
-					</S.Column>
-				))}
-			</S.Grid>
-		</S.GridContainer>
-	);
-};
+								return (
+									<S.AvailabilitySlot
+										key={slotId}
+										data-slot-id={hasParticipants ? slotId : null}
+										$hasParticipants={hasParticipants}
+										$slotColor={slotColor}
+									/>
+								);
+							})}
+						</S.Column>
+					))}
+				</S.Grid>
+			</S.GridContainer>
+		);
+	}
+);
 
 export default AvailabilityGrid;
