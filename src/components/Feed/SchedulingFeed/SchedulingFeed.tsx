@@ -1,12 +1,10 @@
 import { useState } from 'react';
-import { Button } from '@components/common/Button/Button';
-import Flex from '@components/common/Flex/Flex';
 import BaseFeed from '@components/Feed/BaseFeed/BaseFeed';
 import SchedulingDetail from '@components/Feed/Detail/Scheduling/SchedulingDetail';
-import AvailabilityGrid from '@components/Feed/SchedulingFeed/AvailabilityGrid';
 import GridHeader from '@components/Feed/SchedulingFeed/GridHeader';
 import Participants from '@components/Feed/SchedulingFeed/Participants';
 import ScheduleEditView from '@components/Feed/SchedulingFeed/ScheduleEditView';
+import ScheduleReadView from '@components/Feed/SchedulingFeed/ScheduleReadView';
 import useSchedulingAvailMutation from '@hooks/queries/post/useSchedulingAvailMutation';
 import useUserStatusQuery from '@hooks/queries/useUserStatusQuery';
 import {
@@ -15,7 +13,7 @@ import {
 	toUserAvailability,
 } from '@utils/feed/scheduling/availability';
 import { excludePastSlots, isDuePassed } from '@utils/feed/scheduling/past';
-import type { SchedulingFeed, SlotData } from '@type/feed';
+import type { SchedulingFeed } from '@type/feed';
 import * as S from './SchedulingFeed.styled';
 
 interface SchedulingFeedProps {
@@ -35,10 +33,11 @@ const SchedulingFeed = ({
 	const { minTimeSegment, maxTimeSegment, totalAvailability, responses, numOfParticipants } =
 		details;
 
+	const [isEditable, setIsEditable] = useState(false);
+
 	const { userStatus } = useUserStatusQuery();
 	const teamspaceId = userStatus?.profile.lastSeenTeamspaceId;
 	const userId = userStatus?.profile.userId;
-
 	const { mutateSchedulingAvail } = useSchedulingAvailMutation(teamspaceId);
 
 	const { isParticipating, initialSelectedSlots } = getUserScheduleInfo(
@@ -47,22 +46,17 @@ const SchedulingFeed = ({
 		minTimeSegment,
 		maxTimeSegment
 	);
-
 	const availabilityColumns = getAvailabilityColumnsInRange(
 		totalAvailability,
 		minTimeSegment,
 		maxTimeSegment
 	);
 	const dates = availabilityColumns.map(([date]) => date);
+	const isClosed = details.isClosed || isDuePassed(details.dueAt);
 
-	const [isEditable, setIsEditable] = useState(false);
-	const [currentSlot, setCurrentSlot] = useState<SlotData | null>(null);
+	const handleEdit = () => setIsEditable(true);
 
-	const handleAddSchedule = () => {
-		setCurrentSlot(null);
-		setIsEditable(true);
-	};
-	const handleCancelEdit = () => setIsEditable(false);
+	const handleCancel = () => setIsEditable(false);
 
 	const handleSubmit = (selectedSlots: Set<string>) => {
 		if (!teamspaceId) return;
@@ -94,32 +88,19 @@ const SchedulingFeed = ({
 								<Participants responses={responses} numOfParticipants={numOfParticipants} />
 							}
 							onSubmit={handleSubmit}
-							onCancel={handleCancelEdit}
+							onCancel={handleCancel}
 						/>
 					) : (
-						<>
-							<AvailabilityGrid
-								minTimeSegment={minTimeSegment}
-								maxTimeSegment={maxTimeSegment}
-								availabilityColumns={availabilityColumns}
-								numOfParticipants={numOfParticipants}
-								onCurrentSlotChange={setCurrentSlot}
-							/>
-							<Flex justify='space-between'>
-								<Participants
-									responses={responses}
-									numOfParticipants={numOfParticipants}
-									currentSlot={currentSlot}
-								/>
-								<Button
-									label={isParticipating ? '일정 변경' : '일정 추가'}
-									variant='primary'
-									size='md'
-									disabled={details.isClosed || isDuePassed(details.dueAt)}
-									onClick={handleAddSchedule}
-								/>
-							</Flex>
-						</>
+						<ScheduleReadView
+							availabilityColumns={availabilityColumns}
+							minTimeSegment={minTimeSegment}
+							maxTimeSegment={maxTimeSegment}
+							numOfParticipants={numOfParticipants}
+							isParticipating={isParticipating}
+							responses={responses}
+							isClosed={isClosed}
+							onEdit={handleEdit}
+						/>
 					)}
 				</S.DetailWrapper>
 			)}
