@@ -11,23 +11,8 @@ export const FeedContainer = styled.div`
 	margin-bottom: ${theme.units.spacing.space32};
 `;
 
-export const SchedulingContainer = styled.div`
-	display: flex;
-	flex-direction: column;
-	padding: 0 ${theme.units.spacing.space24};
-	gap: ${theme.units.spacing.space24};
-`;
-
 export const DetailWrapper = styled.div`
 	padding: ${theme.units.spacing.space16} 0;
-`;
-
-export const CommentPreviewWrapper = styled.div`
-	display: flex;
-	margin-top: ${theme.units.spacing.space12};
-	margin-left: ${theme.units.spacing.space24};
-	margin-bottom: ${theme.units.spacing.space6};
-	gap: ${theme.units.spacing.space8};
 `;
 
 export const ParticipantsContainer = styled.div`
