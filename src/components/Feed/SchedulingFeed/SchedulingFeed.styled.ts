@@ -31,6 +31,8 @@ export const Caption = styled.div`
 export const ParticipantWrapper = styled.div`
 	display: flex;
 	flex-wrap: wrap;
+	align-items: center;
+	min-height: 24px;
 	gap: ${theme.units.spacing.space8} ${theme.units.spacing.space16};
 `;
 
@@ -119,7 +121,7 @@ export const Slot = styled.div`
 
 	&.isPast {
 		pointer-events: none;
-		background-color: ${theme.color.bg.tertiary};
+		background-color: ${theme.color.bg.disabled};
 	}
 `;
 

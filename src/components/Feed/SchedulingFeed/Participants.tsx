@@ -6,6 +6,9 @@ import { WEEKDAYS } from '@constants/calendar';
 import type { SchedulingResponse, SlotData } from '@type/feed';
 import * as S from './SchedulingFeed.styled';
 
+const NO_RESPONSE_MESSAGE = '가능한 일정을 작성해주세요';
+const NO_AVAILABLE_PARTICIPANT_MESSAGE = '가능한 인원이 없어요';
+
 interface ParticipantsProps {
 	responses: SchedulingResponse[];
 	numOfParticipants: number;
@@ -32,15 +35,15 @@ const Participants = ({ responses, numOfParticipants, currentSlot }: Participant
 		return (
 			<S.ParticipantsContainer>
 				<S.Caption>{`일정 작성 인원 (${numOfParticipants})`}</S.Caption>
-				{numOfParticipants === 0 ? (
-					<Text size='md' weight='medium' color='tertiary'>
-						가능한 일정을 작성해주세요
-					</Text>
-				) : (
-					<S.ParticipantWrapper>
-						{responses.map(({ user }) => renderParticipantChip(user))}
-					</S.ParticipantWrapper>
-				)}
+				<S.ParticipantWrapper>
+					{numOfParticipants === 0 ? (
+						<Text size='md' weight='medium' color='tertiary'>
+							{NO_RESPONSE_MESSAGE}
+						</Text>
+					) : (
+						responses.map(({ user }) => renderParticipantChip(user))
+					)}
+				</S.ParticipantWrapper>
 			</S.ParticipantsContainer>
 		);
 	}
@@ -57,7 +60,13 @@ const Participants = ({ responses, numOfParticipants, currentSlot }: Participant
 		<S.ParticipantsContainer>
 			<S.Caption>{`${slotDateTime} ${countRatio}`}</S.Caption>
 			<S.ParticipantWrapper>
-				{availableParticipants.map((user) => renderParticipantChip(user))}
+				{availableParticipants.length === 0 ? (
+					<Text size='md' weight='medium' color='tertiary'>
+						{NO_AVAILABLE_PARTICIPANT_MESSAGE}
+					</Text>
+				) : (
+					availableParticipants.map((user) => renderParticipantChip(user))
+				)}
 			</S.ParticipantWrapper>
 		</S.ParticipantsContainer>
 	);

@@ -46,7 +46,7 @@ const AvailabilityGrid = memo(
 								return (
 									<S.AvailabilitySlot
 										key={slotId}
-										data-slot-id={hasParticipants ? slotId : null}
+										data-slot-id={slotId}
 										$hasParticipants={hasParticipants}
 										$slotColor={slotColor}
 									/>
