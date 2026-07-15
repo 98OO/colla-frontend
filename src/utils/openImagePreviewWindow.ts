@@ -6,7 +6,7 @@ interface OpenImagePreviewWindowParams {
 export const openImagePreviewWindow = ({ src, alt }: OpenImagePreviewWindowParams) => {
 	const imageWindow = window.open('', '_blank');
 
-	if (!imageWindow) return;
+	if (!imageWindow) return false;
 
 	imageWindow.opener = null;
 	imageWindow.document.title = alt;
@@ -26,4 +26,6 @@ export const openImagePreviewWindow = ({ src, alt }: OpenImagePreviewWindowParam
 	previewImage.style.objectFit = 'contain';
 
 	imageWindow.document.body.replaceChildren(previewImage);
+
+	return true;
 };

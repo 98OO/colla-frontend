@@ -1,8 +1,7 @@
 import { useState } from 'react';
 import { openImagePreviewWindow } from '@utils/openImagePreviewWindow';
+import type { Orientation } from '@type/chat';
 import * as S from './ChatImageMessage.styled';
-
-type Orientation = 'landscape' | 'portrait' | 'square';
 
 interface ChatImageMessageProps {
 	src: string;
@@ -26,8 +25,9 @@ const ChatImageMessage = ({ src, alt }: ChatImageMessageProps) => {
 	const handleImageClick = (event: React.MouseEvent<HTMLAnchorElement>) => {
 		if (event.ctrlKey || event.metaKey || event.shiftKey) return;
 
-		event.preventDefault();
-		openImagePreviewWindow({ src, alt });
+		const isPreviewOpened = openImagePreviewWindow({ src, alt });
+
+		if (isPreviewOpened) event.preventDefault();
 	};
 
 	return (
@@ -37,7 +37,6 @@ const ChatImageMessage = ({ src, alt }: ChatImageMessageProps) => {
 			rel='noopener noreferrer'
 			aria-label={`${alt} 이미지 새 탭에서 보기`}
 			onClick={handleImageClick}
-			$isLoaded={isLoaded}
 			$orientation={orientation}>
 			<S.PreviewImage
 				src={src}
