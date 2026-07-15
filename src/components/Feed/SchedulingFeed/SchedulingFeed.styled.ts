@@ -64,7 +64,7 @@ export const TimeColumn = styled.div`
 `;
 
 export const TimeLabel = styled.div`
-	height: 40px;
+	height: 20px;
 	padding-right: ${theme.units.spacing.space4};
 	text-align: right;
 	box-sizing: border-box;
@@ -93,8 +93,14 @@ const slotBase = css`
 	height: 20px;
 	box-sizing: border-box;
 
-	&:nth-child(even) {
-		border-bottom: 0.5px solid ${theme.color.border.tertiary};
+	border-top: 1px dashed ${theme.color.border.tertiary};
+
+	&[data-hour-start] {
+		border-top: 0.5px solid ${theme.color.border.tertiary};
+	}
+
+	&:first-child {
+		border-top: none;
 	}
 `;
 

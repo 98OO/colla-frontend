@@ -4,6 +4,7 @@ import Flex from '@components/common/Flex/Flex';
 import TimeColumn from '@components/Feed/SchedulingFeed/TimeColumn';
 import useScheduleSelection from '@hooks/feed/useScheduleSelection';
 import { isPastSlot } from '@utils/feed/scheduling/past';
+import { SEGMENTS_PER_HOUR } from '@utils/feed/scheduling/segment';
 import { makeSlotId } from '@utils/feed/scheduling/slotId';
 import type { AvailabilityColumn } from '@type/feed';
 import * as S from './SchedulingFeed.styled';
@@ -63,6 +64,7 @@ const ScheduleEditView = ({
 									<S.Slot
 										key={slotId}
 										className={className}
+										data-hour-start={segment % SEGMENTS_PER_HOUR === 0 || null}
 										data-slot-id={isPast ? null : slotId}
 									/>
 								);

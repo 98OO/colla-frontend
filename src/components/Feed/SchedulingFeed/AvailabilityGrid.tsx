@@ -1,5 +1,6 @@
 import { memo, type MouseEvent } from 'react';
 import TimeColumn from '@components/Feed/SchedulingFeed/TimeColumn';
+import { SEGMENTS_PER_HOUR } from '@utils/feed/scheduling/segment';
 import { getSlotColor } from '@utils/feed/scheduling/slotColor';
 import { makeSlotId, parseSlotId } from '@utils/feed/scheduling/slotId';
 import type { AvailabilityColumn, SlotData } from '@type/feed';
@@ -46,6 +47,7 @@ const AvailabilityGrid = memo(
 								return (
 									<S.AvailabilitySlot
 										key={slotId}
+										data-hour-start={segment % SEGMENTS_PER_HOUR === 0 || null}
 										data-slot-id={slotId}
 										$hasParticipants={hasParticipants}
 										$slotColor={slotColor}
