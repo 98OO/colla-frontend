@@ -38,3 +38,5 @@ export interface Message {
 export interface ChatData {
 	chatChannelMessages: Message[];
 }
+
+export type Orientation = 'landscape' | 'portrait' | 'square';

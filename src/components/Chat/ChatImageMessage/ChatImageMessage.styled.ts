@@ -1,6 +1,5 @@
 import styled from 'styled-components';
-
-type Orientation = 'landscape' | 'portrait' | 'square';
+import type { Orientation } from '@type/chat';
 
 const IMAGE_CARD_SIZE: Record<Orientation, { width: string; height: string }> = {
 	landscape: {
@@ -18,7 +17,6 @@ const IMAGE_CARD_SIZE: Record<Orientation, { width: string; height: string }> = 
 };
 
 export const ImageLink = styled.a<{
-	$isLoaded: boolean;
 	$orientation: Orientation;
 }>`
 	display: flex;
