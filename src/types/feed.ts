@@ -71,9 +71,12 @@ export type TotalAvailability = Record<string, number[]>;
 
 export type AvailabilityColumn = [string, number[]];
 
-export type SlotData = { date: string; segment: number };
+export interface SlotData {
+	date: string;
+	segment: number;
+}
 
-export type SchedulingResponse = {
+export interface SchedulingResponse {
 	availabilities: UserAvailability;
 	createdAt: string;
 	user: {
@@ -81,7 +84,7 @@ export type SchedulingResponse = {
 		profileImageUrl: string;
 		username: string;
 	};
-};
+}
 
 interface SchedulingDetails {
 	dueAt: string;

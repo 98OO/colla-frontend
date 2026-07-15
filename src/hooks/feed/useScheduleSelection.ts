@@ -3,9 +3,24 @@ import { useRef, useState, type PointerEvent } from 'react';
 const SLOT_SELECTOR = '[data-slot-id]';
 
 type DragMode = 'add' | 'remove';
-type Position = { x: number; y: number };
-type Area = { left: number; right: number; top: number; bottom: number };
-type SlotSnapshot = { slotId: string; slotEl: Element; slotArea: Area };
+
+interface Position {
+	x: number;
+	y: number;
+}
+
+interface Area {
+	left: number;
+	right: number;
+	top: number;
+	bottom: number;
+}
+
+interface SlotSnapshot {
+	slotId: string;
+	slotEl: Element;
+	slotArea: Area;
+}
 
 const toGridPosition = (e: PointerEvent<HTMLDivElement>, gridRect: DOMRect): Position => ({
 	x: e.clientX - gridRect.left,
@@ -27,7 +42,7 @@ const clampPositionToGrid = (position: Position, rect: DOMRect): Position => ({
 	y: Math.min(Math.max(position.y, 0), rect.height),
 });
 
-const useSelection = (initialSlots: Set<string> = new Set()) => {
+const useScheduleSelection = (initialSlots: Set<string> = new Set()) => {
 	const [selectedSlots, setSelectedSlots] = useState<Set<string>>(initialSlots);
 
 	const dragModeRef = useRef<DragMode>('add');
@@ -154,4 +169,4 @@ const useSelection = (initialSlots: Set<string> = new Set()) => {
 	};
 };
 
-export default useSelection;
+export default useScheduleSelection;
