@@ -30,9 +30,9 @@ const clampPositionToGrid = (position: Position, rect: DOMRect): Position => ({
 const useSelection = (initialSlots: Set<string> = new Set()) => {
 	const [selectedSlots, setSelectedSlots] = useState<Set<string>>(initialSlots);
 
-	const draggingRef = useRef(false);
 	const dragModeRef = useRef<DragMode>('add');
 	const dragSelectionRef = useRef<Set<string>>(new Set());
+	const dragPointerIdRef = useRef<number | null>(null);
 
 	const gridRef = useRef<HTMLDivElement>(null);
 	const startPositionRef = useRef<Position | null>(null);
@@ -77,7 +77,7 @@ const useSelection = (initialSlots: Set<string> = new Set()) => {
 	};
 
 	const handlePointerDown = (e: PointerEvent<HTMLDivElement>) => {
-		if (draggingRef.current) return;
+		if (dragPointerIdRef.current !== null) return;
 
 		const grid = gridRef.current;
 		if (!grid) return;
@@ -105,7 +105,7 @@ const useSelection = (initialSlots: Set<string> = new Set()) => {
 
 		captureSlotSnapshots(gridRect);
 
-		draggingRef.current = true;
+		dragPointerIdRef.current = e.pointerId;
 		dragSelectionRef.current = new Set(selectedSlots);
 		dragModeRef.current = selectedSlots.has(slotId) ? 'remove' : 'add';
 
@@ -113,7 +113,7 @@ const useSelection = (initialSlots: Set<string> = new Set()) => {
 	};
 
 	const handlePointerMove = (e: PointerEvent<HTMLDivElement>) => {
-		if (!draggingRef.current) return;
+		if (e.pointerId !== dragPointerIdRef.current) return;
 
 		const gridRect = gridRectRef.current;
 		if (!gridRect) return;
@@ -132,10 +132,10 @@ const useSelection = (initialSlots: Set<string> = new Set()) => {
 		});
 	};
 
-	const commitSelection = () => {
-		if (!draggingRef.current) return;
+	const commitSelection = (e: PointerEvent<HTMLDivElement>) => {
+		if (e.pointerId !== dragPointerIdRef.current) return;
 
-		draggingRef.current = false;
+		dragPointerIdRef.current = null;
 		setSelectedSlots(new Set(dragSelectionRef.current));
 
 		slotSnapshotsRef.current = [];
