@@ -14,8 +14,7 @@ interface ErrorProps {
 
 const Error = ({ errorCode, resetError }: ErrorProps) => {
 	const errorMessage =
-		errorCode === HTTP_STATUS_CODE.NOT_FOUND ||
-		errorCode === HTTP_STATUS_CODE.INTERNAL_SERVER_ERROR
+		errorCode === HTTP_STATUS_CODE.NOT_FOUND || errorCode === HTTP_STATUS_CODE.INTERNAL_SERVER_ERROR
 			? HTTP_ERROR_MESSAGE[errorCode]
 			: HTTP_ERROR_MESSAGE.DEFAULT;
 
@@ -46,7 +45,7 @@ const Error = ({ errorCode, resetError }: ErrorProps) => {
 						{errorMessage.BODY.secondLine}
 					</Text>
 					<Text size='lg' weight='medium' color='secondary'>
-						{errorMessage.BODY.thridLine}
+						{errorMessage.BODY.thirdLine}
 					</Text>
 				</Flex>
 				<Button
