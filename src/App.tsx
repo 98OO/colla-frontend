@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
 import { Outlet, useLocation } from 'react-router-dom';
+import AsyncBoundary from '@components/common/AsyncBoundary/AsyncBoundary';
 import Flex from '@components/common/Flex/Flex';
 import GlobalErrorBoundary from '@components/common/GlobalErrorBoundary/GlobalErrorBoundary';
 import GNB from '@components/common/GNB/GNB';
@@ -33,9 +34,7 @@ function App() {
 	const onConnected = () => {
 		if (localStorage.getItem(ACCESS_TOKEN)) {
 			const client = Stomp.over(function () {
-				return new SockJS(
-					`${WEBSOCKET_URL}${localStorage.getItem(ACCESS_TOKEN)}`
-				);
+				return new SockJS(`${WEBSOCKET_URL}${localStorage.getItem(ACCESS_TOKEN)}`);
 			});
 
 			client.connect({}, () => {
@@ -55,10 +54,11 @@ function App() {
 			<Flex direction='column'>
 				{isNavigationBarVisible && <GNB />}
 				<Flex>
-					{isNavigationBarVisible &&
-						(isMobileView || isChatPage ? <SNBIcon /> : <SNBFull />)}
+					{isNavigationBarVisible && (isMobileView || isChatPage ? <SNBIcon /> : <SNBFull />)}
 					<main>
-						<Outlet />
+						<AsyncBoundary resetKeys={[location.pathname]}>
+							<Outlet />
+						</AsyncBoundary>
 					</main>
 				</Flex>
 			</Flex>
