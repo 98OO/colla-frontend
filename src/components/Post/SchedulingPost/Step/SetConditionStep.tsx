@@ -14,6 +14,7 @@ interface SetConditionProps {
 	initialDueAtDate: DateString;
 	initialDueAtTime: TimeString;
 	initialTimeRange: TimeRange;
+	isSubmitting?: boolean;
 	onPrev: () => void;
 	onSave: (condition: SchedulingCondition) => void;
 	onSubmit: (condition: SchedulingCondition) => void;
@@ -24,6 +25,7 @@ const SetConditionStep = ({
 	initialDueAtDate,
 	initialDueAtTime,
 	initialTimeRange,
+	isSubmitting = false,
 	onPrev,
 	onSave,
 	onSubmit,
@@ -84,7 +86,13 @@ const SetConditionStep = ({
 			</Flex>
 			<Flex justify='flex-end' gap='12'>
 				<Button label='이전' variant='secondary' size='md' onClick={handlePrev} />
-				<Button label='등록' variant='primary' size='md' onClick={handleSubmit} />
+				<Button
+					label='등록'
+					variant='primary'
+					size='md'
+					onClick={handleSubmit}
+					disabled={isSubmitting}
+				/>
 			</Flex>
 		</>
 	);
