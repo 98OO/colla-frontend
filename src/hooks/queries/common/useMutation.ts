@@ -1,5 +1,6 @@
-import { useState } from 'react';
-import { HTTPError } from '@apis/HTTPError';
+import { useMutation as useBaseMutation } from '@tanstack/react-query';
+import useToastStore from '@stores/toastStore';
+import { COMMON_ERROR_MESSAGE } from '@constants/api';
 
 type FetchFn<T> = () => Promise<T>;
 type Props<T> = {
@@ -7,24 +8,28 @@ type Props<T> = {
 	onError?: (error: Error) => void;
 };
 
+/**
+ * @deprecated
+ */
 export const useMutation = <T>({ onSuccess, onError }: Props<T>) => {
-	const [error, setError] = useState<HTTPError | null>(null);
+	const { makeToast } = useToastStore();
 
-	// eslint-disable-next-line consistent-return
+	const { mutateAsync, isPending } = useBaseMutation({
+		mutationFn: (fetchFn: FetchFn<T>) => fetchFn(),
+		onSuccess,
+		onError: (error: Error) => {
+			if (onError) onError(error);
+			else makeToast(COMMON_ERROR_MESSAGE.REQUEST_FAILED, 'Warning');
+		},
+	});
+
 	const mutate = async (fetchFn: FetchFn<T>) => {
 		try {
-			const data = await fetchFn();
-			if (onSuccess) onSuccess(data);
-			return data;
-		} catch (err) {
-			if (err instanceof HTTPError) {
-				if (!onError) setError(err);
-				else onError(err);
-			}
+			return await mutateAsync(fetchFn);
+		} catch {
+			return undefined; // 기존 동작 유지
 		}
 	};
 
-	if (error) throw error;
-
-	return { mutate };
+	return { mutate, isPending };
 };

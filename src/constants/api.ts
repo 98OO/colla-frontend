@@ -48,6 +48,8 @@ export const END_POINTS = {
 	POST_TEAMSPACE_ROLE: (teamspaceId: number) => `teamspaces/${teamspaceId}/tags`,
 } as const;
 
+export const VALIDATION_ERROR_CODE = 30001;
+
 export const AUTH_ERROR_CODE = {
 	INVALID_VERIFY_TOKEN: 40101,
 	INVALID_EMAIL_OR_PASSWORD: 40102,
@@ -132,6 +134,12 @@ export const HTTP_ERROR_MESSAGE = {
 		BUTTON: '다시 시도',
 	},
 } satisfies Record<PropertyKey, ErrorMessage>;
+
+export const COMMON_ERROR_MESSAGE = {
+	REQUEST_FAILED: '요청을 처리하지 못했어요. 잠시 후 다시 시도해 주세요',
+	NETWORK: '네트워크 상태를 확인한 뒤 다시 시도해 주세요',
+	TEAMSPACE_NOT_FOUND: '팀스페이스 정보를 찾을 수 없어요. 다시 시도해 주세요',
+} as const;
 
 export const AUTH_API_URL = {
 	KAKAO: `https://kauth.kakao.com/oauth/authorize?client_id=${import.meta.env.VITE_KAKAO_REST_API_KEY}&redirect_uri=${import.meta.env.VITE_KAKAO_REDIRECT_URL}&response_type=code`,
