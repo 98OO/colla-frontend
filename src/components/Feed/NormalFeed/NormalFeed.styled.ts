@@ -1,12 +1,12 @@
 import { styled } from 'styled-components';
 import { editorStyles } from '@styles/editorStyles';
-import { FEED_DETAIL_MAX_HEIGHT } from '@styles/layout';
+import { FEED_BODY_MIN_HEIGHT, FEED_CARD_WIDTH, FEED_DETAIL_MAX_HEIGHT } from '@styles/layout';
 import theme from '@styles/theme';
 
 export const FeedContainer = styled.div`
 	display: flex;
 	flex-direction: column;
-	width: 680px;
+	width: ${FEED_CARD_WIDTH}px;
 	padding: ${theme.units.spacing.space24} 0 ${theme.units.spacing.space8} 0;
 	border-radius: ${theme.units.radius.radius12};
 	box-shadow: ${theme.elevation.shadow.shadow4};
@@ -16,7 +16,7 @@ export const FeedContainer = styled.div`
 export const DetailWrapper = styled.div<{ hasMoreButton: boolean }>`
 	${editorStyles}
 	padding: ${theme.units.spacing.space16} 0;
-	min-height: 150px;
+	min-height: ${FEED_BODY_MIN_HEIGHT}px;
 	max-height: ${FEED_DETAIL_MAX_HEIGHT}px;
 	position: relative;
 	overflow: hidden;

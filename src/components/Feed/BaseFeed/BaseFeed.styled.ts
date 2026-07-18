@@ -1,10 +1,11 @@
 import { styled } from 'styled-components';
+import { FEED_CARD_WIDTH } from '@styles/layout';
 import theme from '@styles/theme';
 
 export const FeedContainer = styled.div`
 	display: flex;
 	flex-direction: column;
-	width: 680px;
+	width: ${FEED_CARD_WIDTH}px;
 	padding: ${theme.units.spacing.space24} 0 ${theme.units.spacing.space8} 0;
 	border-radius: ${theme.units.radius.radius12};
 	box-shadow: ${theme.elevation.shadow.shadow4};

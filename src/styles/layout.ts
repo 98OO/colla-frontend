@@ -15,3 +15,7 @@ export const MODAL_WIDTH = 320;
 export const MODAL_HEIGHT = 180;
 
 export const FEED_DETAIL_MAX_HEIGHT = 400;
+
+export const FEED_CARD_WIDTH = 680;
+
+export const FEED_BODY_MIN_HEIGHT = 150;
