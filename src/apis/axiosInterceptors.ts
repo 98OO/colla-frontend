@@ -33,7 +33,11 @@ export const setAuthorizedRequest = (config: InternalAxiosRequestConfig) => {
 export const handleTokenError = async (error: AxiosError<ErrorResponse>) => {
 	const originalRequest = error.config;
 
-	if (!error.response) throw new NetworkError();
+	if (!error.response) {
+		if (error.isAxiosError) throw new NetworkError();
+		throw error;
+	}
+
 	if (!originalRequest) throw error;
 
 	const { data, status } = error.response;
