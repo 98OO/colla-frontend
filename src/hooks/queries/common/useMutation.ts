@@ -1,5 +1,6 @@
 import { useMutation as useBaseMutation } from '@tanstack/react-query';
 import useToastStore from '@stores/toastStore';
+import { NetworkError } from '@apis/NetworkError';
 import { COMMON_ERROR_MESSAGE } from '@constants/api';
 
 type FetchFn<T> = () => Promise<T>;
@@ -12,14 +13,21 @@ type Props<T> = {
  * @deprecated
  */
 export const useMutation = <T>({ onSuccess, onError }: Props<T>) => {
-	const { makeToast } = useToastStore();
-
 	const { mutateAsync, isPending } = useBaseMutation({
 		mutationFn: (fetchFn: FetchFn<T>) => fetchFn(),
 		onSuccess,
 		onError: (error: Error) => {
-			if (onError) onError(error);
-			else makeToast(COMMON_ERROR_MESSAGE.REQUEST_FAILED, 'Warning');
+			if (onError) {
+				onError(error);
+				return;
+			}
+
+			const message =
+				error instanceof NetworkError
+					? COMMON_ERROR_MESSAGE.NETWORK
+					: COMMON_ERROR_MESSAGE.REQUEST_FAILED;
+
+			useToastStore.getState().makeToast(message, 'Warning');
 		},
 	});
 

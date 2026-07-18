@@ -1,5 +1,6 @@
 import { QueryClient } from '@tanstack/react-query';
 import useToastStore from '@stores/toastStore';
+import { NetworkError } from '@apis/NetworkError';
 import { COMMON_ERROR_MESSAGE } from '@constants/api';
 
 export const queryClient = new QueryClient({
@@ -8,8 +9,13 @@ export const queryClient = new QueryClient({
 			throwOnError: true,
 		},
 		mutations: {
-			onError: () => {
-				useToastStore.getState().makeToast(COMMON_ERROR_MESSAGE.REQUEST_FAILED, 'Warning');
+			onError: (error) => {
+				const message =
+					error instanceof NetworkError
+						? COMMON_ERROR_MESSAGE.NETWORK
+						: COMMON_ERROR_MESSAGE.REQUEST_FAILED;
+
+				useToastStore.getState().makeToast(message, 'Warning');
 			},
 		},
 	},
