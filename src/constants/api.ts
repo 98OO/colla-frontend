@@ -94,7 +94,7 @@ export const HTTP_STATUS_CODE = {
 	INTERNAL_SERVER_ERROR: 500,
 } as const;
 
-export const NETWORK_TIMEOUT = 100000;
+export const NETWORK_TIMEOUT = 10000;
 
 export const ACCESS_TOKEN = 'ACCESS_TOKEN';
 

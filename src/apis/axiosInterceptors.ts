@@ -22,12 +22,33 @@ export interface ErrorResponse {
 
 let newAccessTokenPromise: Promise<string> | null = null;
 
+const invalidateSession = (code: number) => {
+	if (ABNORMAL_TOKEN_CODES.has(code)) {
+		// eslint-disable-next-line no-console
+		console.warn(`비정상적인 토큰 오류가 발생했습니다 (code: ${code})`);
+	}
+
+	localStorage.removeItem(ACCESS_TOKEN);
+	queryClient.removeQueries({ queryKey: ['userStatus'] });
+};
+
 const requestNewAccessToken = () => {
 	if (!newAccessTokenPromise) {
 		newAccessTokenPromise = getNewToken()
 			.then(({ accessToken }) => {
 				localStorage.setItem(ACCESS_TOKEN, accessToken);
 				return accessToken;
+			})
+			.catch((error) => {
+				if (
+					error instanceof HTTPError &&
+					error.code !== undefined &&
+					SESSION_INVALID_CODES.has(error.code)
+				) {
+					invalidateSession(error.code);
+				}
+
+				throw error;
 			})
 			.finally(() => {
 				newAccessTokenPromise = null;
@@ -54,16 +75,6 @@ export const setAuthorizedRequest = async (config: InternalAxiosRequestConfig) =
 	config.headers.Authorization = `Bearer ${accessToken}`;
 
 	return config;
-};
-
-const invalidateSession = (code: number) => {
-	if (ABNORMAL_TOKEN_CODES.has(code)) {
-		// eslint-disable-next-line no-console
-		console.warn(`비정상적인 토큰 오류가 발생했습니다 (code: ${code})`);
-	}
-
-	localStorage.removeItem(ACCESS_TOKEN);
-	queryClient.removeQueries({ queryKey: ['userStatus'] });
 };
 
 export const handleTokenError = async (error: AxiosError<ErrorResponse>) => {
