@@ -1,9 +1,15 @@
 import { getNewToken } from '@apis/user/getNewToken';
 import { queryClient } from '@hooks/queries/common/queryClient';
+import axios from 'axios';
 import { axiosInstance } from '@apis/axiosInstance';
 import { HTTPError } from '@apis/HTTPError';
 import { NetworkError } from '@apis/NetworkError';
-import { HTTP_STATUS_CODE, AUTH_ERROR_CODE, ACCESS_TOKEN } from '@constants/api';
+import {
+	ABNORMAL_TOKEN_CODES,
+	ACCESS_TOKEN,
+	SESSION_INVALID_CODES,
+	TOKEN_ERROR_CODE,
+} from '@constants/api';
 import { PATH } from '@constants/path';
 import type { AxiosError, InternalAxiosRequestConfig } from 'axios';
 
@@ -14,14 +20,34 @@ export interface ErrorResponse {
 	message?: string;
 }
 
-export const setAuthorizedRequest = (config: InternalAxiosRequestConfig) => {
-	if (!config.authRequired || !config.headers || config.headers.Authorization) return config;
+let newAccessTokenPromise: Promise<string> | null = null;
 
-	const accessToken = localStorage.getItem(ACCESS_TOKEN);
+const requestNewAccessToken = () => {
+	if (!newAccessTokenPromise) {
+		newAccessTokenPromise = getNewToken()
+			.then(({ accessToken }) => {
+				localStorage.setItem(ACCESS_TOKEN, accessToken);
+				return accessToken;
+			})
+			.finally(() => {
+				newAccessTokenPromise = null;
+			});
+	}
+
+	return newAccessTokenPromise;
+};
+
+export const setAuthorizedRequest = async (config: InternalAxiosRequestConfig) => {
+	if (!config.authRequired || config.headers.Authorization) return config;
+
+	const newAccessToken = newAccessTokenPromise
+		? await newAccessTokenPromise.catch(() => null)
+		: null;
+	const accessToken = newAccessToken ?? localStorage.getItem(ACCESS_TOKEN);
 
 	if (!accessToken) {
 		window.location.href = PATH.ROOT;
-		throw new Error('인증 토큰이 없습니다. 다시 로그인해주세요.');
+		throw new Error('인증 정보가 없어 요청을 중단합니다');
 	}
 
 	// eslint-disable-next-line no-param-reassign
@@ -30,7 +56,19 @@ export const setAuthorizedRequest = (config: InternalAxiosRequestConfig) => {
 	return config;
 };
 
+const invalidateSession = (code: number) => {
+	if (ABNORMAL_TOKEN_CODES.has(code)) {
+		// eslint-disable-next-line no-console
+		console.warn(`비정상적인 토큰 오류가 발생했습니다 (code: ${code})`);
+	}
+
+	localStorage.removeItem(ACCESS_TOKEN);
+	queryClient.removeQueries({ queryKey: ['userStatus'] });
+};
+
 export const handleTokenError = async (error: AxiosError<ErrorResponse>) => {
+	if (axios.isCancel(error)) throw error;
+
 	const originalRequest = error.config;
 
 	if (!error.response) {
@@ -43,30 +81,20 @@ export const handleTokenError = async (error: AxiosError<ErrorResponse>) => {
 	const { data, status } = error.response;
 
 	if (
-		status === HTTP_STATUS_CODE.UNAUTHORIZED &&
-		data.code === AUTH_ERROR_CODE.EXPIRED_ACCESS_TOKEN
+		data.code === TOKEN_ERROR_CODE.EXPIRED_ACCESS_TOKEN &&
+		originalRequest.authRequired !== false &&
+		!originalRequest.isRetried
 	) {
-		const { accessToken } = await getNewToken();
+		originalRequest.isRetried = true;
+
+		const accessToken = await requestNewAccessToken();
 		originalRequest.headers.Authorization = `Bearer ${accessToken}`;
-		localStorage.setItem(ACCESS_TOKEN, accessToken);
 
 		return axiosInstance(originalRequest);
 	}
 
-	if (
-		status === HTTP_STATUS_CODE.UNAUTHORIZED &&
-		(data.code === AUTH_ERROR_CODE.INVALID_VERIFY_TOKEN ||
-			data.code === AUTH_ERROR_CODE.UNAUTHORIZED_OR_EXPIRED_VERIFY_TOKEN ||
-			data.code === AUTH_ERROR_CODE.FORBIDDEN_ACCESS_TOKEN ||
-			data.code === AUTH_ERROR_CODE.EMPTY_ACCESS_TOKEN ||
-			data.code === AUTH_ERROR_CODE.EXPIRED_REFRESH_TOKEN ||
-			data.code === AUTH_ERROR_CODE.MALFORMED_TOKEN ||
-			data.code === AUTH_ERROR_CODE.TAMPERED_TOKEN ||
-			data.code === AUTH_ERROR_CODE.UNSUPPORTED_JWT_TOKEN ||
-			data.code === AUTH_ERROR_CODE.TAKEN_AWAY_TOKEN)
-	) {
-		queryClient.invalidateQueries({ queryKey: ['userStatus'] });
-		localStorage.removeItem(ACCESS_TOKEN);
+	if (data.code !== undefined && SESSION_INVALID_CODES.has(data.code)) {
+		invalidateSession(data.code);
 
 		throw new HTTPError(status, data.code, data.content, data.message);
 	}
@@ -75,6 +103,8 @@ export const handleTokenError = async (error: AxiosError<ErrorResponse>) => {
 };
 
 export const handleAPIError = (error: AxiosError<ErrorResponse>) => {
+	if (axios.isCancel(error)) throw error;
+
 	if (error instanceof HTTPError || error instanceof NetworkError) throw error;
 
 	if (!error.response) {
