@@ -2,11 +2,8 @@ import { getNewToken } from '@apis/user/getNewToken';
 import { queryClient } from '@hooks/queries/common/queryClient';
 import { axiosInstance } from '@apis/axiosInstance';
 import { HTTPError } from '@apis/HTTPError';
-import {
-	HTTP_STATUS_CODE,
-	AUTH_ERROR_CODE,
-	ACCESS_TOKEN,
-} from '@constants/api';
+import { NetworkError } from '@apis/NetworkError';
+import { HTTP_STATUS_CODE, AUTH_ERROR_CODE, ACCESS_TOKEN } from '@constants/api';
 import { PATH } from '@constants/path';
 import type { AxiosError, InternalAxiosRequestConfig } from 'axios';
 
@@ -18,8 +15,7 @@ export interface ErrorResponse {
 }
 
 export const setAuthorizedRequest = (config: InternalAxiosRequestConfig) => {
-	if (!config.authRequired || !config.headers || config.headers.Authorization)
-		return config;
+	if (!config.authRequired || !config.headers || config.headers.Authorization) return config;
 
 	const accessToken = localStorage.getItem(ACCESS_TOKEN);
 
@@ -37,10 +33,13 @@ export const setAuthorizedRequest = (config: InternalAxiosRequestConfig) => {
 export const handleTokenError = async (error: AxiosError<ErrorResponse>) => {
 	const originalRequest = error.config;
 
-	if (!error.response || !originalRequest)
-		throw new Error(
-			'네트워크 요청이 실패하였거나, 요청 객체를 찾을 수 없습니다.'
-		);
+	if (!error.response) {
+		if (error.isAxiosError) throw new NetworkError();
+		throw error;
+	}
+
+	if (!originalRequest) throw error;
+
 	const { data, status } = error.response;
 
 	if (
@@ -76,12 +75,14 @@ export const handleTokenError = async (error: AxiosError<ErrorResponse>) => {
 };
 
 export const handleAPIError = (error: AxiosError<ErrorResponse>) => {
-	if (!error.response) throw error;
+	if (error instanceof HTTPError || error instanceof NetworkError) throw error;
 
-	const { data, status } = error.response;
-	if (status >= HTTP_STATUS_CODE.INTERNAL_SERVER_ERROR) {
-		throw new HTTPError(HTTP_STATUS_CODE.INTERNAL_SERVER_ERROR);
+	if (!error.response) {
+		if (error.isAxiosError) throw new NetworkError();
+		throw error;
 	}
 
-	throw new HTTPError(status, data.code, data.content, data.message);
+	const { data, status } = error.response;
+
+	throw new HTTPError(status, data?.code, data?.content, data?.message);
 };

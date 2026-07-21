@@ -1,17 +1,16 @@
 import { useCallback, useState } from 'react';
-import InfiniteScroll from 'react-infinite-scroller';
+import AsyncBoundary from '@components/common/AsyncBoundary/AsyncBoundary';
 import Divider from '@components/common/Divider/Divider';
 import Heading from '@components/common/Heading/Heading';
 import Select from '@components/common/Select/Select';
-import Feed from '@components/Feed/Feed';
+import FeedList from '@components/Feed/FeedList/FeedList';
+import FeedSkeletonList from '@components/Feed/FeedSkeletonList/FeedSkeletonList';
 import useMeasureWidth from '@hooks/common/useMeasureWidth';
 import useFeedDrawer from '@hooks/post/useFeedDrawer';
 import { queryClient } from '@hooks/queries/common/queryClient';
-import useFeedsQuery from '@hooks/queries/Feed/useFeedsQuery';
 import useUserStatusQuery from '@hooks/queries/useUserStatusQuery';
-import { getSanitizedFeeds } from '@utils/getSanitizedFeeds';
 import { FEED_SELECT_MAP } from '@constants/feed';
-import type { FeedData, SelectType } from '@type/feed';
+import type { SelectType } from '@type/feed';
 import * as S from './FeedPage.styled';
 
 const FeedPage = () => {
@@ -37,23 +36,16 @@ const FeedPage = () => {
 		});
 	};
 
-	const { feeds, hasNextPage, isFetching, fetchNextPage } = useFeedsQuery({
-		teamspaceId,
-		type: getTypeBySelect(selectedType),
-	});
-
 	const getAdjustedWidth = useCallback((refWidth: number) => {
 		const space = Math.max((refWidth - 760) / 2, 0);
 		return space > 200 ? 200 : space;
 	}, []);
 
-	if (!teamspaceId) return <div>Loading..</div>;
+	const type = getTypeBySelect(selectedType);
 
 	return (
 		<S.Container ref={containerRef}>
-			<S.FeedHeaderContainer
-				isOpen={openFeedId !== null}
-				adjustedWidth={getAdjustedWidth(width)}>
+			<S.FeedHeaderContainer isOpen={openFeedId !== null} adjustedWidth={getAdjustedWidth(width)}>
 				<S.FeedHeader>
 					<Heading size='xs' color='primary'>
 						피드
@@ -69,33 +61,20 @@ const FeedPage = () => {
 				</S.FeedHeader>
 				<Divider size='sm' />
 			</S.FeedHeaderContainer>
-			<S.FeedsWrapper
-				isOpen={openFeedId !== null}
-				adjustedWidth={getAdjustedWidth(width)}>
-				<InfiniteScroll
-					loadMore={() => {
-						if (!isFetching) fetchNextPage();
-					}}
-					hasMore={hasNextPage}
-					useWindow={false}>
-					{feeds?.pages.map((pageData) => {
-						const sanitizedFeeds = getSanitizedFeeds(pageData.content.feeds);
-
-						return sanitizedFeeds.map((feedData: FeedData) => {
-							const { feedId } = feedData;
-
-							return (
-								<Feed
-									key={feedId}
-									feedData={feedData}
-									isDetailOpen={isDrawerOpen(feedId)}
-									openDetail={() => openDrawer(feedId)}
-									closeDetail={closeDrawer}
-								/>
-							);
-						});
-					})}
-				</InfiniteScroll>
+			<S.FeedsWrapper isOpen={openFeedId !== null} adjustedWidth={getAdjustedWidth(width)}>
+				{teamspaceId ? (
+					<AsyncBoundary loadingFallback={<FeedSkeletonList />} resetKeys={[teamspaceId, type]}>
+						<FeedList
+							teamspaceId={teamspaceId}
+							type={type}
+							isDrawerOpen={isDrawerOpen}
+							openDrawer={openDrawer}
+							closeDrawer={closeDrawer}
+						/>
+					</AsyncBoundary>
+				) : (
+					<FeedSkeletonList />
+				)}
 			</S.FeedsWrapper>
 		</S.Container>
 	);

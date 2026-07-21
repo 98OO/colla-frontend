@@ -18,12 +18,12 @@ const SignUpPage = () => {
 	const navigate = useNavigate();
 	const { mutateDuplication } = useDuplicationMutation();
 	const { mutateVerification } = useVerificationMutation();
-	const { mutateRegister } = useRegisterMutation();
+	const { mutateRegister, isPending } = useRegisterMutation();
 
 	const { formData, submitting, errors, register, handleSubmit } = useForm({
 		subscribe: [{ fieldName: 'verifyCode', value: verified }],
-		onSubmit: async () => {
-			await mutateRegister({
+		onSubmit: () => {
+			mutateRegister({
 				username: formData.username,
 				password: formData.password,
 				email: formData.email,
@@ -197,19 +197,14 @@ const SignUpPage = () => {
 					size='lg'
 					variant='primary'
 					isFull
-					disabled={submitting}
+					disabled={submitting || isPending}
 				/>
 			</S.FormContainer>
 			<Flex align='center'>
 				<Text size='md' weight='regular'>
 					계정이 있나요?
 				</Text>
-				<Button
-					label='로그인하기'
-					variant='text'
-					size='md'
-					onClick={() => navigate(PATH.SIGNIN)}
-				/>
+				<Button label='로그인하기' variant='text' size='md' onClick={() => navigate(PATH.SIGNIN)} />
 			</Flex>
 		</S.Container>
 	);
