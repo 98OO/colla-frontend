@@ -21,9 +21,7 @@ interface TeamSpaceInfo {
 }
 
 const SignInPage = () => {
-	const [teamSpaceInfo, setTeamspaceInfo] = useState<TeamSpaceInfo | null>(
-		null
-	);
+	const [teamSpaceInfo, setTeamspaceInfo] = useState<TeamSpaceInfo | null>(null);
 	const [formData, setFormData] = useState({
 		email: '',
 		password: '',
@@ -44,7 +42,7 @@ const SignInPage = () => {
 
 		try {
 			const response = await getTeamSpaceInformation(code, {
-				authRequired: false,
+				skipAuthorizationHeader: true,
 			});
 			setTeamspaceInfo({
 				teamspaceProfileImageUrl: response.teamspaceProfileImageUrl,
@@ -62,10 +60,7 @@ const SignInPage = () => {
 		handleInviteCode();
 	}, []);
 
-	const handleChange = (
-		e: ChangeEvent<HTMLInputElement>,
-		fieldName: string
-	) => {
+	const handleChange = (e: ChangeEvent<HTMLInputElement>, fieldName: string) => {
 		const { value } = e.target;
 		setFormData({
 			...formData,
@@ -156,13 +151,7 @@ const SignInPage = () => {
 							{errorText}
 						</Text>
 					</S.WarningTextWrapper>
-					<Button
-						type='submit'
-						label='로그인'
-						variant='primary'
-						size='lg'
-						isFull
-					/>
+					<Button type='submit' label='로그인' variant='primary' size='lg' isFull />
 					<S.TextWrapper>
 						<Text size='md' weight='regular'>
 							계정이 없나요?

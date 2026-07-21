@@ -59,7 +59,7 @@ const requestNewAccessToken = () => {
 };
 
 export const setAuthorizedRequest = async (config: InternalAxiosRequestConfig) => {
-	if (!config.authRequired || config.headers.Authorization) return config;
+	if (config.skipAuthorizationHeader || config.headers.Authorization) return config;
 
 	const newAccessToken = newAccessTokenPromise
 		? await newAccessTokenPromise.catch(() => null)
@@ -93,7 +93,7 @@ export const handleTokenError = async (error: AxiosError<ErrorResponse>) => {
 
 	if (
 		data.code === TOKEN_ERROR_CODE.EXPIRED_ACCESS_TOKEN &&
-		originalRequest.authRequired !== false &&
+		!originalRequest.skipAuthorizationHeader &&
 		!originalRequest.isRetried
 	) {
 		originalRequest.isRetried = true;

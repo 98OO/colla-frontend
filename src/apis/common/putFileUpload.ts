@@ -12,7 +12,7 @@ const putFileUpload = async ({ presignedURL, file, contentType }: FileUploadInfo
 			'Content-Type': contentType,
 			'Content-Disposition': `attachment; filename*=UTF-8''${encodeURIComponent(file.name)}`,
 		},
-		authRequired: false,
+		skipAuthorizationHeader: true,
 		withCredentials: false,
 	});
 

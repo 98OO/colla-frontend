@@ -8,7 +8,7 @@ const postAuthMail = async (email: string) => {
 			email,
 		},
 		{
-			authRequired: false,
+			skipAuthorizationHeader: true,
 		}
 	);
 

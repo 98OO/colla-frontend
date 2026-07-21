@@ -18,7 +18,7 @@ const postRegister = async (props: RegisterData) => {
 			verifyCode: props.verifyCode,
 		},
 		{
-			authRequired: false,
+			skipAuthorizationHeader: true,
 		}
 	);
 
