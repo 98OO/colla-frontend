@@ -5,8 +5,8 @@ import Profile from '@components/common/Profile/Profile';
 import MenuItem from '@components/common/SideNavigationBar/MenuItem/MenuItem';
 import { queryClient } from '@hooks/queries/common/queryClient';
 import useUserStatusQuery from '@hooks/queries/useUserStatusQuery';
-import { ACCESS_TOKEN } from '@constants/api';
 import { PATH } from '@constants/path';
+import { ACCESS_TOKEN } from '@constants/storage';
 import * as S from './GNBProfile.styled';
 
 const GNBProfile = () => {

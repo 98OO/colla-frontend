@@ -4,13 +4,9 @@ import axios from 'axios';
 import { axiosInstance } from '@apis/axiosInstance';
 import { HTTPError } from '@apis/HTTPError';
 import { NetworkError } from '@apis/NetworkError';
-import {
-	ABNORMAL_TOKEN_CODES,
-	ACCESS_TOKEN,
-	SESSION_INVALID_CODES,
-	TOKEN_ERROR_CODE,
-} from '@constants/api';
+import { ABNORMAL_TOKEN_CODES, SESSION_INVALID_CODES, TOKEN_ERROR_CODE } from '@constants/api';
 import { PATH } from '@constants/path';
+import { ACCESS_TOKEN } from '@constants/storage';
 import type { AxiosError, InternalAxiosRequestConfig } from 'axios';
 
 export interface ErrorResponse {

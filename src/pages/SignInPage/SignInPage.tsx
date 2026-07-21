@@ -10,8 +10,8 @@ import Profile from '@components/common/Profile/Profile';
 import Text from '@components/common/Text/Text';
 import useLoginMutation from '@hooks/queries/useLoginMutation';
 import useToastStore from '@stores/toastStore';
-import { INVITE_URL } from '@constants/api';
 import { PATH } from '@constants/path';
+import { INVITE_URL_KEY } from '@constants/storage';
 import { KakaoLogin, NaverLogin, GoogleLogin, Colla } from '@assets/svg';
 import * as S from './SignInPage.styled';
 
@@ -34,7 +34,7 @@ const SignInPage = () => {
 	const { makeToast } = useToastStore();
 
 	const handleInviteCode = async () => {
-		const inviteUrl = window.sessionStorage.getItem(INVITE_URL);
+		const inviteUrl = window.sessionStorage.getItem(INVITE_URL_KEY);
 		if (inviteUrl === null) return;
 
 		const code = new URLSearchParams(inviteUrl).get('code');
@@ -49,7 +49,7 @@ const SignInPage = () => {
 				teamspaceName: response.teamspaceName,
 			});
 		} catch (error) {
-			window.sessionStorage.removeItem(INVITE_URL);
+			window.sessionStorage.removeItem(INVITE_URL_KEY);
 			setTeamspaceInfo(null);
 			makeToast('유효하지 않은 초대입니다.', 'Warning');
 			throw error;
@@ -113,7 +113,7 @@ const SignInPage = () => {
 							ariaLabel='닫기'
 							size='sm'
 							onClick={() => {
-								window.sessionStorage.removeItem(INVITE_URL);
+								window.sessionStorage.removeItem(INVITE_URL_KEY);
 								setTeamspaceInfo(null);
 							}}
 						/>

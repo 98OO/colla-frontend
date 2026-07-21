@@ -4,8 +4,8 @@ import { Button } from '@components/common/Button/Button';
 import Flex from '@components/common/Flex/Flex';
 import Heading from '@components/common/Heading/Heading';
 import useParticipateTeamSpaceMutation from '@hooks/queries/useParticipateTeamSpaceMutation';
-import { ACCESS_TOKEN, INVITE_URL } from '@constants/api';
 import { PATH } from '@constants/path';
+import { ACCESS_TOKEN, INVITE_URL_KEY } from '@constants/storage';
 import { Colla } from '@assets/svg';
 
 const InvitePage = () => {
@@ -17,7 +17,7 @@ const InvitePage = () => {
 	const getAccessToken = () => {
 		const accessToken = localStorage.getItem(ACCESS_TOKEN);
 		if (!accessToken) {
-			window.sessionStorage.setItem(INVITE_URL, search);
+			window.sessionStorage.setItem(INVITE_URL_KEY, search);
 			navigate(PATH.SIGNIN);
 		}
 	};

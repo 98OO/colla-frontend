@@ -11,8 +11,9 @@ import useWindowWidth from '@hooks/window/useWindowWidth';
 import { Stomp } from '@stomp/stompjs';
 import SockJS from 'sockjs-client';
 import useSocketStore from '@stores/socketStore';
-import { ACCESS_TOKEN, WEBSOCKET_URL } from '@constants/api';
+import { WEBSOCKET_URL } from '@constants/api';
 import { PATH } from '@constants/path';
+import { ACCESS_TOKEN } from '@constants/storage';
 
 function App() {
 	const location = useLocation();
