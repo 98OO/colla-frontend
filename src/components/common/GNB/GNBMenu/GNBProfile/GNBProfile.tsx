@@ -5,8 +5,8 @@ import Profile from '@components/common/Profile/Profile';
 import MenuItem from '@components/common/SideNavigationBar/MenuItem/MenuItem';
 import { queryClient } from '@hooks/queries/common/queryClient';
 import useUserStatusQuery from '@hooks/queries/useUserStatusQuery';
+import useAuthStore from '@stores/authStore';
 import { PATH } from '@constants/path';
-import { ACCESS_TOKEN } from '@constants/storage';
 import * as S from './GNBProfile.styled';
 
 const GNBProfile = () => {
@@ -14,8 +14,7 @@ const GNBProfile = () => {
 	const navigate = useNavigate();
 
 	const handleLogOut = () => {
-		localStorage.removeItem(ACCESS_TOKEN);
-		navigate(PATH.SIGNIN);
+		useAuthStore.getState().clearSession();
 		queryClient.removeQueries({ queryKey: ['userStatus'] });
 	};
 

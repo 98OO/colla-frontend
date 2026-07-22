@@ -4,8 +4,9 @@ import { Button } from '@components/common/Button/Button';
 import Flex from '@components/common/Flex/Flex';
 import Heading from '@components/common/Heading/Heading';
 import useParticipateTeamSpaceMutation from '@hooks/queries/useParticipateTeamSpaceMutation';
+import useAuthStore from '@stores/authStore';
 import { PATH } from '@constants/path';
-import { ACCESS_TOKEN, INVITE_URL_KEY } from '@constants/storage';
+import { INVITE_URL_KEY } from '@constants/storage';
 import { Colla } from '@assets/svg';
 
 const InvitePage = () => {
@@ -13,14 +14,6 @@ const InvitePage = () => {
 	const { search } = useLocation();
 	const [isCodeError, setIsCodeError] = useState(false);
 	const { mutateParticipateTeamSpace } = useParticipateTeamSpaceMutation();
-
-	const getAccessToken = () => {
-		const accessToken = localStorage.getItem(ACCESS_TOKEN);
-		if (!accessToken) {
-			window.sessionStorage.setItem(INVITE_URL_KEY, search);
-			navigate(PATH.SIGNIN);
-		}
-	};
 
 	const participateTeampSpace = async (inviteCode: string) => {
 		try {
@@ -31,8 +24,11 @@ const InvitePage = () => {
 	};
 
 	useEffect(() => {
-		getAccessToken();
-	}, []);
+		if (useAuthStore.getState().status === 'guest') {
+			window.sessionStorage.setItem(INVITE_URL_KEY, search);
+			navigate(PATH.SIGNIN);
+		}
+	}, [search, navigate]);
 
 	useEffect(() => {
 		const code = new URL(window.location.href).searchParams.get('code');

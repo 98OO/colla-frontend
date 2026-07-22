@@ -1,4 +1,3 @@
-import { useEffect } from 'react';
 import { Outlet, useLocation } from 'react-router-dom';
 import AsyncBoundary from '@components/common/AsyncBoundary/AsyncBoundary';
 import Flex from '@components/common/Flex/Flex';
@@ -7,13 +6,9 @@ import GNB from '@components/common/GNB/GNB';
 import SNBFull from '@components/common/SideNavigationBar/SNBFull/SNBFull';
 import SNBIcon from '@components/common/SideNavigationBar/SNBIcon/SNBIcon';
 import ToastContainer from '@components/common/ToastContainer/ToastContainer';
+import useAuthSession from '@hooks/auth/useAuthSession';
 import useWindowWidth from '@hooks/window/useWindowWidth';
-import { Stomp } from '@stomp/stompjs';
-import SockJS from 'sockjs-client';
-import useSocketStore from '@stores/socketStore';
-import { WEBSOCKET_URL } from '@constants/api';
 import { PATH } from '@constants/path';
-import { ACCESS_TOKEN } from '@constants/storage';
 
 function App() {
 	const location = useLocation();
@@ -30,25 +25,11 @@ function App() {
 		PATH.DOCUMENT,
 	].some((path) => location.pathname.includes(path));
 
-	const { setStompClient } = useSocketStore();
+	const authStatus = useAuthSession();
 
-	const onConnected = () => {
-		if (localStorage.getItem(ACCESS_TOKEN)) {
-			const client = Stomp.over(function () {
-				return new SockJS(`${WEBSOCKET_URL}${localStorage.getItem(ACCESS_TOKEN)}`);
-			});
-
-			client.connect({}, () => {
-				setStompClient(client);
-			});
-
-			client.debug = () => {};
-		}
-	};
-
-	useEffect(() => {
-		onConnected();
-	}, []);
+	if (authStatus === 'loading') {
+		return <div>로딩 중...</div>;
+	}
 
 	return (
 		<GlobalErrorBoundary>
