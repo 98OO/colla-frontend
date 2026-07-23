@@ -1,4 +1,5 @@
 import { axiosInstance } from '@apis/axiosInstance';
+import { FILE_UPLOAD_TIMEOUT } from '@constants/api';
 
 export interface FileUploadInfos {
 	presignedURL: string;
@@ -14,6 +15,7 @@ const putFileUpload = async ({ presignedURL, file, contentType }: FileUploadInfo
 		},
 		skipAuthorizationHeader: true,
 		withCredentials: false,
+		timeout: FILE_UPLOAD_TIMEOUT,
 	});
 
 	return response.data.content;
