@@ -14,6 +14,7 @@ const InvitePage = () => {
 	const { search } = useLocation();
 	const [isCodeError, setIsCodeError] = useState(false);
 	const { mutateParticipateTeamSpace } = useParticipateTeamSpaceMutation();
+	const authStatus = useAuthStore((state) => state.status);
 
 	const participateTeampSpace = async (inviteCode: string) => {
 		try {
@@ -24,18 +25,20 @@ const InvitePage = () => {
 	};
 
 	useEffect(() => {
-		if (useAuthStore.getState().status === 'guest') {
+		if (authStatus === 'guest') {
 			window.sessionStorage.setItem(INVITE_URL_KEY, search);
 			navigate(PATH.SIGNIN);
 		}
-	}, [search, navigate]);
+	}, [authStatus, search, navigate]);
 
 	useEffect(() => {
+		if (authStatus !== 'authenticated') return;
+
 		const code = new URL(window.location.href).searchParams.get('code');
 		if (code) {
 			participateTeampSpace(code);
 		}
-	}, []);
+	}, [authStatus]);
 
 	return (
 		<Flex>
