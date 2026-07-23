@@ -2,7 +2,7 @@ import { useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import useAuthStore from '@stores/authStore';
 import useSocketStore from '@stores/socketStore';
-import { refreshAccessToken } from '@apis/authSession';
+import { restoreSession } from '@apis/authSession';
 import { PATH } from '@constants/path';
 
 const useAuthSession = () => {
@@ -12,8 +12,13 @@ const useAuthSession = () => {
 	const navigate = useNavigate();
 	const { connect, disconnect } = useSocketStore();
 
+	const retry = () => {
+		useAuthStore.setState({ status: 'loading' });
+		restoreSession();
+	};
+
 	useEffect(() => {
-		refreshAccessToken().catch(() => useAuthStore.getState().clearSession());
+		restoreSession();
 	}, []);
 
 	useEffect(() => {
@@ -31,7 +36,7 @@ const useAuthSession = () => {
 		prevAuthStatus.current = curAuthStatus;
 	}, [curAuthStatus, connect, disconnect, navigate]);
 
-	return curAuthStatus;
+	return { status: curAuthStatus, retry };
 };
 
 export default useAuthSession;

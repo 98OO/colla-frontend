@@ -43,3 +43,22 @@ export const refreshAccessToken = () => {
 };
 
 export const getPendingRefreshPromise = () => refreshPromise;
+
+export const restoreSession = async () => {
+	try {
+		await refreshAccessToken();
+	} catch {
+		// refreshAccessToken 내부 catch에서 guest로 확정한 상태
+		if (useAuthStore.getState().status !== 'loading') return;
+
+		// 일시적 오류(500번대 · 네트워크) 1회 재시도
+		try {
+			await refreshAccessToken();
+		} catch {
+			// 재시도도 실패. refreshAccessToken 내부 catch에서 guest로 확정되지 않았다면 error로 확정
+			if (useAuthStore.getState().status === 'loading') {
+				useAuthStore.getState().setSessionError();
+			}
+		}
+	}
+};

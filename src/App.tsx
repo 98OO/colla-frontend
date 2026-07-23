@@ -1,5 +1,6 @@
 import { Outlet, useLocation } from 'react-router-dom';
 import AsyncBoundary from '@components/common/AsyncBoundary/AsyncBoundary';
+import Error from '@components/common/Error/Error';
 import Flex from '@components/common/Flex/Flex';
 import GlobalErrorBoundary from '@components/common/GlobalErrorBoundary/GlobalErrorBoundary';
 import GNB from '@components/common/GNB/GNB';
@@ -8,6 +9,7 @@ import SNBIcon from '@components/common/SideNavigationBar/SNBIcon/SNBIcon';
 import ToastContainer from '@components/common/ToastContainer/ToastContainer';
 import useAuthSession from '@hooks/auth/useAuthSession';
 import useWindowWidth from '@hooks/window/useWindowWidth';
+import { HTTP_ERROR_MESSAGE } from '@constants/api';
 import { PATH } from '@constants/path';
 
 function App() {
@@ -25,10 +27,14 @@ function App() {
 		PATH.DOCUMENT,
 	].some((path) => location.pathname.includes(path));
 
-	const authStatus = useAuthSession();
+	const { status: authStatus, retry } = useAuthSession();
 
 	if (authStatus === 'loading') {
 		return <div>로딩 중...</div>;
+	}
+
+	if (authStatus === 'error') {
+		return <Error errorMessage={HTTP_ERROR_MESSAGE.DEFAULT} resetError={retry} />;
 	}
 
 	return (
