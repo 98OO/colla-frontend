@@ -6,7 +6,7 @@ import useToastStore from '@stores/toastStore';
 import { HTTPError } from '@apis/HTTPError';
 import type { UserAvailability } from '@type/feed';
 
-const useSchedulingAvailMutation = (teamspaceId: number | undefined) => {
+const useSchedulingAvailMutation = (teamspaceId: number | undefined, onSuccess?: () => void) => {
 	const { makeToast } = useToastStore();
 	const { showBoundary } = useErrorBoundary();
 	const queryClient = useQueryClient();
@@ -14,6 +14,7 @@ const useSchedulingAvailMutation = (teamspaceId: number | undefined) => {
 	const handleSchedulingAvailSuccess = () => {
 		makeToast('일정을 반영했어요!', 'Success');
 		queryClient.invalidateQueries({ queryKey: ['feeds', teamspaceId] });
+		onSuccess?.();
 	};
 
 	const handleSchedulingAvailError = (error: Error) => {

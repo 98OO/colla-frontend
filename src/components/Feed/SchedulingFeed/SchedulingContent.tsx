@@ -28,7 +28,9 @@ const SchedulingContent = ({ feedData }: SchedulingContentProps) => {
 	const { userStatus } = useUserStatusQuery();
 	const teamspaceId = userStatus?.profile.lastSeenTeamspaceId;
 	const userId = userStatus?.profile.userId;
-	const { mutateSchedulingAvail } = useSchedulingAvailMutation(teamspaceId);
+	const { mutateSchedulingAvail } = useSchedulingAvailMutation(teamspaceId, () =>
+		setIsEditable(false)
+	);
 
 	const { isParticipating, initialSelectedSlots } = getUserScheduleInfo(
 		responses,
@@ -55,7 +57,6 @@ const SchedulingContent = ({ feedData }: SchedulingContentProps) => {
 		const userAvailabilities = toUserAvailability(validSlots, dates);
 
 		mutateSchedulingAvail(feedId, userAvailabilities);
-		setIsEditable(false);
 	};
 
 	return (
