@@ -10,7 +10,8 @@ const useAuthSession = () => {
 	const prevAuthStatus = useRef(curAuthStatus);
 
 	const navigate = useNavigate();
-	const { connect, disconnect } = useSocketStore();
+	const connect = useSocketStore((state) => state.connect);
+	const disconnect = useSocketStore((state) => state.disconnect);
 
 	const retry = () => {
 		useAuthStore.setState({ status: 'loading' });
