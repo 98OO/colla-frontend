@@ -1,5 +1,6 @@
 import { getNewToken } from '@apis/user/getNewToken';
 import { queryClient } from '@hooks/queries/common/queryClient';
+import axios from 'axios';
 import useAuthStore from '@stores/authStore';
 import { HTTPError } from '@apis/HTTPError';
 import { ABNORMAL_TOKEN_CODES, SESSION_INVALID_CODES } from '@constants/api';
@@ -18,8 +19,14 @@ export const invalidateSession = (code: number) => {
 
 export const refreshAccessToken = () => {
 	if (!refreshPromise) {
+		const version = useAuthStore.getState().sessionVersion;
+
 		refreshPromise = getNewToken()
 			.then(({ accessToken }) => {
+				if (useAuthStore.getState().sessionVersion !== version) {
+					throw new axios.CanceledError();
+				}
+
 				useAuthStore.getState().setAccessToken(accessToken);
 				return accessToken;
 			})
@@ -47,15 +54,19 @@ export const getPendingRefreshPromise = () => refreshPromise;
 export const restoreSession = async () => {
 	try {
 		await refreshAccessToken();
-	} catch {
+	} catch (error) {
+		if (axios.isCancel(error)) return;
+
 		// refreshAccessToken 내부 catch에서 guest로 확정한 상태
 		if (useAuthStore.getState().status !== 'loading') return;
 
 		// 일시적 오류(500번대 · 네트워크) 1회 재시도
 		try {
 			await refreshAccessToken();
-		} catch {
-			// 재시도도 실패. refreshAccessToken 내부 catch에서 guest로 확정되지 않았다면 error로 확정
+		} catch (retryError) {
+			if (axios.isCancel(retryError)) return;
+
+			// 재시도도 실패(guest로 확정되지 않음) → error로 확정
 			if (useAuthStore.getState().status === 'loading') {
 				useAuthStore.getState().setSessionError();
 			}
