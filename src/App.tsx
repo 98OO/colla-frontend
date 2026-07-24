@@ -29,10 +29,6 @@ function App() {
 
 	const { status: authStatus, retry } = useAuthSession();
 
-	if (authStatus === 'loading') {
-		return <div>로딩 중...</div>;
-	}
-
 	if (authStatus === 'error') {
 		return <Error errorMessage={HTTP_ERROR_MESSAGE.DEFAULT} resetError={retry} />;
 	}
