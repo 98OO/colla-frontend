@@ -2,8 +2,9 @@ import { useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import useAuthStore from '@stores/authStore';
 import useSocketStore from '@stores/socketStore';
-import { restoreSession } from '@apis/authSession';
+import { clearClientSession, restoreSession } from '@apis/authSession';
 import { PATH } from '@constants/path';
+import { AUTH_RESTORE_DISABLED_KEY } from '@constants/storage';
 
 const useAuthSession = () => {
 	const curAuthStatus = useAuthStore((state) => state.status);
@@ -20,6 +21,18 @@ const useAuthSession = () => {
 
 	useEffect(() => {
 		restoreSession();
+	}, []);
+
+	useEffect(() => {
+		const handleStorage = (event: StorageEvent) => {
+			if (event.key !== AUTH_RESTORE_DISABLED_KEY || event.newValue !== 'true') return;
+
+			clearClientSession();
+		};
+
+		window.addEventListener('storage', handleStorage);
+
+		return () => window.removeEventListener('storage', handleStorage);
 	}, []);
 
 	useEffect(() => {

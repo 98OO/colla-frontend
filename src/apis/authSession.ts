@@ -4,8 +4,14 @@ import axios from 'axios';
 import useAuthStore from '@stores/authStore';
 import { HTTPError } from '@apis/HTTPError';
 import { ABNORMAL_TOKEN_CODES, SESSION_INVALID_CODES } from '@constants/api';
+import { AUTH_RESTORE_DISABLED_KEY } from '@constants/storage';
 
 let refreshPromise: Promise<string> | null = null;
+
+export const clearClientSession = () => {
+	useAuthStore.getState().clearSession();
+	queryClient.removeQueries({ queryKey: ['userStatus'] });
+};
 
 export const invalidateSession = (code: number) => {
 	if (ABNORMAL_TOKEN_CODES.has(code)) {
@@ -13,8 +19,7 @@ export const invalidateSession = (code: number) => {
 		console.warn(`비정상적인 토큰 오류가 발생했습니다 (code: ${code})`);
 	}
 
-	useAuthStore.getState().clearSession();
-	queryClient.removeQueries({ queryKey: ['userStatus'] });
+	clearClientSession();
 };
 
 export const refreshAccessToken = () => {
@@ -51,7 +56,17 @@ export const refreshAccessToken = () => {
 
 export const getPendingRefreshPromise = () => refreshPromise;
 
+const shouldSkipSessionRestore = () => {
+	if (window.localStorage.getItem(AUTH_RESTORE_DISABLED_KEY) !== 'true') return false;
+
+	if (useAuthStore.getState().status !== 'guest') clearClientSession();
+
+	return true;
+};
+
 export const restoreSession = async () => {
+	if (shouldSkipSessionRestore()) return;
+
 	try {
 		await refreshAccessToken();
 	} catch (error) {
@@ -72,4 +87,11 @@ export const restoreSession = async () => {
 			}
 		}
 	}
+};
+
+export const enableSessionRestore = () => window.localStorage.removeItem(AUTH_RESTORE_DISABLED_KEY);
+
+export const logout = () => {
+	window.localStorage.setItem(AUTH_RESTORE_DISABLED_KEY, 'true');
+	clearClientSession();
 };
