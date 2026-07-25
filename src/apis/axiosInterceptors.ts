@@ -15,7 +15,12 @@ export interface ErrorResponse {
 }
 
 export const setAuthorizedRequest = async (config: InternalAxiosRequestConfig) => {
-	if (config.skipAuthorizationHeader || config.headers.Authorization) return config;
+	if (config.skipAuthorizationHeader) return config;
+
+	// eslint-disable-next-line no-param-reassign
+	config.sessionVersion ??= useAuthStore.getState().sessionVersion;
+
+	if (config.headers.Authorization) return config;
 
 	const pendingRefresh = getPendingRefreshPromise();
 	const newAccessToken = pendingRefresh ? await pendingRefresh.catch(() => null) : null;
@@ -40,14 +45,16 @@ export const handleTokenError = async (error: AxiosError<ErrorResponse>) => {
 	}
 
 	if (!originalRequest) throw error;
+	if (originalRequest.skipAuthorizationHeader || originalRequest.sessionVersion === undefined)
+		throw error;
 
 	const { data, status } = error.response;
 
-	if (
-		data.code === TOKEN_ERROR_CODE.EXPIRED_ACCESS_TOKEN &&
-		!originalRequest.skipAuthorizationHeader &&
-		!originalRequest.isRetried
-	) {
+	if (data.code === TOKEN_ERROR_CODE.EXPIRED_ACCESS_TOKEN && !originalRequest.isRetried) {
+		if (originalRequest.sessionVersion !== useAuthStore.getState().sessionVersion) {
+			throw new axios.CanceledError();
+		}
+
 		originalRequest.isRetried = true;
 
 		const accessToken = await refreshAccessToken();
@@ -57,7 +64,7 @@ export const handleTokenError = async (error: AxiosError<ErrorResponse>) => {
 	}
 
 	if (data.code !== undefined && SESSION_INVALID_CODES.has(data.code)) {
-		invalidateSession(data.code);
+		invalidateSession(data.code, originalRequest.sessionVersion);
 
 		throw new HTTPError(status, data.code, data.content, data.message);
 	}

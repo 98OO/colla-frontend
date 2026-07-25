@@ -13,7 +13,9 @@ export const clearClientSession = () => {
 	queryClient.removeQueries({ queryKey: ['userStatus'] });
 };
 
-export const invalidateSession = (code: number) => {
+export const invalidateSession = (code: number, requestSessionVersion: number) => {
+	if (useAuthStore.getState().sessionVersion !== requestSessionVersion) return;
+
 	if (ABNORMAL_TOKEN_CODES.has(code)) {
 		// eslint-disable-next-line no-console
 		console.warn(`비정상적인 토큰 오류가 발생했습니다 (code: ${code})`);
@@ -24,11 +26,11 @@ export const invalidateSession = (code: number) => {
 
 export const refreshAccessToken = () => {
 	if (!refreshPromise) {
-		const version = useAuthStore.getState().sessionVersion;
+		const requestSessionVersion = useAuthStore.getState().sessionVersion;
 
 		refreshPromise = getNewToken()
 			.then(({ accessToken }) => {
-				if (useAuthStore.getState().sessionVersion !== version) {
+				if (useAuthStore.getState().sessionVersion !== requestSessionVersion) {
 					throw new axios.CanceledError();
 				}
 
@@ -41,7 +43,7 @@ export const refreshAccessToken = () => {
 					error.code !== undefined &&
 					SESSION_INVALID_CODES.has(error.code)
 				) {
-					invalidateSession(error.code);
+					invalidateSession(error.code, requestSessionVersion);
 				}
 
 				throw error;
@@ -67,22 +69,26 @@ const shouldSkipSessionRestore = () => {
 export const restoreSession = async () => {
 	if (shouldSkipSessionRestore()) return;
 
+	const restoreSessionVersion = useAuthStore.getState().sessionVersion;
+
 	try {
 		await refreshAccessToken();
 	} catch (error) {
 		if (axios.isCancel(error)) return;
 
-		// refreshAccessToken 내부 catch에서 guest로 확정한 상태
-		if (useAuthStore.getState().status !== 'loading') return;
+		const { status, sessionVersion } = useAuthStore.getState();
+		if (sessionVersion !== restoreSessionVersion || status !== 'loading') return;
 
-		// 일시적 오류(500번대 · 네트워크) 1회 재시도
 		try {
 			await refreshAccessToken();
 		} catch (retryError) {
 			if (axios.isCancel(retryError)) return;
 
-			// 재시도도 실패(guest로 확정되지 않음) → error로 확정
-			if (useAuthStore.getState().status === 'loading') {
+			const currentSession = useAuthStore.getState();
+			if (
+				currentSession.sessionVersion === restoreSessionVersion &&
+				currentSession.status === 'loading'
+			) {
 				useAuthStore.getState().setSessionError();
 			}
 		}
