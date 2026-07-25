@@ -8,13 +8,16 @@ import { AUTH_RESTORE_DISABLED_KEY } from '@constants/storage';
 
 let refreshPromise: Promise<string> | null = null;
 
+export const isCurrentSession = (sessionVersion: number) =>
+	sessionVersion === useAuthStore.getState().sessionVersion;
+
 export const clearClientSession = () => {
 	useAuthStore.getState().clearSession();
 	queryClient.removeQueries({ queryKey: ['userStatus'] });
 };
 
 export const invalidateSession = (code: number, requestSessionVersion: number) => {
-	if (useAuthStore.getState().sessionVersion !== requestSessionVersion) return;
+	if (!isCurrentSession(requestSessionVersion)) return;
 
 	if (ABNORMAL_TOKEN_CODES.has(code)) {
 		// eslint-disable-next-line no-console
@@ -30,7 +33,7 @@ export const refreshAccessToken = () => {
 
 		refreshPromise = getNewToken()
 			.then(({ accessToken }) => {
-				if (useAuthStore.getState().sessionVersion !== requestSessionVersion) {
+				if (!isCurrentSession(requestSessionVersion)) {
 					throw new axios.CanceledError();
 				}
 

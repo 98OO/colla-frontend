@@ -1,6 +1,11 @@
 import axios from 'axios';
 import useAuthStore from '@stores/authStore';
-import { getPendingRefreshPromise, invalidateSession, refreshAccessToken } from '@apis/authSession';
+import {
+	getPendingRefreshPromise,
+	invalidateSession,
+	isCurrentSession,
+	refreshAccessToken,
+} from '@apis/authSession';
 import { axiosInstance } from '@apis/axiosInstance';
 import { HTTPError } from '@apis/HTTPError';
 import { NetworkError } from '@apis/NetworkError';
@@ -34,6 +39,18 @@ export const setAuthorizedRequest = async (config: InternalAxiosRequestConfig) =
 	return config;
 };
 
+const isExpiredAccessTokenError = (code: number | undefined) =>
+	code === TOKEN_ERROR_CODE.EXPIRED_ACCESS_TOKEN;
+
+const retryWithNewToken = async (request: InternalAxiosRequestConfig) => {
+	request.isRetried = true;
+
+	const accessToken = await refreshAccessToken();
+	request.headers.Authorization = `Bearer ${accessToken}`;
+
+	return axiosInstance(request);
+};
+
 export const handleTokenError = async (error: AxiosError<ErrorResponse>) => {
 	if (axios.isCancel(error)) throw error;
 
@@ -45,26 +62,20 @@ export const handleTokenError = async (error: AxiosError<ErrorResponse>) => {
 	}
 
 	if (!originalRequest) throw error;
-	if (originalRequest.skipAuthorizationHeader || originalRequest.sessionVersion === undefined)
-		throw error;
+
+	const { skipAuthorizationHeader, sessionVersion, isRetried } = originalRequest;
+	if (skipAuthorizationHeader || sessionVersion === undefined) throw error;
 
 	const { data, status } = error.response;
 
-	if (data.code === TOKEN_ERROR_CODE.EXPIRED_ACCESS_TOKEN && !originalRequest.isRetried) {
-		if (originalRequest.sessionVersion !== useAuthStore.getState().sessionVersion) {
-			throw new axios.CanceledError();
-		}
+	if (isExpiredAccessTokenError(data.code) && !isRetried) {
+		if (!isCurrentSession(sessionVersion)) throw new axios.CanceledError();
 
-		originalRequest.isRetried = true;
-
-		const accessToken = await refreshAccessToken();
-		originalRequest.headers.Authorization = `Bearer ${accessToken}`;
-
-		return axiosInstance(originalRequest);
+		return retryWithNewToken(originalRequest);
 	}
 
 	if (data.code !== undefined && SESSION_INVALID_CODES.has(data.code)) {
-		invalidateSession(data.code, originalRequest.sessionVersion);
+		invalidateSession(data.code, sessionVersion);
 
 		throw new HTTPError(status, data.code, data.content, data.message);
 	}
