@@ -4,7 +4,7 @@ import Flex from '@components/common/Flex/Flex';
 import Profile from '@components/common/Profile/Profile';
 import MenuItem from '@components/common/SideNavigationBar/MenuItem/MenuItem';
 import useUserStatusQuery from '@hooks/queries/useUserStatusQuery';
-import { logout } from '@apis/authSession';
+import { signOut } from '@apis/authSession';
 import { PATH } from '@constants/path';
 import * as S from './GNBProfile.styled';
 
@@ -38,7 +38,7 @@ const GNBProfile = () => {
 						<MenuItem leadingIcon='Mail' title='문의하기' selected={false} onClick={() => ''} />
 					</Flex>
 					<Divider size='sm' padding={4} />
-					<MenuItem leadingIcon='LogOut' title='로그아웃' selected={false} onClick={logout} />
+					<MenuItem leadingIcon='LogOut' title='로그아웃' selected={false} onClick={signOut} />
 				</>
 			)}
 		</S.GNBProfileContainer>

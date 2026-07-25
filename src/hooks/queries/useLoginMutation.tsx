@@ -1,8 +1,7 @@
 import { useNavigate } from 'react-router-dom';
 import postLogin from '@apis/user/postLogin';
 import { useMutation } from '@tanstack/react-query';
-import useAuthStore from '@stores/authStore';
-import { enableSessionRestore } from '@apis/authSession';
+import { signIn } from '@apis/authSession';
 import { PATH } from '@constants/path';
 import { INVITE_URL_KEY } from '@constants/storage';
 
@@ -13,8 +12,7 @@ const useLoginMutation = () => {
 	const postLoginMutation = useMutation({
 		mutationFn: postLogin,
 		onSuccess: (content) => {
-			enableSessionRestore();
-			useAuthStore.getState().setAccessToken(content.accessToken);
+			signIn(content.accessToken);
 
 			if (inviteUrl) {
 				window.sessionStorage.removeItem(INVITE_URL_KEY);

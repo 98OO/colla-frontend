@@ -32,7 +32,7 @@ export const refreshAccessToken = () => {
 					throw new axios.CanceledError();
 				}
 
-				useAuthStore.getState().setAccessToken(accessToken);
+				useAuthStore.getState().updateSession(accessToken);
 				return accessToken;
 			})
 			.catch((error) => {
@@ -89,9 +89,12 @@ export const restoreSession = async () => {
 	}
 };
 
-export const enableSessionRestore = () => window.localStorage.removeItem(AUTH_RESTORE_DISABLED_KEY);
+export const signIn = (accessToken: string) => {
+	window.localStorage.removeItem(AUTH_RESTORE_DISABLED_KEY);
+	useAuthStore.getState().initializeSession(accessToken);
+};
 
-export const logout = () => {
+export const signOut = () => {
 	window.localStorage.setItem(AUTH_RESTORE_DISABLED_KEY, 'true');
 	clearClientSession();
 };
