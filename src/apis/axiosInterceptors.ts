@@ -2,11 +2,10 @@ import { invalidateSession, isCurrentSession } from '@apis/auth/sessionActions';
 import { getPendingRefreshPromise, refreshAccessToken } from '@apis/auth/tokenRefresh';
 import axios from 'axios';
 import useAuthStore from '@stores/authStore';
-import { axiosInstance } from '@apis/axiosInstance';
 import { HTTPError } from '@apis/HTTPError';
 import { NetworkError } from '@apis/NetworkError';
 import { SESSION_INVALID_CODES, TOKEN_ERROR_CODE } from '@constants/api';
-import type { AxiosError, InternalAxiosRequestConfig } from 'axios';
+import type { AxiosError, AxiosInstance, InternalAxiosRequestConfig } from 'axios';
 
 export interface ErrorResponse {
 	status: number;
@@ -38,16 +37,16 @@ export const setAuthorizedRequest = async (config: InternalAxiosRequestConfig) =
 const isExpiredAccessTokenError = (code: number | undefined) =>
 	code === TOKEN_ERROR_CODE.EXPIRED_ACCESS_TOKEN;
 
-const retryWithNewToken = async (request: InternalAxiosRequestConfig) => {
+const retryWithNewToken = async (instance: AxiosInstance, request: InternalAxiosRequestConfig) => {
 	request.isRetried = true;
 
 	const accessToken = await refreshAccessToken();
 	request.headers.Authorization = `Bearer ${accessToken}`;
 
-	return axiosInstance(request);
+	return instance(request);
 };
 
-export const handleTokenError = async (error: AxiosError<ErrorResponse>) => {
+const handleTokenError = async (error: AxiosError<ErrorResponse>, instance: AxiosInstance) => {
 	if (axios.isCancel(error)) throw error;
 
 	const originalRequest = error.config;
@@ -67,7 +66,7 @@ export const handleTokenError = async (error: AxiosError<ErrorResponse>) => {
 	if (isExpiredAccessTokenError(data.code) && !isRetried) {
 		if (!isCurrentSession(sessionVersion)) throw new axios.CanceledError();
 
-		return retryWithNewToken(originalRequest);
+		return retryWithNewToken(instance, originalRequest);
 	}
 
 	if (data.code !== undefined && SESSION_INVALID_CODES.has(data.code)) {
@@ -78,6 +77,10 @@ export const handleTokenError = async (error: AxiosError<ErrorResponse>) => {
 
 	throw error;
 };
+
+export const createTokenErrorHandler =
+	(instance: AxiosInstance) => (error: AxiosError<ErrorResponse>) =>
+		handleTokenError(error, instance);
 
 export const handleAPIError = (error: AxiosError<ErrorResponse>) => {
 	if (axios.isCancel(error)) throw error;
