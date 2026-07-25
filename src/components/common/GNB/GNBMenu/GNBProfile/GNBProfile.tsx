@@ -1,10 +1,10 @@
 import { useNavigate } from 'react-router-dom';
+import { signOut } from '@apis/auth/sessionActions';
 import Divider from '@components/common/Divider/Divider';
 import Flex from '@components/common/Flex/Flex';
 import Profile from '@components/common/Profile/Profile';
 import MenuItem from '@components/common/SideNavigationBar/MenuItem/MenuItem';
 import useUserStatusQuery from '@hooks/queries/useUserStatusQuery';
-import { signOut } from '@apis/authSession';
 import { PATH } from '@constants/path';
 import * as S from './GNBProfile.styled';
 

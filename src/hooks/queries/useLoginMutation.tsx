@@ -1,7 +1,7 @@
 import { useNavigate } from 'react-router-dom';
+import { signIn } from '@apis/auth/sessionActions';
 import postLogin from '@apis/user/postLogin';
 import { useMutation } from '@tanstack/react-query';
-import { signIn } from '@apis/authSession';
 import { PATH } from '@constants/path';
 import { INVITE_URL_KEY } from '@constants/storage';
 

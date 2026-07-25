@@ -1,11 +1,7 @@
+import { invalidateSession, isCurrentSession } from '@apis/auth/sessionActions';
+import { getPendingRefreshPromise, refreshAccessToken } from '@apis/auth/tokenRefresh';
 import axios from 'axios';
 import useAuthStore from '@stores/authStore';
-import {
-	getPendingRefreshPromise,
-	invalidateSession,
-	isCurrentSession,
-	refreshAccessToken,
-} from '@apis/authSession';
 import { axiosInstance } from '@apis/axiosInstance';
 import { HTTPError } from '@apis/HTTPError';
 import { NetworkError } from '@apis/NetworkError';
