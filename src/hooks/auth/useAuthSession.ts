@@ -16,7 +16,7 @@ const useAuthSession = () => {
 	const disconnect = useSocketStore((state) => state.disconnect);
 
 	const retry = () => {
-		useAuthStore.setState({ status: 'loading' });
+		useAuthStore.getState().startBootstrapping();
 		restoreSession();
 	};
 

@@ -1,5 +1,5 @@
 import { invalidateSession, isCurrentSession } from '@apis/auth/sessionActions';
-import { getPendingRefreshPromise, refreshAccessToken } from '@apis/auth/tokenRefresh';
+import { refreshAccessToken, resolveAccessTokenForRequest } from '@apis/auth/tokenRefreshManager';
 import axios from 'axios';
 import useAuthStore from '@stores/authStore';
 import { HTTPError } from '@apis/HTTPError';
@@ -22,11 +22,9 @@ export const setAuthorizedRequest = async (config: InternalAxiosRequestConfig) =
 
 	if (config.headers.Authorization) return config;
 
-	const pendingRefresh = getPendingRefreshPromise();
-	const newAccessToken = pendingRefresh ? await pendingRefresh.catch(() => null) : null;
-	const accessToken = newAccessToken ?? useAuthStore.getState().accessToken;
+	const { sessionVersion } = config;
 
-	if (!accessToken) throw new Error('인증 정보가 없어 요청을 중단합니다');
+	const accessToken = await resolveAccessTokenForRequest(sessionVersion);
 
 	// eslint-disable-next-line no-param-reassign
 	config.headers.Authorization = `Bearer ${accessToken}`;
@@ -40,8 +38,10 @@ const isExpiredAccessTokenError = (code: number | undefined) =>
 const retryWithNewToken = async (instance: AxiosInstance, request: InternalAxiosRequestConfig) => {
 	request.isRetried = true;
 
-	const accessToken = await refreshAccessToken();
-	request.headers.Authorization = `Bearer ${accessToken}`;
+	const result = await refreshAccessToken();
+	if (result.type !== 'success') throw new axios.CanceledError();
+
+	request.headers.Authorization = `Bearer ${result.accessToken}`;
 
 	return instance(request);
 };
@@ -61,7 +61,7 @@ const handleTokenError = async (error: AxiosError<ErrorResponse>, instance: Axio
 	const { skipAuthorizationHeader, sessionVersion, isRetried } = originalRequest;
 	if (skipAuthorizationHeader || sessionVersion === undefined) throw error;
 
-	const { data, status } = error.response;
+	const { data } = error.response;
 
 	if (isExpiredAccessTokenError(data.code) && !isRetried) {
 		if (!isCurrentSession(sessionVersion)) throw new axios.CanceledError();
@@ -71,8 +71,7 @@ const handleTokenError = async (error: AxiosError<ErrorResponse>, instance: Axio
 
 	if (data.code !== undefined && SESSION_INVALID_CODES.has(data.code)) {
 		invalidateSession(data.code, sessionVersion);
-
-		throw new HTTPError(status, data.code, data.content, data.message);
+		throw new axios.CanceledError();
 	}
 
 	throw error;
