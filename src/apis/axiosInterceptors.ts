@@ -5,7 +5,12 @@ import useAuthStore from '@stores/authStore';
 import { HTTPError } from '@apis/HTTPError';
 import { NetworkError } from '@apis/NetworkError';
 import { SESSION_INVALID_CODES, TOKEN_ERROR_CODE } from '@constants/api';
-import type { AxiosError, AxiosInstance, InternalAxiosRequestConfig } from 'axios';
+import type {
+	AxiosError,
+	AxiosHeaderValue,
+	AxiosInstance,
+	InternalAxiosRequestConfig,
+} from 'axios';
 
 export interface ErrorResponse {
 	status: number;
@@ -35,15 +40,30 @@ export const setAuthorizedRequest = async (config: InternalAxiosRequestConfig) =
 const isExpiredAccessTokenError = (code: number | undefined) =>
 	code === TOKEN_ERROR_CODE.EXPIRED_ACCESS_TOKEN;
 
-const retryWithNewToken = async (instance: AxiosInstance, request: InternalAxiosRequestConfig) => {
-	request.isRetried = true;
+const isRequestTokenOutdated = (
+	requestAccessToken: AxiosHeaderValue | undefined,
+	currentAccessToken: string
+) => requestAccessToken !== `Bearer ${currentAccessToken}`;
 
+const retryRequest = (
+	instance: AxiosInstance,
+	request: InternalAxiosRequestConfig,
+	accessToken: string
+) => {
+	request.isRetried = true;
+	request.headers.Authorization = `Bearer ${accessToken}`;
+
+	return instance(request);
+};
+
+const retryRequestWithNewToken = async (
+	instance: AxiosInstance,
+	request: InternalAxiosRequestConfig
+) => {
 	const result = await refreshAccessToken();
 	if (result.type !== 'success') throw new axios.CanceledError();
 
-	request.headers.Authorization = `Bearer ${result.accessToken}`;
-
-	return instance(request);
+	return retryRequest(instance, request, result.accessToken);
 };
 
 const handleTokenError = async (error: AxiosError<ErrorResponse>, instance: AxiosInstance) => {
@@ -66,7 +86,14 @@ const handleTokenError = async (error: AxiosError<ErrorResponse>, instance: Axio
 	if (isExpiredAccessTokenError(data.code) && !isRetried) {
 		if (!isCurrentSession(sessionVersion)) throw new axios.CanceledError();
 
-		return retryWithNewToken(instance, originalRequest);
+		const requestAccessToken = originalRequest.headers.Authorization;
+		const { accessToken: currentAccessToken } = useAuthStore.getState();
+
+		if (currentAccessToken && isRequestTokenOutdated(requestAccessToken, currentAccessToken)) {
+			return retryRequest(instance, originalRequest, currentAccessToken);
+		}
+
+		return retryRequestWithNewToken(instance, originalRequest);
 	}
 
 	if (data.code !== undefined && SESSION_INVALID_CODES.has(data.code)) {
