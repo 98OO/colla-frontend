@@ -6,9 +6,11 @@ import { AUTH_RESTORE_DISABLED_KEY } from '@constants/storage';
 export const isCurrentSession = (sessionVersion: number) =>
 	sessionVersion === useAuthStore.getState().sessionVersion;
 
+export const clearSessionCache = () => queryClient.clear();
+
 export const clearClientSession = () => {
+	clearSessionCache();
 	useAuthStore.getState().clearSession();
-	queryClient.removeQueries({ queryKey: ['userStatus'] });
 };
 
 export const invalidateSession = (code: number, requestSessionVersion: number) => {
@@ -23,6 +25,8 @@ export const invalidateSession = (code: number, requestSessionVersion: number) =
 };
 
 export const signIn = (accessToken: string) => {
+	clearSessionCache();
+
 	window.localStorage.removeItem(AUTH_RESTORE_DISABLED_KEY);
 	useAuthStore.getState().initializeSession(accessToken);
 };
