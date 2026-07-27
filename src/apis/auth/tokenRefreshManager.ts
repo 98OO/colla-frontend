@@ -153,7 +153,11 @@ const processTokenRefresh = async (sessionVersion: number): Promise<TokenRefresh
  * @throws 예상하지 못한 프로그래밍 오류
  */
 export const refreshAccessToken = (): Promise<TokenRefreshResult> => {
-	const { sessionVersion } = useAuthStore.getState();
+	const { status, sessionVersion } = useAuthStore.getState();
+
+	if (status === 'guest' || status === 'unavailable') {
+		return Promise.resolve<TokenRefreshResult>({ type: 'canceled' });
+	}
 
 	const existingRefreshPromise = getRefreshPromiseForSession(sessionVersion);
 
