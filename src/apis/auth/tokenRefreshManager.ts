@@ -10,6 +10,19 @@ import type { AuthUnavailableReason, TokenRefreshResult } from '@type/auth';
 const TOKEN_REFRESH_RETRY_DELAY = 500;
 
 let refreshPromise: Promise<TokenRefreshResult> | null = null;
+let refreshSessionVersion: number | null = null;
+
+/**
+ * 지정한 세션에서 진행 중인 토큰 재발급 Promise를 가져온다.
+ *
+ * @param sessionVersion 확인할 세션 버전
+ * @returns 해당 세션의 토큰 재발급 Promise가 없으면 null
+ */
+const getRefreshPromiseForSession = (sessionVersion: number) => {
+	if (!refreshPromise || refreshSessionVersion !== sessionVersion) return null;
+
+	return refreshPromise;
+};
 
 /**
  * 토큰 재발급 요청을 다시 시도해도 되는 오류인지 확인한다.
@@ -133,22 +146,30 @@ const processTokenRefresh = async (sessionVersion: number): Promise<TokenRefresh
 };
 
 /**
- * 진행 중인 토큰 재발급이 있으면 새 요청을 만들지 않고 기존 Promise를 반환한다.
- * 진행 중인 작업이 없으면 현재 세션을 기준으로 새 토큰 재발급을 시작한다.
+ * 현재 세션에서 진행 중인 토큰 재발급이 있으면 기존 Promise를 반환한다.
+ * 진행 중인 작업이 없거나 다른 세션의 작업이면 현재 세션을 기준으로 새 토큰 재발급을 시작한다.
  *
  * @returns 진행 중이거나 새로 시작한 토큰 재발급 Promise
  * @throws 예상하지 못한 프로그래밍 오류
  */
 export const refreshAccessToken = (): Promise<TokenRefreshResult> => {
-	if (refreshPromise) return refreshPromise;
-
 	const { sessionVersion } = useAuthStore.getState();
 
-	refreshPromise = processTokenRefresh(sessionVersion).finally(() => {
+	const existingRefreshPromise = getRefreshPromiseForSession(sessionVersion);
+
+	if (existingRefreshPromise) return existingRefreshPromise;
+
+	const newRefreshPromise = processTokenRefresh(sessionVersion).finally(() => {
+		if (refreshPromise !== newRefreshPromise) return;
+
 		refreshPromise = null;
+		refreshSessionVersion = null;
 	});
 
-	return refreshPromise;
+	refreshPromise = newRefreshPromise;
+	refreshSessionVersion = sessionVersion;
+
+	return newRefreshPromise;
 };
 
 /**
@@ -167,7 +188,9 @@ export const resolveAccessTokenForRequest = async (sessionVersion: number): Prom
 
 	if (status === 'guest' || status === 'unavailable') throw new axios.CanceledError();
 
-	if (!refreshPromise && accessToken) return accessToken;
+	const existingRefreshPromise = getRefreshPromiseForSession(sessionVersion);
+
+	if (!existingRefreshPromise && accessToken) return accessToken;
 
 	const refreshResult = await refreshAccessToken();
 
