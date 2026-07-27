@@ -163,7 +163,9 @@ export const refreshAccessToken = (): Promise<TokenRefreshResult> => {
 export const resolveAccessTokenForRequest = async (sessionVersion: number): Promise<string> => {
 	if (!isCurrentSession(sessionVersion)) throw new axios.CanceledError();
 
-	const { accessToken } = useAuthStore.getState();
+	const { status, accessToken } = useAuthStore.getState();
+
+	if (status === 'guest' || status === 'unavailable') throw new axios.CanceledError();
 
 	if (!refreshPromise && accessToken) return accessToken;
 
