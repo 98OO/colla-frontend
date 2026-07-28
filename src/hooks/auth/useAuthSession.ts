@@ -1,17 +1,14 @@
 import { useEffect, useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { clearClientSession } from '@apis/auth/sessionActions';
 import { restoreSession } from '@apis/auth/sessionRestore';
 import useAuthStore from '@stores/authStore';
 import useSocketStore from '@stores/socketStore';
-import { PATH } from '@constants/path';
 import { AUTH_RESTORE_DISABLED_KEY } from '@constants/storage';
 
 const useAuthSession = () => {
 	const curAuthStatus = useAuthStore((state) => state.status);
 	const prevAuthStatus = useRef(curAuthStatus);
 
-	const navigate = useNavigate();
 	const connect = useSocketStore((state) => state.connect);
 	const disconnect = useSocketStore((state) => state.disconnect);
 
@@ -45,11 +42,10 @@ const useAuthSession = () => {
 
 		if (prevAuthStatus.current === 'authenticated' && curAuthStatus === 'guest') {
 			disconnect();
-			navigate(PATH.SIGNIN, { replace: true });
 		}
 
 		prevAuthStatus.current = curAuthStatus;
-	}, [curAuthStatus, connect, disconnect, navigate]);
+	}, [curAuthStatus, connect, disconnect]);
 
 	return { status: curAuthStatus, retry };
 };

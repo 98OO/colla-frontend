@@ -26,20 +26,21 @@ const getAuthErrorMessage = (reason: AuthUnavailableReason | null) => {
 function App() {
 	const location = useLocation();
 	const isMobileView = useWindowWidth();
-	const isChatPage = location.pathname.includes(PATH.CHAT);
-	const isNavigationBarVisible = [
-		PATH.SCHEDULE,
-		PATH.FEED,
-		PATH.DOCUMENT,
-		PATH.PRESENTATION,
-		PATH.SETTING,
-		PATH.MYPAGE,
-		PATH.CHAT,
-		PATH.DOCUMENT,
-	].some((path) => location.pathname.includes(path));
-
 	const { status: authStatus, retry } = useAuthSession();
 	const unavailableReason = useAuthStore((state) => state.unavailableReason);
+	const isChatPage = location.pathname.includes(PATH.CHAT);
+	const isNavigationBarVisible =
+		authStatus === 'authenticated' &&
+		[
+			PATH.SCHEDULE,
+			PATH.FEED,
+			PATH.DOCUMENT,
+			PATH.PRESENTATION,
+			PATH.SETTING,
+			PATH.MYPAGE,
+			PATH.CHAT,
+			PATH.DOCUMENT,
+		].some((path) => location.pathname.includes(path));
 
 	if (authStatus === 'unavailable') {
 		return <Error errorMessage={getAuthErrorMessage(unavailableReason)} resetError={retry} />;
