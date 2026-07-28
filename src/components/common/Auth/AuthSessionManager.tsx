@@ -1,9 +1,11 @@
 import { useEffect, useRef } from 'react';
 import type { ReactNode } from 'react';
+import { matchPath } from 'react-router-dom';
 import { clearClientSession } from '@apis/auth/sessionActions';
 import { restoreSession } from '@apis/auth/sessionRestore';
 import useAuthStore from '@stores/authStore';
 import useSocketStore from '@stores/socketStore';
+import { PATH } from '@constants/path';
 import { AUTH_RESTORE_DISABLED_KEY } from '@constants/storage';
 import type { AuthStatus } from '@type/auth';
 
@@ -13,6 +15,10 @@ interface AuthSessionManagerProps {
 
 const useRestoreSessionOnMount = () => {
 	useEffect(() => {
+		const isOAuthCallback = matchPath(`${PATH.REDIRECT}/:provider`, window.location.pathname);
+
+		if (isOAuthCallback) return;
+
 		restoreSession();
 	}, []);
 };
