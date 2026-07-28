@@ -49,7 +49,7 @@ const useSyncSocketWithAuthStatus = (status: AuthStatus) => {
 			if (accessToken) connect(accessToken);
 		}
 
-		if (previousStatus.current === 'authenticated' && status === 'guest') {
+		if (previousStatus.current === 'authenticated' && status !== 'authenticated') {
 			disconnect();
 		}
 
