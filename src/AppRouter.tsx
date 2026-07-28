@@ -1,6 +1,7 @@
 import type { RouteObject } from 'react-router-dom';
 import { RouterProvider, createBrowserRouter } from 'react-router-dom';
 import AuthGuard from '@components/common/Auth/AuthGuard';
+import GuestOnlyGuard from '@components/common/Auth/GuestOnlyGuard';
 import ChatPage from '@pages/ChatPage/ChatPage';
 import DocumentPage from '@pages/DocumentPage/DocumentPage';
 import EntryPage from '@pages/EntryPage/EntryPage';
@@ -28,9 +29,14 @@ const appRoutes: RouteObject[] = [
 			{
 				element: <PageLayout />,
 				children: [
-					{ path: '', element: <LandingPage /> },
-					{ path: PATH.SIGNIN, element: <SignInPage /> },
-					{ path: PATH.SIGNUP, element: <SignUpPage /> },
+					{
+						element: <GuestOnlyGuard />,
+						children: [
+							{ path: '', element: <LandingPage /> },
+							{ path: PATH.SIGNIN, element: <SignInPage /> },
+							{ path: PATH.SIGNUP, element: <SignUpPage /> },
+						],
+					},
 					{ path: `${PATH.REDIRECT}/:provider`, element: <RedirectPage /> },
 					{ path: PATH.INVITE, element: <InvitePage /> },
 				],
