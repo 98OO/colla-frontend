@@ -6,6 +6,7 @@ import GNBTeamInfo from '@components/common/GNB/GNBMenu/GNBTeamInfo/GNBTeamInfo'
 import GNBTeamSpace from '@components/common/GNB/GNBMenu/GNBTeamSpace/GNBTeamSpace';
 import Heading from '@components/common/Heading/Heading';
 import Icon from '@components/common/Icon/Icon';
+import Skeleton from '@components/common/Skeleton/Skeleton';
 import useMenu from '@hooks/common/useMenu';
 import useRecordTeamSpace from '@hooks/queries/teamspace/useRecordTeamSpace';
 import useUserStatusQuery from '@hooks/queries/useUserStatusQuery';
@@ -26,8 +27,7 @@ const GNB = () => {
 	const { toggleMenu: handleTeamInfo, showMenu: showTeamInfo } = useMenu();
 	const { toggleMenu: handleProfile, showMenu: showProfile } = useMenu();
 	const baseRef = useRef<HTMLDivElement>(null);
-	const { stompClient, increaseChatMessageCount, setChatChannelList } =
-		useSocketStore();
+	const { stompClient, increaseChatMessageCount, setChatChannelList } = useSocketStore();
 	const [position, setPosition] = useState(0);
 
 	const updatePosition = () => {
@@ -76,12 +76,10 @@ const GNB = () => {
 			);
 
 			if (newChatChannelListSubscribe)
-				chatChannelsSubscribeRef.current.chatChannelListSubscribe =
-					newChatChannelListSubscribe;
+				chatChannelsSubscribeRef.current.chatChannelListSubscribe = newChatChannelListSubscribe;
 
 			if (newChatMessageSubscribe)
-				chatChannelsSubscribeRef.current.chatMessageSubscribe =
-					newChatMessageSubscribe;
+				chatChannelsSubscribeRef.current.chatMessageSubscribe = newChatMessageSubscribe;
 		}
 
 		return () => {
@@ -113,57 +111,72 @@ const GNB = () => {
 
 	return (
 		<S.GNBContainer ref={baseRef}>
-			{userStatus && lastSeenTeam && (
+			{!userStatus ? (
 				<>
-					<S.LeftContainer onClick={handleTeamSpace}>
-						<Avatar
-							profile={lastSeenTeam.profileImageUrl}
-							initial={lastSeenTeam.name}
-							size='mlg'
-							shape='rect'
-						/>
-						<Heading size='sm'>{lastSeenTeam.name}</Heading>
-						<Icon name='Updown' />
+					<S.LeftContainer>
+						<Skeleton width={40} height={40} radius='8px' />
+						<Skeleton width={100} height={20} radius='4px' />
 					</S.LeftContainer>
-					{chatChannelsSubscribeRef &&
-						showTeamSpace(baseRef, <GNBTeamSpace />, {
-							top: 70,
-							left: 10,
-						})}
 					<S.RightContainer>
-						{/* <IconButton
+						<S.ProfileContainer>
+							<Skeleton width={64} height={32} radius='8px' />
+							<Skeleton width={36} height={36} radius='50%' />
+						</S.ProfileContainer>
+					</S.RightContainer>
+				</>
+			) : (
+				lastSeenTeam && (
+					<>
+						<S.LeftContainer onClick={handleTeamSpace}>
+							<Avatar
+								profile={lastSeenTeam.profileImageUrl}
+								initial={lastSeenTeam.name}
+								size='mlg'
+								shape='rect'
+							/>
+							<Heading size='sm'>{lastSeenTeam.name}</Heading>
+							<Icon name='Updown' />
+						</S.LeftContainer>
+						{chatChannelsSubscribeRef &&
+							showTeamSpace(baseRef, <GNBTeamSpace />, {
+								top: 70,
+								left: 10,
+							})}
+						<S.RightContainer>
+							{/* <IconButton
 							icon='Bell'
 							ariaLabel='Bell'
 							color='iSecondary'
 							onClick={() => ''}
 						/>
 						<IconButton icon='Search' ariaLabel='Search' onClick={() => ''} /> */}
-						<S.ProfileContainer>
-							<Button
-								label='초대'
-								variant='secondary'
-								size='sm'
-								leadingIcon='User'
-								onClick={handleTeamInfo}
-							/>
-							{showTeamInfo(baseRef, <GNBTeamInfo />, {
-								top: 70,
-								left: position - GNB_TEAM_INFO_WIDTH - 10,
-							})}
-							<Avatar
-								profile={userStatus.profile.profileImageUrl}
-								initial={userStatus.profile.username}
-								size='md'
-								shape='circle'
-								onClick={handleProfile}
-							/>
-							{showProfile(baseRef, <GNBProfile />, {
-								top: 70,
-								left: position - GNB_PROFILE_WIDTH - 10,
-							})}
-						</S.ProfileContainer>
-					</S.RightContainer>
-				</>
+							<S.ProfileContainer>
+								<Button
+									label='초대'
+									variant='secondary'
+									size='sm'
+									leadingIcon='User'
+									onClick={handleTeamInfo}
+								/>
+								{showTeamInfo(baseRef, <GNBTeamInfo />, {
+									top: 70,
+									left: position - GNB_TEAM_INFO_WIDTH - 10,
+								})}
+								<Avatar
+									profile={userStatus.profile.profileImageUrl}
+									initial={userStatus.profile.username}
+									size='md'
+									shape='circle'
+									onClick={handleProfile}
+								/>
+								{showProfile(baseRef, <GNBProfile />, {
+									top: 70,
+									left: position - GNB_PROFILE_WIDTH - 10,
+								})}
+							</S.ProfileContainer>
+						</S.RightContainer>
+					</>
+				)
 			)}
 		</S.GNBContainer>
 	);

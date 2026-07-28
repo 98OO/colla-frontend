@@ -13,7 +13,7 @@ const postOauthLogin = async (props: OauthLoginData) => {
 			code: props.code,
 		},
 		{
-			authRequired: false,
+			skipAuthorizationHeader: true,
 		}
 	);
 

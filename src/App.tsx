@@ -1,18 +1,27 @@
-import { useEffect } from 'react';
 import { Outlet, useLocation } from 'react-router-dom';
 import AsyncBoundary from '@components/common/AsyncBoundary/AsyncBoundary';
+import Error from '@components/common/Error/Error';
 import Flex from '@components/common/Flex/Flex';
 import GlobalErrorBoundary from '@components/common/GlobalErrorBoundary/GlobalErrorBoundary';
 import GNB from '@components/common/GNB/GNB';
 import SNBFull from '@components/common/SideNavigationBar/SNBFull/SNBFull';
 import SNBIcon from '@components/common/SideNavigationBar/SNBIcon/SNBIcon';
 import ToastContainer from '@components/common/ToastContainer/ToastContainer';
+import useAuthSession from '@hooks/auth/useAuthSession';
 import useWindowWidth from '@hooks/window/useWindowWidth';
-import { Stomp } from '@stomp/stompjs';
-import SockJS from 'sockjs-client';
-import useSocketStore from '@stores/socketStore';
-import { ACCESS_TOKEN, WEBSOCKET_URL } from '@constants/api';
+import useAuthStore from '@stores/authStore';
+import { HTTP_ERROR_MESSAGE, HTTP_STATUS_CODE } from '@constants/api';
 import { PATH } from '@constants/path';
+import type { AuthUnavailableReason } from '@type/auth';
+
+const getAuthErrorMessage = (reason: AuthUnavailableReason | null) => {
+	if (reason?.type === 'network') return HTTP_ERROR_MESSAGE.NETWORK;
+	if (reason?.type === 'server') {
+		return HTTP_ERROR_MESSAGE[HTTP_STATUS_CODE.INTERNAL_SERVER_ERROR];
+	}
+
+	return HTTP_ERROR_MESSAGE.DEFAULT;
+};
 
 function App() {
 	const location = useLocation();
@@ -29,25 +38,12 @@ function App() {
 		PATH.DOCUMENT,
 	].some((path) => location.pathname.includes(path));
 
-	const { setStompClient } = useSocketStore();
+	const { status: authStatus, retry } = useAuthSession();
+	const unavailableReason = useAuthStore((state) => state.unavailableReason);
 
-	const onConnected = () => {
-		if (localStorage.getItem(ACCESS_TOKEN)) {
-			const client = Stomp.over(function () {
-				return new SockJS(`${WEBSOCKET_URL}${localStorage.getItem(ACCESS_TOKEN)}`);
-			});
-
-			client.connect({}, () => {
-				setStompClient(client);
-			});
-
-			client.debug = () => {};
-		}
-	};
-
-	useEffect(() => {
-		onConnected();
-	}, []);
+	if (authStatus === 'unavailable') {
+		return <Error errorMessage={getAuthErrorMessage(unavailableReason)} resetError={retry} />;
+	}
 
 	return (
 		<GlobalErrorBoundary>

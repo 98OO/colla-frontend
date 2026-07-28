@@ -1,11 +1,9 @@
-import { axiosInstance } from '@apis/axiosInstance';
+import { refreshInstance } from '@apis/axiosInstance';
 import { END_POINTS } from '@constants/api';
 import type { NewToken } from '@type/user';
 
 export const getNewToken = async () => {
-	const { data } = await axiosInstance.get<NewToken>(END_POINTS.NEWTOKEN, {
-		authRequired: false,
-	});
+	const { data } = await refreshInstance.get<NewToken>(END_POINTS.NEWTOKEN);
 
 	const { content } = data;
 

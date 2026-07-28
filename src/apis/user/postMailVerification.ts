@@ -9,7 +9,7 @@ const postMailVerification = async (email: string, verifyCode: string) => {
 			verifyCode,
 		},
 		{
-			authRequired: false,
+			skipAuthorizationHeader: true,
 		}
 	);
 
