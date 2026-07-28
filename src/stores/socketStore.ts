@@ -34,7 +34,11 @@ const useSocketStore = create<socketStore>((set, get) => ({
 	},
 	disconnect: () => {
 		get().stompClient?.disconnect();
-		set({ stompClient: null });
+		set({
+			stompClient: null,
+			chatMessageCount: null,
+			chatChannelList: [],
+		});
 	},
 	chatMessageCount: null,
 	increaseChatMessageCount: (count) => set({ chatMessageCount: count }),
