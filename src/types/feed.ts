@@ -63,22 +63,37 @@ interface CollectDetails {
 	responses: CollectResponse[];
 }
 
+export type AvailabilityFlag = 0 | 1;
+
+export type UserAvailability = Record<string, AvailabilityFlag[]>;
+
+export type TotalAvailability = Record<string, number[]>;
+
+export type AvailabilityColumn = [string, number[]];
+
+export interface SlotData {
+	date: string;
+	segment: number;
+}
+
+export interface SchedulingResponse {
+	availabilities: UserAvailability;
+	createdAt: string;
+	user: {
+		id: number;
+		profileImageUrl: string;
+		username: string;
+	};
+}
+
 interface SchedulingDetails {
 	dueAt: string;
 	isClosed: boolean;
 	minTimeSegment: number;
 	maxTimeSegment: number;
 	numOfParticipants: number;
-	totalAvailability: Record<string, number[]>;
-	responses: {
-		availabilities: Record<string, number[]>;
-		createdAt: string;
-		user: {
-			id: number;
-			profileImageUrl: string;
-			username: string;
-		};
-	}[];
+	totalAvailability: TotalAvailability;
+	responses: SchedulingResponse[];
 }
 
 interface FeedBase {

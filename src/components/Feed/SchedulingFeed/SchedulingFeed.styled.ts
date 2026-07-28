@@ -1,4 +1,4 @@
-import { styled } from 'styled-components';
+import { styled, css } from 'styled-components';
 import theme from '@styles/theme';
 
 export const FeedContainer = styled.div`
@@ -11,23 +11,8 @@ export const FeedContainer = styled.div`
 	margin-bottom: ${theme.units.spacing.space32};
 `;
 
-export const SchedulingContainer = styled.div`
-	display: flex;
-	flex-direction: column;
-	padding: 0 ${theme.units.spacing.space24};
-	gap: ${theme.units.spacing.space24};
-`;
-
 export const DetailWrapper = styled.div`
 	padding: ${theme.units.spacing.space16} 0;
-`;
-
-export const CommentPreviewWrapper = styled.div`
-	display: flex;
-	margin-top: ${theme.units.spacing.space12};
-	margin-left: ${theme.units.spacing.space24};
-	margin-bottom: ${theme.units.spacing.space6};
-	gap: ${theme.units.spacing.space8};
 `;
 
 export const ParticipantsContainer = styled.div`
@@ -38,20 +23,39 @@ export const ParticipantsContainer = styled.div`
 	font-weight: ${theme.typography.fontWeight.semiBold};
 `;
 
-export const Participants = styled.div`
+export const Caption = styled.div`
 	font-size: ${theme.typography.fontSize.header.xxs};
-	font-weight: ${theme.typography.fontWeight.semiBold};
+	font-weight: ${theme.typography.fontWeight.medium};
 `;
 
-export const TableContainer = styled.div`
+export const ParticipantWrapper = styled.div`
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	min-height: 24px;
+	gap: ${theme.units.spacing.space8} ${theme.units.spacing.space16};
+`;
+
+export const ParticipantChip = styled.div`
+	display: flex;
+	align-items: center;
+	gap: ${theme.units.spacing.space6};
+	font-size: ${theme.typography.fontSize.body.md};
+	font-weight: ${theme.typography.fontWeight.regular};
+`;
+
+export const GridContainer = styled.div`
 	display: flex;
 	flex-grow: 1;
 	margin-bottom: ${theme.units.spacing.space32};
+	user-select: none;
 `;
 
 export const TimeColumn = styled.div`
 	display: flex;
 	flex-direction: column;
+	flex-shrink: 0;
+	width: 50px;
 	padding-right: ${theme.units.spacing.space10};
 	border-right: 1px solid ${theme.color.border.tertiary};
 	font-size: ${theme.typography.fontSize.body.sm};
@@ -59,23 +63,16 @@ export const TimeColumn = styled.div`
 	box-sizing: border-box;
 `;
 
-export const TimeGroup = styled.div`
-	display: flex;
-	flex-direction: column;
-	justify-content: space-between;
-	height: 40px;
-	box-sizing: border-box;
-`;
-
-export const TimeSlot = styled.div`
+export const TimeLabel = styled.div`
 	height: 20px;
 	padding-right: ${theme.units.spacing.space4};
 	text-align: right;
 	box-sizing: border-box;
 `;
 
-export const Table = styled.div`
-	display: flex;
+export const Grid = styled.div<{ $dayCount: number }>`
+	display: grid;
+	grid-template-columns: repeat(${({ $dayCount }) => $dayCount}, minmax(0, 1fr));
 	flex-grow: 1;
 	font-size: ${theme.typography.fontSize.body.md};
 	box-sizing: border-box;
@@ -85,39 +82,65 @@ export const Table = styled.div`
 `;
 
 export const Column = styled.div`
-	width: 100%;
 	display: flex;
 	flex-direction: column;
-`;
-
-export const Slots = styled.div`
-	cursor: pointer;
-`;
-
-export const SlotGroup = styled.div`
-	box-sizing: border-box;
-	height: 40px;
-	display: flex;
-	flex-direction: column;
-	border-bottom: 0.5px solid ${theme.color.border.tertiary};
 	border-right: 0.7px solid ${theme.color.border.tertiary};
 	background-color: ${theme.color.bg.primary};
+	box-sizing: border-box;
 `;
 
-export const Slot = styled.div<{ isSelected: boolean }>`
+const slotBase = css`
 	height: 20px;
-	background-color: ${({ isSelected }) =>
-		isSelected ? theme.color.bg.iSelected : 'transparent'};
-	cursor: pointer;
+	box-sizing: border-box;
+
+	border-top: 1px dashed ${theme.color.border.tertiary};
+
+	&[data-hour-start] {
+		border-top: 0.5px solid ${theme.color.border.tertiary};
+	}
+
+	&:first-child {
+		border-top: none;
+	}
 `;
+
+export const Slot = styled.div`
+	${slotBase}
+	cursor: pointer;
+	touch-action: none;
+	position: relative;
+
+	&::after {
+		content: '';
+		position: absolute;
+		inset: 0;
+		opacity: 0;
+		will-change: opacity;
+		transition: opacity 0.15s cubic-bezier(0.2, 0, 0, 1);
+		pointer-events: none;
+		background-color: ${theme.color.bg.iSelected};
+	}
+
+	&.selected::after {
+		opacity: 1;
+	}
+
+	&.isPast {
+		pointer-events: none;
+		background-color: ${theme.color.bg.disabled};
+	}
+`;
+
 export const HeaderContainer = styled.div`
 	display: flex;
 	flex-grow: 1;
 	box-sizing: border-box;
+	user-select: none;
 `;
 
 export const TimeHeader = styled.div`
 	display: flex;
+	flex-shrink: 0;
 	align-items: center;
 	justify-content: center;
 	height: 42px;
@@ -125,10 +148,12 @@ export const TimeHeader = styled.div`
 	padding-right: ${theme.units.spacing.space4};
 `;
 
-export const HeaderWrapper = styled.div`
-	display: flex;
+export const HeaderWrapper = styled.div<{ $dayCount: number }>`
+	display: grid;
+	grid-template-columns: repeat(${({ $dayCount }) => $dayCount}, minmax(0, 1fr));
 	flex-grow: 1;
 	box-sizing: border-box;
+	padding-bottom: ${theme.units.spacing.space4};
 `;
 
 export const Header = styled.div`
@@ -136,25 +161,21 @@ export const Header = styled.div`
 	flex-direction: column;
 	align-items: center;
 	justify-content: center;
-	width: 100%;
 	height: 42px;
-	gap: ${theme.units.spacing.space4};
+	gap: ${theme.units.spacing.space8};
 `;
 
-export const DayOfWeek = styled.div`
+export const Day = styled.div`
 	font-size: ${theme.typography.fontSize.body.md};
 `;
 
-export const DayOfMonth = styled.div`
+export const Date = styled.div`
 	font-size: ${theme.typography.fontSize.body.sm};
 	color: ${theme.color.text.secondary};
 `;
 
-export const AvailabilitySlot = styled.div<{ slotColor: string }>`
-	height: 20px;
-	background-color: ${({ slotColor }) => slotColor || 'transparent'};
-
-	&:hover {
-		border: 2px dotted ${theme.color.border.iSecondaryHover};
-	}
+export const AvailabilitySlot = styled.div<{ $slotColor: string; $hasParticipants: boolean }>`
+	${slotBase}
+	background-color: ${({ $slotColor }) => $slotColor || 'transparent'};
+	cursor: ${({ $hasParticipants }) => ($hasParticipants ? 'pointer' : 'default')};
 `;
