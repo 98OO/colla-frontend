@@ -31,9 +31,13 @@ const useChatMessages = (props: useChatMessagesProps) => {
 		if (!latestMessageId || !userStatus || !stompClient) return;
 		if (lastReadMessageIdRef.current === latestMessageId) return;
 
-		stompClient.send(
-			END_POINTS.READ_MESSAGE(userStatus.profile.lastSeenTeamspaceId, selectedChat, latestMessageId)
-		);
+		stompClient.publish({
+			destination: END_POINTS.READ_MESSAGE(
+				userStatus.profile.lastSeenTeamspaceId,
+				selectedChat,
+				latestMessageId
+			),
+		});
 		lastReadMessageIdRef.current = latestMessageId;
 	}, [messagePages, selectedChat, stompClient, userStatus]);
 

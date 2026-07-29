@@ -66,12 +66,12 @@ const GNB = () => {
 			const newChatMessageSubscribe = stompClient?.subscribe(
 				END_POINTS.RECEIVE_MESSAGE(userStatus.profile.lastSeenTeamspaceId),
 				() => {
-					stompClient.send(
-						END_POINTS.SEND_CHAT_CHANNEL_LIST(
+					stompClient.publish({
+						destination: END_POINTS.SEND_CHAT_CHANNEL_LIST(
 							userStatus.profile.lastSeenTeamspaceId,
 							userStatus.profile.userId
-						)
-					);
+						),
+					});
 				}
 			);
 

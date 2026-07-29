@@ -20,19 +20,16 @@ const useChatSubscription = (props: useChatSubscriptionProps) => {
 	useEffect(() => {
 		if (selectedChat && userStatus) {
 			const newChatSubscribe = stompClient?.subscribe(
-				END_POINTS.SUBSCRIBE(
-					userStatus.profile.lastSeenTeamspaceId,
-					selectedChat
-				),
+				END_POINTS.SUBSCRIBE(userStatus.profile.lastSeenTeamspaceId, selectedChat),
 				(message) => {
 					const parsedMessage = JSON.parse(message.body);
-					stompClient?.send(
-						END_POINTS.READ_MESSAGE(
+					stompClient?.publish({
+						destination: END_POINTS.READ_MESSAGE(
 							userStatus.profile.lastSeenTeamspaceId,
 							selectedChat,
 							parsedMessage.id
-						)
-					);
+						),
+					});
 
 					handleCheckScroll(parsedMessage);
 				}

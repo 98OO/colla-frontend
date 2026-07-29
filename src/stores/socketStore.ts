@@ -1,7 +1,7 @@
-import { CompatClient, Stomp } from '@stomp/stompjs';
+import { Client } from '@stomp/stompjs';
 import SockJS from 'sockjs-client';
 import { create } from 'zustand';
-import { WEBSOCKET_URL } from '@constants/api';
+import { WEBSOCKET_RECONNECT_DELAY, WEBSOCKET_URL } from '@constants/api';
 
 interface ChatChannel {
 	id: number;
@@ -12,8 +12,8 @@ interface ChatChannel {
 }
 
 type socketStore = {
-	stompClient: CompatClient | null;
-	setStompClient: (client: CompatClient | null) => void;
+	stompClient: Client | null;
+	setStompClient: (client: Client | null) => void;
 	connect: (accessToken: string) => void;
 	disconnect: () => void;
 	chatMessageCount: number | null;
@@ -28,12 +28,17 @@ const useSocketStore = create<socketStore>((set, get) => ({
 	connect: (accessToken) => {
 		if (get().stompClient?.connected) return;
 
-		const client = Stomp.over(() => new SockJS(`${WEBSOCKET_URL}${accessToken}`));
-		client.debug = () => {};
-		client.connect({}, () => set({ stompClient: client }));
+		const client = new Client({
+			webSocketFactory: () => new SockJS(`${WEBSOCKET_URL}${accessToken}`),
+			reconnectDelay: WEBSOCKET_RECONNECT_DELAY,
+			onConnect: () => set({ stompClient: client }),
+			debug: () => {},
+		});
+
+		client.activate();
 	},
 	disconnect: () => {
-		get().stompClient?.disconnect();
+		get().stompClient?.deactivate();
 		set({
 			stompClient: null,
 			chatMessageCount: null,

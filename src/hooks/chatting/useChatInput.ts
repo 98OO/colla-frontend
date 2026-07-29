@@ -27,16 +27,15 @@ const useChatInput = (props: useChatInputProps) => {
 
 	const handleText = () => {
 		if (userStatus) {
-			stompClient?.send(
-				END_POINTS.SEND_MESSAGE(userStatus.profile.lastSeenTeamspaceId, selectedChat),
-				{},
-				JSON.stringify({
+			stompClient?.publish({
+				destination: END_POINTS.SEND_MESSAGE(userStatus.profile.lastSeenTeamspaceId, selectedChat),
+				body: JSON.stringify({
 					chatType: 'TEXT',
 					content: chatMessage,
 					images: [],
 					attachments: [],
-				})
-			);
+				}),
+			});
 		}
 
 		setChatMessage('');
@@ -63,10 +62,12 @@ const useChatInput = (props: useChatInputProps) => {
 					userStatus?.profile.lastSeenTeamspaceId
 				);
 				if (imageUrl && userStatus) {
-					stompClient?.send(
-						END_POINTS.SEND_MESSAGE(userStatus.profile.lastSeenTeamspaceId, selectedChat),
-						{},
-						JSON.stringify({
+					stompClient?.publish({
+						destination: END_POINTS.SEND_MESSAGE(
+							userStatus.profile.lastSeenTeamspaceId,
+							selectedChat
+						),
+						body: JSON.stringify({
 							chatType: 'IMAGE',
 							content: null,
 							images: [
@@ -77,8 +78,8 @@ const useChatInput = (props: useChatInputProps) => {
 								},
 							],
 							attachments: [],
-						})
-					);
+						}),
+					});
 				}
 
 				setTimeout(() => {
@@ -102,10 +103,12 @@ const useChatInput = (props: useChatInputProps) => {
 					userStatus?.profile.lastSeenTeamspaceId
 				);
 				if (fileUrl && userStatus) {
-					stompClient?.send(
-						END_POINTS.SEND_MESSAGE(userStatus.profile.lastSeenTeamspaceId, selectedChat),
-						{},
-						JSON.stringify({
+					stompClient?.publish({
+						destination: END_POINTS.SEND_MESSAGE(
+							userStatus.profile.lastSeenTeamspaceId,
+							selectedChat
+						),
+						body: JSON.stringify({
 							chatType: 'FILE',
 							content: null,
 							images: [],
@@ -116,8 +119,8 @@ const useChatInput = (props: useChatInputProps) => {
 									size: inputFileRef.current?.files[0].size,
 								},
 							],
-						})
-					);
+						}),
+					});
 				}
 
 				setTimeout(() => {

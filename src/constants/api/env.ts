@@ -16,3 +16,5 @@ export const AUTH_API_URL = {
 };
 
 export const WEBSOCKET_URL = `${import.meta.env.VITE_SOCKET_URL}?accessToken=`;
+
+export const WEBSOCKET_RECONNECT_DELAY = 5_000;
