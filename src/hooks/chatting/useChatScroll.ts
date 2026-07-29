@@ -8,14 +8,16 @@ interface useChatScrollProps {
 	chatHistory: ChatData | null;
 	chatRef: React.RefObject<HTMLDivElement>;
 	setChatHistory: React.Dispatch<React.SetStateAction<ChatData | null>>;
+	reconnectedMessageVersion: number;
 }
 
 const useChatScroll = (props: useChatScrollProps) => {
-	const { userStatus, chatHistory, setChatHistory, chatRef } = props;
+	const { userStatus, chatHistory, setChatHistory, chatRef, reconnectedMessageVersion } = props;
 	const [isScrollAtBottom, setIsScrollAtBottom] = useState(false);
 	const [isInitialScrollComplete, setIsInitialScrollComplete] = useState(false);
 	const [isLatestMessageVisible, setIsLatestMessageVisible] = useState(false);
 	const messageEndRef = useRef<HTMLDivElement | null>(null);
+	const isAtBottomRef = useRef(false);
 
 	useEffect(() => {
 		if (!chatHistory || chatHistory.chatChannelMessages.length === 0 || !isScrollAtBottom) {
@@ -32,8 +34,20 @@ const useChatScroll = (props: useChatScrollProps) => {
 		}
 
 		messageEndRef.current?.scrollIntoView();
+		isAtBottomRef.current = true;
 		setIsInitialScrollComplete(true);
 	}, [chatHistory, isInitialScrollComplete]);
+
+	useLayoutEffect(() => {
+		if (reconnectedMessageVersion === 0) return;
+
+		if (isAtBottomRef.current) {
+			messageEndRef.current?.scrollIntoView();
+			return;
+		}
+
+		setIsLatestMessageVisible(true);
+	}, [reconnectedMessageVersion]);
 
 	useEffect(() => {
 		const scrollElement = chatRef.current;
@@ -46,6 +60,7 @@ const useChatScroll = (props: useChatScrollProps) => {
 						scrollElement.scrollHeight - scrollElement.scrollTop - scrollElement.clientHeight <=
 						CHAT_AUTO_SCROLL_LIMIT;
 
+					isAtBottomRef.current = isBottom;
 					if (isBottom) setIsLatestMessageVisible(false);
 					ticking = false;
 				});
@@ -62,16 +77,19 @@ const useChatScroll = (props: useChatScrollProps) => {
 	}, [chatRef]);
 
 	const handleLatestMessageClick = () => {
+		isAtBottomRef.current = true;
 		setIsLatestMessageVisible(false);
 		messageEndRef.current?.scrollIntoView();
 	};
 
 	const handleCheckScroll = (parsedMessage: Message) => {
 		if (userStatus) {
-			const isAutoScroll =
-				chatRef.current &&
-				chatRef.current.scrollHeight - chatRef.current.clientHeight - chatRef.current.scrollTop <=
-					CHAT_AUTO_SCROLL_LIMIT;
+			const isAutoScroll = chatRef.current
+				? chatRef.current.scrollHeight - chatRef.current.clientHeight - chatRef.current.scrollTop <=
+					CHAT_AUTO_SCROLL_LIMIT
+				: false;
+
+			isAtBottomRef.current = isAutoScroll;
 
 			if (parsedMessage.author.id !== userStatus.profile.userId) {
 				if (isAutoScroll) {

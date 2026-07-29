@@ -25,6 +25,7 @@ const Chatting = ({ selectedChat }: { selectedChat: number }) => {
 		isFetchingNextPage,
 		hasNextPage,
 		paginationVersion,
+		reconnectedMessageVersion,
 		setChatHistory,
 		fetchNextPage,
 	} = useChatMessages({
@@ -43,6 +44,7 @@ const Chatting = ({ selectedChat }: { selectedChat: number }) => {
 		chatHistory,
 		setChatHistory,
 		chatRef,
+		reconnectedMessageVersion,
 	});
 
 	const { topSentinelRef } = useChatInfiniteScroll({

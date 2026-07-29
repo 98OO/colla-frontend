@@ -15,9 +15,14 @@ export interface useChatSubscriptionProps {
 const useChatSubscription = (props: useChatSubscriptionProps) => {
 	const { selectedChat, userStatus, handleCheckScroll } = props;
 	const chatSubscribeRef = useRef<StompSubscription | null>(null);
-	const { stompClient } = useSocketStore();
+	const { stompClient, stompConnectionVersion } = useSocketStore();
+	const latestConnectionVersionRef = useRef(stompConnectionVersion);
+
+	latestConnectionVersionRef.current = stompConnectionVersion;
 
 	useEffect(() => {
+		const subscribedConnectionVersion = stompConnectionVersion;
+
 		if (selectedChat && userStatus) {
 			const newChatSubscribe = stompClient?.subscribe(
 				END_POINTS.SUBSCRIBE(userStatus.profile.lastSeenTeamspaceId, selectedChat),
@@ -36,19 +41,28 @@ const useChatSubscription = (props: useChatSubscriptionProps) => {
 			);
 
 			if (newChatSubscribe) chatSubscribeRef.current = newChatSubscribe;
+
+			if (stompConnectionVersion > 1) {
+				queryClient.resetQueries({
+					queryKey: ['chatMessage', selectedChat, userStatus.profile.lastSeenTeamspaceId],
+					exact: true,
+				});
+			}
 		}
 
 		return () => {
-			if (chatSubscribeRef.current) {
-				chatSubscribeRef.current.unsubscribe();
-				chatSubscribeRef.current = null;
+			if (latestConnectionVersionRef.current === subscribedConnectionVersion) {
+				chatSubscribeRef.current?.unsubscribe();
+
+				queryClient.removeQueries({
+					queryKey: ['chatMessage', selectedChat, userStatus?.profile.lastSeenTeamspaceId],
+					exact: true,
+				});
 			}
 
-			queryClient.removeQueries({
-				queryKey: ['chatMessage', selectedChat],
-			});
+			chatSubscribeRef.current = null;
 		};
-	}, [selectedChat, stompClient]);
+	}, [selectedChat, stompClient, stompConnectionVersion]);
 };
 
 export default useChatSubscription;
