@@ -1,5 +1,6 @@
 import { useEffect, useRef } from 'react';
 import type { ReactNode } from 'react';
+import { useErrorBoundary } from 'react-error-boundary';
 import { matchPath } from 'react-router-dom';
 import { clearClientSession } from '@apis/auth/sessionActions';
 import { restoreSession } from '@apis/auth/sessionRestore';
@@ -14,13 +15,15 @@ interface AuthSessionManagerProps {
 }
 
 const useRestoreSessionOnMount = () => {
+	const { showBoundary } = useErrorBoundary();
+
 	useEffect(() => {
 		const isOAuthCallback = matchPath(`${PATH.REDIRECT}/:provider`, window.location.pathname);
 
 		if (isOAuthCallback) return;
 
-		restoreSession();
-	}, []);
+		restoreSession().catch(showBoundary);
+	}, [showBoundary]);
 };
 
 const useSyncSessionAcrossTabs = () => {

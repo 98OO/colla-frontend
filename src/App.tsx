@@ -1,4 +1,3 @@
-import AuthSessionManager from '@components/common/Auth/AuthSessionManager';
 import { queryClient } from '@hooks/queries/common/queryClient';
 import { QueryClientProvider } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
@@ -11,9 +10,7 @@ const App = () => (
 	<ThemeProvider theme={theme}>
 		<QueryClientProvider client={queryClient}>
 			<GlobalStyle />
-			<AuthSessionManager>
-				<AppRouter />
-			</AuthSessionManager>
+			<AppRouter />
 			<ReactQueryDevtools />
 		</QueryClientProvider>
 	</ThemeProvider>
