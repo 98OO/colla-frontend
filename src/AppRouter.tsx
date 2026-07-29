@@ -2,6 +2,7 @@ import type { RouteObject } from 'react-router-dom';
 import { RouterProvider, createBrowserRouter } from 'react-router-dom';
 import AuthGuard from '@components/common/Auth/AuthGuard';
 import GuestOnlyGuard from '@components/common/Auth/GuestOnlyGuard';
+import RoleGuard from '@components/common/Auth/RoleGuard';
 import ChatPage from '@pages/ChatPage/ChatPage';
 import DocumentPage from '@pages/DocumentPage/DocumentPage';
 import EntryPage from '@pages/EntryPage/EntryPage';
@@ -51,7 +52,10 @@ const appRoutes: RouteObject[] = [
 					{
 						element: <NavigationLayout />,
 						children: [
-							{ path: PATH.SETTING, element: <SettingPage /> },
+							{
+								element: <RoleGuard requiredRole='LEADER' />,
+								children: [{ path: PATH.SETTING, element: <SettingPage /> }],
+							},
 							{ path: PATH.MYPAGE, element: <MyPage /> },
 							{ path: PATH.FEED, element: <FeedPage /> },
 							{ path: PATH.POST, element: <PostPage /> },

@@ -8,6 +8,8 @@ export interface NewToken {
 	message: string;
 }
 
+export type TeamRole = 'LEADER' | 'MEMBER';
+
 export interface UserProfile {
 	userId: number;
 	username: string;
@@ -22,7 +24,7 @@ interface ParticipatedTeamspace {
 	teamspaceId: number;
 	name: string;
 	profileImageUrl: string;
-	teamspaceRole: string;
+	teamspaceRole: TeamRole;
 	numOfParticipants: number;
 	unreadMessageCount: number;
 }
@@ -42,7 +44,7 @@ export interface TeamSpaceUser {
 	profileImageUrl: string;
 	username: string;
 	email: string;
-	role: 'LEADER' | 'MEMBER';
+	role: TeamRole;
 	tag: Tag | null;
 }
 
