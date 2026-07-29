@@ -24,11 +24,11 @@ export const invalidateSession = (code: number, requestSessionVersion: number) =
 	clearClientSession();
 };
 
-export const signIn = (accessToken: string) => {
+export const signIn = (accessToken: string, hasTeam: boolean) => {
 	clearSessionCache();
 
 	window.localStorage.removeItem(AUTH_RESTORE_DISABLED_KEY);
-	useAuthStore.getState().initializeSession(accessToken);
+	useAuthStore.getState().initializeSession(accessToken, hasTeam);
 };
 
 export const signOut = () => {
