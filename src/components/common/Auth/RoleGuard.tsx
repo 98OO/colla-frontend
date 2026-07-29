@@ -1,5 +1,5 @@
 import { Navigate, Outlet } from 'react-router-dom';
-import useUserStatusQuery from '@hooks/queries/useUserStatusQuery';
+import useCurrentTeamRole from '@hooks/auth/useCurrentTeamRole';
 import { HTTPError } from '@apis/HTTPError';
 import { HTTP_STATUS_CODE } from '@constants/api';
 import { PATH } from '@constants/path';
@@ -10,12 +10,7 @@ interface RoleGuardProps {
 }
 
 const RoleGuard = ({ requiredRole }: RoleGuardProps) => {
-	const { userStatus } = useUserStatusQuery();
-
-	const currentTeam = userStatus?.participatedTeamspaces.find(
-		(teamspace) => teamspace.teamspaceId === userStatus.profile.lastSeenTeamspaceId
-	);
-	const currentTeamRole = currentTeam?.teamspaceRole ?? null;
+	const { userStatus, currentTeamRole } = useCurrentTeamRole();
 
 	if (userStatus === undefined) return null;
 	if (currentTeamRole === null) return <Navigate to={PATH.ENTRY} replace />;
