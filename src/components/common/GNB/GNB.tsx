@@ -27,7 +27,8 @@ const GNB = () => {
 	const { toggleMenu: handleTeamInfo, showMenu: showTeamInfo } = useMenu();
 	const { toggleMenu: handleProfile, showMenu: showProfile } = useMenu();
 	const baseRef = useRef<HTMLDivElement>(null);
-	const { stompClient, increaseChatMessageCount, setChatChannelList } = useSocketStore();
+	const { stompClient, stompConnectionVersion, increaseChatMessageCount, setChatChannelList } =
+		useSocketStore();
 	const [position, setPosition] = useState(0);
 
 	const updatePosition = () => {
@@ -43,10 +44,15 @@ const GNB = () => {
 		chatChannelListSubscribe: null,
 		chatMessageSubscribe: null,
 	});
+	const latestConnectionVersionRef = useRef(stompConnectionVersion);
+
+	latestConnectionVersionRef.current = stompConnectionVersion;
 
 	useEffect(() => {
-		if (userStatus) {
-			const newChatChannelListSubscribe = stompClient?.subscribe(
+		const subscribedConnectionVersion = stompConnectionVersion;
+
+		if (userStatus && stompClient) {
+			const newChatChannelListSubscribe = stompClient.subscribe(
 				END_POINTS.CHAT_CHANNEL_LIST(
 					userStatus.profile.lastSeenTeamspaceId,
 					userStatus.profile.userId
@@ -63,7 +69,7 @@ const GNB = () => {
 				}
 			);
 
-			const newChatMessageSubscribe = stompClient?.subscribe(
+			const newChatMessageSubscribe = stompClient.subscribe(
 				END_POINTS.RECEIVE_MESSAGE(userStatus.profile.lastSeenTeamspaceId),
 				() => {
 					stompClient.publish({
@@ -80,21 +86,29 @@ const GNB = () => {
 
 			if (newChatMessageSubscribe)
 				chatChannelsSubscribeRef.current.chatMessageSubscribe = newChatMessageSubscribe;
+
+			if (stompConnectionVersion > 1) {
+				stompClient.publish({
+					destination: END_POINTS.SEND_CHAT_CHANNEL_LIST(
+						userStatus.profile.lastSeenTeamspaceId,
+						userStatus.profile.userId
+					),
+				});
+			}
 		}
 
 		return () => {
-			if (chatChannelsSubscribeRef.current.chatChannelListSubscribe)
-				chatChannelsSubscribeRef.current.chatChannelListSubscribe.unsubscribe();
-
-			if (chatChannelsSubscribeRef.current.chatMessageSubscribe)
-				chatChannelsSubscribeRef.current.chatMessageSubscribe.unsubscribe();
+			if (latestConnectionVersionRef.current === subscribedConnectionVersion) {
+				chatChannelsSubscribeRef.current.chatChannelListSubscribe?.unsubscribe();
+				chatChannelsSubscribeRef.current.chatMessageSubscribe?.unsubscribe();
+			}
 
 			chatChannelsSubscribeRef.current = {
 				chatChannelListSubscribe: null,
 				chatMessageSubscribe: null,
 			};
 		};
-	}, [userStatus, stompClient]);
+	}, [userStatus, stompClient, stompConnectionVersion]);
 
 	useEffect(() => {
 		if (userStatus?.profile.lastSeenTeamspaceId === null && userStatus)
