@@ -3,6 +3,7 @@ import { Button } from '@components/common/Button/Button';
 import Divider from '@components/common/Divider/Divider';
 import Flex from '@components/common/Flex/Flex';
 import Heading from '@components/common/Heading/Heading';
+import SanitizedHtml from '@components/common/SanitizedHtml/SanitizedHtml';
 import FeedAuthor from '@components/Feed/FeedAuthors/FeedAuthor';
 import Editor from '@components/Post/Editor/Editor';
 import usePostEditor from '@hooks/post/usePostEditor';
@@ -22,11 +23,7 @@ const SubTaskDetail = ({ subTaskAuthor, feedId }: SubTaskPostProps) => {
 	const { id } = subTaskAuthor;
 	const { editorRef, appendImageFile } = usePostEditor();
 	const { userStatus } = useUserStatusQuery();
-	const { subTask } = useCollectSubTaskQuery(
-		userStatus?.profile.lastSeenTeamspaceId,
-		feedId,
-		id
-	);
+	const { subTask } = useCollectSubTaskQuery(userStatus?.profile.lastSeenTeamspaceId, feedId, id);
 	const [title, setTitle] = useState<string | null>(null);
 	const { mutateCollectSubTask } = useCollectSubTaskMutation(
 		userStatus?.profile.lastSeenTeamspaceId,
@@ -66,12 +63,7 @@ const SubTaskDetail = ({ subTaskAuthor, feedId }: SubTaskPostProps) => {
 					/>
 					<Editor editorRef={editorRef} appendImageFile={appendImageFile} />
 					<Flex justify='flex-end'>
-						<Button
-							label='수정'
-							variant='primary'
-							size='md'
-							onClick={handleSubmitSubTask}
-						/>
+						<Button label='수정' variant='primary' size='md' onClick={handleSubmitSubTask} />
 					</Flex>
 				</S.SubTaskPostContainer>
 			) : (
@@ -88,9 +80,7 @@ const SubTaskDetail = ({ subTaskAuthor, feedId }: SubTaskPostProps) => {
 							{subTask.title && <Heading size='xs'>{subTask.title}</Heading>}
 							<Divider size='sm' />
 							<S.DetailWrapper>
-								<div
-									dangerouslySetInnerHTML={{ __html: subTask.content || '' }}
-								/>
+								<SanitizedHtml html={subTask.content} />
 							</S.DetailWrapper>
 						</Flex>
 					</Flex>

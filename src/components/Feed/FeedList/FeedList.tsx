@@ -1,7 +1,6 @@
 import InfiniteScroll from 'react-infinite-scroller';
 import Feed from '@components/Feed/Feed';
 import useFeedsQuery from '@hooks/queries/Feed/useFeedsQuery';
-import { getSanitizedFeeds } from '@utils/getSanitizedFeeds';
 import type { FeedData, FeedType } from '@type/feed';
 
 interface FeedListProps {
@@ -26,9 +25,7 @@ const FeedList = ({ teamspaceId, type, isDrawerOpen, openDrawer, closeDrawer }: 
 			hasMore={hasNextPage}
 			useWindow={false}>
 			{feeds.pages.map((pageData) => {
-				const sanitizedFeeds = getSanitizedFeeds(pageData.content.feeds);
-
-				return sanitizedFeeds.map((feedData: FeedData) => {
+				return pageData.content.feeds.map((feedData: FeedData) => {
 					const { feedId } = feedData;
 
 					return (

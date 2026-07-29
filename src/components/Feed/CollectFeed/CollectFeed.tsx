@@ -1,6 +1,7 @@
 import { Button } from '@components/common/Button/Button';
 import Flex from '@components/common/Flex/Flex';
 import Icon from '@components/common/Icon/Icon';
+import SanitizedHtml from '@components/common/SanitizedHtml/SanitizedHtml';
 import Text from '@components/common/Text/Text';
 import BaseFeed from '@components/Feed/BaseFeed/BaseFeed';
 import SubTask from '@components/Feed/CollectFeed/SubTask/SubTask';
@@ -18,12 +19,7 @@ interface CollectFeedProps {
 	closeDetail: () => void;
 }
 
-const CollectFeed = ({
-	feedData,
-	isDetailOpen,
-	openDetail,
-	closeDetail,
-}: CollectFeedProps) => {
+const CollectFeed = ({ feedData, isDetailOpen, openDetail, closeDetail }: CollectFeedProps) => {
 	const { details, createdAt } = feedData;
 	const { content } = details;
 	const { showMoreButton, detailRef } = useDetailObserver(content);
@@ -59,7 +55,7 @@ const CollectFeed = ({
 				</Flex>
 				{details && (
 					<S.DetailWrapper ref={detailRef} hasMoreButton={showMoreButton}>
-						<div dangerouslySetInnerHTML={{ __html: details.content || '' }} />
+						<SanitizedHtml html={details.content} />
 					</S.DetailWrapper>
 				)}
 				{showMoreButton && (

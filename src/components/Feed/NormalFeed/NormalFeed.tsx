@@ -1,5 +1,6 @@
 import { Button } from '@components/common/Button/Button';
 import Flex from '@components/common/Flex/Flex';
+import SanitizedHtml from '@components/common/SanitizedHtml/SanitizedHtml';
 import BaseFeed from '@components/Feed/BaseFeed/BaseFeed';
 import NormalDetail from '@components/Feed/Detail/Normal/NormalDetail';
 import useDetailObserver from '@hooks/feed/useDetailObserver';
@@ -13,12 +14,7 @@ interface NormalFeedProps {
 	closeDetail: () => void;
 }
 
-const NormalFeed = ({
-	feedData,
-	isDetailOpen,
-	openDetail,
-	closeDetail,
-}: NormalFeedProps) => {
+const NormalFeed = ({ feedData, isDetailOpen, openDetail, closeDetail }: NormalFeedProps) => {
 	const { details } = feedData;
 	const { content } = details;
 	const { showMoreButton, detailRef } = useDetailObserver(content);
@@ -32,18 +28,12 @@ const NormalFeed = ({
 			renderDetail={() => <NormalDetail feedData={feedData} />}>
 			{details && (
 				<S.DetailWrapper ref={detailRef} hasMoreButton={showMoreButton}>
-					<div dangerouslySetInnerHTML={{ __html: details.content || '' }} />
+					<SanitizedHtml html={details.content} />
 				</S.DetailWrapper>
 			)}
 			{showMoreButton && (
 				<Flex>
-					<Button
-						type='button'
-						size='sm'
-						variant='secondary'
-						label='더보기'
-						onClick={openDetail}
-					/>
+					<Button type='button' size='sm' variant='secondary' label='더보기' onClick={openDetail} />
 				</Flex>
 			)}
 		</BaseFeed>
