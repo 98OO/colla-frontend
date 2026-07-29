@@ -11,6 +11,8 @@ interface ChatChannel {
 	unreadMessageCount: number;
 }
 
+let pendingStompClient: Client | null = null;
+
 type socketStore = {
 	stompClient: Client | null;
 	setStompClient: (client: Client | null) => void;
@@ -26,19 +28,29 @@ const useSocketStore = create<socketStore>((set, get) => ({
 	stompClient: null,
 	setStompClient: (client) => set({ stompClient: client }),
 	connect: (accessToken) => {
-		if (get().stompClient?.connected) return;
+		if (get().stompClient?.active || pendingStompClient?.active) return;
 
 		const client = new Client({
 			webSocketFactory: () => new SockJS(`${WEBSOCKET_URL}${accessToken}`),
 			reconnectDelay: WEBSOCKET_RECONNECT_DELAY,
-			onConnect: () => set({ stompClient: client }),
+			onConnect: () => {
+				if (pendingStompClient !== client) return;
+
+				pendingStompClient = null;
+				set({ stompClient: client });
+			},
 			debug: () => {},
 		});
 
+		pendingStompClient = client;
 		client.activate();
 	},
 	disconnect: () => {
-		get().stompClient?.deactivate();
+		const client = get().stompClient ?? pendingStompClient;
+
+		pendingStompClient = null;
+		client?.deactivate();
+
 		set({
 			stompClient: null,
 			chatMessageCount: null,
