@@ -20,7 +20,7 @@ const useChatMessages = (props: useChatMessagesProps) => {
 	const processedPageCountRef = useRef(0);
 	const previousConnectionVersionRef = useRef(0);
 	const shouldHandleReconnectedMessagesRef = useRef(false);
-	const { stompClient, stompConnectionVersion } = useSocketStore();
+	const { stompClient, stompConnectionVersion, connectionStatus } = useSocketStore();
 	const { messages, fetchNextPage, hasNextPage, isFetchingNextPage } = useChatMessageQuery(
 		selectedChat,
 		userStatus?.profile.lastSeenTeamspaceId
@@ -41,7 +41,13 @@ const useChatMessages = (props: useChatMessagesProps) => {
 		const latestMessages = messagePages[0]?.chatChannelMessages ?? [];
 		const latestMessageId = latestMessages[0]?.id;
 
-		if (!latestMessageId || !userStatus || !stompClient) return;
+		if (
+			!latestMessageId ||
+			!userStatus ||
+			connectionStatus !== 'connected' ||
+			!stompClient?.connected
+		)
+			return;
 		if (lastReadMessageIdRef.current === latestMessageId) return;
 
 		stompClient.publish({
@@ -52,7 +58,7 @@ const useChatMessages = (props: useChatMessagesProps) => {
 			),
 		});
 		lastReadMessageIdRef.current = latestMessageId;
-	}, [messagePages, selectedChat, stompClient, userStatus]);
+	}, [messagePages, selectedChat, stompClient, connectionStatus, userStatus]);
 
 	useEffect(() => {
 		if (!messagePages) return;

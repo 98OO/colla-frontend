@@ -28,13 +28,17 @@ const useChatSubscription = (props: useChatSubscriptionProps) => {
 				END_POINTS.SUBSCRIBE(userStatus.profile.lastSeenTeamspaceId, selectedChat),
 				(message) => {
 					const parsedMessage = JSON.parse(message.body);
-					stompClient?.publish({
-						destination: END_POINTS.READ_MESSAGE(
-							userStatus.profile.lastSeenTeamspaceId,
-							selectedChat,
-							parsedMessage.id
-						),
-					});
+					const { stompClient: currentStompClient, connectionStatus } = useSocketStore.getState();
+
+					if (connectionStatus === 'connected' && currentStompClient?.connected) {
+						currentStompClient.publish({
+							destination: END_POINTS.READ_MESSAGE(
+								userStatus.profile.lastSeenTeamspaceId,
+								selectedChat,
+								parsedMessage.id
+							),
+						});
+					}
 
 					handleCheckScroll(parsedMessage);
 				}
