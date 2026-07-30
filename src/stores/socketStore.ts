@@ -3,6 +3,8 @@ import SockJS from 'sockjs-client';
 import { create } from 'zustand';
 import { WEBSOCKET_RECONNECT_DELAY, WEBSOCKET_URL } from '@constants/api';
 
+type SocketConnectionStatus = 'connecting' | 'connected' | 'reconnecting' | 'disconnected';
+
 interface ChatChannel {
 	id: number;
 	name: string;
@@ -16,6 +18,7 @@ let pendingStompClient: Client | null = null;
 type socketStore = {
 	stompClient: Client | null;
 	stompConnectionVersion: number;
+	connectionStatus: SocketConnectionStatus;
 	setStompClient: (client: Client | null) => void;
 	connect: (accessToken: string) => void;
 	disconnect: () => void;
@@ -28,9 +31,12 @@ type socketStore = {
 const useSocketStore = create<socketStore>((set, get) => ({
 	stompClient: null,
 	stompConnectionVersion: 0,
+	connectionStatus: 'disconnected',
 	setStompClient: (client) => set({ stompClient: client }),
 	connect: (accessToken) => {
 		if (get().stompClient?.active || pendingStompClient?.active) return;
+
+		set({ connectionStatus: 'connecting' });
 
 		const client = new Client({
 			webSocketFactory: () => new SockJS(`${WEBSOCKET_URL}${accessToken}`),
@@ -42,7 +48,23 @@ const useSocketStore = create<socketStore>((set, get) => ({
 				set((state) => ({
 					stompClient: client,
 					stompConnectionVersion: state.stompConnectionVersion + 1,
+					connectionStatus: 'connected',
 				}));
+			},
+			onWebSocketClose: () => {
+				if (pendingStompClient !== client && get().stompClient !== client) return;
+
+				set({ connectionStatus: client.active ? 'reconnecting' : 'disconnected' });
+			},
+			onWebSocketError: () => {
+				if (pendingStompClient !== client && get().stompClient !== client) return;
+
+				set({ connectionStatus: client.active ? 'reconnecting' : 'disconnected' });
+			},
+			onStompError: () => {
+				if (pendingStompClient !== client && get().stompClient !== client) return;
+
+				set({ connectionStatus: client.active ? 'reconnecting' : 'disconnected' });
 			},
 			debug: () => {},
 		});
@@ -59,6 +81,7 @@ const useSocketStore = create<socketStore>((set, get) => ({
 		set({
 			stompClient: null,
 			stompConnectionVersion: 0,
+			connectionStatus: 'disconnected',
 			chatMessageCount: null,
 			chatChannelList: [],
 		});

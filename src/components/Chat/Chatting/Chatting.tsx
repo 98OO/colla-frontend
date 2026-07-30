@@ -58,6 +58,7 @@ const Chatting = ({ selectedChat }: { selectedChat: number }) => {
 
 	const {
 		chatMessage,
+		isSendAvailable,
 		inputImageRef,
 		inputFileRef,
 		handleMessageChange,
@@ -184,6 +185,7 @@ const Chatting = ({ selectedChat }: { selectedChat: number }) => {
 							ariaLabel='image'
 							color='secondary'
 							size='md'
+							disabled={!isSendAvailable}
 							onClick={handleImageUploadClick}
 						/>
 						<S.ImgUploadWrapper
@@ -197,6 +199,7 @@ const Chatting = ({ selectedChat }: { selectedChat: number }) => {
 							ariaLabel='file'
 							color='secondary'
 							size='md'
+							disabled={!isSendAvailable}
 							onClick={handleFileUploadClick}
 						/>
 						<S.ImgUploadWrapper type='file' onChange={handleFileChange} ref={inputFileRef} />
@@ -211,7 +214,7 @@ const Chatting = ({ selectedChat }: { selectedChat: number }) => {
 								variant='primary'
 								size='sm'
 								isFull
-								disabled={chatMessage.trimStart().length === 0}
+								disabled={chatMessage.trimStart().length === 0 || !isSendAvailable}
 								onClick={handleText}
 							/>
 						</Flex>

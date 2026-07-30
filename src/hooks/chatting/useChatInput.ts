@@ -16,9 +16,20 @@ const useChatInput = (props: useChatInputProps) => {
 	const [chatMessage, setChatMessage] = useState('');
 	const inputImageRef = useRef<HTMLInputElement | null>(null);
 	const inputFileRef = useRef<HTMLInputElement | null>(null);
-	const { stompClient } = useSocketStore();
+	const { stompClient, connectionStatus } = useSocketStore();
 	const { makeToast } = useToastStore();
 	const { isFileSizeExceedLimit, uploadFiles } = useFileUpload();
+	const isSendAvailable = connectionStatus === 'connected' && Boolean(stompClient?.connected);
+
+	const getConnectedStompClient = () => {
+		if (connectionStatus !== 'connected' || !stompClient?.connected) return null;
+
+		return stompClient;
+	};
+
+	const handleConnectionUnavailable = () => {
+		makeToast('채팅 서버에 연결 중입니다. 잠시 후 다시 시도해주세요.', 'Warning');
+	};
 
 	const handleMessageChange = (e: ChangeEvent<HTMLTextAreaElement>) => {
 		const { value } = e.target;
@@ -26,8 +37,16 @@ const useChatInput = (props: useChatInputProps) => {
 	};
 
 	const handleText = () => {
+		const connectedStompClient = getConnectedStompClient();
+
+		if (!connectedStompClient) {
+			handleConnectionUnavailable();
+
+			return;
+		}
+
 		if (userStatus) {
-			stompClient?.publish({
+			connectedStompClient.publish({
 				destination: END_POINTS.SEND_MESSAGE(userStatus.profile.lastSeenTeamspaceId, selectedChat),
 				body: JSON.stringify({
 					chatType: 'TEXT',
@@ -51,6 +70,12 @@ const useChatInput = (props: useChatInputProps) => {
 
 	const handleImageChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
 		if (event.target.files && event.target.files[0]) {
+			if (!getConnectedStompClient()) {
+				handleConnectionUnavailable();
+
+				return;
+			}
+
 			if (isFileSizeExceedLimit(event.target.files[0])) {
 				makeToast('이미지 크기는 최대 100MB입니다.', 'Warning');
 				return;
@@ -62,7 +87,15 @@ const useChatInput = (props: useChatInputProps) => {
 					userStatus?.profile.lastSeenTeamspaceId
 				);
 				if (imageUrl && userStatus) {
-					stompClient?.publish({
+					const connectedStompClient = getConnectedStompClient();
+
+					if (!connectedStompClient) {
+						handleConnectionUnavailable();
+
+						return;
+					}
+
+					connectedStompClient.publish({
 						destination: END_POINTS.SEND_MESSAGE(
 							userStatus.profile.lastSeenTeamspaceId,
 							selectedChat
@@ -91,6 +124,12 @@ const useChatInput = (props: useChatInputProps) => {
 
 	const handleFileChange = async (event: ChangeEvent<HTMLInputElement>) => {
 		if (event.target.files && event.target.files[0]) {
+			if (!getConnectedStompClient()) {
+				handleConnectionUnavailable();
+
+				return;
+			}
+
 			if (isFileSizeExceedLimit(event.target.files[0])) {
 				makeToast('파일 크기는 최대 100MB입니다.', 'Warning');
 				return;
@@ -103,7 +142,15 @@ const useChatInput = (props: useChatInputProps) => {
 					userStatus?.profile.lastSeenTeamspaceId
 				);
 				if (fileUrl && userStatus) {
-					stompClient?.publish({
+					const connectedStompClient = getConnectedStompClient();
+
+					if (!connectedStompClient) {
+						handleConnectionUnavailable();
+
+						return;
+					}
+
+					connectedStompClient.publish({
 						destination: END_POINTS.SEND_MESSAGE(
 							userStatus.profile.lastSeenTeamspaceId,
 							selectedChat
@@ -145,6 +192,7 @@ const useChatInput = (props: useChatInputProps) => {
 
 	return {
 		chatMessage,
+		isSendAvailable,
 		inputImageRef,
 		inputFileRef,
 		messageEndRef,
