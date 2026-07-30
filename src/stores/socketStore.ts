@@ -14,6 +14,8 @@ interface ChatChannel {
 }
 
 let pendingStompClient: Client | null = null;
+let socketAccessToken: string | null = null;
+let manualReconnectClient: Client | null = null;
 
 type socketStore = {
 	stompClient: Client | null;
@@ -21,6 +23,7 @@ type socketStore = {
 	connectionStatus: SocketConnectionStatus;
 	setStompClient: (client: Client | null) => void;
 	connect: (accessToken: string) => void;
+	reconnectNow: () => void;
 	disconnect: () => void;
 	chatMessageCount: number | null;
 	increaseChatMessageCount: (number: number | null) => void;
@@ -36,6 +39,7 @@ const useSocketStore = create<socketStore>((set, get) => ({
 	connect: (accessToken) => {
 		if (get().stompClient?.active || pendingStompClient?.active) return;
 
+		socketAccessToken = accessToken;
 		set({ connectionStatus: 'connecting' });
 
 		const client = new Client({
@@ -72,10 +76,32 @@ const useSocketStore = create<socketStore>((set, get) => ({
 		pendingStompClient = client;
 		client.activate();
 	},
+	reconnectNow: () => {
+		const client = get().stompClient ?? pendingStompClient;
+
+		if (!client || client.connected || manualReconnectClient || !socketAccessToken) return;
+
+		manualReconnectClient = client;
+		set({ connectionStatus: 'reconnecting' });
+
+		client.deactivate({ force: true }).finally(() => {
+			if (manualReconnectClient !== client) return;
+
+			manualReconnectClient = null;
+
+			const isCurrentClient = get().stompClient === client || pendingStompClient === client;
+			if (!socketAccessToken || !isCurrentClient) return;
+
+			if (pendingStompClient === client) pendingStompClient = null;
+			get().connect(socketAccessToken);
+		});
+	},
 	disconnect: () => {
 		const client = get().stompClient ?? pendingStompClient;
 
 		pendingStompClient = null;
+		socketAccessToken = null;
+		manualReconnectClient = null;
 		client?.deactivate();
 
 		set({
