@@ -1,11 +1,9 @@
-import type { FeedType } from '@type/feed';
-
-export const FEED_SELECT_MAP: Record<string, FeedType> = {
+export const FEED_SELECT_MAP = {
 	전체: 'ALL',
 	일반: 'NORMAL',
 	자료수집: 'COLLECT',
 	일정조율: 'SCHEDULING',
-};
+} as const;
 
 export const EDITOR_IMAGE_ERROR_MESSAGE = {
 	NO_FILE_SELECTED: '파일이 선택되지 않았습니다. 다시 시도해주세요.',
