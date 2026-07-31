@@ -1,4 +1,5 @@
 import { useCallback, useRef, useState } from 'react';
+import ChatMessageActions from '@components/Chat/ChatMessageActions/ChatMessageActions';
 import LatestMessageBox from '@components/Chat/LatestMessageBox/LatestMessageBox';
 import MyMessageBox from '@components/Chat/MyMessageBox/MyMessageBox';
 import OtherMessageBox from '@components/Chat/OtherMessageBox/OtherMessageBox';
@@ -58,11 +59,13 @@ const Chatting = ({ selectedChat }: { selectedChat: number }) => {
 
 	const {
 		chatMessage,
-		isSendAvailable,
+		failedMessages,
 		inputImageRef,
 		inputFileRef,
 		handleMessageChange,
 		handleText,
+		handleFailedMessageRetry,
+		handleFailedMessageDelete,
 		handleImageUploadClick,
 		handleFileUploadClick,
 		handleImageChange,
@@ -82,6 +85,33 @@ const Chatting = ({ selectedChat }: { selectedChat: number }) => {
 		<S.ChattingContainer>
 			<S.ChattingListContainer ref={handleChatContainerRef}>
 				<S.ChatMessageList>
+					{failedMessages.map((message) => (
+						<MyMessageBox
+							key={message.id}
+							type={message.type}
+							content={message.type === 'TEXT' ? message.content : ''}
+							date={null}
+							file={
+								message.type === 'TEXT'
+									? []
+									: [
+											{
+												id: -Number(message.id.split('-')[0]),
+												filename: message.file.name,
+												url: message.localUrl,
+												size: message.file.size,
+											},
+										]
+							}
+							state
+							actions={
+								<ChatMessageActions
+									onRetry={() => handleFailedMessageRetry(message)}
+									onDelete={() => handleFailedMessageDelete(message.id)}
+								/>
+							}
+						/>
+					))}
 					{chatHistory &&
 						chatHistory.chatChannelMessages.map((msg, index, array) => {
 							const previousMsg = index < array.length - 1 ? array[index + 1] : null;
@@ -185,7 +215,6 @@ const Chatting = ({ selectedChat }: { selectedChat: number }) => {
 							ariaLabel='image'
 							color='secondary'
 							size='md'
-							disabled={!isSendAvailable}
 							onClick={handleImageUploadClick}
 						/>
 						<S.ImgUploadWrapper
@@ -199,7 +228,6 @@ const Chatting = ({ selectedChat }: { selectedChat: number }) => {
 							ariaLabel='file'
 							color='secondary'
 							size='md'
-							disabled={!isSendAvailable}
 							onClick={handleFileUploadClick}
 						/>
 						<S.ImgUploadWrapper type='file' onChange={handleFileChange} ref={inputFileRef} />
@@ -214,7 +242,7 @@ const Chatting = ({ selectedChat }: { selectedChat: number }) => {
 								variant='primary'
 								size='sm'
 								isFull
-								disabled={chatMessage.trimStart().length === 0 || !isSendAvailable}
+								disabled={chatMessage.trimStart().length === 0}
 								onClick={handleText}
 							/>
 						</Flex>

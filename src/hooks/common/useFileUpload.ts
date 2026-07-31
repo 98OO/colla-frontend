@@ -8,7 +8,7 @@ const useFileUpload = () => {
 	const { mutateFileUpload } = useFileUploadMutation();
 
 	const uploadFiles = async (
-		files: FileList,
+		files: FileList | File[],
 		domainType: 'USER' | 'TEAMSPACE',
 		teamspaceId?: number
 	) => {
@@ -23,20 +23,16 @@ const useFileUpload = () => {
 		if (response) {
 			const { fileUploadUrlsDtos } = response;
 
-			const fileUploadInfos = fileUploadUrlsDtos.map(
-				({ presignedUrl }, index) => ({
-					presignedURL: presignedUrl,
-					file: files[index],
-					contentType: files[index].type,
-				})
-			);
+			const fileUploadInfos = fileUploadUrlsDtos.map(({ presignedUrl }, index) => ({
+				presignedURL: presignedUrl,
+				file: files[index],
+				contentType: files[index].type,
+			}));
 
 			try {
 				await mutateFileUpload(fileUploadInfos);
 
-				const attachmentUrls = fileUploadUrlsDtos.map(
-					({ attachmentUrl }) => attachmentUrl
-				);
+				const attachmentUrls = fileUploadUrlsDtos.map(({ attachmentUrl }) => attachmentUrl);
 				return attachmentUrls;
 			} catch (error) {
 				return null;

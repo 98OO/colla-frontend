@@ -57,3 +57,4 @@ export { ReactComponent as ChevronLeft } from './chevron-left.svg';
 export { ReactComponent as ChevronRight } from './chevron-right.svg';
 export { ReactComponent as PDF } from './PDFLogo.svg';
 export { ReactComponent as Clock } from './clock.svg';
+export { ReactComponent as Refresh } from './refresh.svg';

@@ -9,7 +9,10 @@ export const MyMessageBoxContainer = styled.div`
 	gap: ${theme.units.spacing.space8};
 `;
 
-export const MyMessageBoxWrapper = styled.div<{ state: boolean; type: string }>`
+export const MyMessageBoxWrapper = styled.div<{
+	state: boolean;
+	type: string;
+}>`
 	display: flex;
 	align-items: center;
 	justify-content: center;

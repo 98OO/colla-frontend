@@ -1,3 +1,4 @@
+import type { ReactNode } from 'react';
 import ChatAttachments from '@components/Chat/ChatAttachment/ChatAttachments';
 import ChatImageMessage from '@components/Chat/ChatImageMessage/ChatImageMessage';
 import Flex from '@components/common/Flex/Flex';
@@ -11,20 +12,22 @@ export interface MyMessageBoxProps {
 	date: string | null;
 	file: Pick<Attachment, 'filename' | 'url' | 'id' | 'size'>[];
 	state: boolean;
+	actions?: ReactNode;
 }
 
 const MyMessageBox = (props: MyMessageBoxProps) => {
-	const { type, content, date, file, state } = props;
+	const { type, content, date, file, state, actions } = props;
 
 	return (
 		<S.MyMessageBoxContainer>
 			<S.MyMessageBoxSpacer />
 			<S.TimeWrapper>
-				{date && (
-					<Text size='sm' weight='regular' color='subtle'>
-						{date}
-					</Text>
-				)}
+				{actions ??
+					(date && (
+						<Text size='sm' weight='regular' color='subtle'>
+							{date}
+						</Text>
+					))}
 			</S.TimeWrapper>
 			<S.MyMessageBoxWrapper state={state} type={type}>
 				{type === 'TEXT' && (

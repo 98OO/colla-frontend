@@ -24,6 +24,7 @@ const IconButton = ({
 		<S.IconButtonWrapper
 			type='button'
 			aria-label={ariaLabel}
+			title={ariaLabel}
 			onClick={onClick}
 			disabled={disabled}>
 			<Icon name={icon} size={size} color={color} />

@@ -39,4 +39,21 @@ export interface ChatData {
 	chatChannelMessages: Message[];
 }
 
+interface FailedMessageBase {
+	id: string;
+}
+
+export interface FailedTextMessage extends FailedMessageBase {
+	type: 'TEXT';
+	content: string;
+}
+
+export interface FailedAttachmentMessage extends FailedMessageBase {
+	type: 'IMAGE' | 'FILE';
+	file: File;
+	localUrl: string;
+}
+
+export type FailedChatMessage = FailedTextMessage | FailedAttachmentMessage;
+
 export type Orientation = 'landscape' | 'portrait' | 'square';

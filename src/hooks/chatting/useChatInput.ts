@@ -1,8 +1,9 @@
-import { ChangeEvent, useRef, useState, KeyboardEvent } from 'react';
+import { ChangeEvent, KeyboardEvent, useEffect, useRef, useState } from 'react';
 import useFileUpload from '@hooks/common/useFileUpload';
 import useSocketStore from '@stores/socketStore';
 import useToastStore from '@stores/toastStore';
 import { END_POINTS } from '@constants/api';
+import type { FailedChatMessage } from '@type/chat';
 import type { UserInformation } from '@type/user';
 
 interface useChatInputProps {
@@ -11,15 +12,39 @@ interface useChatInputProps {
 	messageEndRef: React.RefObject<HTMLDivElement>;
 }
 
+interface AttachmentMessagePayload {
+	type: 'IMAGE' | 'FILE';
+	file: File;
+}
+
 const useChatInput = (props: useChatInputProps) => {
 	const { selectedChat, userStatus, messageEndRef } = props;
 	const [chatMessage, setChatMessage] = useState('');
+	const [failedMessages, setFailedMessages] = useState<FailedChatMessage[]>([]);
+	const failedMessagesRef = useRef<FailedChatMessage[]>([]);
+	const shouldScrollToFailedMessageRef = useRef(false);
 	const inputImageRef = useRef<HTMLInputElement | null>(null);
 	const inputFileRef = useRef<HTMLInputElement | null>(null);
-	const { stompClient, connectionStatus } = useSocketStore();
+	const { stompClient, connectionStatus, reconnectNow } = useSocketStore();
 	const { makeToast } = useToastStore();
 	const { isFileSizeExceedLimit, uploadFiles } = useFileUpload();
-	const isSendAvailable = connectionStatus === 'connected' && Boolean(stompClient?.connected);
+
+	useEffect(() => {
+		failedMessagesRef.current = failedMessages;
+
+		if (!shouldScrollToFailedMessageRef.current) return;
+
+		shouldScrollToFailedMessageRef.current = false;
+		messageEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+	}, [failedMessages, messageEndRef]);
+
+	useEffect(() => {
+		return () => {
+			failedMessagesRef.current.forEach((message) => {
+				if (message.type !== 'TEXT') URL.revokeObjectURL(message.localUrl);
+			});
+		};
+	}, []);
 
 	const getConnectedStompClient = () => {
 		if (connectionStatus !== 'connected' || !stompClient?.connected) return null;
@@ -27,37 +52,149 @@ const useChatInput = (props: useChatInputProps) => {
 		return stompClient;
 	};
 
-	const handleConnectionUnavailable = () => {
-		makeToast('채팅 서버에 연결 중입니다. 잠시 후 다시 시도해주세요.', 'Warning');
+	const removeFailedMessage = (messageId: string) => {
+		setFailedMessages((prev) => {
+			const failedMessage = prev.find((message) => message.id === messageId);
+
+			if (failedMessage && failedMessage.type !== 'TEXT') {
+				URL.revokeObjectURL(failedMessage.localUrl);
+			}
+
+			return prev.filter((message) => message.id !== messageId);
+		});
 	};
 
-	const handleMessageChange = (e: ChangeEvent<HTMLTextAreaElement>) => {
-		const { value } = e.target;
+	const addFailedTextMessage = (content: string) => {
+		shouldScrollToFailedMessageRef.current = true;
+		setFailedMessages((prev) => [
+			{
+				id: `${Date.now()}-${Math.random()}`,
+				type: 'TEXT',
+				content,
+			},
+			...prev,
+		]);
+	};
+
+	const addFailedAttachmentMessage = (type: 'IMAGE' | 'FILE', file: File) => {
+		shouldScrollToFailedMessageRef.current = true;
+		setFailedMessages((prev) => [
+			{
+				id: `${Date.now()}-${Math.random()}`,
+				type,
+				file,
+				localUrl: URL.createObjectURL(file),
+			},
+			...prev,
+		]);
+	};
+
+	const publishTextMessage = (
+		connectedStompClient: NonNullable<typeof stompClient>,
+		content: string
+	) => {
+		if (!userStatus) return false;
+
+		try {
+			connectedStompClient.publish({
+				destination: END_POINTS.SEND_MESSAGE(userStatus.profile.lastSeenTeamspaceId, selectedChat),
+				body: JSON.stringify({
+					chatType: 'TEXT',
+					content,
+					images: [],
+					attachments: [],
+				}),
+			});
+		} catch {
+			return false;
+		}
+
+		return true;
+	};
+
+	const publishAttachmentMessage = async (
+		connectedStompClient: NonNullable<typeof stompClient>,
+		attachmentMessage: AttachmentMessagePayload
+	) => {
+		const { type, file } = attachmentMessage;
+
+		if (!userStatus) return false;
+
+		const fileUrl = await uploadFiles([file], 'TEAMSPACE', userStatus.profile.lastSeenTeamspaceId);
+		const currentStompClient = getConnectedStompClient();
+
+		if (!fileUrl || !currentStompClient || currentStompClient !== connectedStompClient)
+			return false;
+
+		try {
+			currentStompClient.publish({
+				destination: END_POINTS.SEND_MESSAGE(userStatus.profile.lastSeenTeamspaceId, selectedChat),
+				body: JSON.stringify({
+					chatType: type,
+					content: null,
+					images:
+						type === 'IMAGE'
+							? [
+									{
+										name: file.name,
+										fileUrl: fileUrl[0],
+										size: file.size,
+									},
+								]
+							: [],
+					attachments:
+						type === 'FILE'
+							? [
+									{
+										name: file.name,
+										fileUrl: fileUrl[0],
+										size: file.size,
+									},
+								]
+							: [],
+				}),
+			});
+		} catch {
+			return false;
+		}
+
+		return true;
+	};
+
+	const handleMessageChange = (event: ChangeEvent<HTMLTextAreaElement>) => {
+		const { value } = event.target;
+
 		if (value.length <= 1000) setChatMessage(value);
 	};
 
 	const handleText = () => {
 		const connectedStompClient = getConnectedStompClient();
+		const content = chatMessage;
 
-		if (!connectedStompClient) {
-			handleConnectionUnavailable();
-
-			return;
-		}
-
-		if (userStatus) {
-			connectedStompClient.publish({
-				destination: END_POINTS.SEND_MESSAGE(userStatus.profile.lastSeenTeamspaceId, selectedChat),
-				body: JSON.stringify({
-					chatType: 'TEXT',
-					content: chatMessage,
-					images: [],
-					attachments: [],
-				}),
-			});
+		if (!connectedStompClient || !publishTextMessage(connectedStompClient, content)) {
+			addFailedTextMessage(content);
 		}
 
 		setChatMessage('');
+	};
+
+	const handleFailedMessageRetry = async (failedMessage: FailedChatMessage) => {
+		const connectedStompClient = getConnectedStompClient();
+
+		if (!connectedStompClient) {
+			reconnectNow();
+			return;
+		}
+
+		const isPublished =
+			failedMessage.type === 'TEXT'
+				? publishTextMessage(connectedStompClient, failedMessage.content)
+				: await publishAttachmentMessage(connectedStompClient, {
+						type: failedMessage.type,
+						file: failedMessage.file,
+					});
+
+		if (isPublished) removeFailedMessage(failedMessage.id);
 	};
 
 	const handleImageUploadClick = () => {
@@ -68,114 +205,48 @@ const useChatInput = (props: useChatInputProps) => {
 		inputFileRef.current?.click();
 	};
 
-	const handleImageChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
-		if (event.target.files && event.target.files[0]) {
-			if (!getConnectedStompClient()) {
-				handleConnectionUnavailable();
+	const handleAttachmentChange = async (
+		event: ChangeEvent<HTMLInputElement>,
+		type: 'IMAGE' | 'FILE'
+	) => {
+		const input = event.target;
+		const file = input.files?.[0];
+		input.value = '';
 
-				return;
-			}
+		if (!file) return;
 
-			if (isFileSizeExceedLimit(event.target.files[0])) {
-				makeToast('이미지 크기는 최대 100MB입니다.', 'Warning');
-				return;
-			}
-			if (inputImageRef.current?.files) {
-				const imageUrl = await uploadFiles(
-					inputImageRef.current?.files,
-					'TEAMSPACE',
-					userStatus?.profile.lastSeenTeamspaceId
-				);
-				if (imageUrl && userStatus) {
-					const connectedStompClient = getConnectedStompClient();
-
-					if (!connectedStompClient) {
-						handleConnectionUnavailable();
-
-						return;
-					}
-
-					connectedStompClient.publish({
-						destination: END_POINTS.SEND_MESSAGE(
-							userStatus.profile.lastSeenTeamspaceId,
-							selectedChat
-						),
-						body: JSON.stringify({
-							chatType: 'IMAGE',
-							content: null,
-							images: [
-								{
-									name: inputImageRef.current?.files[0].name,
-									fileUrl: imageUrl[0],
-									size: inputImageRef.current?.files[0].size,
-								},
-							],
-							attachments: [],
-						}),
-					});
-				}
-
-				setTimeout(() => {
-					messageEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-				}, 500);
-			}
+		if (isFileSizeExceedLimit(file)) {
+			makeToast(
+				type === 'IMAGE' ? '이미지 크기는 최대 100MB입니다.' : '파일 크기는 최대 100MB입니다.',
+				'Warning'
+			);
+			return;
 		}
+
+		const connectedStompClient = getConnectedStompClient();
+
+		if (!connectedStompClient) {
+			addFailedAttachmentMessage(type, file);
+			return;
+		}
+
+		const isPublished = await publishAttachmentMessage(connectedStompClient, { type, file });
+
+		if (!isPublished) {
+			addFailedAttachmentMessage(type, file);
+			return;
+		}
+
+		setTimeout(() => {
+			messageEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+		}, 500);
 	};
 
-	const handleFileChange = async (event: ChangeEvent<HTMLInputElement>) => {
-		if (event.target.files && event.target.files[0]) {
-			if (!getConnectedStompClient()) {
-				handleConnectionUnavailable();
+	const handleImageChange = (event: ChangeEvent<HTMLInputElement>) =>
+		handleAttachmentChange(event, 'IMAGE');
 
-				return;
-			}
-
-			if (isFileSizeExceedLimit(event.target.files[0])) {
-				makeToast('파일 크기는 최대 100MB입니다.', 'Warning');
-				return;
-			}
-
-			if (inputFileRef.current?.files) {
-				const fileUrl = await uploadFiles(
-					inputFileRef.current?.files,
-					'TEAMSPACE',
-					userStatus?.profile.lastSeenTeamspaceId
-				);
-				if (fileUrl && userStatus) {
-					const connectedStompClient = getConnectedStompClient();
-
-					if (!connectedStompClient) {
-						handleConnectionUnavailable();
-
-						return;
-					}
-
-					connectedStompClient.publish({
-						destination: END_POINTS.SEND_MESSAGE(
-							userStatus.profile.lastSeenTeamspaceId,
-							selectedChat
-						),
-						body: JSON.stringify({
-							chatType: 'FILE',
-							content: null,
-							images: [],
-							attachments: [
-								{
-									name: inputFileRef.current?.files[0].name,
-									fileUrl: fileUrl[0],
-									size: inputFileRef.current?.files[0].size,
-								},
-							],
-						}),
-					});
-				}
-
-				setTimeout(() => {
-					messageEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-				}, 500);
-			}
-		}
-	};
+	const handleFileChange = (event: ChangeEvent<HTMLInputElement>) =>
+		handleAttachmentChange(event, 'FILE');
 
 	const handleKeyDown = (event: KeyboardEvent<HTMLTextAreaElement>) => {
 		if (event.nativeEvent.isComposing) return;
@@ -192,12 +263,14 @@ const useChatInput = (props: useChatInputProps) => {
 
 	return {
 		chatMessage,
-		isSendAvailable,
+		failedMessages,
 		inputImageRef,
 		inputFileRef,
 		messageEndRef,
 		handleMessageChange,
 		handleText,
+		handleFailedMessageRetry,
+		handleFailedMessageDelete: removeFailedMessage,
 		handleImageUploadClick,
 		handleFileUploadClick,
 		handleImageChange,
