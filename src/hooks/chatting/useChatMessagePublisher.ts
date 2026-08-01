@@ -3,11 +3,18 @@ import useFileUpload from '@hooks/common/useFileUpload';
 import useSocketStore from '@stores/socketStore';
 import { END_POINTS } from '@constants/api';
 import type { Client } from '@stomp/stompjs';
+import type { UploadedAttachment } from '@type/chat';
 import type { UserInformation } from '@type/user';
 
 export interface AttachmentMessagePayload {
 	type: 'IMAGE' | 'FILE';
 	file: File;
+	uploadedAttachment?: UploadedAttachment;
+}
+
+export interface AttachmentPublishResult {
+	isPublished: boolean;
+	uploadedAttachment?: UploadedAttachment;
 }
 
 interface UseChatMessagePublisherProps {
@@ -53,20 +60,37 @@ const useChatMessagePublisher = (props: UseChatMessagePublisherProps) => {
 	);
 
 	const publishAttachmentMessage = useCallback(
-		async (connectedStompClient: Client, attachmentMessage: AttachmentMessagePayload) => {
-			const { type, file } = attachmentMessage;
+		async (
+			connectedStompClient: Client,
+			attachmentMessage: AttachmentMessagePayload
+		): Promise<AttachmentPublishResult> => {
+			const { type, file, uploadedAttachment: existingAttachment } = attachmentMessage;
 
-			if (!userStatus) return false;
+			if (!userStatus) return { isPublished: false };
 
-			const fileUrl = await uploadFiles(
-				[file],
-				'TEAMSPACE',
-				userStatus.profile.lastSeenTeamspaceId
-			);
+			let uploadedAttachment = existingAttachment;
+
+			if (!uploadedAttachment) {
+				try {
+					const fileUrl = await uploadFiles(
+						[file],
+						'TEAMSPACE',
+						userStatus.profile.lastSeenTeamspaceId
+					);
+
+					if (!fileUrl) return { isPublished: false };
+
+					uploadedAttachment = { name: file.name, fileUrl: fileUrl[0], size: file.size };
+				} catch {
+					return { isPublished: false };
+				}
+			}
+
 			const currentStompClient = getConnectedStompClient();
 
-			if (!fileUrl || !currentStompClient || currentStompClient !== connectedStompClient)
-				return false;
+			if (!currentStompClient || currentStompClient !== connectedStompClient) {
+				return { isPublished: false, uploadedAttachment };
+			}
 
 			try {
 				currentStompClient.publish({
@@ -77,17 +101,15 @@ const useChatMessagePublisher = (props: UseChatMessagePublisherProps) => {
 					body: JSON.stringify({
 						chatType: type,
 						content: null,
-						images:
-							type === 'IMAGE' ? [{ name: file.name, fileUrl: fileUrl[0], size: file.size }] : [],
-						attachments:
-							type === 'FILE' ? [{ name: file.name, fileUrl: fileUrl[0], size: file.size }] : [],
+						images: type === 'IMAGE' ? [uploadedAttachment] : [],
+						attachments: type === 'FILE' ? [uploadedAttachment] : [],
 					}),
 				});
 			} catch {
-				return false;
+				return { isPublished: false, uploadedAttachment };
 			}
 
-			return true;
+			return { isPublished: true, uploadedAttachment };
 		},
 		[getConnectedStompClient, selectedChat, uploadFiles, userStatus]
 	);

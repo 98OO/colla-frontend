@@ -95,10 +95,10 @@ const useChatInput = (props: UseChatInputProps) => {
 			return;
 		}
 
-		const isPublished = await publishAttachmentMessage(connectedStompClient, { type, file });
+		const result = await publishAttachmentMessage(connectedStompClient, { type, file });
 
-		if (!isPublished) {
-			addFailedAttachmentMessage(type, file);
+		if (!result.isPublished) {
+			addFailedAttachmentMessage(type, file, result.uploadedAttachment);
 			return;
 		}
 

@@ -1,8 +1,11 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import type { SocketConnectionStatus } from '@stores/socketStore';
-import type { AttachmentMessagePayload } from '@hooks/chatting/useChatMessagePublisher';
+import type {
+	AttachmentMessagePayload,
+	AttachmentPublishResult,
+} from '@hooks/chatting/useChatMessagePublisher';
 import type { Client } from '@stomp/stompjs';
-import type { LocalChatMessage } from '@type/chat';
+import type { LocalChatMessage, UploadedAttachment } from '@type/chat';
 
 interface UseChatMessageQueueProps {
 	connectionStatus: SocketConnectionStatus;
@@ -13,7 +16,7 @@ interface UseChatMessageQueueProps {
 	publishAttachmentMessage: (
 		connectedStompClient: Client,
 		attachmentMessage: AttachmentMessagePayload
-	) => Promise<boolean>;
+	) => Promise<AttachmentPublishResult>;
 }
 
 const createLocalMessageId = () => `${Date.now()}-${Math.random()}`;
@@ -83,7 +86,7 @@ const useChatMessageQueue = (props: UseChatMessageQueueProps) => {
 	);
 
 	const addFailedAttachmentMessage = useCallback(
-		(type: 'IMAGE' | 'FILE', file: File) => {
+		(type: 'IMAGE' | 'FILE', file: File, uploadedAttachment?: UploadedAttachment) => {
 			shouldScrollToLocalMessageRef.current = true;
 			updateFailedMessages([
 				{
@@ -91,6 +94,7 @@ const useChatMessageQueue = (props: UseChatMessageQueueProps) => {
 					type,
 					file,
 					localUrl: URL.createObjectURL(file),
+					uploadedAttachment,
 				},
 				...failedMessagesRef.current,
 			]);
@@ -126,13 +130,17 @@ const useChatMessageQueue = (props: UseChatMessageQueueProps) => {
 	);
 
 	const moveQueuedMessageToFailed = useCallback(
-		(messageId: string) => {
+		(messageId: string, uploadedAttachment?: UploadedAttachment) => {
 			const queuedMessage = queuedMessagesRef.current.find((message) => message.id === messageId);
 
 			if (!queuedMessage) return;
+			const failedMessage =
+				queuedMessage.type === 'TEXT' || !uploadedAttachment
+					? queuedMessage
+					: { ...queuedMessage, uploadedAttachment };
 
 			updateQueuedMessages(queuedMessagesRef.current.filter((message) => message.id !== messageId));
-			updateFailedMessages([queuedMessage, ...failedMessagesRef.current]);
+			updateFailedMessages([failedMessage, ...failedMessagesRef.current]);
 		},
 		[updateFailedMessages, updateQueuedMessages]
 	);
@@ -198,20 +206,23 @@ const useChatMessageQueue = (props: UseChatMessageQueueProps) => {
 				return;
 			}
 
-			const isPublished =
+			const result =
 				queuedMessage.type === 'TEXT'
-					? publishTextMessage(connectedStompClient, queuedMessage.content)
+					? { isPublished: publishTextMessage(connectedStompClient, queuedMessage.content) }
 					: await publishAttachmentMessage(connectedStompClient, {
 							type: queuedMessage.type,
 							file: queuedMessage.file,
+							uploadedAttachment: queuedMessage.uploadedAttachment,
 						});
 
 			isFlushingQueueRef.current = false;
 
 			if (isUnmountedRef.current) return;
 
-			if (isPublished) removeQueuedMessage(queuedMessage.id);
-			else if (getConnectedStompClient()) moveQueuedMessageToFailed(queuedMessage.id);
+			if (result.isPublished) removeQueuedMessage(queuedMessage.id);
+			else if (getConnectedStompClient()) {
+				moveQueuedMessageToFailed(queuedMessage.id, result.uploadedAttachment);
+			}
 		};
 
 		isFlushingQueueRef.current = true;
@@ -246,15 +257,25 @@ const useChatMessageQueue = (props: UseChatMessageQueueProps) => {
 				return;
 			}
 
-			const isPublished =
+			const result =
 				failedMessage.type === 'TEXT'
-					? publishTextMessage(connectedStompClient, failedMessage.content)
+					? { isPublished: publishTextMessage(connectedStompClient, failedMessage.content) }
 					: await publishAttachmentMessage(connectedStompClient, {
 							type: failedMessage.type,
 							file: failedMessage.file,
+							uploadedAttachment: failedMessage.uploadedAttachment,
 						});
 
-			if (isPublished) removeFailedMessage(failedMessage.id);
+			if (result.isPublished) removeFailedMessage(failedMessage.id);
+			else if (failedMessage.type !== 'TEXT' && result.uploadedAttachment) {
+				updateFailedMessages(
+					failedMessagesRef.current.map((message) =>
+						message.id === failedMessage.id && message.type !== 'TEXT'
+							? { ...message, uploadedAttachment: result.uploadedAttachment }
+							: message
+					)
+				);
+			}
 		},
 		[
 			getConnectedStompClient,
@@ -263,6 +284,7 @@ const useChatMessageQueue = (props: UseChatMessageQueueProps) => {
 			publishTextMessage,
 			reconnectNow,
 			removeFailedMessage,
+			updateFailedMessages,
 		]
 	);
 
