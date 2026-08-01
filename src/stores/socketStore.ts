@@ -1,9 +1,17 @@
 import { Client } from '@stomp/stompjs';
 import SockJS from 'sockjs-client';
 import { create } from 'zustand';
-import { WEBSOCKET_RECONNECT_DELAY, WEBSOCKET_URL } from '@constants/api';
+import {
+	WEBSOCKET_RECONNECT_DELAY,
+	WEBSOCKET_RECONNECT_TIMEOUT,
+	WEBSOCKET_URL,
+} from '@constants/api';
 
-type SocketConnectionStatus = 'connecting' | 'connected' | 'reconnecting' | 'disconnected';
+export type SocketConnectionStatus =
+	| 'connecting'
+	| 'reconnectWaiting'
+	| 'connected'
+	| 'disconnected';
 
 interface ChatChannel {
 	id: number;
@@ -16,6 +24,14 @@ interface ChatChannel {
 let pendingStompClient: Client | null = null;
 let socketAccessToken: string | null = null;
 let manualReconnectClient: Client | null = null;
+let reconnectTimeoutId: ReturnType<typeof setTimeout> | null = null;
+
+const clearReconnectTimeout = () => {
+	if (!reconnectTimeoutId) return;
+
+	clearTimeout(reconnectTimeoutId);
+	reconnectTimeoutId = null;
+};
 
 type socketStore = {
 	stompClient: Client | null;
@@ -41,14 +57,23 @@ const useSocketStore = create<socketStore>((set, get) => ({
 
 		socketAccessToken = accessToken;
 		set({ connectionStatus: 'connecting' });
+		let client: Client;
 
-		const client = new Client({
+		const isCurrentClient = () => pendingStompClient === client || get().stompClient === client;
+
+		client = new Client({
 			webSocketFactory: () => new SockJS(`${WEBSOCKET_URL}${accessToken}`),
 			reconnectDelay: WEBSOCKET_RECONNECT_DELAY,
+			beforeConnect: () => {
+				if (!isCurrentClient()) return;
+
+				set({ connectionStatus: 'connecting' });
+			},
 			onConnect: () => {
-				if (pendingStompClient !== client && get().stompClient !== client) return;
+				if (!isCurrentClient()) return;
 
 				pendingStompClient = null;
+				clearReconnectTimeout();
 				set((state) => ({
 					stompClient: client,
 					stompConnectionVersion: state.stompConnectionVersion + 1,
@@ -56,19 +81,33 @@ const useSocketStore = create<socketStore>((set, get) => ({
 				}));
 			},
 			onWebSocketClose: () => {
-				if (pendingStompClient !== client && get().stompClient !== client) return;
+				if (!isCurrentClient()) return;
 
-				set({ connectionStatus: client.active ? 'reconnecting' : 'disconnected' });
+				if (!client.active) {
+					set({ connectionStatus: 'disconnected' });
+					return;
+				}
+
+				set({ connectionStatus: 'reconnectWaiting' });
+
+				if (reconnectTimeoutId) return;
+
+				reconnectTimeoutId = setTimeout(() => {
+					if (!isCurrentClient() || client.connected || !client.active) return;
+
+					client.deactivate({ force: true });
+					set({ connectionStatus: 'disconnected' });
+				}, WEBSOCKET_RECONNECT_TIMEOUT);
 			},
 			onWebSocketError: () => {
-				if (pendingStompClient !== client && get().stompClient !== client) return;
+				if (!isCurrentClient()) return;
 
-				set({ connectionStatus: client.active ? 'reconnecting' : 'disconnected' });
+				set({ connectionStatus: client.active ? 'reconnectWaiting' : 'disconnected' });
 			},
 			onStompError: () => {
-				if (pendingStompClient !== client && get().stompClient !== client) return;
+				if (!isCurrentClient()) return;
 
-				set({ connectionStatus: client.active ? 'reconnecting' : 'disconnected' });
+				set({ connectionStatus: client.active ? 'reconnectWaiting' : 'disconnected' });
 			},
 			debug: () => {},
 		});
@@ -81,8 +120,9 @@ const useSocketStore = create<socketStore>((set, get) => ({
 
 		if (!client || client.connected || manualReconnectClient || !socketAccessToken) return;
 
+		clearReconnectTimeout();
 		manualReconnectClient = client;
-		set({ connectionStatus: 'reconnecting' });
+		set({ connectionStatus: 'connecting' });
 
 		client.deactivate({ force: true }).finally(() => {
 			if (manualReconnectClient !== client) return;
@@ -102,6 +142,7 @@ const useSocketStore = create<socketStore>((set, get) => ({
 		pendingStompClient = null;
 		socketAccessToken = null;
 		manualReconnectClient = null;
+		clearReconnectTimeout();
 		client?.deactivate();
 
 		set({
