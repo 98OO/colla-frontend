@@ -74,7 +74,11 @@ const Chatting = ({ selectedChat }: { selectedChat: number }) => {
 		handleKeyDown,
 	} = useChatInput({ selectedChat, userStatus, messageEndRef });
 
-	useChatSubscription({ selectedChat, userStatus, handleCheckScroll });
+	useChatSubscription({
+		selectedChat,
+		teamspaceId: userStatus?.profile.lastSeenTeamspaceId,
+		handleCheckScroll,
+	});
 
 	const handleChatContainerRef = useCallback((element: HTMLDivElement | null) => {
 		chatRef.current = element;
