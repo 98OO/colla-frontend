@@ -39,21 +39,21 @@ export interface ChatData {
 	chatChannelMessages: Message[];
 }
 
-interface FailedMessageBase {
+interface LocalMessageBase {
 	id: string;
 }
 
-export interface FailedTextMessage extends FailedMessageBase {
+export interface LocalTextMessage extends LocalMessageBase {
 	type: 'TEXT';
 	content: string;
 }
 
-export interface FailedAttachmentMessage extends FailedMessageBase {
+export interface LocalAttachmentMessage extends LocalMessageBase {
 	type: 'IMAGE' | 'FILE';
 	file: File;
 	localUrl: string;
 }
 
-export type FailedChatMessage = FailedTextMessage | FailedAttachmentMessage;
+export type LocalChatMessage = LocalTextMessage | LocalAttachmentMessage;
 
 export type Orientation = 'landscape' | 'portrait' | 'square';
