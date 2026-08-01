@@ -59,6 +59,7 @@ const Chatting = ({ selectedChat }: { selectedChat: number }) => {
 
 	const {
 		chatMessage,
+		queuedMessages,
 		failedMessages,
 		inputImageRef,
 		inputFileRef,
@@ -85,6 +86,28 @@ const Chatting = ({ selectedChat }: { selectedChat: number }) => {
 		<S.ChattingContainer>
 			<S.ChattingListContainer ref={handleChatContainerRef}>
 				<S.ChatMessageList>
+					{queuedMessages.map((message) => (
+						<MyMessageBox
+							key={message.id}
+							type={message.type}
+							content={message.type === 'TEXT' ? message.content : ''}
+							date={null}
+							file={
+								message.type === 'TEXT'
+									? []
+									: [
+											{
+												id: -Number(message.id.split('-')[0]),
+												filename: message.file.name,
+												url: message.localUrl,
+												size: message.file.size,
+											},
+										]
+							}
+							state
+							actions={<ChatMessageActions />}
+						/>
+					))}
 					{failedMessages.map((message) => (
 						<MyMessageBox
 							key={message.id}
