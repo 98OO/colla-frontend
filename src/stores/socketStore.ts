@@ -2,7 +2,9 @@ import { Client } from '@stomp/stompjs';
 import SockJS from 'sockjs-client';
 import { create } from 'zustand';
 import {
-	WEBSOCKET_RECONNECT_DELAY,
+	WEBSOCKET_CONNECTION_TIMEOUT,
+	WEBSOCKET_RECONNECT_INITIAL_DELAY,
+	WEBSOCKET_RECONNECT_MAX_DELAY,
 	WEBSOCKET_RECONNECT_TIMEOUT,
 	WEBSOCKET_URL,
 } from '@constants/api';
@@ -25,12 +27,27 @@ let pendingStompClient: Client | null = null;
 let socketAccessToken: string | null = null;
 let manualReconnectClient: Client | null = null;
 let reconnectTimeoutId: ReturnType<typeof setTimeout> | null = null;
+let reconnectAttemptCount = 0;
 
 const clearReconnectTimeout = () => {
 	if (!reconnectTimeoutId) return;
 
 	clearTimeout(reconnectTimeoutId);
 	reconnectTimeoutId = null;
+};
+
+const resetReconnectAttemptCount = () => {
+	reconnectAttemptCount = 0;
+};
+
+const getNextReconnectDelay = () => {
+	const nextReconnectDelay = Math.min(
+		WEBSOCKET_RECONNECT_INITIAL_DELAY * 2 ** reconnectAttemptCount,
+		WEBSOCKET_RECONNECT_MAX_DELAY
+	);
+	reconnectAttemptCount += 1;
+
+	return nextReconnectDelay;
 };
 
 type socketStore = {
@@ -56,6 +73,7 @@ const useSocketStore = create<socketStore>((set, get) => ({
 		if (get().stompClient?.active || pendingStompClient?.active) return;
 
 		socketAccessToken = accessToken;
+		resetReconnectAttemptCount();
 		set({ connectionStatus: 'connecting' });
 		let client: Client;
 
@@ -63,7 +81,8 @@ const useSocketStore = create<socketStore>((set, get) => ({
 
 		client = new Client({
 			webSocketFactory: () => new SockJS(`${WEBSOCKET_URL}${accessToken}`),
-			reconnectDelay: WEBSOCKET_RECONNECT_DELAY,
+			connectionTimeout: WEBSOCKET_CONNECTION_TIMEOUT,
+			reconnectDelay: WEBSOCKET_RECONNECT_INITIAL_DELAY,
 			beforeConnect: () => {
 				if (!isCurrentClient()) return;
 
@@ -74,6 +93,8 @@ const useSocketStore = create<socketStore>((set, get) => ({
 
 				pendingStompClient = null;
 				clearReconnectTimeout();
+				resetReconnectAttemptCount();
+				client.reconnectDelay = WEBSOCKET_RECONNECT_INITIAL_DELAY;
 				set((state) => ({
 					stompClient: client,
 					stompConnectionVersion: state.stompConnectionVersion + 1,
@@ -88,6 +109,7 @@ const useSocketStore = create<socketStore>((set, get) => ({
 					return;
 				}
 
+				client.reconnectDelay = getNextReconnectDelay();
 				set({ connectionStatus: 'reconnectWaiting' });
 
 				if (reconnectTimeoutId) return;
@@ -142,6 +164,7 @@ const useSocketStore = create<socketStore>((set, get) => ({
 		pendingStompClient = null;
 		socketAccessToken = null;
 		manualReconnectClient = null;
+		resetReconnectAttemptCount();
 		clearReconnectTimeout();
 		client?.deactivate();
 
