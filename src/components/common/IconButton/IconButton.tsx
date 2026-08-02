@@ -21,12 +21,7 @@ const IconButton = ({
 	disabled = false,
 }: IconButtonProps) => {
 	return (
-		<S.IconButtonWrapper
-			type='button'
-			aria-label={ariaLabel}
-			title={ariaLabel}
-			onClick={onClick}
-			disabled={disabled}>
+		<S.IconButtonWrapper type='button' aria-label={ariaLabel} onClick={onClick} disabled={disabled}>
 			<Icon name={icon} size={size} color={color} />
 		</S.IconButtonWrapper>
 	);
