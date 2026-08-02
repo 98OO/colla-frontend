@@ -72,15 +72,16 @@ const useChatMessagePublisher = (props: UseChatMessagePublisherProps) => {
 
 			if (!uploadedAttachment) {
 				try {
-					const fileUrl = await uploadFiles(
+					const fileUrls = await uploadFiles(
 						[file],
 						'TEAMSPACE',
 						userStatus.profile.lastSeenTeamspaceId
 					);
+					const fileUrl = fileUrls?.[0];
 
 					if (!fileUrl) return { isPublished: false };
 
-					uploadedAttachment = { name: file.name, fileUrl: fileUrl[0], size: file.size };
+					uploadedAttachment = { name: file.name, fileUrl, size: file.size };
 				} catch {
 					return { isPublished: false };
 				}
