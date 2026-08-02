@@ -5,12 +5,13 @@ import * as S from './ChatMessageActions.styled';
 interface ChatMessageActionsProps {
 	onRetry?: () => void;
 	onDelete?: () => void;
+	isRetrying?: boolean;
 }
 
 const ChatMessageActions = (props: ChatMessageActionsProps) => {
-	const { onRetry, onDelete } = props;
+	const { onRetry, onDelete, isRetrying = false } = props;
 
-	if (!onRetry || !onDelete) {
+	if (isRetrying || !onRetry || !onDelete) {
 		return (
 			<S.PendingIndicator aria-label='메시지 전송 중' role='status'>
 				<Icon name='ProgressActivity' color='secondary' size='sm' />

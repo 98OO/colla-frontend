@@ -61,6 +61,7 @@ const Chatting = ({ selectedChat }: { selectedChat: number }) => {
 		chatMessage,
 		queuedMessages,
 		failedMessages,
+		retryingMessageIds,
 		inputImageRef,
 		inputFileRef,
 		handleMessageChange,
@@ -133,6 +134,7 @@ const Chatting = ({ selectedChat }: { selectedChat: number }) => {
 							state
 							actions={
 								<ChatMessageActions
+									isRetrying={retryingMessageIds.includes(message.id)}
 									onRetry={() => handleFailedMessageRetry(message)}
 									onDelete={() => handleFailedMessageDelete(message.id)}
 								/>

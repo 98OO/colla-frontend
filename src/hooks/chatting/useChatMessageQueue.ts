@@ -36,8 +36,10 @@ const useChatMessageQueue = (props: UseChatMessageQueueProps) => {
 	} = props;
 	const [queuedMessages, setQueuedMessages] = useState<LocalChatMessage[]>([]);
 	const [failedMessages, setFailedMessages] = useState<LocalChatMessage[]>([]);
+	const [retryingMessageIds, setRetryingMessageIds] = useState<string[]>([]);
 	const queuedMessagesRef = useRef<LocalChatMessage[]>([]);
 	const failedMessagesRef = useRef<LocalChatMessage[]>([]);
+	const retryingMessageIdsRef = useRef<Set<string>>(new Set());
 	const shouldScrollToLocalMessageRef = useRef(false);
 	const isFlushingQueueRef = useRef(false);
 	const isUnmountedRef = useRef(false);
@@ -249,6 +251,13 @@ const useChatMessageQueue = (props: UseChatMessageQueueProps) => {
 
 	const handleFailedMessageRetry = useCallback(
 		async (failedMessage: LocalChatMessage) => {
+			if (
+				retryingMessageIdsRef.current.has(failedMessage.id) ||
+				!failedMessagesRef.current.some((message) => message.id === failedMessage.id)
+			) {
+				return;
+			}
+
 			const connectedStompClient = getConnectedStompClient();
 
 			if (!connectedStompClient) {
@@ -257,24 +266,35 @@ const useChatMessageQueue = (props: UseChatMessageQueueProps) => {
 				return;
 			}
 
-			const result =
-				failedMessage.type === 'TEXT'
-					? { isPublished: publishTextMessage(connectedStompClient, failedMessage.content) }
-					: await publishAttachmentMessage(connectedStompClient, {
-							type: failedMessage.type,
-							file: failedMessage.file,
-							uploadedAttachment: failedMessage.uploadedAttachment,
-						});
+			retryingMessageIdsRef.current.add(failedMessage.id);
+			setRetryingMessageIds([...retryingMessageIdsRef.current]);
 
-			if (result.isPublished) removeFailedMessage(failedMessage.id);
-			else if (failedMessage.type !== 'TEXT' && result.uploadedAttachment) {
-				updateFailedMessages(
-					failedMessagesRef.current.map((message) =>
-						message.id === failedMessage.id && message.type !== 'TEXT'
-							? { ...message, uploadedAttachment: result.uploadedAttachment }
-							: message
-					)
-				);
+			try {
+				const result =
+					failedMessage.type === 'TEXT'
+						? { isPublished: publishTextMessage(connectedStompClient, failedMessage.content) }
+						: await publishAttachmentMessage(connectedStompClient, {
+								type: failedMessage.type,
+								file: failedMessage.file,
+								uploadedAttachment: failedMessage.uploadedAttachment,
+							});
+
+				if (result.isPublished) removeFailedMessage(failedMessage.id);
+				else if (failedMessage.type !== 'TEXT' && result.uploadedAttachment) {
+					updateFailedMessages(
+						failedMessagesRef.current.map((message) =>
+							message.id === failedMessage.id && message.type !== 'TEXT'
+								? { ...message, uploadedAttachment: result.uploadedAttachment }
+								: message
+						)
+					);
+				}
+			} finally {
+				retryingMessageIdsRef.current.delete(failedMessage.id);
+
+				if (!isUnmountedRef.current) {
+					setRetryingMessageIds([...retryingMessageIdsRef.current]);
+				}
 			}
 		},
 		[
@@ -291,6 +311,7 @@ const useChatMessageQueue = (props: UseChatMessageQueueProps) => {
 	return {
 		queuedMessages,
 		failedMessages,
+		retryingMessageIds,
 		addQueuedTextMessage,
 		addQueuedAttachmentMessage,
 		addFailedTextMessage,

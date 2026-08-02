@@ -27,6 +27,7 @@ const useChatInput = (props: UseChatInputProps) => {
 	const {
 		queuedMessages,
 		failedMessages,
+		retryingMessageIds,
 		addQueuedTextMessage,
 		addQueuedAttachmentMessage,
 		addFailedTextMessage,
@@ -130,6 +131,7 @@ const useChatInput = (props: UseChatInputProps) => {
 		chatMessage,
 		queuedMessages,
 		failedMessages,
+		retryingMessageIds,
 		inputImageRef,
 		inputFileRef,
 		handleMessageChange,
