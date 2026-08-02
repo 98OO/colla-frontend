@@ -20,7 +20,8 @@ export const MyMessageBoxWrapper = styled.div<{
 		props.$type === 'TEXT'
 			? `${theme.units.spacing.space10} ${theme.units.spacing.space14}`
 			: `${theme.units.spacing.space10} 0 0 0`};
-	background-color: ${(props) => (props.$type === 'TEXT' ? theme.color.bg.iPrimary : 'none')};
+	background-color: ${(props) =>
+		props.$type === 'TEXT' ? theme.color.bg.iPrimary : 'transparent'};
 	border-radius: ${(props) =>
 		props.$state
 			? `${theme.units.radius.radius20} 0 ${theme.units.radius.radius20} ${theme.units.radius.radius20}`

@@ -20,7 +20,7 @@ const OtherMessageBox = (props: OtherMessageBoxProps) => {
 	const { name, profile, type, content, date, file, state } = props;
 
 	return (
-		<S.OtherMessageBoxContainer state={state}>
+		<S.OtherMessageBoxContainer $state={state}>
 			<Flex direction='column' width='32'>
 				{state ? (
 					<Avatar profile={profile} initial={name} size='md' shape='circle' />
@@ -35,7 +35,7 @@ const OtherMessageBox = (props: OtherMessageBoxProps) => {
 					</Text>
 				)}
 				<Flex gap='8'>
-					<S.OtherMessageBoxWrapper state={state} type={type}>
+					<S.OtherMessageBoxWrapper $state={state} $type={type}>
 						{type === 'TEXT' && (
 							<Text size='lg' weight='regular' color='secondary'>
 								{content}
