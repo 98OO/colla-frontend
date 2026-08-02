@@ -29,7 +29,7 @@ const MyMessageBox = (props: MyMessageBoxProps) => {
 						</Text>
 					))}
 			</S.TimeWrapper>
-			<S.MyMessageBoxWrapper state={state} type={type}>
+			<S.MyMessageBoxWrapper $state={state} $type={type}>
 				{type === 'TEXT' && (
 					<Text size='lg' weight='regular' color='iInverse'>
 						{content}
