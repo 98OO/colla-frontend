@@ -72,6 +72,7 @@ const useSocketStore = create<socketStore>((set, get) => ({
 	connect: (accessToken) => {
 		if (get().stompClient?.active || pendingStompClient?.active) return;
 
+		clearReconnectTimeout();
 		socketAccessToken = accessToken;
 		resetReconnectAttemptCount();
 		set({ connectionStatus: 'connecting' });
@@ -115,6 +116,8 @@ const useSocketStore = create<socketStore>((set, get) => ({
 				if (reconnectTimeoutId) return;
 
 				reconnectTimeoutId = setTimeout(() => {
+					reconnectTimeoutId = null;
+
 					if (!isCurrentClient() || client.connected || !client.active) return;
 
 					client.deactivate({ force: true });
