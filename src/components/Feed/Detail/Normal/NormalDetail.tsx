@@ -1,6 +1,7 @@
 import Divider from '@components/common/Divider/Divider';
 import Flex from '@components/common/Flex/Flex';
 import Heading from '@components/common/Heading/Heading';
+import SanitizedHtml from '@components/common/SanitizedHtml/SanitizedHtml';
 import Text from '@components/common/Text/Text';
 import Attachments from '@components/Feed/Attachments/Attachments';
 import CommentInput from '@components/Feed/CommentInput/CommentInput';
@@ -16,8 +17,7 @@ interface FeedProps {
 }
 
 const Feed = ({ feedData }: FeedProps) => {
-	const { feedId, author, title, createdAt, details, attachments, comments } =
-		feedData;
+	const { feedId, author, title, createdAt, details, attachments, comments } = feedData;
 	const { userStatus } = useUserStatusQuery();
 
 	return (
@@ -33,7 +33,7 @@ const Feed = ({ feedData }: FeedProps) => {
 				<Heading size='xs'>{title}</Heading>
 				<Divider size='sm' />
 				<S.DetailWrapper>
-					<div dangerouslySetInnerHTML={{ __html: details.content || '' }} />
+					<SanitizedHtml html={details.content} />
 				</S.DetailWrapper>
 				{attachments.length !== 0 && (
 					<S.SectionContainer>
@@ -51,10 +51,7 @@ const Feed = ({ feedData }: FeedProps) => {
 				)}
 				<S.SectionContainer>
 					<Flex direction='column' align='flex-start'>
-						<Text
-							size='md'
-							weight='medium'
-							color='tertiary'>{`댓글 ${comments.length}개`}</Text>
+						<Text size='md' weight='medium' color='tertiary'>{`댓글 ${comments.length}개`}</Text>
 					</Flex>
 					<Divider size='sm' />
 					{comments.map((comment) => {
@@ -68,10 +65,7 @@ const Feed = ({ feedData }: FeedProps) => {
 				</S.SectionContainer>
 				<S.CommentContainer>
 					{userStatus && (
-						<CommentInput
-							teamspaceId={userStatus.profile.lastSeenTeamspaceId}
-							feedId={feedId}
-						/>
+						<CommentInput teamspaceId={userStatus.profile.lastSeenTeamspaceId} feedId={feedId} />
 					)}
 				</S.CommentContainer>
 			</Flex>
