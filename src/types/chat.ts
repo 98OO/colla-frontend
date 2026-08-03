@@ -39,4 +39,28 @@ export interface ChatData {
 	chatChannelMessages: Message[];
 }
 
+interface LocalMessageBase {
+	id: string;
+}
+
+export interface UploadedAttachment {
+	name: string;
+	fileUrl: string;
+	size: number;
+}
+
+export interface LocalTextMessage extends LocalMessageBase {
+	type: 'TEXT';
+	content: string;
+}
+
+export interface LocalAttachmentMessage extends LocalMessageBase {
+	type: 'IMAGE' | 'FILE';
+	file: File;
+	localUrl: string;
+	uploadedAttachment?: UploadedAttachment;
+}
+
+export type LocalChatMessage = LocalTextMessage | LocalAttachmentMessage;
+
 export type Orientation = 'landscape' | 'portrait' | 'square';

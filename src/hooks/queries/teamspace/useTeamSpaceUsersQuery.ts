@@ -4,7 +4,7 @@ import type { TeamSpaceUserList } from '@type/user';
 
 const useTeamSpaceUsersQuery = (teamspaceId?: number) => {
 	const { data: teamSpaceUsers } = useQuery<TeamSpaceUserList>({
-		queryKey: ['teamSpaceUsers'],
+		queryKey: ['teamSpaceUsers', teamspaceId],
 		queryFn: () => getTeamSpaceUser(teamspaceId!),
 		gcTime: 60 * 60 * 60 * 1000,
 		staleTime: 60 * 60 * 60 * 1000,

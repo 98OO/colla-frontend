@@ -9,17 +9,21 @@ export const MyMessageBoxContainer = styled.div`
 	gap: ${theme.units.spacing.space8};
 `;
 
-export const MyMessageBoxWrapper = styled.div<{ state: boolean; type: string }>`
+export const MyMessageBoxWrapper = styled.div<{
+	$state: boolean;
+	$type: string;
+}>`
 	display: flex;
 	align-items: center;
 	justify-content: center;
 	padding: ${(props) =>
-		props.type === 'TEXT'
+		props.$type === 'TEXT'
 			? `${theme.units.spacing.space10} ${theme.units.spacing.space14}`
 			: `${theme.units.spacing.space10} 0 0 0`};
-	background-color: ${(props) => (props.type === 'TEXT' ? theme.color.bg.iPrimary : 'none')};
+	background-color: ${(props) =>
+		props.$type === 'TEXT' ? theme.color.bg.iPrimary : 'transparent'};
 	border-radius: ${(props) =>
-		props.state
+		props.$state
 			? `${theme.units.radius.radius20} 0 ${theme.units.radius.radius20} ${theme.units.radius.radius20}`
 			: theme.units.radius.radius20};
 	max-width: 564px;

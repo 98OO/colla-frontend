@@ -1,4 +1,5 @@
 import { useCallback, useRef, useState } from 'react';
+import ChatMessageActions from '@components/Chat/ChatMessageActions/ChatMessageActions';
 import LatestMessageBox from '@components/Chat/LatestMessageBox/LatestMessageBox';
 import MyMessageBox from '@components/Chat/MyMessageBox/MyMessageBox';
 import OtherMessageBox from '@components/Chat/OtherMessageBox/OtherMessageBox';
@@ -25,6 +26,7 @@ const Chatting = ({ selectedChat }: { selectedChat: number }) => {
 		isFetchingNextPage,
 		hasNextPage,
 		paginationVersion,
+		reconnectedMessageVersion,
 		setChatHistory,
 		fetchNextPage,
 	} = useChatMessages({
@@ -43,6 +45,7 @@ const Chatting = ({ selectedChat }: { selectedChat: number }) => {
 		chatHistory,
 		setChatHistory,
 		chatRef,
+		reconnectedMessageVersion,
 	});
 
 	const { topSentinelRef } = useChatInfiniteScroll({
@@ -56,10 +59,15 @@ const Chatting = ({ selectedChat }: { selectedChat: number }) => {
 
 	const {
 		chatMessage,
+		queuedMessages,
+		failedMessages,
+		retryingMessageIds,
 		inputImageRef,
 		inputFileRef,
 		handleMessageChange,
 		handleText,
+		handleFailedMessageRetry,
+		handleFailedMessageDelete,
 		handleImageUploadClick,
 		handleFileUploadClick,
 		handleImageChange,
@@ -67,7 +75,11 @@ const Chatting = ({ selectedChat }: { selectedChat: number }) => {
 		handleKeyDown,
 	} = useChatInput({ selectedChat, userStatus, messageEndRef });
 
-	useChatSubscription({ selectedChat, userStatus, handleCheckScroll });
+	useChatSubscription({
+		selectedChat,
+		teamspaceId: userStatus?.profile.lastSeenTeamspaceId,
+		handleCheckScroll,
+	});
 
 	const handleChatContainerRef = useCallback((element: HTMLDivElement | null) => {
 		chatRef.current = element;
@@ -79,6 +91,56 @@ const Chatting = ({ selectedChat }: { selectedChat: number }) => {
 		<S.ChattingContainer>
 			<S.ChattingListContainer ref={handleChatContainerRef}>
 				<S.ChatMessageList>
+					{queuedMessages.map((message) => (
+						<MyMessageBox
+							key={message.id}
+							type={message.type}
+							content={message.type === 'TEXT' ? message.content : ''}
+							date={null}
+							file={
+								message.type === 'TEXT'
+									? []
+									: [
+											{
+												id: -Number(message.id.split('-')[0]),
+												filename: message.file.name,
+												url: message.localUrl,
+												size: message.file.size,
+											},
+										]
+							}
+							state
+							actions={<ChatMessageActions />}
+						/>
+					))}
+					{failedMessages.map((message) => (
+						<MyMessageBox
+							key={message.id}
+							type={message.type}
+							content={message.type === 'TEXT' ? message.content : ''}
+							date={null}
+							file={
+								message.type === 'TEXT'
+									? []
+									: [
+											{
+												id: -Number(message.id.split('-')[0]),
+												filename: message.file.name,
+												url: message.localUrl,
+												size: message.file.size,
+											},
+										]
+							}
+							state
+							actions={
+								<ChatMessageActions
+									isRetrying={retryingMessageIds.includes(message.id)}
+									onRetry={() => handleFailedMessageRetry(message)}
+									onDelete={() => handleFailedMessageDelete(message.id)}
+								/>
+							}
+						/>
+					))}
 					{chatHistory &&
 						chatHistory.chatChannelMessages.map((msg, index, array) => {
 							const previousMsg = index < array.length - 1 ? array[index + 1] : null;

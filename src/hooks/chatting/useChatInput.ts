@@ -1,43 +1,63 @@
-import { ChangeEvent, useRef, useState, KeyboardEvent } from 'react';
-import useFileUpload from '@hooks/common/useFileUpload';
+import { ChangeEvent, KeyboardEvent, useRef, useState } from 'react';
+import useChatMessagePublisher from '@hooks/chatting/useChatMessagePublisher';
+import useChatMessageQueue from '@hooks/chatting/useChatMessageQueue';
 import useSocketStore from '@stores/socketStore';
 import useToastStore from '@stores/toastStore';
-import { END_POINTS } from '@constants/api';
 import type { UserInformation } from '@type/user';
 
-interface useChatInputProps {
+interface UseChatInputProps {
 	selectedChat: number;
 	userStatus: UserInformation | undefined;
 	messageEndRef: React.RefObject<HTMLDivElement>;
 }
 
-const useChatInput = (props: useChatInputProps) => {
+const useChatInput = (props: UseChatInputProps) => {
 	const { selectedChat, userStatus, messageEndRef } = props;
 	const [chatMessage, setChatMessage] = useState('');
 	const inputImageRef = useRef<HTMLInputElement | null>(null);
 	const inputFileRef = useRef<HTMLInputElement | null>(null);
-	const { stompClient } = useSocketStore();
+	const { connectionStatus, reconnectNow } = useSocketStore();
 	const { makeToast } = useToastStore();
-	const { isFileSizeExceedLimit, uploadFiles } = useFileUpload();
+	const {
+		isFileSizeExceedLimit,
+		getConnectedStompClient,
+		publishTextMessage,
+		publishAttachmentMessage,
+	} = useChatMessagePublisher({ selectedChat, userStatus });
+	const {
+		queuedMessages,
+		failedMessages,
+		retryingMessageIds,
+		addQueuedTextMessage,
+		addQueuedAttachmentMessage,
+		addFailedTextMessage,
+		addFailedAttachmentMessage,
+		handleFailedMessageRetry,
+		handleFailedMessageDelete,
+	} = useChatMessageQueue({
+		connectionStatus,
+		messageEndRef,
+		reconnectNow,
+		getConnectedStompClient,
+		publishTextMessage,
+		publishAttachmentMessage,
+	});
+	const isRecovering = connectionStatus === 'connecting' || connectionStatus === 'reconnectWaiting';
 
-	const handleMessageChange = (e: ChangeEvent<HTMLTextAreaElement>) => {
-		const { value } = e.target;
+	const handleMessageChange = (event: ChangeEvent<HTMLTextAreaElement>) => {
+		const { value } = event.target;
+
 		if (value.length <= 1000) setChatMessage(value);
 	};
 
 	const handleText = () => {
-		if (userStatus) {
-			stompClient?.send(
-				END_POINTS.SEND_MESSAGE(userStatus.profile.lastSeenTeamspaceId, selectedChat),
-				{},
-				JSON.stringify({
-					chatType: 'TEXT',
-					content: chatMessage,
-					images: [],
-					attachments: [],
-				})
-			);
-		}
+		const content = chatMessage;
+		const connectedStompClient = getConnectedStompClient();
+
+		if (connectedStompClient) {
+			if (!publishTextMessage(connectedStompClient, content)) addFailedTextMessage(content);
+		} else if (isRecovering) addQueuedTextMessage(content);
+		else addFailedTextMessage(content);
 
 		setChatMessage('');
 	};
@@ -50,82 +70,49 @@ const useChatInput = (props: useChatInputProps) => {
 		inputFileRef.current?.click();
 	};
 
-	const handleImageChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
-		if (event.target.files && event.target.files[0]) {
-			if (isFileSizeExceedLimit(event.target.files[0])) {
-				makeToast('이미지 크기는 최대 100MB입니다.', 'Warning');
-				return;
-			}
-			if (inputImageRef.current?.files) {
-				const imageUrl = await uploadFiles(
-					inputImageRef.current?.files,
-					'TEAMSPACE',
-					userStatus?.profile.lastSeenTeamspaceId
-				);
-				if (imageUrl && userStatus) {
-					stompClient?.send(
-						END_POINTS.SEND_MESSAGE(userStatus.profile.lastSeenTeamspaceId, selectedChat),
-						{},
-						JSON.stringify({
-							chatType: 'IMAGE',
-							content: null,
-							images: [
-								{
-									name: inputImageRef.current?.files[0].name,
-									fileUrl: imageUrl[0],
-									size: inputImageRef.current?.files[0].size,
-								},
-							],
-							attachments: [],
-						})
-					);
-				}
+	const handleAttachmentChange = async (
+		event: ChangeEvent<HTMLInputElement>,
+		type: 'IMAGE' | 'FILE'
+	) => {
+		const input = event.target;
+		const file = input.files?.[0];
+		input.value = '';
 
-				setTimeout(() => {
-					messageEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-				}, 500);
-			}
+		if (!file) return;
+
+		if (isFileSizeExceedLimit(file)) {
+			makeToast(
+				type === 'IMAGE' ? '이미지 크기는 최대 100MB입니다.' : '파일 크기는 최대 100MB입니다.',
+				'Warning'
+			);
+			return;
 		}
+
+		const connectedStompClient = getConnectedStompClient();
+
+		if (!connectedStompClient) {
+			if (isRecovering) addQueuedAttachmentMessage(type, file);
+			else addFailedAttachmentMessage(type, file);
+			return;
+		}
+
+		const result = await publishAttachmentMessage(connectedStompClient, { type, file });
+
+		if (!result.isPublished) {
+			addFailedAttachmentMessage(type, file, result.uploadedAttachment);
+			return;
+		}
+
+		setTimeout(() => {
+			messageEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+		}, 500);
 	};
 
-	const handleFileChange = async (event: ChangeEvent<HTMLInputElement>) => {
-		if (event.target.files && event.target.files[0]) {
-			if (isFileSizeExceedLimit(event.target.files[0])) {
-				makeToast('파일 크기는 최대 100MB입니다.', 'Warning');
-				return;
-			}
+	const handleImageChange = (event: ChangeEvent<HTMLInputElement>) =>
+		handleAttachmentChange(event, 'IMAGE');
 
-			if (inputFileRef.current?.files) {
-				const fileUrl = await uploadFiles(
-					inputFileRef.current?.files,
-					'TEAMSPACE',
-					userStatus?.profile.lastSeenTeamspaceId
-				);
-				if (fileUrl && userStatus) {
-					stompClient?.send(
-						END_POINTS.SEND_MESSAGE(userStatus.profile.lastSeenTeamspaceId, selectedChat),
-						{},
-						JSON.stringify({
-							chatType: 'FILE',
-							content: null,
-							images: [],
-							attachments: [
-								{
-									name: inputFileRef.current?.files[0].name,
-									fileUrl: fileUrl[0],
-									size: inputFileRef.current?.files[0].size,
-								},
-							],
-						})
-					);
-				}
-
-				setTimeout(() => {
-					messageEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-				}, 500);
-			}
-		}
-	};
+	const handleFileChange = (event: ChangeEvent<HTMLInputElement>) =>
+		handleAttachmentChange(event, 'FILE');
 
 	const handleKeyDown = (event: KeyboardEvent<HTMLTextAreaElement>) => {
 		if (event.nativeEvent.isComposing) return;
@@ -142,11 +129,15 @@ const useChatInput = (props: useChatInputProps) => {
 
 	return {
 		chatMessage,
+		queuedMessages,
+		failedMessages,
+		retryingMessageIds,
 		inputImageRef,
 		inputFileRef,
-		messageEndRef,
 		handleMessageChange,
 		handleText,
+		handleFailedMessageRetry,
+		handleFailedMessageDelete,
 		handleImageUploadClick,
 		handleFileUploadClick,
 		handleImageChange,
