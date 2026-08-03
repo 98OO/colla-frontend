@@ -2,6 +2,7 @@ import { useNavigate } from 'react-router-dom';
 import { signIn } from '@apis/auth/sessionActions';
 import postOauthLogin from '@apis/user/postOauthLogin';
 import { useMutation } from '@tanstack/react-query';
+import resolveServiceEntryPath from '@utils/auth/resolveServiceEntryPath';
 import { PATH } from '@constants/path';
 import { INVITE_URL_KEY } from '@constants/storage';
 
@@ -12,15 +13,14 @@ const useOauthLoginMutation = () => {
 	const postOauthLoginMutation = useMutation({
 		mutationFn: postOauthLogin,
 		onSuccess: (content) => {
-			signIn(content.accessToken);
+			signIn(content.accessToken, content.hasTeam);
 
 			if (inviteUrl) {
 				window.sessionStorage.removeItem(INVITE_URL_KEY);
 				navigate(`${PATH.INVITE}${inviteUrl}`, { replace: true });
-			} else if (content.hasTeam) {
-				navigate(PATH.FEED, { replace: true });
 			} else {
-				navigate(PATH.ENTRY, { replace: true });
+				const serviceEntryPath = resolveServiceEntryPath(content.hasTeam);
+				navigate(serviceEntryPath, { replace: true });
 			}
 		},
 		onError: (error) => {

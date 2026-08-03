@@ -131,11 +131,11 @@ const handleRefreshError = (error: unknown, sessionVersion: number): TokenRefres
  */
 const processTokenRefresh = async (sessionVersion: number): Promise<TokenRefreshResult> => {
 	try {
-		const { accessToken } = await requestNewAccessToken(sessionVersion);
+		const { accessToken, hasTeam } = await requestNewAccessToken(sessionVersion);
 
 		if (!isCurrentSession(sessionVersion)) return { type: 'canceled' };
 
-		useAuthStore.getState().updateSession(accessToken);
+		useAuthStore.getState().updateSession(accessToken, hasTeam);
 
 		return { type: 'success', accessToken };
 	} catch (error) {

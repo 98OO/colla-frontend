@@ -6,19 +6,17 @@ import Icon from '@components/common/Icon/Icon';
 import Input from '@components/common/Input/Input';
 import Profile from '@components/common/Profile/Profile';
 import Text from '@components/common/Text/Text';
+import useCurrentTeamRole from '@hooks/auth/useCurrentTeamRole';
 import useInviteTeamSpace from '@hooks/queries/teamspace/useInviteTeamSpaceMutation';
 import useTeamSpaceCode from '@hooks/queries/teamspace/useTeamSpaceCodeMutation';
 import useTeamSpaceUsersQuery from '@hooks/queries/teamspace/useTeamSpaceUsersQuery';
-import useUserStatusQuery from '@hooks/queries/useUserStatusQuery';
 import useForm from '@hooks/user/useForm';
 import { PATH } from '@constants/path';
 import * as S from './GNBTeamInfo.styled';
 
 const GNBTeamInfo = () => {
-	const { userStatus } = useUserStatusQuery();
-	const { teamSpaceUsers } = useTeamSpaceUsersQuery(
-		userStatus?.profile.lastSeenTeamspaceId
-	);
+	const { userStatus, currentTeamRole } = useCurrentTeamRole();
+	const { teamSpaceUsers } = useTeamSpaceUsersQuery(userStatus?.profile.lastSeenTeamspaceId);
 	const { mutateInviteTeamSpace } = useInviteTeamSpace();
 	const { mutateTeampSpaceCode } = useTeamSpaceCode();
 	const navigate = useNavigate();
@@ -26,18 +24,11 @@ const GNBTeamInfo = () => {
 	const lastSeenTeam = userStatus?.participatedTeamspaces.find(
 		(team) => team.teamspaceId === userStatus?.profile.lastSeenTeamspaceId
 	);
-	const teamRole = userStatus?.participatedTeamspaces?.find(
-		(teamspace) =>
-			teamspace.teamspaceId === userStatus?.profile.lastSeenTeamspaceId
-	)?.teamspaceRole;
 
 	const { formData, submitting, errors, register, handleSubmit } = useForm({
 		onSubmit: async () => {
 			if (userStatus?.profile.lastSeenTeamspaceId !== undefined) {
-				await mutateInviteTeamSpace(
-					userStatus?.profile.lastSeenTeamspaceId,
-					formData.email
-				);
+				await mutateInviteTeamSpace(userStatus?.profile.lastSeenTeamspaceId, formData.email);
 			}
 		},
 	});
@@ -56,11 +47,7 @@ const GNBTeamInfo = () => {
 			{userStatus && lastSeenTeam && (
 				<>
 					<Flex direction='column' gap='4'>
-						<Flex
-							paddingTop='4'
-							paddingBottom='4'
-							paddingLeft='12'
-							paddingRight='12'>
+						<Flex paddingTop='4' paddingBottom='4' paddingLeft='12' paddingRight='12'>
 							<Text size='md' weight='semiBold' color='tertiary'>
 								팀 정보
 							</Text>
@@ -127,7 +114,7 @@ const GNBTeamInfo = () => {
 					<Divider size='sm' padding={4} />
 					<Flex paddingLeft='16' paddingRight='16' justify='space-between'>
 						<Flex>
-							{teamRole === 'LEADER' && (
+							{currentTeamRole === 'LEADER' && (
 								<S.FooterWrapper onClick={() => navigate(PATH.SETTING)}>
 									<Icon name='Settings' size='sm' color='iSecondary' />
 									<Text size='md' weight='medium' color='secondary'>
@@ -136,8 +123,7 @@ const GNBTeamInfo = () => {
 								</S.FooterWrapper>
 							)}
 						</Flex>
-						<S.FooterWrapper
-							onClick={() => mutateTeampSpaceCode(lastSeenTeam.teamspaceId)}>
+						<S.FooterWrapper onClick={() => mutateTeampSpaceCode(lastSeenTeam.teamspaceId)}>
 							<Icon name='Link' size='sm' color='iSecondary' />
 							<Text size='md' weight='medium' color='secondary'>
 								초대 코드

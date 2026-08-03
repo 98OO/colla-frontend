@@ -1,8 +1,6 @@
-import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@components/common/Button/Button';
 import Text from '@components/common/Text/Text';
-import useAuthStore from '@stores/authStore';
 import { PATH } from '@constants/path';
 import { collaBear } from '@assets/png';
 import { Colla } from '@assets/svg';
@@ -10,12 +8,6 @@ import * as S from './LandingPage.styled';
 
 const LandingPage = () => {
 	const navigate = useNavigate();
-
-	useEffect(() => {
-		if (useAuthStore.getState().status === 'authenticated') {
-			navigate(PATH.FEED, { replace: true });
-		}
-	}, [navigate]);
 
 	return (
 		<S.Container>

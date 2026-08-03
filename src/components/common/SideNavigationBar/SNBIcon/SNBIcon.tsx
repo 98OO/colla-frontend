@@ -5,9 +5,9 @@ import Divider from '@components/common/Divider/Divider';
 import Flex from '@components/common/Flex/Flex';
 import FeedMenu from '@components/common/SideNavigationBar/FeedMenu/FeedMenu';
 import MenuItem from '@components/common/SideNavigationBar/MenuItem/MenuItem';
+import useCurrentTeamRole from '@hooks/auth/useCurrentTeamRole';
 import useMenu from '@hooks/common/useMenu';
 import useUnreadMessageCountQuery from '@hooks/queries/teamspace/useUnreadMessageCountQuery';
-import useUserStatusQuery from '@hooks/queries/useUserStatusQuery';
 import useSocketStore from '@stores/socketStore';
 import { PATH } from '@constants/path';
 import { SNB_ICON_WIDTH } from '@styles/layout';
@@ -16,15 +16,10 @@ import * as S from './SNBIcon.styled';
 const SNBIcon = () => {
 	const navigate = useNavigate();
 	const location = useLocation();
-	const { userStatus } = useUserStatusQuery();
+	const { userStatus, currentTeamRole } = useCurrentTeamRole();
 	const lastSeenTeamspaceId = userStatus?.profile.lastSeenTeamspaceId;
-	const teamspaces = userStatus?.participatedTeamspaces;
-	const teamRole = teamspaces?.find(
-		(teamspace) => teamspace.teamspaceId === lastSeenTeamspaceId
-	)?.teamspaceRole;
 
-	const { unreadMessageCount } =
-		useUnreadMessageCountQuery(lastSeenTeamspaceId);
+	const { unreadMessageCount } = useUnreadMessageCountQuery(lastSeenTeamspaceId);
 
 	const { chatMessageCount } = useSocketStore();
 	const baseRef = useRef<HTMLDivElement>(null);
@@ -33,13 +28,7 @@ const SNBIcon = () => {
 	return (
 		<S.Container ref={baseRef}>
 			<S.ButtonWrapper>
-				<Button
-					label=''
-					variant='primary'
-					size='md'
-					leadingIcon='Plus'
-					onClick={handleFeedMenu}
-				/>
+				<Button label='' variant='primary' size='md' leadingIcon='Plus' onClick={handleFeedMenu} />
 			</S.ButtonWrapper>
 			{showFeedMenu(baseRef, <FeedMenu closeMenu={handleFeedMenu} />, {
 				top: 24,
@@ -62,9 +51,7 @@ const SNBIcon = () => {
 					<MenuItem
 						leadingIcon='Message'
 						selected={location.pathname === PATH.CHAT}
-						number={
-							chatMessageCount === null ? unreadMessageCount : chatMessageCount
-						}
+						number={chatMessageCount === null ? unreadMessageCount : chatMessageCount}
 						type='iconOnly'
 						onClick={() => navigate(PATH.CHAT)}
 					/>
@@ -83,7 +70,7 @@ const SNBIcon = () => {
 				</Flex>
 				<Flex direction='column' gap='8' align='center'>
 					<Divider size='sm' />
-					{teamRole === 'LEADER' && (
+					{currentTeamRole === 'LEADER' && (
 						<MenuItem
 							leadingIcon='Settings'
 							selected={location.pathname === PATH.SETTING}
@@ -97,12 +84,7 @@ const SNBIcon = () => {
 						type='iconOnly'
 						onClick={() => navigate(PATH.ENTRY)}
 					/>
-					<MenuItem
-						leadingIcon='Help'
-						selected={false}
-						type='iconOnly'
-						onClick={() => ''}
-					/>
+					<MenuItem leadingIcon='Help' selected={false} type='iconOnly' onClick={() => ''} />
 				</Flex>
 			</Flex>
 		</S.Container>

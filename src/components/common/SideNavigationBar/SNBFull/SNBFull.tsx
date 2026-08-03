@@ -7,9 +7,9 @@ import Heading from '@components/common/Heading/Heading';
 import FeedMenu from '@components/common/SideNavigationBar/FeedMenu/FeedMenu';
 import MenuItem from '@components/common/SideNavigationBar/MenuItem/MenuItem';
 import Text from '@components/common/Text/Text';
+import useCurrentTeamRole from '@hooks/auth/useCurrentTeamRole';
 import useMenu from '@hooks/common/useMenu';
 import useUnreadMessageCountQuery from '@hooks/queries/teamspace/useUnreadMessageCountQuery';
-import useUserStatusQuery from '@hooks/queries/useUserStatusQuery';
 import useSocketStore from '@stores/socketStore';
 import { PATH } from '@constants/path';
 import { SNB_FULL_WIDTH } from '@styles/layout';
@@ -18,15 +18,10 @@ import * as S from './SNBFull.styled';
 const SNBFull = () => {
 	const navigate = useNavigate();
 	const location = useLocation();
-	const { userStatus } = useUserStatusQuery();
+	const { userStatus, currentTeamRole } = useCurrentTeamRole();
 	const lastSeenTeamspaceId = userStatus?.profile.lastSeenTeamspaceId;
-	const teamspaces = userStatus?.participatedTeamspaces;
-	const teamRole = teamspaces?.find(
-		(teamspace) => teamspace.teamspaceId === lastSeenTeamspaceId
-	)?.teamspaceRole;
 
-	const { unreadMessageCount } =
-		useUnreadMessageCountQuery(lastSeenTeamspaceId);
+	const { unreadMessageCount } = useUnreadMessageCountQuery(lastSeenTeamspaceId);
 	const { chatMessageCount } = useSocketStore();
 	const baseRef = useRef<HTMLDivElement>(null);
 	const { toggleMenu: handleFeedMenu, showMenu: showFeedMenu } = useMenu();
@@ -65,9 +60,7 @@ const SNBFull = () => {
 						leadingIcon='Message'
 						title='채팅'
 						selected={location.pathname === PATH.CHAT}
-						number={
-							chatMessageCount === null ? unreadMessageCount : chatMessageCount
-						}
+						number={chatMessageCount === null ? unreadMessageCount : chatMessageCount}
 						onClick={() => navigate(PATH.CHAT)}
 					/>
 					<MenuItem
@@ -85,14 +78,12 @@ const SNBFull = () => {
 				</Flex>
 				<Flex direction='column' gap='8'>
 					<Divider size='sm' />
-					{teamRole === 'LEADER' && (
+					{currentTeamRole === 'LEADER' && (
 						<S.ButtonWrapper onClick={() => navigate(PATH.SETTING)}>
 							<Text
 								size='md'
 								weight='medium'
-								color={
-									location.pathname === PATH.SETTING ? 'info' : 'tertiary'
-								}>
+								color={location.pathname === PATH.SETTING ? 'info' : 'tertiary'}>
 								팀스페이스 설정
 							</Text>
 						</S.ButtonWrapper>

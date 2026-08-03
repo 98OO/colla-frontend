@@ -16,3 +16,9 @@ export const restoreSession = async () => {
 
 	await refreshAccessToken();
 };
+
+export const retrySessionRestore = () => {
+	useAuthStore.getState().startBootstrapping();
+
+	return restoreSession();
+};
