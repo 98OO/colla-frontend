@@ -2,7 +2,7 @@ import { useCallback, useRef, useState } from 'react';
 import ChatMessageActions from '@components/Chat/ChatMessageActions/ChatMessageActions';
 import LatestMessageBox from '@components/Chat/LatestMessageBox/LatestMessageBox';
 import MyMessageBox from '@components/Chat/MyMessageBox/MyMessageBox';
-import OtherMessageBox from '@components/Chat/OtherMessageBox/OtherMessageBox';
+import VirtualChatMessageList from '@components/Chat/VirtualChatMessageList/VirtualChatMessageList';
 import { Button } from '@components/common/Button/Button';
 import Flex from '@components/common/Flex/Flex';
 import IconButton from '@components/common/IconButton/IconButton';
@@ -13,13 +13,14 @@ import useChatMessages from '@hooks/chatting/useChatMessages';
 import useChatScroll from '@hooks/chatting/useChatScroll';
 import useChatSubscription from '@hooks/chatting/useChatSubscription';
 import useUserStatusQuery from '@hooks/queries/useUserStatusQuery';
-import { getFormattedDate } from '@utils/getFormattedDate';
 import * as S from './Chatting.styled';
 
 const Chatting = ({ selectedChat }: { selectedChat: number }) => {
 	const { userStatus } = useUserStatusQuery();
 	const chatRef = useRef<HTMLDivElement | null>(null);
+	const initializedVirtualLayoutChatIdRef = useRef<number | null>(null);
 	const [chatContainer, setChatContainer] = useState<HTMLDivElement | null>(null);
+	const [virtualLayoutReadyChatId, setVirtualLayoutReadyChatId] = useState<number | null>(null);
 
 	const {
 		chatHistory,
@@ -52,7 +53,7 @@ const Chatting = ({ selectedChat }: { selectedChat: number }) => {
 		chatContainer,
 		hasNextPage,
 		isFetchingNextPage,
-		isInitialScrollComplete,
+		isInitialScrollComplete: isInitialScrollComplete && virtualLayoutReadyChatId === selectedChat,
 		paginationVersion,
 		fetchNextPage,
 	});
@@ -86,6 +87,14 @@ const Chatting = ({ selectedChat }: { selectedChat: number }) => {
 
 		setChatContainer(element);
 	}, []);
+
+	const handleInitialVirtualLayoutSettled = useCallback(() => {
+		if (initializedVirtualLayoutChatIdRef.current === selectedChat) return;
+
+		initializedVirtualLayoutChatIdRef.current = selectedChat;
+		messageEndRef.current?.scrollIntoView();
+		setVirtualLayoutReadyChatId(selectedChat);
+	}, [messageEndRef, selectedChat]);
 
 	return (
 		<S.ChattingContainer>
@@ -141,84 +150,16 @@ const Chatting = ({ selectedChat }: { selectedChat: number }) => {
 							}
 						/>
 					))}
-					{chatHistory &&
-						chatHistory.chatChannelMessages.map((msg, index, array) => {
-							const previousMsg = index < array.length - 1 ? array[index + 1] : null;
-							const nextMsg = index > 0 ? array[index - 1] : null;
-
-							return (
-								<Flex direction='column' key={msg.id}>
-									{((previousMsg &&
-										getFormattedDate(msg.createdAt, 'chatDate') !==
-											getFormattedDate(previousMsg.createdAt, 'chatDate')) ||
-										index === array.length - 1) && (
-										<Flex justify='center' height='28' margin='20px 0 10px 0'>
-											<S.ChattingDateWrapper>
-												<Text size='sm' weight='medium' color='tertiary'>
-													{getFormattedDate(msg.createdAt, 'chatDate')}
-												</Text>
-											</S.ChattingDateWrapper>
-										</Flex>
-									)}
-									{msg.author.id === userStatus?.profile.userId ? (
-										<MyMessageBox
-											key={msg.id}
-											type={msg.type}
-											content={msg.content}
-											date={
-												nextMsg?.author.id !== msg.author.id ||
-												(nextMsg?.author.id === msg.author.id &&
-													nextMsg?.createdAt !== msg.createdAt)
-													? getFormattedDate(msg.createdAt, 'chatTime')
-													: null
-											}
-											file={
-												msg.attachments.length > 0
-													? msg.attachments.map((attachment) => ({
-															filename: attachment.filename,
-															url: attachment.url,
-															id: attachment.id,
-															size: attachment.size,
-														}))
-													: []
-											}
-											state={
-												previousMsg?.author.id !== msg.author.id ||
-												previousMsg?.createdAt !== msg.createdAt
-											}
-										/>
-									) : (
-										<OtherMessageBox
-											name={msg.author.username}
-											profile={msg.author.profileImageUrl}
-											type={msg.type}
-											content={msg.content}
-											date={
-												nextMsg?.author.id !== msg.author.id ||
-												(nextMsg?.author.id === msg.author.id &&
-													nextMsg?.createdAt !== msg.createdAt)
-													? getFormattedDate(msg.createdAt, 'chatTime')
-													: null
-											}
-											file={
-												msg.attachments.length > 0
-													? msg.attachments.map((attachment) => ({
-															filename: attachment.filename,
-															url: attachment.url,
-															id: attachment.id,
-															size: attachment.size,
-														}))
-													: []
-											}
-											state={
-												previousMsg?.author.id !== msg.author.id ||
-												previousMsg?.createdAt !== msg.createdAt
-											}
-										/>
-									)}
-								</Flex>
-							);
-						})}
+					{chatHistory && (
+						<VirtualChatMessageList
+							messages={chatHistory.chatChannelMessages}
+							chatContainer={chatContainer}
+							userId={userStatus?.profile.userId}
+							isInitialScrollComplete={isInitialScrollComplete}
+							isVirtualLayoutReady={virtualLayoutReadyChatId === selectedChat}
+							onInitialLayoutSettled={handleInitialVirtualLayoutSettled}
+						/>
+					)}
 					<S.ChatTopSentinel ref={topSentinelRef} />
 				</S.ChatMessageList>
 				<S.MessageEndWrapper ref={messageEndRef} />
