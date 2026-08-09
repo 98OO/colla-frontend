@@ -42,9 +42,12 @@ const VirtualChatMessageList = ({
 		overscan: 5,
 	});
 	const virtualItems = virtualizer.getVirtualItems();
+	const measuredItemKeys = new Set(
+		virtualizer.takeSnapshot().map((virtualItem) => virtualItem.key)
+	);
 	const hasMeasuredVirtualItems =
 		virtualItems.length > 0 &&
-		virtualItems.every((virtualItem) => virtualizer.itemSizeCache.has(virtualItem.key));
+		virtualItems.every((virtualItem) => measuredItemKeys.has(virtualItem.key));
 
 	useLayoutEffect(() => {
 		if (!hasMeasuredVirtualItems || hasNotifiedInitialLayoutRef.current) return;
