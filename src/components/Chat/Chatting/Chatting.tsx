@@ -18,7 +18,6 @@ import * as S from './Chatting.styled';
 const Chatting = ({ selectedChat }: { selectedChat: number }) => {
 	const { userStatus } = useUserStatusQuery();
 	const chatRef = useRef<HTMLDivElement | null>(null);
-	const initializedVirtualLayoutChatIdRef = useRef<number | null>(null);
 	const [chatContainer, setChatContainer] = useState<HTMLDivElement | null>(null);
 	const [virtualLayoutReadyChatId, setVirtualLayoutReadyChatId] = useState<number | null>(null);
 
@@ -89,12 +88,11 @@ const Chatting = ({ selectedChat }: { selectedChat: number }) => {
 	}, []);
 
 	const handleInitialVirtualLayoutSettled = useCallback(() => {
-		if (initializedVirtualLayoutChatIdRef.current === selectedChat) return;
+		if (virtualLayoutReadyChatId === selectedChat) return;
 
-		initializedVirtualLayoutChatIdRef.current = selectedChat;
 		messageEndRef.current?.scrollIntoView();
 		setVirtualLayoutReadyChatId(selectedChat);
-	}, [messageEndRef, selectedChat]);
+	}, [messageEndRef, selectedChat, virtualLayoutReadyChatId]);
 
 	return (
 		<S.ChattingContainer>
