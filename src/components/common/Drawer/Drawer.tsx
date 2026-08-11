@@ -1,56 +1,70 @@
-import { useEffect, useCallback } from 'react';
+import { useEffect, type ReactNode } from 'react';
 import { createPortal } from 'react-dom';
 import IconButton from '@components/common/IconButton/IconButton';
 import useOutsideClick from '@hooks/common/useOutSideClick';
+import { AnimatePresence, domAnimation, LazyMotion, MotionConfig } from 'motion/react';
+import { DRAWER_TRANSITION_DURATION_MS } from '@styles/motion';
 import * as S from './Drawer.styled';
+
+const DRAWER_VARIANTS = {
+	hidden: { x: '100%', pointerEvents: 'none' },
+	visible: { x: 0, pointerEvents: 'auto' },
+} as const;
+
+const DRAWER_TRANSITION = {
+	duration: DRAWER_TRANSITION_DURATION_MS / 1000,
+	ease: 'easeInOut',
+} as const;
 
 interface DrawerProps {
 	isOpen: boolean;
+	children: ReactNode;
 	onClose: () => void;
-	children: React.ReactNode;
 }
 
 const Drawer = ({ isOpen, onClose, children }: DrawerProps) => {
 	const ref = useOutsideClick({
 		onClickOutside: onClose,
+		enabled: isOpen,
 	});
 
-	const handleKeyDown = useCallback(
-		(event: KeyboardEvent) => {
-			if (event.key === 'Escape' && isOpen) {
+	useEffect(() => {
+		if (!isOpen) return undefined;
+
+		const handleKeyDown = (event: KeyboardEvent) => {
+			if (event.key === 'Escape') {
 				onClose();
 			}
-		},
-		[isOpen, onClose]
-	);
+		};
 
-	useEffect(() => {
 		window.addEventListener('keydown', handleKeyDown);
 		return () => window.removeEventListener('keydown', handleKeyDown);
-	}, [handleKeyDown]);
-
-	useEffect(() => {
-		if (isOpen && ref.current) {
-			ref.current.classList.add('open');
-		} else if (ref.current) {
-			ref.current.classList.remove('open');
-		}
-	}, [isOpen]);
+	}, [isOpen, onClose]);
 
 	return createPortal(
-		<S.DrawerContainer ref={ref}>
-			<S.DrawerContent>
-				<S.DrawerMenu>
-					<IconButton
-						icon='ChevronsRight'
-						size='lg'
-						ariaLabel='close'
-						onClick={onClose}
-					/>
-				</S.DrawerMenu>
-				{children}
-			</S.DrawerContent>
-		</S.DrawerContainer>,
+		<LazyMotion features={domAnimation} strict>
+			<MotionConfig reducedMotion='user'>
+				<AnimatePresence initial={false}>
+					{isOpen && (
+						<S.DrawerContainer
+							key='drawer'
+							ref={ref}
+							initial='hidden'
+							animate='visible'
+							exit='hidden'
+							variants={DRAWER_VARIANTS}
+							transition={DRAWER_TRANSITION}>
+							<S.DrawerContent>
+								<S.DrawerMenu>
+									<IconButton icon='ChevronsRight' size='lg' ariaLabel='close' onClick={onClose} />
+								</S.DrawerMenu>
+								{children}
+							</S.DrawerContent>
+						</S.DrawerContainer>
+					)}
+				</AnimatePresence>
+			</MotionConfig>
+		</LazyMotion>,
 		document.getElementById('drawer-root') as HTMLElement
 	);
 };

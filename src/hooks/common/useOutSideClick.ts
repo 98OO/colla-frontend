@@ -2,9 +2,10 @@ import { useCallback, useEffect, useRef } from 'react';
 
 interface UseOutsideClickProps {
 	onClickOutside: () => void;
+	enabled?: boolean;
 }
 
-const useOutsideClick = ({ onClickOutside }: UseOutsideClickProps) => {
+const useOutsideClick = ({ onClickOutside, enabled = true }: UseOutsideClickProps) => {
 	const ref = useRef<HTMLDivElement | null>(null);
 
 	const handleClickOutside = useCallback(
@@ -14,16 +15,18 @@ const useOutsideClick = ({ onClickOutside }: UseOutsideClickProps) => {
 				onClickOutside();
 			}
 		},
-		[onClickOutside, ref]
+		[onClickOutside]
 	);
 
 	useEffect(() => {
+		if (!enabled) return undefined;
+
 		document.addEventListener('mouseup', handleClickOutside);
 
 		return () => {
 			document.removeEventListener('mouseup', handleClickOutside);
 		};
-	}, [handleClickOutside]);
+	}, [enabled, handleClickOutside]);
 
 	return ref;
 };

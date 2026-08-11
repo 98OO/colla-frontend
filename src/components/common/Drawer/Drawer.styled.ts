@@ -1,24 +1,21 @@
+import * as m from 'motion/react-m';
 import styled from 'styled-components';
+import { DRAWER_MAX_WIDTH } from '@styles/layout';
 import theme from '@styles/theme';
 
-export const DrawerContainer = styled.div`
+export const DrawerContainer = styled(m.div)`
 	position: fixed;
 	top: 0;
 	right: 0;
-	width: 0;
+	z-index: ${theme.elevation.zIndex.DRAWER};
+	display: flex;
+	width: min(${DRAWER_MAX_WIDTH}px, 100vw);
 	height: 100%;
 	overflow: hidden;
-	transition: width 0.3s ease-in-out;
-	z-index: 1000;
-	display: flex;
 	box-shadow:
 		rgba(15, 15, 15, 0.04) 0px 0px 0px 1px,
 		rgba(15, 15, 15, 0.03) 0px 3px 6px,
 		rgba(15, 15, 15, 0.06) 0px 9px 24px;
-
-	&.open {
-		width: 800px;
-	}
 `;
 
 export const DrawerMenu = styled.div`

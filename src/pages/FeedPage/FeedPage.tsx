@@ -5,7 +5,6 @@ import Heading from '@components/common/Heading/Heading';
 import Select from '@components/common/Select/Select';
 import FeedList from '@components/Feed/FeedList/FeedList';
 import FeedSkeletonList from '@components/Feed/FeedSkeletonList/FeedSkeletonList';
-import useMeasureWidth from '@hooks/common/useMeasureWidth';
 import { queryClient } from '@hooks/queries/common/queryClient';
 import { useLastSeenTeamspaceId } from '@hooks/user/useLastSeenTeamspaceId';
 import useFeedDetailStore, { clearFeedDetail } from '@stores/feedDetailStore';
@@ -21,12 +20,6 @@ const toFeedQueryType = (select: SelectType): FeedType | undefined => {
 	return feedType === 'ALL' ? undefined : feedType;
 };
 
-const getAdjustedWidth = (width: number) => {
-	const space = Math.max((width - 760) / 2, 0);
-
-	return Math.min(space, 200);
-};
-
 const useResetFeedDetail = (teamspaceId?: number, type?: FeedType) => {
 	useEffect(() => {
 		clearFeedDetail();
@@ -38,12 +31,10 @@ const useResetFeedDetail = (teamspaceId?: number, type?: FeedType) => {
 const FeedPage = () => {
 	const teamspaceId = useLastSeenTeamspaceId();
 	const isFeedDetailOpen = useFeedDetailStore((state) => state.selectedFeedId !== null);
-	const { ref: containerRef, width } = useMeasureWidth();
 
 	const [selectedType, setSelectedType] = useState<SelectType>('전체');
 
 	const feedType = toFeedQueryType(selectedType);
-	const adjustedWidth = getAdjustedWidth(width);
 
 	useResetFeedDetail(teamspaceId, feedType);
 
@@ -58,8 +49,8 @@ const FeedPage = () => {
 	};
 
 	return (
-		<S.Container ref={containerRef}>
-			<S.FeedHeaderContainer isOpen={isFeedDetailOpen} adjustedWidth={adjustedWidth}>
+		<S.Container>
+			<S.FeedHeaderContainer $isOpen={isFeedDetailOpen}>
 				<S.FeedHeader>
 					<Heading size='xs' color='primary'>
 						피드
@@ -75,7 +66,7 @@ const FeedPage = () => {
 				</S.FeedHeader>
 				<Divider size='sm' />
 			</S.FeedHeaderContainer>
-			<S.FeedsWrapper isOpen={isFeedDetailOpen} adjustedWidth={adjustedWidth}>
+			<S.FeedsWrapper $isOpen={isFeedDetailOpen}>
 				{teamspaceId ? (
 					<AsyncBoundary loadingFallback={<FeedSkeletonList />} resetKeys={[teamspaceId, feedType]}>
 						<FeedList teamspaceId={teamspaceId} type={feedType} />
