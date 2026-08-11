@@ -4,6 +4,7 @@ import { useErrorBoundary } from 'react-error-boundary';
 import { matchPath } from 'react-router-dom';
 import { clearClientSession } from '@apis/auth/sessionActions';
 import { restoreSession } from '@apis/auth/sessionRestore';
+import useSocketNetworkRecovery from '@hooks/socket/useSocketNetworkRecovery';
 import useAuthStore from '@stores/authStore';
 import useSocketStore from '@stores/socketStore';
 import { PATH } from '@constants/path';
@@ -66,6 +67,7 @@ const AuthSessionManager = ({ children }: AuthSessionManagerProps) => {
 	useRestoreSessionOnMount();
 	useSyncSessionAcrossTabs();
 	useSyncSocketWithAuthStatus(status);
+	useSocketNetworkRecovery();
 
 	return children;
 };
