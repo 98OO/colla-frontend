@@ -1,10 +1,8 @@
 import { useEffect, useState } from 'react';
-import AsyncBoundary from '@components/common/AsyncBoundary/AsyncBoundary';
 import Divider from '@components/common/Divider/Divider';
 import Heading from '@components/common/Heading/Heading';
 import Select from '@components/common/Select/Select';
-import FeedList from '@components/Feed/FeedList/FeedList';
-import FeedSkeletonList from '@components/Feed/FeedSkeletonList/FeedSkeletonList';
+import FeedPageContentContainer from '@components/Feed/FeedPageContentContainer/FeedPageContentContainer';
 import { queryClient } from '@hooks/queries/common/queryClient';
 import { useLastSeenTeamspaceId } from '@hooks/user/useLastSeenTeamspaceId';
 import useFeedDetailStore, { clearFeedDetail } from '@stores/feedDetailStore';
@@ -66,15 +64,11 @@ const FeedPage = () => {
 				</S.FeedHeader>
 				<Divider size='sm' />
 			</S.FeedHeaderContainer>
-			<S.FeedsWrapper $isOpen={isFeedDetailOpen}>
-				{teamspaceId ? (
-					<AsyncBoundary loadingFallback={<FeedSkeletonList />} resetKeys={[teamspaceId, feedType]}>
-						<FeedList teamspaceId={teamspaceId} type={feedType} />
-					</AsyncBoundary>
-				) : (
-					<FeedSkeletonList />
-				)}
-			</S.FeedsWrapper>
+			<FeedPageContentContainer
+				teamspaceId={teamspaceId}
+				isFeedDetailOpen={isFeedDetailOpen}
+				feedType={feedType}
+			/>
 		</S.Container>
 	);
 };

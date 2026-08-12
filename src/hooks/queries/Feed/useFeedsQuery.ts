@@ -3,9 +3,10 @@ import { useSuspenseInfiniteQuery } from '@tanstack/react-query';
 
 const useFeedsQuery = ({ teamspaceId, limit, type }: GetFeedsParams) => {
 	const {
-		data: feeds,
+		data: feedPages,
 		hasNextPage,
-		isFetching,
+		isFetchingNextPage,
+		isError,
 		fetchNextPage,
 	} = useSuspenseInfiniteQuery({
 		queryKey: ['feeds', teamspaceId, type],
@@ -27,7 +28,7 @@ const useFeedsQuery = ({ teamspaceId, limit, type }: GetFeedsParams) => {
 		},
 	});
 
-	return { feeds, hasNextPage, isFetching, fetchNextPage };
+	return { feedPages, hasNextPage, isFetchingNextPage, isError, fetchNextPage };
 };
 
 export default useFeedsQuery;
