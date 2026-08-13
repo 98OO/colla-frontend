@@ -1,3 +1,4 @@
+import { memo } from 'react';
 import SelectedFeedDetail from '@components/Feed/Detail/SelectedFeedDetail';
 import Feed from '@components/Feed/Feed';
 import NextPageTrigger from '@components/Feed/NextPageTrigger/NextPageTrigger';
@@ -10,7 +11,7 @@ interface FeedPageContentProps {
 	feedType?: FeedType;
 }
 
-const FeedPageContent = ({ teamspaceId, scrollContainer, feedType }: FeedPageContentProps) => {
+const FeedPageContent = memo(({ teamspaceId, scrollContainer, feedType }: FeedPageContentProps) => {
 	const { feedPages, hasNextPage, isFetchingNextPage, isError, fetchNextPage } = useFeedsQuery({
 		teamspaceId,
 		type: feedType,
@@ -32,6 +33,8 @@ const FeedPageContent = ({ teamspaceId, scrollContainer, feedType }: FeedPageCon
 			<SelectedFeedDetail feeds={feeds} />
 		</>
 	);
-};
+});
+
+FeedPageContent.displayName = 'FeedPageContent';
 
 export default FeedPageContent;
