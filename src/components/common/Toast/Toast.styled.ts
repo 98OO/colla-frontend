@@ -1,10 +1,7 @@
 import styled from 'styled-components';
 import { fadeIn, fadeOut } from '@styles/animations';
-import type { ToastProps } from './Toast';
 
-type toastWrapperProps = Pick<ToastProps, 'isActive'>;
-
-export const ToastWrapper = styled.div<toastWrapperProps>`
+export const ToastWrapper = styled.div<{ $isActive: boolean }>`
 	display: flex;
 	justify-content: center;
 	align-items: center;
@@ -18,7 +15,7 @@ export const ToastWrapper = styled.div<toastWrapperProps>`
 	-webkit-backdrop-filter: blur(8px);
 	border-radius: ${(props) => props.theme.units.radius.radius12};
 	box-shadow: ${(props) => props.theme.elevation.shadow.shadow8};
-	animation: ${(props) => (props.isActive ? fadeIn : fadeOut)} 0.4s ease-out;
+	animation: ${({ $isActive }) => ($isActive ? fadeIn : fadeOut)} 0.4s ease-out;
 `;
 
 export const ToastTextWrapper = styled.div`
