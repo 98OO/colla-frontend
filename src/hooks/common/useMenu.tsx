@@ -9,12 +9,19 @@ interface MenuPosition {
 	right?: number;
 }
 
-const MenuContainer = styled.div<MenuPosition>`
+interface MenuContainerProps {
+	$top?: number;
+	$bottom?: number;
+	$left?: number;
+	$right?: number;
+}
+
+const MenuContainer = styled.div<MenuContainerProps>`
 	position: absolute;
-	top: ${(props) => `${props.top}px` ?? 'auto'};
-	bottom: ${(props) => `${props.bottom}px` ?? 'auto'};
-	left: ${(props) => `${props.left}px` ?? 'auto'};
-	right: ${(props) => `${props.right}px` ?? 'auto'};
+	top: ${({ $top }) => ($top === undefined ? 'auto' : `${$top}px`)};
+	bottom: ${({ $bottom }) => ($bottom === undefined ? 'auto' : `${$bottom}px`)};
+	left: ${({ $left }) => ($left === undefined ? 'auto' : `${$left}px`)};
+	right: ${({ $right }) => ($right === undefined ? 'auto' : `${$right}px`)};
 	z-index: ${(props) => props.theme.elevation.zIndex.MENU};
 `;
 
@@ -49,7 +56,12 @@ const useMenu = () => {
 
 		return (
 			isVisible && (
-				<MenuContainer ref={ref} {...position}>
+				<MenuContainer
+					ref={ref}
+					$top={position.top}
+					$bottom={position.bottom}
+					$left={position.left}
+					$right={position.right}>
 					{menu}
 				</MenuContainer>
 			)
