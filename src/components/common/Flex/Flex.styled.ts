@@ -1,5 +1,30 @@
 import styled from 'styled-components';
 
+const FLEX_STYLE_PROPS = [
+	'direction',
+	'wrap',
+	'basis',
+	'grow',
+	'shrink',
+	'align',
+	'justify',
+	'gap',
+	'margin',
+	'marginRight',
+	'marginTop',
+	'marginLeft',
+	'marginBottom',
+	'padding',
+	'paddingTop',
+	'paddingRight',
+	'paddingBottom',
+	'paddingLeft',
+	'border',
+	'width',
+	'height',
+	'position',
+] as const;
+
 export interface FlexStyleProps {
 	direction?: 'row' | 'column';
 	wrap?: 'nowrap' | 'wrap' | 'wrap-reverse';
@@ -55,7 +80,8 @@ export interface FlexStyleProps {
 }
 
 export const FlexWrapper = styled.div.withConfig({
-	shouldForwardProp: (prop) => !['gap', 'align'].includes(prop),
+	shouldForwardProp: (prop) =>
+		!FLEX_STYLE_PROPS.includes(prop as (typeof FLEX_STYLE_PROPS)[number]),
 })<FlexStyleProps>`
 	display: flex;
 	flex-direction: ${({ direction }) => direction || 'row'};
