@@ -25,6 +25,9 @@ const MenuContainer = styled.div<MenuContainerProps>`
 	z-index: ${(props) => props.theme.elevation.zIndex.MENU};
 `;
 
+const addOffset = (value: number | undefined, basePosition: number) =>
+	value === undefined ? undefined : value + basePosition;
+
 const useMenu = () => {
 	const [isVisible, setIsVisible] = useState(false);
 
@@ -48,10 +51,10 @@ const useMenu = () => {
 		const { top, bottom, left, right } = baseRect;
 
 		const position: MenuPosition = {
-			top: (menuPosition.top ?? 0) + top,
-			bottom: (menuPosition.bottom ?? 0) + bottom,
-			left: (menuPosition.left ?? 0) + left,
-			right: (menuPosition.right ?? 0) + right,
+			top: addOffset(menuPosition.top, top),
+			bottom: addOffset(menuPosition.bottom, bottom),
+			left: addOffset(menuPosition.left, left),
+			right: addOffset(menuPosition.right, right),
 		};
 
 		return (
