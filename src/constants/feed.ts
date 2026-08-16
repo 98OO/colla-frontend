@@ -7,6 +7,8 @@ export const FEED_SELECT_MAP = {
 
 export const FEED_INFINITE_SCROLL_PRELOAD_DISTANCE = 250;
 
+export const SCHEDULING_SLOT_HEIGHT = 20;
+
 export const EDITOR_IMAGE_ERROR_MESSAGE = {
 	NO_FILE_SELECTED: '파일이 선택되지 않았습니다. 다시 시도해주세요.',
 	EXCEED_LIMIT: '파일 최대 허용 사이즈를 초과했습니다.',
