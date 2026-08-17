@@ -1,8 +1,8 @@
-import { useState } from 'react';
 import GridHeader from '@components/Feed/SchedulingFeed/GridHeader';
 import Participants from '@components/Feed/SchedulingFeed/Participants';
 import ScheduleEditView from '@components/Feed/SchedulingFeed/ScheduleEditView';
 import ScheduleReadView from '@components/Feed/SchedulingFeed/ScheduleReadView';
+import useSchedulingEditMode from '@hooks/feed/useSchedulingEditMode';
 import useSchedulingAvailMutation from '@hooks/queries/post/useSchedulingAvailMutation';
 import useUserStatusQuery from '@hooks/queries/useUserStatusQuery';
 import {
@@ -16,21 +16,23 @@ import * as S from './SchedulingFeed.styled';
 
 interface SchedulingContentProps {
 	feedData: SchedulingFeed;
+	onEditChange?: (feedId: number, isEditing: boolean) => void;
 }
 
-const SchedulingContent = ({ feedData }: SchedulingContentProps) => {
+const SchedulingContent = ({ feedData, onEditChange }: SchedulingContentProps) => {
 	const { feedId, details } = feedData;
 	const { minTimeSegment, maxTimeSegment, totalAvailability, responses, numOfParticipants } =
 		details;
 
-	const [isEditable, setIsEditable] = useState(false);
-
 	const { userStatus } = useUserStatusQuery();
 	const teamspaceId = userStatus?.profile.lastSeenTeamspaceId;
 	const userId = userStatus?.profile.userId;
-	const { mutateSchedulingAvail } = useSchedulingAvailMutation(teamspaceId, () =>
-		setIsEditable(false)
-	);
+
+	const { isEditing, enterEditMode, exitEditMode } = useSchedulingEditMode({
+		feedId,
+		onEditChange,
+	});
+	const { mutateSchedulingAvail } = useSchedulingAvailMutation(teamspaceId, exitEditMode);
 
 	const { isParticipating, initialSelectedSlots } = getUserScheduleInfo(
 		responses,
@@ -46,10 +48,6 @@ const SchedulingContent = ({ feedData }: SchedulingContentProps) => {
 	const dates = availabilityColumns.map(([date]) => date);
 	const isClosed = details.isClosed || isDuePassed(details.dueAt);
 
-	const handleEdit = () => setIsEditable(true);
-
-	const handleCancel = () => setIsEditable(false);
-
 	const handleSubmit = (selectedSlots: Set<string>) => {
 		if (!teamspaceId) return;
 
@@ -62,7 +60,7 @@ const SchedulingContent = ({ feedData }: SchedulingContentProps) => {
 	return (
 		<S.DetailWrapper>
 			<GridHeader dates={dates} />
-			{isEditable ? (
+			{isEditing ? (
 				<ScheduleEditView
 					availabilityColumns={availabilityColumns}
 					minTimeSegment={minTimeSegment}
@@ -72,7 +70,7 @@ const SchedulingContent = ({ feedData }: SchedulingContentProps) => {
 						<Participants responses={responses} numOfParticipants={numOfParticipants} />
 					}
 					onSubmit={handleSubmit}
-					onCancel={handleCancel}
+					onCancel={exitEditMode}
 				/>
 			) : (
 				<ScheduleReadView
@@ -83,7 +81,7 @@ const SchedulingContent = ({ feedData }: SchedulingContentProps) => {
 					isParticipating={isParticipating}
 					responses={responses}
 					isClosed={isClosed}
-					onEdit={handleEdit}
+					onEdit={enterEditMode}
 				/>
 			)}
 		</S.DetailWrapper>

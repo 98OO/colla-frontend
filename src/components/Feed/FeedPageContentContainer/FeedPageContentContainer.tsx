@@ -16,7 +16,7 @@ const FeedPageContentContainer = ({
 	isFeedDetailOpen,
 	feedType,
 }: FeedPageContentContainerProps) => {
-	const [scrollContainer, setScrollContainer] = useState<HTMLElement | null>(null);
+	const [scrollContainer, setScrollContainer] = useState<HTMLDivElement | null>(null);
 	const canRenderFeedPageContent = teamspaceId !== undefined && scrollContainer !== null;
 
 	return (

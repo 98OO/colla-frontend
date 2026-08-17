@@ -7,6 +7,14 @@ export const FEED_SELECT_MAP = {
 
 export const FEED_INFINITE_SCROLL_PRELOAD_DISTANCE = 250;
 
+export const FEED_VIRTUAL_OVERSCAN = 2;
+
+export const FEED_ESTIMATED_HEIGHT = {
+	NORMAL: 406,
+	COLLECT: 636,
+	SCHEDULING_BASE: 426,
+} as const;
+
 export const SCHEDULING_SLOT_HEIGHT = 20;
 
 export const EDITOR_IMAGE_ERROR_MESSAGE = {
