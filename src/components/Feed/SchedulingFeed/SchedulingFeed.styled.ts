@@ -1,5 +1,9 @@
 import { styled, css } from 'styled-components';
-import { SCHEDULING_SLOT_HEIGHT } from '@constants/feed';
+import {
+	SCHEDULING_HEADER_HEIGHT,
+	SCHEDULING_SLOT_HEIGHT,
+	SCHEDULING_TIME_COLUMN_WIDTH,
+} from '@constants/feed';
 import theme from '@styles/theme';
 
 export const FeedContainer = styled.div`
@@ -56,7 +60,7 @@ export const TimeColumn = styled.div`
 	display: flex;
 	flex-direction: column;
 	flex-shrink: 0;
-	width: 50px;
+	width: ${SCHEDULING_TIME_COLUMN_WIDTH}px;
 	padding-right: ${theme.units.spacing.space10};
 	border-right: 1px solid ${theme.color.border.tertiary};
 	font-size: ${theme.typography.fontSize.body.sm};
@@ -148,8 +152,8 @@ export const TimeHeader = styled.div`
 	flex-shrink: 0;
 	align-items: center;
 	justify-content: center;
-	height: 42px;
-	width: 50px;
+	height: ${SCHEDULING_HEADER_HEIGHT}px;
+	width: ${SCHEDULING_TIME_COLUMN_WIDTH}px;
 	padding-right: ${theme.units.spacing.space4};
 `;
 
@@ -166,7 +170,7 @@ export const Header = styled.div`
 	flex-direction: column;
 	align-items: center;
 	justify-content: center;
-	height: 42px;
+	height: ${SCHEDULING_HEADER_HEIGHT}px;
 	gap: ${theme.units.spacing.space8};
 `;
 

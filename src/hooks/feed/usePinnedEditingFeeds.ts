@@ -43,6 +43,7 @@ const usePinnedEditingFeeds = (feeds: FeedData[]) => {
 	}, []);
 
 	return {
+		editingFeedIds,
 		extractRangeWithEditingFeeds,
 		handleSchedulingEditChange,
 	};
