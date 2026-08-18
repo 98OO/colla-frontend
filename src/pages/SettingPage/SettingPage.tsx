@@ -279,6 +279,7 @@ const SettingPage = () => {
 							<S.TeamMemberContainer>
 								{teamSetting.users.map((user, index) => (
 									<TeamMemberItem
+										key={user.id}
 										profile={user.profileImageUrl}
 										username={user.username}
 										email={user.email}

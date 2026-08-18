@@ -9,7 +9,7 @@ export interface DividerProps {
 const Divider = (props: DividerProps) => {
 	const { size, padding } = props;
 	return (
-		<S.DividerContainer padding={padding}>
+		<S.DividerContainer $padding={padding}>
 			<S.DividerWrapper size={size} />
 		</S.DividerContainer>
 	);

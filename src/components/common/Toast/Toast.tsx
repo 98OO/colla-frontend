@@ -28,7 +28,7 @@ const Toast = (props: ToastProps) => {
 	}, [id, isActive, removeToast]);
 
 	return createPortal(
-		<S.ToastWrapper ref={ref} isActive={isActive}>
+		<S.ToastWrapper ref={ref} $isActive={isActive}>
 			<Icon name={variant} size='lg' />
 			<S.ToastTextWrapper>
 				<Text as='span' color='iInverse' size='lg' weight='medium'>

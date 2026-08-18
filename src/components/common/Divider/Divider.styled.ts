@@ -9,12 +9,11 @@ const dividerSizeMap = {
 	sm: '1px',
 };
 
-export const DividerContainer = styled.div<Omit<DividerProps, 'size'>>`
-	padding: ${(props) => (props.padding ? `${props.padding}px 0` : '0')};
+export const DividerContainer = styled.div<{ $padding?: number }>`
+	padding: ${({ $padding }) => ($padding ? `${$padding}px 0` : '0')};
 `;
 
 export const DividerWrapper = styled.div<DividerProps>`
-	border-bottom: ${(props) => dividerSizeMap[props.size]} solid
-		${theme.color.border.tertiary};
+	border-bottom: ${(props) => dividerSizeMap[props.size]} solid ${theme.color.border.tertiary};
 	height: ${(props) => dividerSizeMap[props.size]};
 `;
