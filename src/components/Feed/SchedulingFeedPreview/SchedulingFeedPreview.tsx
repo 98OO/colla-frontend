@@ -7,13 +7,9 @@ interface SchedulingFeedPreviewProps {
 const SchedulingFeedPreview = ({ height }: SchedulingFeedPreviewProps) => {
 	return (
 		<S.Preview $height={height} aria-hidden>
-			<S.Author>
-				<S.Avatar />
-				<S.AuthorLines />
-			</S.Author>
-			<S.Title />
-			<S.ScheduleHeader />
+			<S.Header />
 			<S.ScheduleGrid />
+			<S.Footer />
 		</S.Preview>
 	);
 };
