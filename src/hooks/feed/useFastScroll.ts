@@ -24,9 +24,12 @@ const useFastScroll = (scrollElement: HTMLElement | null) => {
 			const elapsedTime = timestamp - lastTimestampRef.current;
 			const distance = Math.abs(scrollElement.scrollTop - lastScrollTopRef.current);
 			const velocity = elapsedTime > 0 ? distance / elapsedTime : 0;
+			const hasScrolledAtLeastViewportHeight = distance >= scrollElement.clientHeight;
 
 			consecutiveFastScrollCountRef.current =
-				velocity >= FAST_SCROLL_MIN_VELOCITY ? consecutiveFastScrollCountRef.current + 1 : 0;
+				velocity >= FAST_SCROLL_MIN_VELOCITY && hasScrolledAtLeastViewportHeight
+					? consecutiveFastScrollCountRef.current + 1
+					: 0;
 
 			if (consecutiveFastScrollCountRef.current >= FAST_SCROLL_MIN_EVENT_COUNT) {
 				setIsFastScrolling(true);
