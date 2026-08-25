@@ -10,6 +10,7 @@ const PREVIEW_HEADER_LINE_WIDTH = { primary: 112, secondary: 184 } as const;
 const PREVIEW_FOOTER_HEIGHT = 64;
 const PREVIEW_DAY_COUNT = 7;
 const PREVIEW_BLOCKS_BACKGROUND = `url("${schedulingFeedPreviewBlocksUrl}")`;
+const PREVIEW_GRID_BACKGROUND = `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='89' height='40' viewBox='0 0 89 40'%3E%3Cpath d='M88.5 0V40M0 20.5H89M0 39.5H89' fill='none' stroke='%23e5e7eb' stroke-width='1'/%3E%3C/svg%3E")`;
 
 export const Preview = styled.div<{ $height: number }>`
 	display: flex;
@@ -63,8 +64,7 @@ export const ScheduleGrid = styled.div`
 	border-top: 1px solid ${theme.color.border.tertiary};
 	border-left: 1px solid ${theme.color.border.tertiary};
 	background-color: ${theme.color.bg.primary};
-	background-image: ${PREVIEW_BLOCKS_BACKGROUND},
-		url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='89' height='40' viewBox='0 0 89 40'%3E%3Cpath d='M88.5 0V40M0 20.5H89M0 39.5H89' fill='none' stroke='%23e5e7eb' stroke-width='1'/%3E%3C/svg%3E");
+	background-image: ${PREVIEW_BLOCKS_BACKGROUND}, ${PREVIEW_GRID_BACKGROUND};
 	background-repeat: no-repeat, round;
 	background-size:
 		100% 100%,
