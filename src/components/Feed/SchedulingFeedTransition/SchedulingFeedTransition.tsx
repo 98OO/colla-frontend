@@ -18,14 +18,15 @@ interface SchedulingFeedTransitionProps {
 const SchedulingFeedTransition = memo(
 	({ feedData, height, shouldRenderPreview, onEditChange }: SchedulingFeedTransitionProps) => {
 		const { shouldKeepPreview, shouldRenderFeed } = usePreviewTransition(shouldRenderPreview);
+		const isPreviewVisible = shouldRenderPreview || shouldKeepPreview;
 
 		return (
-			<S.Container style={shouldKeepPreview ? { minHeight: height } : undefined}>
+			<S.Container style={isPreviewVisible ? { minHeight: height } : undefined}>
 				{!shouldRenderPreview && shouldRenderFeed && (
 					<SchedulingFeed feedData={feedData} onEditChange={onEditChange} />
 				)}
 				<AnimatePresence initial={false}>
-					{shouldKeepPreview && (
+					{isPreviewVisible && (
 						<S.PreviewLayer
 							key='scheduling-preview'
 							initial={{ opacity: 1 }}
