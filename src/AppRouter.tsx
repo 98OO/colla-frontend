@@ -1,5 +1,8 @@
 import type { RouteObject } from 'react-router-dom';
 import { RouterProvider, createBrowserRouter } from 'react-router-dom';
+import NavigationLayout from '@layouts/NavigationLayout';
+import PageLayout from '@layouts/PageLayout';
+import RootLayout from '@layouts/RootLayout';
 import AuthGuard from '@components/common/Auth/AuthGuard';
 import GuestOnlyGuard from '@components/common/Auth/GuestOnlyGuard';
 import RoleGuard from '@components/common/Auth/RoleGuard';
@@ -17,9 +20,6 @@ import SettingPage from '@pages/SettingPage/SettingPage';
 import SignInPage from '@pages/SignInPage/SignInPage';
 import SignUpPage from '@pages/SignUpPage/SignUpPage';
 import { PATH } from '@constants/path';
-import NavigationLayout from './layouts/NavigationLayout';
-import PageLayout from './layouts/PageLayout';
-import RootLayout from './layouts/RootLayout';
 
 const appRoutes: RouteObject[] = [
 	{
