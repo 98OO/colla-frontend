@@ -14,7 +14,7 @@ const postLogin = async (props: FormData) => {
 			password: props.password,
 		},
 		{
-			authRequired: false,
+			skipAuthorizationHeader: true,
 		}
 	);
 

@@ -78,10 +78,10 @@ export const DragSelect: Story = {
 		const midCell = canvas.getByText('2');
 		const endCell = canvas.getByText('3');
 
-		fireEvent.pointerDown(startCell);
-		fireEvent.pointerOver(midCell);
-		fireEvent.pointerOver(endCell);
-		fireEvent.pointerUp(endCell);
+		await fireEvent.pointerDown(startCell);
+		await fireEvent.pointerOver(midCell);
+		await fireEvent.pointerOver(endCell);
+		await fireEvent.pointerUp(endCell);
 
 		await expect(startCell).toHaveAttribute('aria-selected', 'true');
 		await expect(midCell).toHaveAttribute('aria-selected', 'true');

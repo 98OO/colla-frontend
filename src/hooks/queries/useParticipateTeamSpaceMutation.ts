@@ -3,6 +3,7 @@ import getTeamSpaceInformation from '@apis/teamspace/getTeamSpaceInformation';
 import postParticipateTeamSpace from '@apis/teamspace/postParticipateTeamSpace';
 import postUserLastSeen from '@apis/user/postUserLastSeen';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
+import useAuthStore from '@stores/authStore';
 import useToastStore from '@stores/toastStore';
 import { PATH } from '@constants/path';
 
@@ -17,12 +18,12 @@ const useParticipateTeamSpaceMutation = () => {
 			if (!content.isParticipated) {
 				await postParticipateTeamSpace(content.teamspaceId, teamCode);
 			}
+
+			useAuthStore.getState().setHasTeam(true);
 			postUserLastSeen(content.teamspaceId);
 			queryClient.invalidateQueries({ queryKey: ['userStatus'] });
-			makeToast(
-				`${content.teamspaceName} 팀스페이스에 참가했습니다.`,
-				'Success'
-			);
+
+			makeToast(`${content.teamspaceName} 팀스페이스에 참가했습니다.`, 'Success');
 			navigate(PATH.FEED);
 		},
 		onError: (error) => {

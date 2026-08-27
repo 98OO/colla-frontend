@@ -40,7 +40,7 @@ export const TeamSpaceUserContainer = styled.div`
 	}
 `;
 
-export const InputWrapper = styled.form`
+export const InputWrapper = styled.div`
 	display: flex;
 	width: 216px;
 

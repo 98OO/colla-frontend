@@ -4,18 +4,19 @@ import Heading from '@components/common/Heading/Heading';
 import Text from '@components/common/Text/Text';
 import CommentInput from '@components/Feed/CommentInput/CommentInput';
 import Comment from '@components/Feed/Comments/Comment';
+import SchedulingContent from '@components/Feed/SchedulingFeed/SchedulingContent';
 import useUserStatusQuery from '@hooks/queries/useUserStatusQuery';
 import { getFormattedDate } from '@utils/getFormattedDate';
-import type { FeedData } from '@type/feed';
+import type { SchedulingFeed } from '@type/feed';
 import FeedAuthor from '../../FeedAuthors/FeedAuthor';
 import * as S from './SchedulingDetail.styled';
 
 interface FeedProps {
-	feedData: FeedData;
+	feedData: SchedulingFeed;
 }
 
 const SchedulingDetail = ({ feedData }: FeedProps) => {
-	const { feedId, author, title, createdAt, details, comments } = feedData;
+	const { feedId, author, title, createdAt, comments } = feedData;
 	const { userStatus } = useUserStatusQuery();
 
 	return (
@@ -30,13 +31,10 @@ const SchedulingDetail = ({ feedData }: FeedProps) => {
 			<Flex direction='column' gap='12'>
 				<Heading size='xs'>{title}</Heading>
 				<Divider size='sm' />
-				<S.DetailWrapper>{details && '일정 조율 디테일'}</S.DetailWrapper>
+				<SchedulingContent feedData={feedData} />
 				<S.SectionContainer>
 					<Flex direction='column' align='flex-start'>
-						<Text
-							size='md'
-							weight='medium'
-							color='tertiary'>{`댓글 ${comments.length}개`}</Text>
+						<Text size='md' weight='medium' color='tertiary'>{`댓글 ${comments.length}개`}</Text>
 					</Flex>
 					<Divider size='sm' />
 					{comments.map((comment) => {
@@ -50,10 +48,7 @@ const SchedulingDetail = ({ feedData }: FeedProps) => {
 				</S.SectionContainer>
 				<S.CommentContainer>
 					{userStatus && (
-						<CommentInput
-							teamspaceId={userStatus.profile.lastSeenTeamspaceId}
-							feedId={feedId}
-						/>
+						<CommentInput teamspaceId={userStatus.profile.lastSeenTeamspaceId} feedId={feedId} />
 					)}
 				</S.CommentContainer>
 			</Flex>

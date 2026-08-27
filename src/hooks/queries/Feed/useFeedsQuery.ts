@@ -1,13 +1,14 @@
 import { GetFeedsParams, getFeeds } from '@apis/Feed/getFeeds';
-import { useInfiniteQuery } from '@tanstack/react-query';
+import { useSuspenseInfiniteQuery } from '@tanstack/react-query';
 
 const useFeedsQuery = ({ teamspaceId, limit, type }: GetFeedsParams) => {
 	const {
-		data: feeds,
+		data: feedPages,
 		hasNextPage,
-		isFetching,
+		isFetchingNextPage,
+		isError,
 		fetchNextPage,
-	} = useInfiniteQuery({
+	} = useSuspenseInfiniteQuery({
 		queryKey: ['feeds', teamspaceId, type],
 		initialPageParam: undefined,
 		queryFn: ({ pageParam }) =>
@@ -20,13 +21,14 @@ const useFeedsQuery = ({ teamspaceId, limit, type }: GetFeedsParams) => {
 		getNextPageParam: (lastPage) => {
 			const lastFeedPage = lastPage.content.feeds;
 			const lastFeed = lastFeedPage[lastFeedPage.length - 1];
+
 			if (lastFeed) return lastFeed.feedId;
+
 			return undefined;
 		},
-		enabled: !!teamspaceId,
 	});
 
-	return { feeds, hasNextPage, isFetching, fetchNextPage };
+	return { feedPages, hasNextPage, isFetchingNextPage, isError, fetchNextPage };
 };
 
 export default useFeedsQuery;

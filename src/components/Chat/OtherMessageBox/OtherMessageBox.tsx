@@ -1,8 +1,9 @@
+import ChatAttachments from '@components/Chat/ChatAttachment/ChatAttachments';
+import ChatImageMessage from '@components/Chat/ChatImageMessage/ChatImageMessage';
 import Avatar from '@components/common/Avatar/Avatar';
 import Flex from '@components/common/Flex/Flex';
 import Text from '@components/common/Text/Text';
 import type { Attachment } from '@type/chat';
-import ChatAttachments from '../ChatAttachment/ChatAttachments';
 import * as S from './OtherMessageBox.styled';
 
 export interface OtherMessageBoxProps {
@@ -19,7 +20,7 @@ const OtherMessageBox = (props: OtherMessageBoxProps) => {
 	const { name, profile, type, content, date, file, state } = props;
 
 	return (
-		<S.OtherMessageBoxContainer state={state}>
+		<S.OtherMessageBoxContainer $state={state}>
 			<Flex direction='column' width='32'>
 				{state ? (
 					<Avatar profile={profile} initial={name} size='md' shape='circle' />
@@ -34,7 +35,7 @@ const OtherMessageBox = (props: OtherMessageBoxProps) => {
 					</Text>
 				)}
 				<Flex gap='8'>
-					<S.OtherMessageBoxWrapper state={state} type={type}>
+					<S.OtherMessageBoxWrapper $state={state} $type={type}>
 						{type === 'TEXT' && (
 							<Text size='lg' weight='regular' color='secondary'>
 								{content}
@@ -43,13 +44,7 @@ const OtherMessageBox = (props: OtherMessageBoxProps) => {
 						{type === 'IMAGE' && (
 							<S.ImageWrapper>
 								{file?.map((img) => (
-									<a
-										key={img.id}
-										href={img.url}
-										target='_blank'
-										rel='noopener noreferrer'>
-										<img src={img.url} alt={img.filename} />
-									</a>
+									<ChatImageMessage key={img.id} src={img.url} alt={img.filename} />
 								))}
 							</S.ImageWrapper>
 						)}

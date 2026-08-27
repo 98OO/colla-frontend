@@ -2,6 +2,7 @@ import { useNavigate } from 'react-router-dom';
 import postCreateTeamSpace from '@apis/teamspace/postCreateTeamSpace';
 import useRecordTeamSpace from '@hooks/queries/teamspace/useRecordTeamSpace';
 import { useMutation } from '@tanstack/react-query';
+import useAuthStore from '@stores/authStore';
 import useSocketStore from '@stores/socketStore';
 import { PATH } from '@constants/path';
 
@@ -13,6 +14,7 @@ const useCreateTeamSpaceMutation = () => {
 	const postCreateTeamSpaceMutation = useMutation({
 		mutationFn: postCreateTeamSpace,
 		onSuccess: (teamspaceId) => {
+			useAuthStore.getState().setHasTeam(true);
 			mutateRecordTeamSpace(teamspaceId);
 			setChatChannelList([]);
 			navigate(PATH.FEED);

@@ -1,40 +1,29 @@
 import { Button } from '@components/common/Button/Button';
 import Flex from '@components/common/Flex/Flex';
 import Icon from '@components/common/Icon/Icon';
+import SanitizedHtml from '@components/common/SanitizedHtml/SanitizedHtml';
 import Text from '@components/common/Text/Text';
 import BaseFeed from '@components/Feed/BaseFeed/BaseFeed';
 import SubTask from '@components/Feed/CollectFeed/SubTask/SubTask';
-import CollectDetail from '@components/Feed/Detail/Collect/CollectDetail';
 import ProgressChip from '@components/Feed/ProgressChip/ProgressChip';
 import useDetailObserver from '@hooks/feed/useDetailObserver';
+import { selectFeedDetail } from '@stores/feedDetailStore';
 import { getFormattedDate } from '@utils/getFormattedDate';
 import type { CollectFeed } from '@type/feed';
 import * as S from './CollectFeed.styled';
 
 interface CollectFeedProps {
 	feedData: CollectFeed;
-	isDetailOpen: boolean;
-	openDetail: () => void;
-	closeDetail: () => void;
 }
 
-const CollectFeed = ({
-	feedData,
-	isDetailOpen,
-	openDetail,
-	closeDetail,
-}: CollectFeedProps) => {
-	const { details, createdAt } = feedData;
+const CollectFeed = ({ feedData }: CollectFeedProps) => {
+	const { feedId, details, createdAt } = feedData;
 	const { content } = details;
 	const { showMoreButton, detailRef } = useDetailObserver(content);
+	const openDetail = () => selectFeedDetail(feedId);
 
 	return (
-		<BaseFeed
-			feedData={feedData}
-			isDetailOpen={isDetailOpen}
-			openDetail={openDetail}
-			closeDetail={closeDetail}
-			renderDetail={() => <CollectDetail feedData={feedData} />}>
+		<BaseFeed feedData={feedData}>
 			<Flex direction='column' gap='16'>
 				<Flex align='center' gap='14'>
 					<Icon name='Clock' />
@@ -59,7 +48,7 @@ const CollectFeed = ({
 				</Flex>
 				{details && (
 					<S.DetailWrapper ref={detailRef} hasMoreButton={showMoreButton}>
-						<div dangerouslySetInnerHTML={{ __html: details.content || '' }} />
+						<SanitizedHtml html={details.content} />
 					</S.DetailWrapper>
 				)}
 				{showMoreButton && (

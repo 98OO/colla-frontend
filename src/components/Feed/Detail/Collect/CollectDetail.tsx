@@ -4,6 +4,7 @@ import Divider from '@components/common/Divider/Divider';
 import Flex from '@components/common/Flex/Flex';
 import Heading from '@components/common/Heading/Heading';
 import Icon from '@components/common/Icon/Icon';
+import SanitizedHtml from '@components/common/SanitizedHtml/SanitizedHtml';
 import Text from '@components/common/Text/Text';
 import SubTask from '@components/Feed/CollectFeed/SubTask/SubTask';
 import CommentInput from '@components/Feed/CommentInput/CommentInput';
@@ -80,9 +81,7 @@ const CollectDetail = ({ feedData }: FeedProps) => {
 								)}
 							</Flex>
 							<S.DetailWrapper>
-								<div
-									dangerouslySetInnerHTML={{ __html: details.content || '' }}
-								/>
+								<SanitizedHtml html={details.content} />
 							</S.DetailWrapper>
 						</Flex>
 						<Flex direction='column' gap='12'>
@@ -96,10 +95,7 @@ const CollectDetail = ({ feedData }: FeedProps) => {
 							</Flex>
 							<Flex direction='column'>
 								{details.responses.map((task) => (
-									<SubTask
-										subTaskData={task}
-										onClick={() => setSelectSubTask(task.author)}
-									/>
+									<SubTask subTaskData={task} onClick={() => setSelectSubTask(task.author)} />
 								))}
 							</Flex>
 						</Flex>
@@ -124,10 +120,7 @@ const CollectDetail = ({ feedData }: FeedProps) => {
 						</S.SectionContainer>
 					)}
 					{userStatus && (
-						<CommentInput
-							teamspaceId={userStatus.profile.lastSeenTeamspaceId}
-							feedId={feedId}
-						/>
+						<CommentInput teamspaceId={userStatus.profile.lastSeenTeamspaceId} feedId={feedId} />
 					)}
 				</>
 			)}

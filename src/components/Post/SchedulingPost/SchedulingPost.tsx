@@ -11,7 +11,7 @@ const STEPS = ['selectDate', 'setCondition'] as const;
 const SchedulingPost = () => {
 	const { Funnel, step, goNext, goPrev } = useHistoryFunnel(STEPS);
 	const { formData, handleTargetDates, handleCondition } = useSchedulingPostForm();
-	const { mutateSchedulingPost } = useSchedulingPostMutation();
+	const { mutateSchedulingPost, isPending } = useSchedulingPostMutation();
 
 	const handleSubmit = (condition: SchedulingCondition) => {
 		mutateSchedulingPost({
@@ -36,6 +36,7 @@ const SchedulingPost = () => {
 						initialDueAtDate={formData.dueAtDate}
 						initialDueAtTime={formData.dueAtTime}
 						initialTimeRange={formData.timeRange}
+						isSubmitting={isPending}
 						onPrev={goPrev}
 						onSave={handleCondition}
 						onSubmit={handleSubmit}

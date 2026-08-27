@@ -4,7 +4,7 @@ import type { UnreadMessageCountResponse } from '@type/team';
 
 const useUnreadMessageCountQuery = (teamspaceId?: number) => {
 	const { data } = useQuery<UnreadMessageCountResponse>({
-		queryKey: ['unreadMessage'],
+		queryKey: ['unreadMessage', teamspaceId],
 		queryFn: () => getUnreadMessageCount(teamspaceId!),
 		gcTime: 60 * 60 * 60 * 1000,
 		staleTime: 60 * 60 * 60 * 1000,

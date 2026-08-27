@@ -4,7 +4,7 @@ import { END_POINTS } from '@constants/api';
 const getMailDuplication = async (email: string) => {
 	await axiosInstance.get(END_POINTS.AUTHDUPLICATION, {
 		params: { email },
-		authRequired: false,
+		skipAuthorizationHeader: true,
 	});
 
 	return email;

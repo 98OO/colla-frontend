@@ -2,19 +2,13 @@ import { axiosInstance } from '@apis/axiosInstance';
 import { END_POINTS } from '@constants/api';
 
 interface RequestConfig {
-	authRequired?: boolean;
+	skipAuthorizationHeader?: boolean;
 }
 
-const getTeamSpaceInformation = async (
-	teamCode: string,
-	config: RequestConfig = { authRequired: true }
-) => {
-	const response = await axiosInstance.get(
-		`${END_POINTS.TEAMSPACE}?code=${teamCode}`,
-		{
-			authRequired: config.authRequired,
-		}
-	);
+const getTeamSpaceInformation = async (teamCode: string, config: RequestConfig = {}) => {
+	const response = await axiosInstance.get(`${END_POINTS.TEAMSPACE}?code=${teamCode}`, {
+		skipAuthorizationHeader: config.skipAuthorizationHeader,
+	});
 
 	return response.data.content;
 };

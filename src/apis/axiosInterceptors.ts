@@ -1,14 +1,16 @@
-import { getNewToken } from '@apis/user/getNewToken';
-import { queryClient } from '@hooks/queries/common/queryClient';
-import { axiosInstance } from '@apis/axiosInstance';
+import { invalidateSession, isCurrentSession } from '@apis/auth/sessionActions';
+import { refreshAccessToken, resolveAccessTokenForRequest } from '@apis/auth/tokenRefreshManager';
+import axios from 'axios';
+import useAuthStore from '@stores/authStore';
 import { HTTPError } from '@apis/HTTPError';
-import {
-	HTTP_STATUS_CODE,
-	AUTH_ERROR_CODE,
-	ACCESS_TOKEN,
-} from '@constants/api';
-import { PATH } from '@constants/path';
-import type { AxiosError, InternalAxiosRequestConfig } from 'axios';
+import { NetworkError } from '@apis/NetworkError';
+import { SESSION_INVALID_CODES, TOKEN_ERROR_CODE } from '@constants/api';
+import type {
+	AxiosError,
+	AxiosHeaderValue,
+	AxiosInstance,
+	InternalAxiosRequestConfig,
+} from 'axios';
 
 export interface ErrorResponse {
 	status: number;
@@ -17,16 +19,17 @@ export interface ErrorResponse {
 	message?: string;
 }
 
-export const setAuthorizedRequest = (config: InternalAxiosRequestConfig) => {
-	if (!config.authRequired || !config.headers || config.headers.Authorization)
-		return config;
+export const setAuthorizedRequest = async (config: InternalAxiosRequestConfig) => {
+	if (config.skipAuthorizationHeader) return config;
 
-	const accessToken = localStorage.getItem(ACCESS_TOKEN);
+	// eslint-disable-next-line no-param-reassign
+	config.sessionVersion ??= useAuthStore.getState().sessionVersion;
 
-	if (!accessToken) {
-		window.location.href = PATH.ROOT;
-		throw new Error('인증 토큰이 없습니다. 다시 로그인해주세요.');
-	}
+	if (config.headers.Authorization) return config;
+
+	const { sessionVersion } = config;
+
+	const accessToken = await resolveAccessTokenForRequest(sessionVersion);
 
 	// eslint-disable-next-line no-param-reassign
 	config.headers.Authorization = `Bearer ${accessToken}`;
@@ -34,54 +37,88 @@ export const setAuthorizedRequest = (config: InternalAxiosRequestConfig) => {
 	return config;
 };
 
-export const handleTokenError = async (error: AxiosError<ErrorResponse>) => {
+const isExpiredAccessTokenError = (code: number | undefined) =>
+	code === TOKEN_ERROR_CODE.EXPIRED_ACCESS_TOKEN;
+
+const isRequestTokenOutdated = (
+	requestAccessToken: AxiosHeaderValue | undefined,
+	currentAccessToken: string
+) => requestAccessToken !== `Bearer ${currentAccessToken}`;
+
+const retryRequest = (
+	instance: AxiosInstance,
+	request: InternalAxiosRequestConfig,
+	accessToken: string
+) => {
+	request.isRetried = true;
+	request.headers.Authorization = `Bearer ${accessToken}`;
+
+	return instance(request);
+};
+
+const retryRequestWithNewToken = async (
+	instance: AxiosInstance,
+	request: InternalAxiosRequestConfig
+) => {
+	const result = await refreshAccessToken();
+	if (result.type !== 'success') throw new axios.CanceledError();
+
+	return retryRequest(instance, request, result.accessToken);
+};
+
+const handleTokenError = async (error: AxiosError<ErrorResponse>, instance: AxiosInstance) => {
+	if (axios.isCancel(error)) throw error;
+
 	const originalRequest = error.config;
 
-	if (!error.response || !originalRequest)
-		throw new Error(
-			'네트워크 요청이 실패하였거나, 요청 객체를 찾을 수 없습니다.'
-		);
-	const { data, status } = error.response;
-
-	if (
-		status === HTTP_STATUS_CODE.UNAUTHORIZED &&
-		data.code === AUTH_ERROR_CODE.EXPIRED_ACCESS_TOKEN
-	) {
-		const { accessToken } = await getNewToken();
-		originalRequest.headers.Authorization = `Bearer ${accessToken}`;
-		localStorage.setItem(ACCESS_TOKEN, accessToken);
-
-		return axiosInstance(originalRequest);
+	if (!error.response) {
+		if (error.isAxiosError) throw new NetworkError();
+		throw error;
 	}
 
-	if (
-		status === HTTP_STATUS_CODE.UNAUTHORIZED &&
-		(data.code === AUTH_ERROR_CODE.INVALID_VERIFY_TOKEN ||
-			data.code === AUTH_ERROR_CODE.UNAUTHORIZED_OR_EXPIRED_VERIFY_TOKEN ||
-			data.code === AUTH_ERROR_CODE.FORBIDDEN_ACCESS_TOKEN ||
-			data.code === AUTH_ERROR_CODE.EMPTY_ACCESS_TOKEN ||
-			data.code === AUTH_ERROR_CODE.EXPIRED_REFRESH_TOKEN ||
-			data.code === AUTH_ERROR_CODE.MALFORMED_TOKEN ||
-			data.code === AUTH_ERROR_CODE.TAMPERED_TOKEN ||
-			data.code === AUTH_ERROR_CODE.UNSUPPORTED_JWT_TOKEN ||
-			data.code === AUTH_ERROR_CODE.TAKEN_AWAY_TOKEN)
-	) {
-		queryClient.invalidateQueries({ queryKey: ['userStatus'] });
-		localStorage.removeItem(ACCESS_TOKEN);
+	if (!originalRequest) throw error;
 
-		throw new HTTPError(status, data.code, data.content, data.message);
+	const { skipAuthorizationHeader, sessionVersion, isRetried } = originalRequest;
+	if (skipAuthorizationHeader || sessionVersion === undefined) throw error;
+
+	const { data } = error.response;
+
+	if (isExpiredAccessTokenError(data.code) && !isRetried) {
+		if (!isCurrentSession(sessionVersion)) throw new axios.CanceledError();
+
+		const requestAccessToken = originalRequest.headers.Authorization;
+		const { accessToken: currentAccessToken } = useAuthStore.getState();
+
+		if (currentAccessToken && isRequestTokenOutdated(requestAccessToken, currentAccessToken)) {
+			return retryRequest(instance, originalRequest, currentAccessToken);
+		}
+
+		return retryRequestWithNewToken(instance, originalRequest);
+	}
+
+	if (data.code !== undefined && SESSION_INVALID_CODES.has(data.code)) {
+		invalidateSession(data.code, sessionVersion);
+		throw new axios.CanceledError();
 	}
 
 	throw error;
 };
 
-export const handleAPIError = (error: AxiosError<ErrorResponse>) => {
-	if (!error.response) throw error;
+export const createTokenErrorHandler =
+	(instance: AxiosInstance) => (error: AxiosError<ErrorResponse>) =>
+		handleTokenError(error, instance);
 
-	const { data, status } = error.response;
-	if (status >= HTTP_STATUS_CODE.INTERNAL_SERVER_ERROR) {
-		throw new HTTPError(HTTP_STATUS_CODE.INTERNAL_SERVER_ERROR);
+export const handleAPIError = (error: AxiosError<ErrorResponse>) => {
+	if (axios.isCancel(error)) throw error;
+
+	if (error instanceof HTTPError || error instanceof NetworkError) throw error;
+
+	if (!error.response) {
+		if (error.isAxiosError) throw new NetworkError();
+		throw error;
 	}
 
-	throw new HTTPError(status, data.code, data.content, data.message);
+	const { data, status } = error.response;
+
+	throw new HTTPError(status, data?.code, data?.content, data?.message);
 };

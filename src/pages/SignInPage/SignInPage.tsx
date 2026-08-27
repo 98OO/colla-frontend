@@ -10,8 +10,8 @@ import Profile from '@components/common/Profile/Profile';
 import Text from '@components/common/Text/Text';
 import useLoginMutation from '@hooks/queries/useLoginMutation';
 import useToastStore from '@stores/toastStore';
-import { INVITE_URL } from '@constants/api';
 import { PATH } from '@constants/path';
+import { INVITE_URL_KEY } from '@constants/storage';
 import { KakaoLogin, NaverLogin, GoogleLogin, Colla } from '@assets/svg';
 import * as S from './SignInPage.styled';
 
@@ -21,9 +21,7 @@ interface TeamSpaceInfo {
 }
 
 const SignInPage = () => {
-	const [teamSpaceInfo, setTeamspaceInfo] = useState<TeamSpaceInfo | null>(
-		null
-	);
+	const [teamSpaceInfo, setTeamspaceInfo] = useState<TeamSpaceInfo | null>(null);
 	const [formData, setFormData] = useState({
 		email: '',
 		password: '',
@@ -36,7 +34,7 @@ const SignInPage = () => {
 	const { makeToast } = useToastStore();
 
 	const handleInviteCode = async () => {
-		const inviteUrl = window.sessionStorage.getItem(INVITE_URL);
+		const inviteUrl = window.sessionStorage.getItem(INVITE_URL_KEY);
 		if (inviteUrl === null) return;
 
 		const code = new URLSearchParams(inviteUrl).get('code');
@@ -44,14 +42,14 @@ const SignInPage = () => {
 
 		try {
 			const response = await getTeamSpaceInformation(code, {
-				authRequired: false,
+				skipAuthorizationHeader: true,
 			});
 			setTeamspaceInfo({
 				teamspaceProfileImageUrl: response.teamspaceProfileImageUrl,
 				teamspaceName: response.teamspaceName,
 			});
 		} catch (error) {
-			window.sessionStorage.removeItem(INVITE_URL);
+			window.sessionStorage.removeItem(INVITE_URL_KEY);
 			setTeamspaceInfo(null);
 			makeToast('유효하지 않은 초대입니다.', 'Warning');
 			throw error;
@@ -62,10 +60,7 @@ const SignInPage = () => {
 		handleInviteCode();
 	}, []);
 
-	const handleChange = (
-		e: ChangeEvent<HTMLInputElement>,
-		fieldName: string
-	) => {
+	const handleChange = (e: ChangeEvent<HTMLInputElement>, fieldName: string) => {
 		const { value } = e.target;
 		setFormData({
 			...formData,
@@ -118,7 +113,7 @@ const SignInPage = () => {
 							ariaLabel='닫기'
 							size='sm'
 							onClick={() => {
-								window.sessionStorage.removeItem(INVITE_URL);
+								window.sessionStorage.removeItem(INVITE_URL_KEY);
 								setTeamspaceInfo(null);
 							}}
 						/>
@@ -156,13 +151,7 @@ const SignInPage = () => {
 							{errorText}
 						</Text>
 					</S.WarningTextWrapper>
-					<Button
-						type='submit'
-						label='로그인'
-						variant='primary'
-						size='lg'
-						isFull
-					/>
+					<Button type='submit' label='로그인' variant='primary' size='lg' isFull />
 					<S.TextWrapper>
 						<Text size='md' weight='regular'>
 							계정이 없나요?

@@ -1,37 +1,41 @@
-import { useState } from 'react';
+import { useCallback, useRef, useState } from 'react';
+import ChatMessageActions from '@components/Chat/ChatMessageActions/ChatMessageActions';
 import LatestMessageBox from '@components/Chat/LatestMessageBox/LatestMessageBox';
 import MyMessageBox from '@components/Chat/MyMessageBox/MyMessageBox';
-import OtherMessageBox from '@components/Chat/OtherMessageBox/OtherMessageBox';
+import VirtualChatMessageList from '@components/Chat/VirtualChatMessageList/VirtualChatMessageList';
 import { Button } from '@components/common/Button/Button';
 import Flex from '@components/common/Flex/Flex';
 import IconButton from '@components/common/IconButton/IconButton';
 import Text from '@components/common/Text/Text';
+import useChatInfiniteScroll from '@hooks/chatting/useChatInfiniteScroll';
 import useChatInput from '@hooks/chatting/useChatInput';
 import useChatMessages from '@hooks/chatting/useChatMessages';
 import useChatScroll from '@hooks/chatting/useChatScroll';
 import useChatSubscription from '@hooks/chatting/useChatSubscription';
 import useUserStatusQuery from '@hooks/queries/useUserStatusQuery';
-import { getFormattedDate } from '@utils/getFormattedDate';
 import * as S from './Chatting.styled';
 
 const Chatting = ({ selectedChat }: { selectedChat: number }) => {
 	const { userStatus } = useUserStatusQuery();
-	const [prevHeight, setPrevHeight] = useState(0);
+	const chatRef = useRef<HTMLDivElement | null>(null);
+	const [chatContainer, setChatContainer] = useState<HTMLDivElement | null>(null);
+	const [virtualLayoutReadyChatId, setVirtualLayoutReadyChatId] = useState<number | null>(null);
 
 	const {
 		chatHistory,
-		chatRef,
-		isFetching,
+		isFetchingNextPage,
 		hasNextPage,
+		paginationVersion,
+		reconnectedMessageVersion,
 		setChatHistory,
 		fetchNextPage,
 	} = useChatMessages({
 		selectedChat,
 		userStatus,
-		setPrevHeight,
 	});
 
 	const {
+		isInitialScrollComplete,
 		isLatestMessageVisible,
 		messageEndRef,
 		handleLatestMessageClick,
@@ -41,15 +45,29 @@ const Chatting = ({ selectedChat }: { selectedChat: number }) => {
 		chatHistory,
 		setChatHistory,
 		chatRef,
-		prevHeight,
+		reconnectedMessageVersion,
+	});
+
+	const { topSentinelRef } = useChatInfiniteScroll({
+		chatContainer,
+		hasNextPage,
+		isFetchingNextPage,
+		isInitialScrollComplete: isInitialScrollComplete && virtualLayoutReadyChatId === selectedChat,
+		paginationVersion,
+		fetchNextPage,
 	});
 
 	const {
 		chatMessage,
+		queuedMessages,
+		failedMessages,
+		retryingMessageIds,
 		inputImageRef,
 		inputFileRef,
 		handleMessageChange,
 		handleText,
+		handleFailedMessageRetry,
+		handleFailedMessageDelete,
 		handleImageUploadClick,
 		handleFileUploadClick,
 		handleImageChange,
@@ -57,99 +75,91 @@ const Chatting = ({ selectedChat }: { selectedChat: number }) => {
 		handleKeyDown,
 	} = useChatInput({ selectedChat, userStatus, messageEndRef });
 
-	useChatSubscription({ selectedChat, userStatus, handleCheckScroll });
+	useChatSubscription({
+		selectedChat,
+		teamspaceId: userStatus?.profile.lastSeenTeamspaceId,
+		handleCheckScroll,
+	});
+
+	const handleChatContainerRef = useCallback((element: HTMLDivElement | null) => {
+		chatRef.current = element;
+
+		setChatContainer(element);
+	}, []);
+
+	const handleInitialVirtualLayoutSettled = useCallback(() => {
+		if (virtualLayoutReadyChatId === selectedChat) return;
+
+		messageEndRef.current?.scrollIntoView();
+		setVirtualLayoutReadyChatId(selectedChat);
+	}, [messageEndRef, selectedChat, virtualLayoutReadyChatId]);
 
 	return (
 		<S.ChattingContainer>
-			<S.ChattingListContainer ref={chatRef}>
-				<S.InfiniteScrollContainer
-					loadMore={() => {
-						if (!isFetching) fetchNextPage();
-					}}
-					isReverse
-					hasMore={hasNextPage}
-					useWindow={false}
-					initialLoad={false}>
-					{chatHistory &&
-						chatHistory.chatChannelMessages.map((msg, index, array) => {
-							const previousMsg =
-								index < array.length - 1 ? array[index + 1] : null;
-							const nextMsg = index > 0 ? array[index - 1] : null;
-
-							return (
-								<Flex direction='column' key={msg.id}>
-									{((previousMsg &&
-										getFormattedDate(msg.createdAt, 'chatDate') !==
-											getFormattedDate(previousMsg.createdAt, 'chatDate')) ||
-										index === array.length - 1) && (
-										<Flex justify='center' height='28' margin='20px 0 10px 0'>
-											<S.ChattingDateWrapper>
-												<Text size='sm' weight='medium' color='tertiary'>
-													{getFormattedDate(msg.createdAt, 'chatDate')}
-												</Text>
-											</S.ChattingDateWrapper>
-										</Flex>
-									)}
-									{msg.author.id === userStatus?.profile.userId ? (
-										<MyMessageBox
-											key={msg.id}
-											type={msg.type}
-											content={msg.content}
-											date={
-												nextMsg?.author.id !== msg.author.id ||
-												(nextMsg?.author.id === msg.author.id &&
-													nextMsg?.createdAt !== msg.createdAt)
-													? getFormattedDate(msg.createdAt, 'chatTime')
-													: null
-											}
-											file={
-												msg.attachments.length > 0
-													? msg.attachments.map((attachment) => ({
-															filename: attachment.filename,
-															url: attachment.url,
-															id: attachment.id,
-															size: attachment.size,
-														}))
-													: []
-											}
-											state={
-												previousMsg?.author.id !== msg.author.id ||
-												previousMsg?.createdAt !== msg.createdAt
-											}
-										/>
-									) : (
-										<OtherMessageBox
-											name={msg.author.username}
-											profile={msg.author.profileImageUrl}
-											type={msg.type}
-											content={msg.content}
-											date={
-												nextMsg?.author.id !== msg.author.id ||
-												(nextMsg?.author.id === msg.author.id &&
-													nextMsg?.createdAt !== msg.createdAt)
-													? getFormattedDate(msg.createdAt, 'chatTime')
-													: null
-											}
-											file={
-												msg.attachments.length > 0
-													? msg.attachments.map((attachment) => ({
-															filename: attachment.filename,
-															url: attachment.url,
-															id: attachment.id,
-															size: attachment.size,
-														}))
-													: []
-											}
-											state={
-												previousMsg?.author.id !== msg.author.id ||
-												previousMsg?.createdAt !== msg.createdAt
-											}
-										/>
-									)}
-								</Flex>
-							);
-						})}
-				</S.InfiniteScrollContainer>
+			<S.ChattingListContainer ref={handleChatContainerRef}>
+				<S.ChatMessageList>
+					{queuedMessages.map((message) => (
+						<MyMessageBox
+							key={message.id}
+							type={message.type}
+							content={message.type === 'TEXT' ? message.content : ''}
+							date={null}
+							file={
+								message.type === 'TEXT'
+									? []
+									: [
+											{
+												id: -Number(message.id.split('-')[0]),
+												filename: message.file.name,
+												url: message.localUrl,
+												size: message.file.size,
+											},
+										]
+							}
+							state
+							actions={<ChatMessageActions />}
+						/>
+					))}
+					{failedMessages.map((message) => (
+						<MyMessageBox
+							key={message.id}
+							type={message.type}
+							content={message.type === 'TEXT' ? message.content : ''}
+							date={null}
+							file={
+								message.type === 'TEXT'
+									? []
+									: [
+											{
+												id: -Number(message.id.split('-')[0]),
+												filename: message.file.name,
+												url: message.localUrl,
+												size: message.file.size,
+											},
+										]
+							}
+							state
+							actions={
+								<ChatMessageActions
+									isRetrying={retryingMessageIds.includes(message.id)}
+									onRetry={() => handleFailedMessageRetry(message)}
+									onDelete={() => handleFailedMessageDelete(message.id)}
+								/>
+							}
+						/>
+					))}
+					{chatHistory && (
+						<VirtualChatMessageList
+							messages={chatHistory.chatChannelMessages}
+							chatContainer={chatContainer}
+							userId={userStatus?.profile.userId}
+							isInitialScrollComplete={isInitialScrollComplete}
+							isVirtualLayoutReady={virtualLayoutReadyChatId === selectedChat}
+							onInitialLayoutSettled={handleInitialVirtualLayoutSettled}
+						/>
+					)}
+					<S.ChatTopSentinel ref={topSentinelRef} />
+				</S.ChatMessageList>
 				<S.MessageEndWrapper ref={messageEndRef} />
 			</S.ChattingListContainer>
 			{isLatestMessageVisible && chatHistory && (
@@ -166,12 +176,7 @@ const Chatting = ({ selectedChat }: { selectedChat: number }) => {
 					maxLength={1000}
 					placeholder='메세지 입력'
 				/>
-				<Flex
-					height='38'
-					paddingLeft='4'
-					paddingRight='4'
-					justify='space-between'
-					align='center'>
+				<Flex height='38' paddingLeft='4' paddingRight='4' justify='space-between' align='center'>
 					<Flex paddingLeft='3' paddingRight='3' gap='4'>
 						<IconButton
 							icon='Image'
@@ -193,11 +198,7 @@ const Chatting = ({ selectedChat }: { selectedChat: number }) => {
 							size='md'
 							onClick={handleFileUploadClick}
 						/>
-						<S.ImgUploadWrapper
-							type='file'
-							onChange={handleFileChange}
-							ref={inputFileRef}
-						/>
+						<S.ImgUploadWrapper type='file' onChange={handleFileChange} ref={inputFileRef} />
 					</Flex>
 					<Flex paddingLeft='4' paddingRight='4' gap='10' align='center'>
 						<Text size='sm' weight='semiBold' color='tertiary'>

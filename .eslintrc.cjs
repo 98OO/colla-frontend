@@ -127,10 +127,16 @@ module.exports = {
 			'error',
 			{
 				devDependencies: [
+					'.storybook/**',
 					'**/__tests__/**',
+					'**/*.stories.ts',
+					'**/*.stories.tsx',
 					'**/*.test.ts',
 					'**/*.test.tsx',
 					'**/setupTests.ts',
+					'src/main.tsx',
+					'src/mocks/**',
+					'vite.config.ts',
 				],
 			},
 		],

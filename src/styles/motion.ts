@@ -1,0 +1,1 @@
+export const DRAWER_TRANSITION_DURATION_MS = 300;
