@@ -30,8 +30,6 @@ const mockUser: UserInformation = {
 	participatedTeamspaces: [],
 };
 
-const noop = () => {};
-
 const pad = (n: number) => String(n).padStart(2, '0');
 
 const makeDates = () =>
@@ -157,12 +155,5 @@ type Story = StoryObj<typeof SchedulingFeed>;
 
 export const MultiParticipants: Story = {
 	name: '조회 · 가능 인원 표시',
-	render: () => (
-		<SchedulingFeed
-			feedData={buildMultiParticipantFeed()}
-			isDetailOpen={false}
-			openDetail={noop}
-			closeDetail={noop}
-		/>
-	),
+	render: () => <SchedulingFeed feedData={buildMultiParticipantFeed()} />,
 };

@@ -1,9 +1,10 @@
-import { memo, type MouseEvent } from 'react';
+import { memo, useRef, type CSSProperties, type MouseEvent } from 'react';
 import TimeColumn from '@components/Feed/SchedulingFeed/TimeColumn';
+import { toAvailabilityGradient } from '@utils/feed/scheduling/availabilityGradient';
 import { SEGMENTS_PER_HOUR } from '@utils/feed/scheduling/segment';
-import { getSlotColor } from '@utils/feed/scheduling/slotColor';
-import { makeSlotId, parseSlotId } from '@utils/feed/scheduling/slotId';
+import { SCHEDULING_SLOT_HEIGHT } from '@constants/feed';
 import type { AvailabilityColumn, SlotData } from '@type/feed';
+import styles from './AvailabilityGrid.module.css';
 import * as S from './SchedulingFeed.styled';
 
 interface AvailabilityGridProps {
@@ -14,6 +15,11 @@ interface AvailabilityGridProps {
 	onCurrentSlotChange: (slot: SlotData | null) => void;
 }
 
+const getColumnStyle = (segments: number[], numOfParticipants: number): CSSProperties => ({
+	height: segments.length * SCHEDULING_SLOT_HEIGHT,
+	backgroundImage: toAvailabilityGradient(segments, numOfParticipants, SCHEDULING_SLOT_HEIGHT),
+});
+
 const AvailabilityGrid = memo(
 	({
 		minTimeSegment,
@@ -22,40 +28,47 @@ const AvailabilityGrid = memo(
 		numOfParticipants,
 		onCurrentSlotChange,
 	}: AvailabilityGridProps) => {
+		const currentSlotKeyRef = useRef<string | null>(null);
+
 		const dayCount = availabilityColumns.length;
+		const startsOnTheHour = minTimeSegment % SEGMENTS_PER_HOUR === 0;
 
-		const handleGridLeave = () => onCurrentSlotChange(null);
+		const handleMouseMove = (e: MouseEvent<HTMLDivElement>, date: string) => {
+			const segmentIndex = Math.floor(e.nativeEvent.offsetY / SCHEDULING_SLOT_HEIGHT);
+			const slot: SlotData = {
+				date,
+				segment: minTimeSegment + segmentIndex,
+			};
 
-		const handleSlotHover = (e: MouseEvent<HTMLDivElement>) => {
-			const { slotId } = (e.target as HTMLElement).dataset;
+			const slotKey = `${slot.date}:${slot.segment}`;
+			if (slotKey === currentSlotKeyRef.current) return;
 
-			onCurrentSlotChange(slotId ? parseSlotId(slotId) : null);
+			currentSlotKeyRef.current = slotKey;
+			onCurrentSlotChange(slot);
+		};
+
+		const handleMouseLeave = () => {
+			currentSlotKeyRef.current = null;
+			onCurrentSlotChange(null);
 		};
 
 		return (
 			<S.GridContainer>
 				<TimeColumn minTimeSegment={minTimeSegment} maxTimeSegment={maxTimeSegment} />
-				<S.Grid $dayCount={dayCount} onMouseLeave={handleGridLeave} onMouseOver={handleSlotHover}>
-					{availabilityColumns.map(([date, segments]) => (
-						<S.Column key={date}>
-							{segments.map((availableCount, idx) => {
-								const segment = idx + minTimeSegment;
-								const hasParticipants = availableCount > 0;
-								const slotId = makeSlotId(date, segment);
-								const slotColor = getSlotColor(numOfParticipants, availableCount);
+				<S.Grid $dayCount={dayCount} onMouseLeave={handleMouseLeave}>
+					{availabilityColumns.map((availabilityColumn) => {
+						const [date, segments] = availabilityColumn;
 
-								return (
-									<S.AvailabilitySlot
-										key={slotId}
-										data-hour-start={segment % SEGMENTS_PER_HOUR === 0 || null}
-										data-slot-id={slotId}
-										$hasParticipants={hasParticipants}
-										$slotColor={slotColor}
-									/>
-								);
-							})}
-						</S.Column>
-					))}
+						return (
+							<div
+								key={date}
+								className={styles.column}
+								data-starts-on-the-hour={startsOnTheHour}
+								onMouseMove={(e) => handleMouseMove(e, date)}
+								style={getColumnStyle(segments, numOfParticipants)}
+							/>
+						);
+					})}
 				</S.Grid>
 			</S.GridContainer>
 		);

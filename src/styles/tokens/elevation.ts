@@ -7,8 +7,9 @@ const shadow = {
 
 const zIndex = {
 	MENU: 2,
-	MODAL: 3,
-	DIALOG: 4,
+	DRAWER: 3,
+	MODAL: 4,
+	DIALOG: 5,
 } as const;
 
 export const elevation = {

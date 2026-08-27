@@ -1,11 +1,11 @@
 import { ReactNode } from 'react';
 import Divider from '@components/common/Divider/Divider';
-import Drawer from '@components/common/Drawer/Drawer';
 import Flex from '@components/common/Flex/Flex';
 import Heading from '@components/common/Heading/Heading';
 import ActionButton from '@components/Feed/ActionButton/ActionButton';
 import FeedAuthor from '@components/Feed/FeedAuthors/FeedAuthor';
 import { CommentPreview } from '@components/Feed/Preview/Preview';
+import { selectFeedDetail } from '@stores/feedDetailStore';
 import { getFormattedDate } from '@utils/getFormattedDate';
 import type { FeedData } from '@type/feed';
 import * as S from './BaseFeed.styled';
@@ -13,21 +13,11 @@ import * as S from './BaseFeed.styled';
 interface BaseFeedProps {
 	children: ReactNode;
 	feedData: FeedData;
-	isDetailOpen: boolean;
-	openDetail: () => void;
-	closeDetail: () => void;
-	renderDetail: () => ReactNode;
 }
 
-const BaseFeed = ({
-	feedData,
-	isDetailOpen,
-	openDetail,
-	closeDetail,
-	children,
-	renderDetail,
-}: BaseFeedProps) => {
-	const { author, title, createdAt, comments, attachments } = feedData;
+const BaseFeed = ({ feedData, children }: BaseFeedProps) => {
+	const { feedId, author, title, createdAt, comments, attachments } = feedData;
+	const openDetail = () => selectFeedDetail(feedId);
 
 	return (
 		<S.FeedContainer>
@@ -44,11 +34,6 @@ const BaseFeed = ({
 					<Divider size='sm' />
 					{children}
 				</Flex>
-				{isDetailOpen && (
-					<Drawer isOpen={isDetailOpen} onClose={closeDetail}>
-						{renderDetail()}
-					</Drawer>
-				)}
 			</S.FeedContent>
 			<S.DividerWrapper>
 				<Divider size='sm' />

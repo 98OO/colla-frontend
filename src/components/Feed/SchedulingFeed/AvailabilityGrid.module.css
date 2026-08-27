@@ -1,0 +1,22 @@
+.column {
+	position: relative;
+	box-sizing: border-box;
+	border-right: 0.7px solid var(--grid-border-color);
+	background-color: var(--grid-background-color);
+}
+
+.column::after {
+	content: '';
+	position: absolute;
+	z-index: 1;
+	inset: 0;
+	pointer-events: none;
+	background-image: url('./availability-grid-pattern.svg');
+	background-size: 5px calc(var(--slot-height) * 2);
+	background-repeat: repeat;
+	background-position: 0 calc(var(--slot-height) * -1);
+}
+
+.column[data-starts-on-the-hour='true']::after {
+	background-position: 0 0;
+}

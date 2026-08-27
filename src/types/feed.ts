@@ -1,10 +1,14 @@
 import { FEED_SELECT_MAP } from '@constants/feed';
 
-export type FeedType = 'ALL' | 'NORMAL' | 'COLLECT' | 'SCHEDULING'; // | 'VOTE'
+type FeedSelectMap = typeof FEED_SELECT_MAP;
 
-export type FeedMenuType = 'normal' | 'collect' | 'scheduling'; // | 'vote'
+export type FeedFilter = FeedSelectMap[keyof FeedSelectMap];
 
-export type SelectType = keyof typeof FEED_SELECT_MAP;
+export type FeedType = Exclude<FeedFilter, 'ALL'>;
+
+export type SelectType = keyof FeedSelectMap;
+
+export type FeedMenuType = Lowercase<FeedType>;
 
 export interface Author {
 	id: number;

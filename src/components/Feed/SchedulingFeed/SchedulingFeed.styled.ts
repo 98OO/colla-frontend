@@ -1,4 +1,9 @@
 import { styled, css } from 'styled-components';
+import {
+	SCHEDULING_HEADER_HEIGHT,
+	SCHEDULING_SLOT_HEIGHT,
+	SCHEDULING_TIME_COLUMN_WIDTH,
+} from '@constants/feed';
 import theme from '@styles/theme';
 
 export const FeedContainer = styled.div`
@@ -55,7 +60,7 @@ export const TimeColumn = styled.div`
 	display: flex;
 	flex-direction: column;
 	flex-shrink: 0;
-	width: 50px;
+	width: ${SCHEDULING_TIME_COLUMN_WIDTH}px;
 	padding-right: ${theme.units.spacing.space10};
 	border-right: 1px solid ${theme.color.border.tertiary};
 	font-size: ${theme.typography.fontSize.body.sm};
@@ -64,13 +69,17 @@ export const TimeColumn = styled.div`
 `;
 
 export const TimeLabel = styled.div`
-	height: 20px;
+	height: ${SCHEDULING_SLOT_HEIGHT}px;
 	padding-right: ${theme.units.spacing.space4};
 	text-align: right;
 	box-sizing: border-box;
 `;
 
 export const Grid = styled.div<{ $dayCount: number }>`
+	--slot-height: ${SCHEDULING_SLOT_HEIGHT}px;
+	--grid-background-color: ${theme.color.bg.primary};
+	--grid-border-color: ${theme.color.border.tertiary};
+
 	display: grid;
 	grid-template-columns: repeat(${({ $dayCount }) => $dayCount}, minmax(0, 1fr));
 	flex-grow: 1;
@@ -90,7 +99,7 @@ export const Column = styled.div`
 `;
 
 const slotBase = css`
-	height: 20px;
+	height: ${SCHEDULING_SLOT_HEIGHT}px;
 	box-sizing: border-box;
 
 	border-top: 1px dashed ${theme.color.border.tertiary};
@@ -143,8 +152,8 @@ export const TimeHeader = styled.div`
 	flex-shrink: 0;
 	align-items: center;
 	justify-content: center;
-	height: 42px;
-	width: 50px;
+	height: ${SCHEDULING_HEADER_HEIGHT}px;
+	width: ${SCHEDULING_TIME_COLUMN_WIDTH}px;
 	padding-right: ${theme.units.spacing.space4};
 `;
 
@@ -161,7 +170,7 @@ export const Header = styled.div`
 	flex-direction: column;
 	align-items: center;
 	justify-content: center;
-	height: 42px;
+	height: ${SCHEDULING_HEADER_HEIGHT}px;
 	gap: ${theme.units.spacing.space8};
 `;
 
@@ -172,10 +181,4 @@ export const Day = styled.div`
 export const Date = styled.div`
 	font-size: ${theme.typography.fontSize.body.sm};
 	color: ${theme.color.text.secondary};
-`;
-
-export const AvailabilitySlot = styled.div<{ $slotColor: string; $hasParticipants: boolean }>`
-	${slotBase}
-	background-color: ${({ $slotColor }) => $slotColor || 'transparent'};
-	cursor: ${({ $hasParticipants }) => ($hasParticipants ? 'pointer' : 'default')};
 `;
