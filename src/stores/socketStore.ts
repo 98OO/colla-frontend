@@ -1,5 +1,4 @@
-import { Client } from '@stomp/stompjs';
-import SockJS from 'sockjs-client';
+import loadSocketClientModules from '@utils/socket/loadSocketClientModules';
 import { create } from 'zustand';
 import {
 	WEBSOCKET_CONNECTION_TIMEOUT,
@@ -8,6 +7,7 @@ import {
 	WEBSOCKET_RECONNECT_TIMEOUT,
 	WEBSOCKET_URL,
 } from '@constants/api';
+import type { Client } from '@stomp/stompjs';
 
 export type SocketConnectionStatus =
 	| 'connecting'
@@ -23,6 +23,7 @@ interface ChatChannel {
 	unreadMessageCount: number;
 }
 
+let pendingClientSetup: Promise<void> | null = null;
 let pendingStompClient: Client | null = null;
 let socketAccessToken: string | null = null;
 let manualReconnectClient: Client | null = null;
@@ -70,80 +71,102 @@ const useSocketStore = create<socketStore>((set, get) => ({
 	connectionStatus: 'disconnected',
 	setStompClient: (client) => set({ stompClient: client }),
 	connect: (accessToken) => {
-		if (get().stompClient?.active || pendingStompClient?.active) return;
+		if (pendingClientSetup || get().stompClient?.active || pendingStompClient?.active) return;
 
 		clearReconnectTimeout();
 		socketAccessToken = accessToken;
 		resetReconnectAttemptCount();
 		set({ connectionStatus: 'connecting' });
-		let client: Client;
 
-		const isCurrentClient = () => pendingStompClient === client || get().stompClient === client;
+		const clientSetup = loadSocketClientModules()
+			.then(({ Client: StompClient, SockJS }) => {
+				if (pendingClientSetup !== clientSetup) return;
 
-		client = new Client({
-			webSocketFactory: () => new SockJS(`${WEBSOCKET_URL}${accessToken}`),
-			connectionTimeout: WEBSOCKET_CONNECTION_TIMEOUT,
-			reconnectDelay: WEBSOCKET_RECONNECT_INITIAL_DELAY,
-			beforeConnect: () => {
-				if (!isCurrentClient()) return;
+				let client: Client;
+				const isCurrentClient = () => pendingStompClient === client || get().stompClient === client;
 
-				set({ connectionStatus: 'connecting' });
-			},
-			onConnect: () => {
-				if (!isCurrentClient()) return;
+				client = new StompClient({
+					webSocketFactory: () => new SockJS(`${WEBSOCKET_URL}${accessToken}`),
+					connectionTimeout: WEBSOCKET_CONNECTION_TIMEOUT,
+					reconnectDelay: WEBSOCKET_RECONNECT_INITIAL_DELAY,
+					beforeConnect: () => {
+						if (!isCurrentClient()) return;
 
-				pendingStompClient = null;
-				clearReconnectTimeout();
-				resetReconnectAttemptCount();
-				client.reconnectDelay = WEBSOCKET_RECONNECT_INITIAL_DELAY;
-				set((state) => ({
-					stompClient: client,
-					stompConnectionVersion: state.stompConnectionVersion + 1,
-					connectionStatus: 'connected',
-				}));
-			},
-			onWebSocketClose: () => {
-				if (!isCurrentClient()) return;
+						set({ connectionStatus: 'connecting' });
+					},
+					onConnect: () => {
+						if (!isCurrentClient()) return;
 
-				if (!client.active) {
-					set({ connectionStatus: 'disconnected' });
-					return;
-				}
+						pendingStompClient = null;
+						clearReconnectTimeout();
+						resetReconnectAttemptCount();
+						client.reconnectDelay = WEBSOCKET_RECONNECT_INITIAL_DELAY;
+						set((state) => ({
+							stompClient: client,
+							stompConnectionVersion: state.stompConnectionVersion + 1,
+							connectionStatus: 'connected',
+						}));
+					},
+					onWebSocketClose: () => {
+						if (!isCurrentClient()) return;
 
-				client.reconnectDelay = getNextReconnectDelay();
-				set({ connectionStatus: 'reconnectWaiting' });
+						if (!client.active) {
+							set({ connectionStatus: 'disconnected' });
+							return;
+						}
 
-				if (reconnectTimeoutId) return;
+						client.reconnectDelay = getNextReconnectDelay();
+						set({ connectionStatus: 'reconnectWaiting' });
 
-				reconnectTimeoutId = setTimeout(() => {
-					reconnectTimeoutId = null;
+						if (reconnectTimeoutId) return;
 
-					if (!isCurrentClient() || client.connected || !client.active) return;
+						reconnectTimeoutId = setTimeout(() => {
+							reconnectTimeoutId = null;
 
-					client.deactivate({ force: true });
-					set({ connectionStatus: 'disconnected' });
-				}, WEBSOCKET_RECONNECT_TIMEOUT);
-			},
-			onWebSocketError: () => {
-				if (!isCurrentClient()) return;
+							if (!isCurrentClient() || client.connected || !client.active) return;
 
-				set({ connectionStatus: client.active ? 'reconnectWaiting' : 'disconnected' });
-			},
-			onStompError: () => {
-				if (!isCurrentClient()) return;
+							client.deactivate({ force: true });
+							set({ connectionStatus: 'disconnected' });
+						}, WEBSOCKET_RECONNECT_TIMEOUT);
+					},
+					onWebSocketError: () => {
+						if (!isCurrentClient()) return;
 
-				set({ connectionStatus: client.active ? 'reconnectWaiting' : 'disconnected' });
-			},
-			debug: () => {},
-		});
+						set({ connectionStatus: client.active ? 'reconnectWaiting' : 'disconnected' });
+					},
+					onStompError: () => {
+						if (!isCurrentClient()) return;
 
-		pendingStompClient = client;
-		client.activate();
+						set({ connectionStatus: client.active ? 'reconnectWaiting' : 'disconnected' });
+					},
+					debug: () => {},
+				});
+
+				pendingStompClient = client;
+				client.activate();
+			})
+			.catch(() => {
+				if (pendingClientSetup !== clientSetup) return;
+
+				set({ connectionStatus: 'disconnected' });
+			})
+			.finally(() => {
+				if (pendingClientSetup === clientSetup) pendingClientSetup = null;
+			});
+
+		pendingClientSetup = clientSetup;
 	},
 	reconnectNow: () => {
 		const client = get().stompClient ?? pendingStompClient;
 
-		if (!client || client.connected || manualReconnectClient || !socketAccessToken) return;
+		if (!socketAccessToken || pendingClientSetup) return;
+
+		if (!client) {
+			get().connect(socketAccessToken);
+			return;
+		}
+
+		if (client.connected || manualReconnectClient) return;
 
 		clearReconnectTimeout();
 		manualReconnectClient = client;
@@ -165,6 +188,7 @@ const useSocketStore = create<socketStore>((set, get) => ({
 		const client = get().stompClient ?? pendingStompClient;
 
 		pendingStompClient = null;
+		pendingClientSetup = null;
 		socketAccessToken = null;
 		manualReconnectClient = null;
 		resetReconnectAttemptCount();

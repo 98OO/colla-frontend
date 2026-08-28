@@ -10,10 +10,10 @@ import Skeleton from '@components/common/Skeleton/Skeleton';
 import useMenu from '@hooks/common/useMenu';
 import useRecordTeamSpace from '@hooks/queries/teamspace/useRecordTeamSpace';
 import useUserStatusQuery from '@hooks/queries/useUserStatusQuery';
-import { StompSubscription } from '@stomp/stompjs';
 import useSocketStore from '@stores/socketStore';
 import { END_POINTS } from '@constants/api';
 import { GNB_PROFILE_WIDTH, GNB_TEAM_INFO_WIDTH } from '@styles/layout';
+import type { StompSubscription } from '@stomp/stompjs';
 import * as S from './GNB.styled';
 
 const GNB = () => {
