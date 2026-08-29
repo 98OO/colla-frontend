@@ -1,6 +1,11 @@
 import { useState, useEffect, useRef, ChangeEvent, MouseEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
 import getTeamSpaceInformation from '@apis/teamspace/getTeamSpaceInformation';
+import { ReactComponent as Colla } from '@assets/svg/colla.svg';
+import { ReactComponent as GoogleLogin } from '@assets/svg/GoogleLogin.svg';
+import { ReactComponent as KakaoLogin } from '@assets/svg/KakaoLogin.svg';
+import { ReactComponent as NaverLogin } from '@assets/svg/NaverLogin.svg';
+import { ReactComponent as CloseIcon } from '@assets/svg/x.svg';
 import { Button } from '@components/common/Button/Button';
 import Flex from '@components/common/Flex/Flex';
 import IconButton from '@components/common/IconButton/IconButton';
@@ -12,7 +17,6 @@ import useLoginMutation from '@hooks/queries/useLoginMutation';
 import useToastStore from '@stores/toastStore';
 import { PATH } from '@constants/path';
 import { INVITE_URL_KEY } from '@constants/storage';
-import { KakaoLogin, NaverLogin, GoogleLogin, Colla } from '@assets/svg';
 import * as S from './SignInPage.styled';
 
 interface TeamSpaceInfo {
@@ -109,7 +113,7 @@ const SignInPage = () => {
 							text='팀원으로 참여하려면 로그인하세요.'
 						/>
 						<IconButton
-							icon='X'
+							icon={CloseIcon}
 							ariaLabel='닫기'
 							size='sm'
 							onClick={() => {

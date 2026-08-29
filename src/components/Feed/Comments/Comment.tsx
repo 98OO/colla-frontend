@@ -1,3 +1,4 @@
+import { ReactComponent as KebabIcon } from '@assets/svg/kebab.svg';
 import Avatar from '@components/common/Avatar/Avatar';
 import Flex from '@components/common/Flex/Flex';
 import Icon from '@components/common/Icon/Icon';
@@ -47,7 +48,7 @@ const Comment = ({ comment }: CommentsProps) => {
 				</Flex>
 			</Flex>
 			<Flex gap='8' align='center'>
-				<Icon name='Kebab' size='sm' />
+				<Icon icon={KebabIcon} size='sm' />
 			</Flex>
 		</S.CommentContainer>
 	);

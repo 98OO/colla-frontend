@@ -1,5 +1,12 @@
 import { useRef } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
+import { ReactComponent as DocumentIcon } from '@assets/svg/folder.svg';
+import { ReactComponent as HelpIcon } from '@assets/svg/help-circle.svg';
+import { ReactComponent as FeedIcon } from '@assets/svg/home.svg';
+import { ReactComponent as ChatIcon } from '@assets/svg/message-circle.svg';
+import { ReactComponent as CreateTeamIcon } from '@assets/svg/plus-square.svg';
+import { ReactComponent as CreatePostIcon } from '@assets/svg/plus.svg';
+import { ReactComponent as SettingsIcon } from '@assets/svg/settings.svg';
 import { Button } from '@components/common/Button/Button';
 import Divider from '@components/common/Divider/Divider';
 import Flex from '@components/common/Flex/Flex';
@@ -28,7 +35,13 @@ const SNBIcon = () => {
 	return (
 		<S.Container ref={baseRef}>
 			<S.ButtonWrapper>
-				<Button label='' variant='primary' size='md' leadingIcon='Plus' onClick={handleFeedMenu} />
+				<Button
+					label=''
+					variant='primary'
+					size='md'
+					leadingIcon={CreatePostIcon}
+					onClick={handleFeedMenu}
+				/>
 			</S.ButtonWrapper>
 			{showFeedMenu(baseRef, <FeedMenu closeMenu={handleFeedMenu} />, {
 				top: 24,
@@ -37,7 +50,7 @@ const SNBIcon = () => {
 			<Flex direction='column' gap='48' paddingLeft='16' paddingRight='16'>
 				<Flex direction='column' gap='8' align='center'>
 					<MenuItem
-						leadingIcon='Home'
+						leadingIcon={FeedIcon}
 						selected={location.pathname === PATH.FEED}
 						type='iconOnly'
 						onClick={() => navigate(PATH.FEED)}
@@ -49,14 +62,14 @@ const SNBIcon = () => {
 						onClick={() => navigate(PATH.SCHEDULE)}
 					/> */}
 					<MenuItem
-						leadingIcon='Message'
+						leadingIcon={ChatIcon}
 						selected={location.pathname === PATH.CHAT}
 						number={chatMessageCount === null ? unreadMessageCount : chatMessageCount}
 						type='iconOnly'
 						onClick={() => navigate(PATH.CHAT)}
 					/>
 					<MenuItem
-						leadingIcon='Folder'
+						leadingIcon={DocumentIcon}
 						selected={location.pathname === PATH.DOCUMENT}
 						type='iconOnly'
 						onClick={() => navigate(PATH.DOCUMENT)}
@@ -72,19 +85,19 @@ const SNBIcon = () => {
 					<Divider size='sm' />
 					{currentTeamRole === 'LEADER' && (
 						<MenuItem
-							leadingIcon='Settings'
+							leadingIcon={SettingsIcon}
 							selected={location.pathname === PATH.SETTING}
 							type='iconOnly'
 							onClick={() => navigate(PATH.SETTING)}
 						/>
 					)}
 					<MenuItem
-						leadingIcon='PlusBox'
+						leadingIcon={CreateTeamIcon}
 						selected={false}
 						type='iconOnly'
 						onClick={() => navigate(PATH.ENTRY)}
 					/>
-					<MenuItem leadingIcon='Help' selected={false} type='iconOnly' onClick={() => ''} />
+					<MenuItem leadingIcon={HelpIcon} selected={false} type='iconOnly' onClick={() => ''} />
 				</Flex>
 			</Flex>
 		</S.Container>

@@ -62,7 +62,7 @@ const EditorMenu = ({ editor, appendImageFile }: EditorMenuProps) => {
 				<>
 					{group.map((button) => (
 						<EditorMenuButton
-							key={button.icon}
+							key={button.id}
 							icon={button.icon}
 							command={button.command}
 							isActive={button.isActive}

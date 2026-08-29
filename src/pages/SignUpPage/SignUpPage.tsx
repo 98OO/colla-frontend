@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { ReactComponent as Colla } from '@assets/svg/colla.svg';
 import { Button } from '@components/common/Button/Button';
 import Flex from '@components/common/Flex/Flex';
 import Input from '@components/common/Input/Input';
@@ -9,7 +10,6 @@ import useVerificationMutation from '@hooks/queries/signup/useVerificationMutati
 import useRegisterMutation from '@hooks/queries/useRegisterMutation';
 import useForm from '@hooks/user/useForm';
 import { PATH } from '@constants/path';
-import { Colla } from '@assets/svg';
 import * as S from './SignUpPage.styled';
 
 const SignUpPage = () => {

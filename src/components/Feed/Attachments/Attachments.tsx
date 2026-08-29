@@ -1,3 +1,4 @@
+import { ReactComponent as DownloadIcon } from '@assets/svg/download.svg';
 import IconButton from '@components/common/IconButton/IconButton';
 import Profile from '@components/common/Profile/Profile';
 import { getUnitFormattedSize } from '@utils/getUnitFormattedSize';
@@ -36,7 +37,7 @@ const Attachments = ({ attachment }: AttachmentsProps) => {
 			/>
 			<IconButton
 				ariaLabel='download'
-				icon='Download'
+				icon={DownloadIcon}
 				color='primary'
 				size='md'
 				onClick={() => window.open(fileUrl, '_blank')}

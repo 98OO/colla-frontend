@@ -1,4 +1,10 @@
 import { useMemo, useState } from 'react';
+import { ReactComponent as ChevronLeftIcon } from '@assets/svg/chevron-left.svg';
+import { ReactComponent as ChevronRightIcon } from '@assets/svg/chevron-right.svg';
+import { ReactComponent as ChevronsLeftIcon } from '@assets/svg/chevrons-left.svg';
+import { ReactComponent as ChevronsRightIcon } from '@assets/svg/chevrons-right.svg';
+import { ReactComponent as DownloadIcon } from '@assets/svg/download.svg';
+import { ReactComponent as FolderIcon } from '@assets/svg/folder.svg';
 import { Button } from '@components/common/Button/Button';
 import Divider from '@components/common/Divider/Divider';
 import Flex from '@components/common/Flex/Flex';
@@ -32,9 +38,7 @@ const DOCUMENT_SORT_ORDER_MAP: Record<string, DocumentSortOrder> = {
 const DocumentPage = () => {
 	const [selectedSortOption, setSelectedSortOption] = useState('최신순');
 	const { userStatus } = useUserStatusQuery();
-	const { teamDocument, isPending } = useDocumentQuery(
-		userStatus?.profile.lastSeenTeamspaceId
-	);
+	const { teamDocument, isPending } = useDocumentQuery(userStatus?.profile.lastSeenTeamspaceId);
 	const attachments = useMemo(
 		() =>
 			getDocumentsBySortOrder(
@@ -72,8 +76,7 @@ const DocumentPage = () => {
 
 	const handleSortSelect = (index: number) => {
 		setSelectedSortOption(
-			Object.keys(DOCUMENT_SORT_ORDER_MAP)[index - 1] ??
-				Object.keys(DOCUMENT_SORT_ORDER_MAP)[0]
+			Object.keys(DOCUMENT_SORT_ORDER_MAP)[index - 1] ?? Object.keys(DOCUMENT_SORT_ORDER_MAP)[0]
 		);
 	};
 
@@ -102,7 +105,7 @@ const DocumentPage = () => {
 							variant='secondary'
 							size='sm'
 							disabled={selectedDocument.size === 0}
-							leadingIcon='Download'
+							leadingIcon={DownloadIcon}
 							onClick={handleDownloadClick}
 						/>
 						<S.SelectWrapper>
@@ -150,7 +153,7 @@ const DocumentPage = () => {
 			<S.DocumentListContainer>
 				{!isPending && attachments.length === 0 && (
 					<S.DocumentStateContainer>
-						<Icon name='Folder' color='tertiary' size='lg' />
+						<Icon icon={FolderIcon} color='tertiary' size='lg' />
 						<Flex direction='column' align='center' gap='8'>
 							<Heading size='xs' color='primary'>
 								아직 저장된 자료가 없어요
@@ -174,23 +177,21 @@ const DocumentPage = () => {
 			{attachments.length > 0 && (
 				<S.PaginationContainer>
 					<IconButton
-						icon='ChevronsLeft'
+						icon={ChevronsLeftIcon}
 						ariaLabel='ChevronsLeft'
 						color='iSecondary'
 						onClick={() => handlePageGroupClick('prev')}
 						disabled={selectedNumber === 1}
 					/>
 					<IconButton
-						icon='ChevronLeft'
+						icon={ChevronLeftIcon}
 						ariaLabel='ChevronLeft'
 						color='iSecondary'
 						onClick={() => handlePageClick('prev')}
 						disabled={selectedNumber === 1}
 					/>
 					{pageNumbers.map((number) => (
-						<S.NumberButtonWrapper
-							$active={selectedNumber === number}
-							key={number}>
+						<S.NumberButtonWrapper $active={selectedNumber === number} key={number}>
 							<Button
 								label={number.toString()}
 								variant='text'
@@ -200,14 +201,14 @@ const DocumentPage = () => {
 						</S.NumberButtonWrapper>
 					))}
 					<IconButton
-						icon='ChevronRight'
+						icon={ChevronRightIcon}
 						ariaLabel='ChevronRight'
 						color='iSecondary'
 						onClick={() => handlePageClick('next')}
 						disabled={selectedNumber === lastPageNumber}
 					/>
 					<IconButton
-						icon='ChevronsRight'
+						icon={ChevronsRightIcon}
 						ariaLabel='ChevronsRight'
 						color='iSecondary'
 						onClick={() => handlePageGroupClick('next')}

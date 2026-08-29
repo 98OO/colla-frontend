@@ -1,3 +1,5 @@
+import { ReactComponent as EyeOffIcon } from '@assets/svg/eye-off.svg';
+import { ReactComponent as EyeIcon } from '@assets/svg/eye.svg';
 import IconButton from '@components/common/IconButton/IconButton';
 import type { Meta, StoryObj } from '@storybook/react-vite';
 
@@ -11,8 +13,8 @@ const meta = {
 	},
 	argTypes: {
 		icon: {
-			control: 'select',
-			description: '사용할 Icon의 이름입니다.',
+			control: false,
+			description: '표시할 SVG 컴포넌트입니다.',
 		},
 		ariaLabel: {
 			control: 'text',
@@ -45,7 +47,7 @@ type Story = StoryObj<typeof meta>;
 
 export const Eye: Story = {
 	args: {
-		icon: 'Eye',
+		icon: EyeIcon,
 		ariaLabel: '비밀번호 숨김',
 		color: 'tertiary',
 		size: 'lg',
@@ -55,7 +57,7 @@ export const Eye: Story = {
 
 export const EyeOff: Story = {
 	args: {
-		icon: 'EyeOff',
+		icon: EyeOffIcon,
 		ariaLabel: '비밀번호 확인',
 		color: 'tertiary',
 		size: 'lg',

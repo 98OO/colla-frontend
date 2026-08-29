@@ -1,3 +1,4 @@
+import { ReactComponent as KebabIcon } from '@assets/svg/kebab.svg';
 import Avatar from '@components/common/Avatar/Avatar';
 import Flex from '@components/common/Flex/Flex';
 import Icon from '@components/common/Icon/Icon';
@@ -20,12 +21,7 @@ const FeedAuthor = (props: FeedAuthorProps) => {
 		<S.FeedAuthorContainer onClick={onClick}>
 			<Flex gap='8' align='center'>
 				<S.FeedAuthorAvatarContainer>
-					<Avatar
-						profile={profile}
-						initial={initial}
-						size='mlg'
-						shape='circle'
-					/>
+					<Avatar profile={profile} initial={initial} size='mlg' shape='circle' />
 				</S.FeedAuthorAvatarContainer>
 				<Flex direction='column' gap='8'>
 					<Flex align='center' gap='6'>
@@ -44,7 +40,7 @@ const FeedAuthor = (props: FeedAuthorProps) => {
 				</Flex>
 			</Flex>
 			<Flex gap='8' align='center'>
-				<Icon name='Kebab' size='sm' />
+				<Icon icon={KebabIcon} size='sm' />
 			</Flex>
 		</S.FeedAuthorContainer>
 	);

@@ -1,5 +1,9 @@
 import { useRef } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
+import { ReactComponent as DocumentIcon } from '@assets/svg/folder.svg';
+import { ReactComponent as FeedIcon } from '@assets/svg/home.svg';
+import { ReactComponent as ChatIcon } from '@assets/svg/message-circle.svg';
+import { ReactComponent as CreatePostIcon } from '@assets/svg/plus.svg';
 import { Button } from '@components/common/Button/Button';
 import Divider from '@components/common/Divider/Divider';
 import Flex from '@components/common/Flex/Flex';
@@ -32,7 +36,7 @@ const SNBFull = () => {
 				label='피드 작성'
 				variant='primary'
 				size='md'
-				leadingIcon='Plus'
+				leadingIcon={CreatePostIcon}
 				onClick={handleFeedMenu}
 			/>
 			{showFeedMenu(baseRef, <FeedMenu closeMenu={handleFeedMenu} />, {
@@ -45,7 +49,7 @@ const SNBFull = () => {
 						<Heading size='xxs'>메뉴</Heading>
 					</S.HeadingWrapper>
 					<MenuItem
-						leadingIcon='Home'
+						leadingIcon={FeedIcon}
 						title='피드'
 						selected={location.pathname === PATH.FEED}
 						onClick={() => navigate(PATH.FEED)}
@@ -57,14 +61,14 @@ const SNBFull = () => {
 						onClick={() => navigate(PATH.SCHEDULE)}
 					/> */}
 					<MenuItem
-						leadingIcon='Message'
+						leadingIcon={ChatIcon}
 						title='채팅'
 						selected={location.pathname === PATH.CHAT}
 						number={chatMessageCount === null ? unreadMessageCount : chatMessageCount}
 						onClick={() => navigate(PATH.CHAT)}
 					/>
 					<MenuItem
-						leadingIcon='Folder'
+						leadingIcon={DocumentIcon}
 						title='자료 저장소'
 						selected={location.pathname === PATH.DOCUMENT}
 						onClick={() => navigate(PATH.DOCUMENT)}

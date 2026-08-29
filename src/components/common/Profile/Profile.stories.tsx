@@ -1,3 +1,4 @@
+import { ReactComponent as HomeIcon } from '@assets/svg/home.svg';
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import Profile from './Profile';
 
@@ -37,9 +38,7 @@ const meta = {
 			description: '프로필의 추가 텍스트를 지정합니다.',
 		},
 		trailingIcon: {
-			control: {
-				type: 'select',
-			},
+			control: false,
 			description: '프로필 끝에 표시할 아이콘을 지정합니다.',
 		},
 		trailingText: {
@@ -60,7 +59,7 @@ export const DefaultProfile: Story = {
 		title: '홍길동',
 		subTitle: 'Leader',
 		text: '안녕하세요',
-		trailingIcon: 'Home',
+		trailingIcon: HomeIcon,
 		trailingText: 'More info',
 	},
 };

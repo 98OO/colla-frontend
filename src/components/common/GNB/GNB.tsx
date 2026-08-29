@@ -1,4 +1,6 @@
 import { useEffect, useLayoutEffect, useRef, useState } from 'react';
+import { ReactComponent as TeamSwitchIcon } from '@assets/svg/chevrons-updown.svg';
+import { ReactComponent as InviteIcon } from '@assets/svg/user-plus.svg';
 import Avatar from '@components/common/Avatar/Avatar';
 import { Button } from '@components/common/Button/Button';
 import GNBProfile from '@components/common/GNB/GNBMenu/GNBProfile/GNBProfile';
@@ -149,7 +151,7 @@ const GNB = () => {
 								shape='rect'
 							/>
 							<Heading size='sm'>{lastSeenTeam.name}</Heading>
-							<Icon name='Updown' />
+							<Icon icon={TeamSwitchIcon} />
 						</S.LeftContainer>
 						{chatChannelsSubscribeRef &&
 							showTeamSpace(baseRef, <GNBTeamSpace />, {
@@ -169,7 +171,7 @@ const GNB = () => {
 									label='초대'
 									variant='secondary'
 									size='sm'
-									leadingIcon='User'
+									leadingIcon={InviteIcon}
 									onClick={handleTeamInfo}
 								/>
 								{showTeamInfo(baseRef, <GNBTeamInfo />, {

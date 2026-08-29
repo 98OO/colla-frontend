@@ -1,10 +1,11 @@
 import Icon from '@components/common/Icon/Icon';
 import { iconSize } from '@type/size';
-import { iconColor, iconName } from '@type/tokens';
+import { iconColor } from '@type/tokens';
+import type { IconComponent } from '@type/icon';
 import * as S from './IconButton.styled';
 
 export interface IconButtonProps {
-	icon: iconName;
+	icon: IconComponent;
 	ariaLabel: string;
 	color?: iconColor;
 	size?: iconSize;
@@ -22,7 +23,7 @@ const IconButton = ({
 }: IconButtonProps) => {
 	return (
 		<S.IconButtonWrapper type='button' aria-label={ariaLabel} onClick={onClick} disabled={disabled}>
-			<Icon name={icon} size={size} color={color} />
+			<Icon icon={icon} size={size} color={color} />
 		</S.IconButtonWrapper>
 	);
 };

@@ -1,4 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
+import { ReactComponent as CheckIcon } from '@assets/svg/check.svg';
+import { ReactComponent as ChevronDownIcon } from '@assets/svg/chevron-down.svg';
+import { ReactComponent as ChevronUpIcon } from '@assets/svg/chevron-up.svg';
 import Icon from '@components/common/Icon/Icon';
 import Text from '@components/common/Text/Text';
 import { selectSize } from '@type/size';
@@ -50,7 +53,7 @@ const Select = (props: SelectProps) => {
 				<Text size={size} weight='medium'>
 					{select || 'select'}
 				</Text>
-				{isOpen ? <Icon name='Up' /> : <Icon name='Down' />}
+				{isOpen ? <Icon icon={ChevronUpIcon} /> : <Icon icon={ChevronDownIcon} />}
 			</S.ButtonWrapper>
 			{isOpen && options && (
 				<S.SelectOptionContainer>
@@ -59,7 +62,7 @@ const Select = (props: SelectProps) => {
 							<Text size='md' weight='medium'>
 								{option}
 							</Text>
-							{select === option && <Icon name='Check' />}
+							{select === option && <Icon icon={CheckIcon} />}
 						</S.SelectOptionWrapper>
 					))}
 				</S.SelectOptionContainer>

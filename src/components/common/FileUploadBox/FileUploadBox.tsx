@@ -1,4 +1,5 @@
 import { useRef } from 'react';
+import { ReactComponent as CloseIcon } from '@assets/svg/x.svg';
 import IconButton from '@components/common/IconButton/IconButton';
 import * as S from './FileUploadBox.styled';
 
@@ -23,25 +24,15 @@ const FileItem = ({ file, onDelete }: FileItemProps) => {
 
 	return (
 		<S.FileItemWrapper>
-			<IconButton
-				ariaLabel='delete'
-				icon='X'
-				size='sm'
-				onClick={handleDeleteClick}
-			/>
+			<IconButton ariaLabel='delete' icon={CloseIcon} size='sm' onClick={handleDeleteClick} />
 			<span>{file.name}</span>
 		</S.FileItemWrapper>
 	);
 };
 
 const FileUploadBox = (fileUploadBoxProps: FileUploadBoxProps) => {
-	const {
-		files,
-		handleDrop,
-		handleDragOver,
-		handleFilesAdd,
-		handleFileDelete,
-	} = fileUploadBoxProps;
+	const { files, handleDrop, handleDragOver, handleFilesAdd, handleFileDelete } =
+		fileUploadBoxProps;
 	const fileInputRef = useRef<HTMLInputElement | null>(null);
 
 	const handleClick = () => {
@@ -62,21 +53,14 @@ const FileUploadBox = (fileUploadBoxProps: FileUploadBoxProps) => {
 		) : (
 			<S.FileItemContainer>
 				{files.map((file) => (
-					<FileItem
-						key={file.name}
-						file={file}
-						onDelete={() => handleFileDelete(file.name)}
-					/>
+					<FileItem key={file.name} file={file} onDelete={() => handleFileDelete(file.name)} />
 				))}
 			</S.FileItemContainer>
 		);
 	};
 
 	return (
-		<S.FileUploadBoxContainer
-			onDragOver={handleDragOver}
-			onDrop={handleDrop}
-			onClick={handleClick}>
+		<S.FileUploadBoxContainer onDragOver={handleDragOver} onDrop={handleDrop} onClick={handleClick}>
 			<input
 				type='file'
 				ref={fileInputRef}

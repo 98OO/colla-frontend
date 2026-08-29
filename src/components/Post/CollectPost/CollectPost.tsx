@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { ReactComponent as ClockIcon } from '@assets/svg/clock.svg';
 import { Button } from '@components/common/Button/Button';
 import FileUploadBox from '@components/common/FileUploadBox/FileUploadBox';
 import Flex from '@components/common/Flex/Flex';
@@ -64,7 +65,7 @@ const CollectPost = () => {
 			<Flex direction='column' gap='12'>
 				<S.PostInput placeholder='제목을 입력해주세요' value={title} onChange={handleTitleChange} />
 				<Flex align='center' gap='14' position='relative'>
-					<Icon name='Clock' />
+					<Icon icon={ClockIcon} />
 					<Text size='md' weight='regular'>
 						마감 일시
 					</Text>

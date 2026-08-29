@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { ReactComponent as CalendarIcon } from '@assets/svg/calendar.svg';
 import Flex from '@components/common/Flex/Flex';
 import Heading from '@components/common/Heading/Heading';
 import Icon from '@components/common/Icon/Icon';
@@ -30,7 +31,7 @@ const TimeRangeSection = ({ initialTimeRange, updateCondition }: TimeRangeProps)
 	return (
 		<Flex direction='column' gap='20'>
 			<Flex align='center' gap='6'>
-				<Icon name='Calendar' />
+				<Icon icon={CalendarIcon} />
 				<Heading size='xs' color='secondary'>
 					시간 범위
 				</Heading>

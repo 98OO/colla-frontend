@@ -1,3 +1,4 @@
+import { ReactComponent as ChevronDownIcon } from '@assets/svg/chevron-down.svg';
 import Profile from '@components/common/Profile/Profile';
 import type { Message } from '@type/chat';
 import * as S from './LatestMessageBox.styled';
@@ -18,7 +19,7 @@ const LatestMessageBox = (props: LatestMessageBoxProps) => {
 				avatarSize='sm'
 				title={latestMessage.author.username}
 				subTitle={latestMessage.content}
-				trailingIcon='Down'
+				trailingIcon={ChevronDownIcon}
 			/>
 		</S.LatestMessageContainer>
 	);

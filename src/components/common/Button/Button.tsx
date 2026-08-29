@@ -1,6 +1,6 @@
 import Icon from '@components/common/Icon/Icon';
+import type { IconComponent } from '@type/icon';
 import type { buttonSize } from '@type/size';
-import type { iconName } from '@type/tokens';
 import * as S from './Button.styled';
 
 type buttonVariant = 'primary' | 'secondary' | 'destructive' | 'text';
@@ -12,7 +12,7 @@ export interface ButtonProps {
 	isFull?: boolean;
 	type?: 'button' | 'reset' | 'submit';
 	disabled?: boolean;
-	leadingIcon?: iconName;
+	leadingIcon?: IconComponent;
 	onClick?: React.MouseEventHandler<HTMLButtonElement>;
 }
 
@@ -42,9 +42,7 @@ export const Button = (props: ButtonProps) => {
 			type={type}
 			disabled={disabled}
 			onClick={onClick}>
-			{leadingIcon && (
-				<Icon name={leadingIcon} color={getIconColor(variant, disabled)} />
-			)}
+			{leadingIcon && <Icon icon={leadingIcon} color={getIconColor(variant, disabled)} />}
 			{label}
 		</S.ButtonWrapper>
 	);

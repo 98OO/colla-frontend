@@ -1,5 +1,8 @@
 import { useNavigate } from 'react-router-dom';
 import { signOut } from '@apis/auth/sessionActions';
+import { ReactComponent as LogOutIcon } from '@assets/svg/log-out.svg';
+import { ReactComponent as MailIcon } from '@assets/svg/mail.svg';
+import { ReactComponent as ProfileIcon } from '@assets/svg/user.svg';
 import Divider from '@components/common/Divider/Divider';
 import Flex from '@components/common/Flex/Flex';
 import Profile from '@components/common/Profile/Profile';
@@ -30,15 +33,15 @@ const GNBProfile = () => {
 					<Divider size='sm' padding={4} />
 					<Flex direction='column' gap='4'>
 						<MenuItem
-							leadingIcon='Profile'
+							leadingIcon={ProfileIcon}
 							title='마이페이지'
 							selected={false}
 							onClick={() => navigate(PATH.MYPAGE)}
 						/>
-						<MenuItem leadingIcon='Mail' title='문의하기' selected={false} onClick={() => ''} />
+						<MenuItem leadingIcon={MailIcon} title='문의하기' selected={false} onClick={() => ''} />
 					</Flex>
 					<Divider size='sm' padding={4} />
-					<MenuItem leadingIcon='LogOut' title='로그아웃' selected={false} onClick={signOut} />
+					<MenuItem leadingIcon={LogOutIcon} title='로그아웃' selected={false} onClick={signOut} />
 				</>
 			)}
 		</S.GNBProfileContainer>

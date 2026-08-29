@@ -1,3 +1,5 @@
+import { ReactComponent as ChevronLeftIcon } from '@assets/svg/chevron-left.svg';
+import { ReactComponent as ChevronRightIcon } from '@assets/svg/chevron-right.svg';
 import Flex from '@components/common/Flex/Flex';
 import IconButton from '@components/common/IconButton/IconButton';
 import Select from '@components/common/Select/Select';
@@ -63,7 +65,7 @@ const DatePicker = ({ selectedDate, time, onDateChange, onTimeChange }: DatePick
 						<S.CalendarHeader>
 							<IconButton
 								ariaLabel='prevMonth'
-								icon='ChevronLeft'
+								icon={ChevronLeftIcon}
 								onClick={prevMonth}
 								disabled={isPrevDisabled}
 							/>
@@ -72,7 +74,7 @@ const DatePicker = ({ selectedDate, time, onDateChange, onTimeChange }: DatePick
 							</S.Month>
 							<IconButton
 								ariaLabel='nextMonth'
-								icon='ChevronRight'
+								icon={ChevronRightIcon}
 								onClick={nextMonth}
 								disabled={isNextDisabled}
 							/>

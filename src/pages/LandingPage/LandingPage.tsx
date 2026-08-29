@@ -1,9 +1,9 @@
 import { useNavigate } from 'react-router-dom';
+import { ReactComponent as Colla } from '@assets/svg/colla.svg';
 import { Button } from '@components/common/Button/Button';
 import Text from '@components/common/Text/Text';
 import { PATH } from '@constants/path';
 import { collaBear } from '@assets/png';
-import { Colla } from '@assets/svg';
 import * as S from './LandingPage.styled';
 
 const LandingPage = () => {

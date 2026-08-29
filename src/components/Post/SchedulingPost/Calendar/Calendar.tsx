@@ -1,4 +1,6 @@
 import type { Dispatch, SetStateAction } from 'react';
+import { ReactComponent as ChevronLeftIcon } from '@assets/svg/chevron-left.svg';
+import { ReactComponent as ChevronRightIcon } from '@assets/svg/chevron-right.svg';
 import Flex from '@components/common/Flex/Flex';
 import IconButton from '@components/common/IconButton/IconButton';
 import { DateCell, EmptyCell } from '@components/Post/SchedulingPost/Calendar/DateCell/DateCell';
@@ -34,7 +36,7 @@ const Calendar = ({ selectedDates, setSelectedDates }: CalendarProps) => {
 			<Flex gap='12' align='center'>
 				<IconButton
 					ariaLabel='prevMonth'
-					icon='ChevronLeft'
+					icon={ChevronLeftIcon}
 					onClick={prevMonth}
 					disabled={isSameMonth}
 				/>
@@ -63,7 +65,7 @@ const Calendar = ({ selectedDates, setSelectedDates }: CalendarProps) => {
 						);
 					})}
 				</S.CalendarGrid>
-				<IconButton ariaLabel='nextMonth' icon='ChevronRight' onClick={nextMonth} />
+				<IconButton ariaLabel='nextMonth' icon={ChevronRightIcon} onClick={nextMonth} />
 			</Flex>
 		</S.CalendarContainer>
 	);
