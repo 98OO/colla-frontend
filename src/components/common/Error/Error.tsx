@@ -1,3 +1,7 @@
+import signPostAvif340 from '@assets/images/signPost-340.avif';
+import signPostWebp340 from '@assets/images/signPost-340.webp';
+import signPostAvif478 from '@assets/images/signPost-478.avif';
+import signPostWebp478 from '@assets/images/signPost-478.webp';
 import { Button } from '@components/common/Button/Button';
 import Flex from '@components/common/Flex/Flex';
 import Heading from '@components/common/Heading/Heading';
@@ -15,7 +19,19 @@ const Error = ({ errorMessage, resetError }: ErrorProps) => {
 	return (
 		<Flex gap='72' align='center'>
 			<S.ImageWrapper>
-				<img alt='signPost' src={signPost} />
+				<picture>
+					<source
+						type='image/avif'
+						srcSet={`${signPostAvif340} 340w, ${signPostAvif478} 478w`}
+						sizes='340px'
+					/>
+					<source
+						type='image/webp'
+						srcSet={`${signPostWebp340} 340w, ${signPostWebp478} 478w`}
+						sizes='340px'
+					/>
+					<img alt='signPost' src={signPost} width={478} height={593} loading='eager' />
+				</picture>
 			</S.ImageWrapper>
 			<Flex direction='column' gap='30' justify='center'>
 				<Heading size='lg' color='primary'>

@@ -13,7 +13,12 @@ interface EntryItemProps {
 	type: 'teamName' | 'teamCode';
 	title: string;
 	subTitle: string;
-	image: string;
+	image: {
+		avif: string;
+		webp: string;
+		fallback: string;
+		alt: string;
+	};
 	inputLabel: string;
 	buttonLabel: string;
 }
@@ -68,7 +73,11 @@ const EntryItem = (props: EntryItemProps) => {
 				</Text>
 			</Flex>
 			<S.ImageWrapper>
-				<img alt='teamCreation' src={image} />
+				<picture>
+					<source type='image/avif' srcSet={image.avif} />
+					<source type='image/webp' srcSet={image.webp} />
+					<img alt={image.alt} src={image.fallback} width={274} height={216} loading='eager' />
+				</picture>
 			</S.ImageWrapper>
 			<S.InputWrapper>
 				<Text size='md' weight='medium'>

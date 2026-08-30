@@ -1,4 +1,8 @@
 import { useNavigate } from 'react-router-dom';
+import collaBearAvif340 from '@assets/images/collaBear-340.avif';
+import collaBearWebp340 from '@assets/images/collaBear-340.webp';
+import collaBearAvif577 from '@assets/images/collaBear-577.avif';
+import collaBearWebp577 from '@assets/images/collaBear-577.webp';
 import { ReactComponent as Colla } from '@assets/svg/colla.svg';
 import { Button } from '@components/common/Button/Button';
 import Text from '@components/common/Text/Text';
@@ -12,7 +16,26 @@ const LandingPage = () => {
 	return (
 		<S.Container>
 			<S.ImageWrapper>
-				<img alt='collaBear' src={collaBear} />
+				<picture>
+					<source
+						type='image/avif'
+						srcSet={`${collaBearAvif340} 340w, ${collaBearAvif577} 577w`}
+						sizes='340px'
+					/>
+					<source
+						type='image/webp'
+						srcSet={`${collaBearWebp340} 340w, ${collaBearWebp577} 577w`}
+						sizes='340px'
+					/>
+					<img
+						alt='collaBear'
+						src={collaBear}
+						width={577}
+						height={577}
+						loading='eager'
+						fetchPriority='high'
+					/>
+				</picture>
 			</S.ImageWrapper>
 			<S.CTAContainer>
 				<Colla viewBox='0 0 154 57' />
