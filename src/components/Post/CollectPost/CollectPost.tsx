@@ -28,7 +28,7 @@ const CollectPost = () => {
 		deleteAttachmentFile,
 		handleDrop,
 		handleDragOver,
-		handleSubmit: submitCollectFeedForm,
+		submitCollectFeed,
 	} = usePostEditor();
 
 	const { dueAtDate, dueAtTime } = getDefaultDueAt();
@@ -47,7 +47,7 @@ const CollectPost = () => {
 			return;
 		}
 
-		await submitCollectFeedForm(title, `${selectedDate} ${time}`);
+		await submitCollectFeed(title, `${selectedDate} ${time}`);
 	};
 
 	const handleCancel = () => {

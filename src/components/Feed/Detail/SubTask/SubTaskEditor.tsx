@@ -4,7 +4,7 @@ import Flex from '@components/common/Flex/Flex';
 import Editor from '@components/Post/Editor/Editor';
 import usePostEditor from '@hooks/post/usePostEditor';
 import useCollectSubTaskMutation from '@hooks/queries/Feed/Collect/useCollectSubTaskMutation';
-import useUserStatusQuery from '@hooks/queries/useUserStatusQuery';
+import { useLastSeenTeamspaceId } from '@hooks/user/useLastSeenTeamspaceId';
 import * as S from './SubTaskDetail.styled';
 
 interface SubTaskEditorProps {
@@ -13,12 +13,9 @@ interface SubTaskEditorProps {
 }
 
 const SubTaskEditor = ({ feedId, title: savedTitle }: SubTaskEditorProps) => {
-	const { editorRef, appendImageFile } = usePostEditor();
-	const { userStatus } = useUserStatusQuery();
-	const { mutateCollectSubTask } = useCollectSubTaskMutation(
-		userStatus?.profile.lastSeenTeamspaceId,
-		feedId
-	);
+	const { editorRef, appendImageFile, resolveEditorImageUrls } = usePostEditor();
+	const teamspaceId = useLastSeenTeamspaceId();
+	const { mutateCollectSubTask } = useCollectSubTaskMutation(teamspaceId, feedId);
 
 	const [title, setTitle] = useState<string | null>(null);
 
@@ -31,16 +28,17 @@ const SubTaskEditor = ({ feedId, title: savedTitle }: SubTaskEditorProps) => {
 	};
 
 	const handleSubmitSubTask = async () => {
-		if (editorRef.current && editorRef.current.getHTML() !== undefined) {
-			const content = editorRef.current.getHTML();
+		const result = await resolveEditorImageUrls();
+		if (!result) return;
 
-			await mutateCollectSubTask({
-				teamspaceId: userStatus?.profile.lastSeenTeamspaceId,
-				feedId,
-				title,
-				content: content === '<p></p>' ? null : content,
-			});
-		}
+		const { content } = result;
+
+		await mutateCollectSubTask({
+			teamspaceId,
+			feedId,
+			title,
+			content: content === '<p></p>' ? null : content,
+		});
 	};
 
 	return (
