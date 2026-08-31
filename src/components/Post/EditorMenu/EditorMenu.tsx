@@ -10,14 +10,13 @@ import {
 } from '@components/Post/EditorMenuButton/getButtons';
 import useFileUpload from '@hooks/common/useFileUpload';
 import useToastStore from '@stores/toastStore';
-import { convertToBase64 } from '@utils/editorImageUtils';
 import { EDITOR_IMAGE_ERROR_MESSAGE } from '@constants/feed';
 import type { Editor } from '@tiptap/react';
 import * as S from './EditorMenu.styled';
 
 interface EditorMenuProps {
 	editor: Editor;
-	appendImageFile: (file: File) => void;
+	appendImageFile: (file: File) => string;
 }
 
 const EditorMenu = ({ editor, appendImageFile }: EditorMenuProps) => {
@@ -31,12 +30,9 @@ const EditorMenu = ({ editor, appendImageFile }: EditorMenuProps) => {
 		getUtilityButtons(editor),
 	];
 
-	const addImageToEditor = async (file: File) => {
-		const imageUrl = await convertToBase64(file);
-
-		if (imageUrl) {
-			editor.chain().focus().setImage({ src: imageUrl }).run();
-		}
+	const addImageToEditor = (file: File) => {
+		const previewUrl = appendImageFile(file);
+		editor.chain().focus().setImage({ src: previewUrl }).run();
 	};
 
 	const handleEditorImage = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -53,7 +49,6 @@ const EditorMenu = ({ editor, appendImageFile }: EditorMenuProps) => {
 		}
 
 		addImageToEditor(file);
-		appendImageFile(file);
 	};
 
 	return (

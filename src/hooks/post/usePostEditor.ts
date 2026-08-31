@@ -1,9 +1,10 @@
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import useFileUpload from '@hooks/common/useFileUpload';
 import useCollectFeedMutation from '@hooks/queries/post/useCollectFeedMutation';
 import useNormalFeedMutation from '@hooks/queries/post/useNormalFeedMutation';
 import { useLastSeenTeamspaceId } from '@hooks/user/useLastSeenTeamspaceId';
-import { replaceDataUrlsToAttachmentUrls } from '@utils/editorImageUtils';
+import replaceEditorImageUrls from '@utils/editorImageUtils';
+import optimizeImageFile from '@utils/optimizeImageFile';
 import type { Editor } from '@tiptap/react';
 
 interface FileDTO {
@@ -14,6 +15,17 @@ interface FileDTO {
 
 interface EditorImageUrlResult {
 	content: string;
+	imageFiles: File[];
+	imageUrls: string[];
+}
+
+interface EditorImage {
+	file: File;
+	previewUrl: string;
+}
+
+interface UploadedEditorImages {
+	imageFiles: File[];
 	imageUrls: string[];
 }
 
@@ -27,6 +39,10 @@ type FeedSubmitCommand =
 			title: string;
 			dueAt: string | null;
 	  };
+
+const getReferencedEditorImages = (editorImages: EditorImage[], content: string) => {
+	return editorImages.filter(({ previewUrl }) => content.includes(previewUrl));
+};
 
 const createFileDTOs = (files: File[], fileUrls: string[]): FileDTO[] => {
 	return files.map((file, index) => ({
@@ -43,13 +59,26 @@ const usePostEditor = () => {
 	const { mutateNormalFeed } = useNormalFeedMutation();
 	const { mutateCollectFeed } = useCollectFeedMutation();
 
-	const [imageFiles, setImageFiles] = useState<File[]>([]);
 	const [attachmentFiles, setAttachmentFiles] = useState<File[]>([]);
+	const [isSubmitting, setIsSubmitting] = useState(false);
 
 	const editorRef = useRef<Editor>(null);
+	const editorImagesRef = useRef<EditorImage[]>([]);
+	const isSubmittingRef = useRef(false);
+
+	useEffect(() => {
+		const editorImages = editorImagesRef.current;
+
+		return () => {
+			editorImages.forEach(({ previewUrl }) => URL.revokeObjectURL(previewUrl));
+		};
+	}, []);
 
 	const appendImageFile = (file: File) => {
-		setImageFiles((prevFiles) => [...prevFiles, file]);
+		const previewUrl = URL.createObjectURL(file);
+		editorImagesRef.current.push({ file, previewUrl });
+
+		return previewUrl;
 	};
 
 	const appendAttachmentFile = (file: File) => {
@@ -73,51 +102,85 @@ const usePostEditor = () => {
 		files.forEach((file) => appendAttachmentFile(file));
 	};
 
+	const uploadEditorImages = async (
+		editorImages: EditorImage[],
+		currentTeamspaceId: number
+	): Promise<UploadedEditorImages | null> => {
+		const imageFilePromises = editorImages.map(({ file }) => optimizeImageFile(file));
+		const imageFiles = await Promise.all(imageFilePromises);
+		const imageUrls: string[] | null = await uploadFiles(
+			imageFiles,
+			'TEAMSPACE',
+			currentTeamspaceId
+		);
+
+		if (!imageUrls || imageUrls.length !== imageFiles.length) return null;
+
+		return { imageFiles, imageUrls };
+	};
+
 	const resolveEditorImageUrls = async (): Promise<EditorImageUrlResult | null> => {
 		if (!teamspaceId) return null;
 
 		const content = editorRef.current?.getHTML();
 		if (!content) return null;
 
-		const imageUrls = await uploadFiles(imageFiles, 'TEAMSPACE', teamspaceId);
-		if (!imageUrls) return null;
+		const editorImages = getReferencedEditorImages(editorImagesRef.current, content);
+		const uploadedImages = await uploadEditorImages(editorImages, teamspaceId);
+		if (!uploadedImages) return null;
+
+		const { imageFiles, imageUrls } = uploadedImages;
+		const previewUrls = editorImages.map(({ previewUrl }) => previewUrl);
 
 		return {
-			content: replaceDataUrlsToAttachmentUrls(content, imageUrls),
+			content: replaceEditorImageUrls(content, imageUrls, previewUrls),
+			imageFiles,
 			imageUrls,
 		};
 	};
 
 	const submitFeed = async (command: FeedSubmitCommand) => {
-		if (!teamspaceId) return;
+		if (!teamspaceId || isSubmittingRef.current) return;
 
-		const result = await resolveEditorImageUrls();
-		if (!result) return;
-		const { content, imageUrls } = result;
+		isSubmittingRef.current = true;
+		setIsSubmitting(true);
 
-		const attachmentUrls = await uploadFiles(attachmentFiles, 'TEAMSPACE', teamspaceId);
-		if (!attachmentUrls) return;
+		try {
+			const result = await resolveEditorImageUrls();
+			if (!result) return;
+			const { content, imageFiles, imageUrls } = result;
 
-		const commonPayload = {
-			teamspaceId,
-			title: command.title,
-			images: createFileDTOs(imageFiles, imageUrls),
-			attachments: createFileDTOs(attachmentFiles, attachmentUrls),
-		};
+			const attachmentUrls: string[] | null = await uploadFiles(
+				attachmentFiles,
+				'TEAMSPACE',
+				teamspaceId
+			);
+			if (!attachmentUrls) return;
 
-		if (command.feedType === 'NORMAL') {
-			await mutateNormalFeed({
+			const commonPayload = {
+				teamspaceId,
+				title: command.title,
+				images: createFileDTOs(imageFiles, imageUrls),
+				attachments: createFileDTOs(attachmentFiles, attachmentUrls),
+			};
+
+			if (command.feedType === 'NORMAL') {
+				await mutateNormalFeed({
+					...commonPayload,
+					details: { content },
+				});
+
+				return;
+			}
+
+			await mutateCollectFeed({
 				...commonPayload,
-				details: { content },
+				details: { content, dueAt: command.dueAt },
 			});
-
-			return;
+		} finally {
+			isSubmittingRef.current = false;
+			setIsSubmitting(false);
 		}
-
-		await mutateCollectFeed({
-			...commonPayload,
-			details: { content, dueAt: command.dueAt },
-		});
 	};
 
 	const submitNormalFeed = (title: string) => {
@@ -131,6 +194,7 @@ const usePostEditor = () => {
 	return {
 		editorRef,
 		attachmentFiles,
+		isSubmitting,
 		appendImageFile,
 		appendAttachmentFile,
 		deleteAttachmentFile,

@@ -23,6 +23,7 @@ const CollectPost = () => {
 	const {
 		editorRef,
 		attachmentFiles,
+		isSubmitting,
 		appendImageFile,
 		appendAttachmentFile,
 		deleteAttachmentFile,
@@ -88,7 +89,13 @@ const CollectPost = () => {
 				handleFileDelete={deleteAttachmentFile}
 			/>
 			<S.ButtonContainer>
-				<Button label='등록' size='md' variant='primary' onClick={handleSubmit} />
+				<Button
+					label='등록'
+					size='md'
+					variant='primary'
+					onClick={handleSubmit}
+					disabled={isSubmitting}
+				/>
 				<Button label='취소' size='md' variant='secondary' onClick={handleCancel} />
 			</S.ButtonContainer>
 		</S.CollectPostContainer>

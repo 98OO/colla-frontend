@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Button } from '@components/common/Button/Button';
 import Flex from '@components/common/Flex/Flex';
 import Editor from '@components/Post/Editor/Editor';
@@ -18,6 +18,9 @@ const SubTaskEditor = ({ feedId, title: savedTitle }: SubTaskEditorProps) => {
 	const { mutateCollectSubTask } = useCollectSubTaskMutation(teamspaceId, feedId);
 
 	const [title, setTitle] = useState<string | null>(null);
+	const [isSubmitting, setIsSubmitting] = useState(false);
+
+	const isSubmittingRef = useRef(false);
 
 	useEffect(() => {
 		if (savedTitle !== undefined) setTitle(savedTitle);
@@ -28,17 +31,27 @@ const SubTaskEditor = ({ feedId, title: savedTitle }: SubTaskEditorProps) => {
 	};
 
 	const handleSubmitSubTask = async () => {
-		const result = await resolveEditorImageUrls();
-		if (!result) return;
+		if (isSubmittingRef.current) return;
 
-		const { content } = result;
+		isSubmittingRef.current = true;
+		setIsSubmitting(true);
 
-		await mutateCollectSubTask({
-			teamspaceId,
-			feedId,
-			title,
-			content: content === '<p></p>' ? null : content,
-		});
+		try {
+			const result = await resolveEditorImageUrls();
+			if (!result) return;
+
+			const { content } = result;
+
+			await mutateCollectSubTask({
+				teamspaceId,
+				feedId,
+				title,
+				content: content === '<p></p>' ? null : content,
+			});
+		} finally {
+			isSubmittingRef.current = false;
+			setIsSubmitting(false);
+		}
 	};
 
 	return (
@@ -53,7 +66,13 @@ const SubTaskEditor = ({ feedId, title: savedTitle }: SubTaskEditorProps) => {
 				<Editor editorRef={editorRef} appendImageFile={appendImageFile} />
 			</S.EditorContainer>
 			<Flex justify='flex-end'>
-				<Button label='수정' variant='primary' size='md' onClick={handleSubmitSubTask} />
+				<Button
+					label='수정'
+					variant='primary'
+					size='md'
+					onClick={handleSubmitSubTask}
+					disabled={isSubmitting}
+				/>
 			</Flex>
 		</S.SubTaskPostContainer>
 	);
