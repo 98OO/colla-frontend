@@ -5,6 +5,7 @@ import SchedulingFeedTransition from '@components/Feed/SchedulingFeedTransition/
 import useVirtualList from '@hooks/common/useVirtualList';
 import useFastScrollPreview from '@hooks/feed/useFastScrollPreview';
 import usePinnedEditingFeeds from '@hooks/feed/usePinnedEditingFeeds';
+import usePriorityImageFeedId from '@hooks/feed/usePriorityImageFeedId';
 import estimateFeedHeight from '@utils/feed/estimateFeedHeight';
 import { domAnimation, LazyMotion, MotionConfig } from 'motion/react';
 import { FEED_VIRTUAL_OVERSCAN } from '@constants/feed';
@@ -31,6 +32,11 @@ const VirtualizedFeedList = memo(({ feeds, scrollContainer }: VirtualizedFeedLis
 		rangeExtractor: extractRangeWithEditingFeeds,
 	});
 	const virtualItems = virtualizer.getVirtualItems();
+	const priorityImageFeedId = usePriorityImageFeedId({
+		feeds,
+		virtualItems,
+		scrollContainer,
+	});
 
 	const shouldRenderFeedPreview = useFastScrollPreview({
 		feeds,
@@ -57,7 +63,11 @@ const VirtualizedFeedList = memo(({ feeds, scrollContainer }: VirtualizedFeedLis
 											onEditChange={handleSchedulingEditChange}
 										/>
 									) : (
-										<Feed feedData={feed} onSchedulingEditChange={handleSchedulingEditChange} />
+										<Feed
+											feedData={feed}
+											prioritizeImage={feed.feedId === priorityImageFeedId}
+											onSchedulingEditChange={handleSchedulingEditChange}
+										/>
 									)}
 								</S.FeedRow>
 							);

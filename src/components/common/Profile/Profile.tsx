@@ -1,4 +1,4 @@
-import Avatar from '@components/common/Avatar/Avatar';
+import Avatar, { type ResponsiveImage } from '@components/common/Avatar/Avatar';
 import Flex from '@components/common/Flex/Flex';
 import Icon from '@components/common/Icon/Icon';
 import Text from '@components/common/Text/Text';
@@ -8,6 +8,7 @@ import * as S from './Profile.styled';
 
 export interface ProfileProps {
 	profile: string | null;
+	responsiveImage?: ResponsiveImage;
 	initial: string;
 	avatarSize?: AvatarSize | 'mlg';
 	avatarShape?: 'circle' | 'rect';
@@ -24,6 +25,7 @@ export interface ProfileProps {
 const Profile = (props: ProfileProps) => {
 	const {
 		profile,
+		responsiveImage,
 		initial,
 		avatarSize = 'md',
 		avatarShape = 'circle',
@@ -41,7 +43,13 @@ const Profile = (props: ProfileProps) => {
 		<S.ProfileContainer onClick={onClick}>
 			<Flex gap='8' align='center'>
 				<S.ProfileAvatarContainer>
-					<Avatar profile={profile} initial={initial} size={avatarSize} shape={avatarShape} />
+					<Avatar
+						profile={profile}
+						responsiveImage={responsiveImage}
+						initial={initial}
+						size={avatarSize}
+						shape={avatarShape}
+					/>
 				</S.ProfileAvatarContainer>
 				<Flex direction='column' gap='4'>
 					<Flex align='center' gap='6'>

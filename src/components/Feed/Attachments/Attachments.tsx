@@ -1,8 +1,37 @@
 import { ReactComponent as DownloadIcon } from '@assets/svg/download.svg';
 import IconButton from '@components/common/IconButton/IconButton';
-import Profile from '@components/common/Profile/Profile';
+import Profile, { type ProfileProps } from '@components/common/Profile/Profile';
 import { getUnitFormattedSize } from '@utils/getUnitFormattedSize';
+import { getResponsiveFeedImage } from '@utils/responsiveFeedImage';
 import * as S from './Attachments.styled';
+
+type ProfileImageProps = Pick<ProfileProps, 'profile' | 'responsiveImage'>;
+
+const IMAGE_FILE_PATH_PATTERN = /\.(?:avif|bmp|gif|jpe?g|png|webp)$/i;
+
+const isImageFileUrl = (url: string) => {
+	try {
+		return IMAGE_FILE_PATH_PATTERN.test(new URL(url).pathname);
+	} catch {
+		return false;
+	}
+};
+
+const getProfileImageProps = (fileUrl: string): ProfileImageProps => {
+	if (!isImageFileUrl(fileUrl)) return { profile: null };
+
+	const responsiveImage = getResponsiveFeedImage(fileUrl, 'thumbnail');
+	if (!responsiveImage) return { profile: fileUrl };
+
+	return {
+		profile: responsiveImage.src,
+		responsiveImage: {
+			srcSet: responsiveImage.srcSet,
+			sizes: responsiveImage.sizes,
+			fallbackSrc: fileUrl,
+		},
+	};
+};
 
 interface Attachment {
 	id: number;
@@ -17,16 +46,15 @@ interface AttachmentsProps {
 
 const Attachments = ({ attachment }: AttachmentsProps) => {
 	const { name, fileUrl, size } = attachment;
+	const { profile, responsiveImage } = getProfileImageProps(fileUrl);
 
-	const filterImageURL = (url: string) => {
-		const imageRegEx = /\.(jpg|jpeg|png|gif|bmp)$/i;
-		return imageRegEx.test(url) ? url : null;
-	};
+	const handleOpenAttachment = () => window.open(fileUrl, '_blank');
 
 	return (
 		<S.AttachmentWrapper>
 			<Profile
-				profile={filterImageURL(fileUrl)}
+				profile={profile}
+				responsiveImage={responsiveImage}
 				initial={name.charAt(0)}
 				avatarSize='mlg'
 				avatarShape='rect'
@@ -40,7 +68,7 @@ const Attachments = ({ attachment }: AttachmentsProps) => {
 				icon={DownloadIcon}
 				color='primary'
 				size='md'
-				onClick={() => window.open(fileUrl, '_blank')}
+				onClick={handleOpenAttachment}
 			/>
 		</S.AttachmentWrapper>
 	);

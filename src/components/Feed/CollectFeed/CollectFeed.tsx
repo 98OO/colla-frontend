@@ -16,10 +16,11 @@ import * as S from './CollectFeed.styled';
 
 interface CollectFeedProps {
 	feedData: CollectFeed;
+	prioritizeImage?: boolean;
 }
 
-const CollectFeed = ({ feedData }: CollectFeedProps) => {
-	const { feedId, details, createdAt } = feedData;
+const CollectFeed = ({ feedData, prioritizeImage = false }: CollectFeedProps) => {
+	const { feedId, details, createdAt, images } = feedData;
 	const { content } = details;
 	const { showMoreButton, detailRef } = useDetailObserver(content);
 	const openDetail = () => selectFeedDetail(feedId);
@@ -49,8 +50,15 @@ const CollectFeed = ({ feedData }: CollectFeedProps) => {
 					)}
 				</Flex>
 				{details && (
-					<S.DetailWrapper ref={detailRef} hasMoreButton={showMoreButton}>
-						<SanitizedHtml html={details.content} />
+					<S.DetailWrapper
+						ref={detailRef}
+						hasMoreButton={showMoreButton}
+						$hasImage={images.length > 0}>
+						<SanitizedHtml
+							html={details.content}
+							optimizeFeedImages
+							prioritizeImage={prioritizeImage}
+						/>
 					</S.DetailWrapper>
 				)}
 				{showMoreButton && (
