@@ -1,4 +1,4 @@
-import { useEffect, useLayoutEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { ReactComponent as TeamSwitchIcon } from '@assets/svg/chevrons-updown.svg';
 import { ReactComponent as InviteIcon } from '@assets/svg/user-plus.svg';
 import Avatar from '@components/common/Avatar/Avatar';
@@ -32,12 +32,6 @@ const GNB = () => {
 	const { stompClient, stompConnectionVersion, increaseChatMessageCount, setChatChannelList } =
 		useSocketStore();
 	const [position, setPosition] = useState(0);
-
-	const updatePosition = () => {
-		if (baseRef.current) {
-			setPosition(baseRef.current.offsetWidth);
-		}
-	};
 
 	const chatChannelsSubscribeRef = useRef<{
 		chatChannelListSubscribe: StompSubscription | null;
@@ -117,13 +111,19 @@ const GNB = () => {
 			mutateRecordTeamSpace(userStatus.participatedTeamspaces[0].teamspaceId);
 	}, [userStatus]);
 
-	useLayoutEffect(() => {
-		updatePosition();
-		window.addEventListener('resize', updatePosition);
-		return () => {
-			window.removeEventListener('resize', updatePosition);
-		};
-	}, [baseRef.current?.offsetWidth]);
+	useEffect(() => {
+		const baseElement = baseRef.current;
+		if (!baseElement) return undefined;
+
+		const observer = new ResizeObserver(([entry]) => {
+			const width = entry.borderBoxSize[0]?.inlineSize ?? baseElement.offsetWidth;
+			setPosition((currentPosition) => (currentPosition === width ? currentPosition : width));
+		});
+
+		observer.observe(baseElement, { box: 'border-box' });
+
+		return () => observer.disconnect();
+	}, []);
 
 	return (
 		<S.GNBContainer ref={baseRef}>

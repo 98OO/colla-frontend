@@ -44,6 +44,8 @@ const useMenu = () => {
 		menu: ReactNode,
 		menuPosition: MenuPosition
 	) => {
+		if (!isVisible) return null;
+
 		const baseElement = baseRef.current;
 		if (!baseElement) return null;
 
@@ -58,16 +60,14 @@ const useMenu = () => {
 		};
 
 		return (
-			isVisible && (
-				<MenuContainer
-					ref={ref}
-					$top={position.top}
-					$bottom={position.bottom}
-					$left={position.left}
-					$right={position.right}>
-					{menu}
-				</MenuContainer>
-			)
+			<MenuContainer
+				ref={ref}
+				$top={position.top}
+				$bottom={position.bottom}
+				$left={position.left}
+				$right={position.right}>
+				{menu}
+			</MenuContainer>
 		);
 	};
 
