@@ -27,7 +27,6 @@ export const configureFeedImages = (
 	images.forEach((image, index) => {
 		const isPriorityImage = prioritizeImage && index === 0;
 		configureFeedImageLoading(image, isPriorityImage);
-		if (isPriorityImage) return;
 
 		const originalSource = image.getAttribute('src');
 		if (!originalSource) return;
