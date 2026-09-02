@@ -1,8 +1,26 @@
+import teamCreationAvif from '@assets/images/team-creation.avif';
+import teamCreationWebp from '@assets/images/team-creation.webp';
+import teamParticipationAvif from '@assets/images/team-participation.avif';
+import teamParticipationWebp from '@assets/images/team-participation.webp';
 import Flex from '@components/common/Flex/Flex';
 import Heading from '@components/common/Heading/Heading';
 import Text from '@components/common/Text/Text';
 import EntryItem from '@components/Entry/EntryItem/EntryItem';
 import { teamCreation, teamParticipation } from '@assets/png';
+
+const TEAM_CREATION_IMAGE = {
+	avif: teamCreationAvif,
+	webp: teamCreationWebp,
+	fallback: teamCreation,
+	alt: '팀스페이스 생성',
+};
+
+const TEAM_PARTICIPATION_IMAGE = {
+	avif: teamParticipationAvif,
+	webp: teamParticipationWebp,
+	fallback: teamParticipation,
+	alt: '팀스페이스 참가',
+};
 
 const EntryPage = () => {
 	return (
@@ -11,17 +29,12 @@ const EntryPage = () => {
 			<Text size='lg' weight='regular' color='secondary'>
 				팀스페이스를 직접 만들거나 참가하세요
 			</Text>
-			<Flex
-				direction='row'
-				gap='24'
-				paddingTop='20'
-				paddingBottom='20'
-				width='720'>
+			<Flex direction='row' gap='24' paddingTop='20' paddingBottom='20' width='720'>
 				<EntryItem
 					type='teamName'
 					title='생성'
 					subTitle='팀스페이스를 만들고 협업을 시작하세요'
-					image={teamCreation}
+					image={TEAM_CREATION_IMAGE}
 					inputLabel='팀스페이스 이름'
 					buttonLabel='생성하기'
 				/>
@@ -29,7 +42,7 @@ const EntryPage = () => {
 					type='teamCode'
 					title='참가'
 					subTitle='초대코드를 입력하여 팀스페이스에 참가하세요'
-					image={teamParticipation}
+					image={TEAM_PARTICIPATION_IMAGE}
 					inputLabel='초대코드'
 					buttonLabel='참가하기'
 				/>

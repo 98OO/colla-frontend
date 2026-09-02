@@ -1,4 +1,6 @@
 import { useNavigate } from 'react-router-dom';
+import { ReactComponent as LinkIcon } from '@assets/svg/link.svg';
+import { ReactComponent as SettingsIcon } from '@assets/svg/settings.svg';
 import { Button } from '@components/common/Button/Button';
 import Divider from '@components/common/Divider/Divider';
 import Flex from '@components/common/Flex/Flex';
@@ -116,7 +118,7 @@ const GNBTeamInfo = () => {
 						<Flex>
 							{currentTeamRole === 'LEADER' && (
 								<S.FooterWrapper onClick={() => navigate(PATH.SETTING)}>
-									<Icon name='Settings' size='sm' color='iSecondary' />
+									<Icon icon={SettingsIcon} size='sm' color='iSecondary' />
 									<Text size='md' weight='medium' color='secondary'>
 										설정
 									</Text>
@@ -124,7 +126,7 @@ const GNBTeamInfo = () => {
 							)}
 						</Flex>
 						<S.FooterWrapper onClick={() => mutateTeampSpaceCode(lastSeenTeam.teamspaceId)}>
-							<Icon name='Link' size='sm' color='iSecondary' />
+							<Icon icon={LinkIcon} size='sm' color='iSecondary' />
 							<Text size='md' weight='medium' color='secondary'>
 								초대 코드
 							</Text>

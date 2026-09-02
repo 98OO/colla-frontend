@@ -1,4 +1,6 @@
 import { useNavigate } from 'react-router-dom';
+import { ReactComponent as CheckIcon } from '@assets/svg/check.svg';
+import { ReactComponent as CreateTeamIcon } from '@assets/svg/plus-square.svg';
 import Divider from '@components/common/Divider/Divider';
 import Flex from '@components/common/Flex/Flex';
 import Icon from '@components/common/Icon/Icon';
@@ -29,11 +31,7 @@ const GNBTeamSpace = () => {
 			{userStatus && (
 				<>
 					<Flex direction='column' gap='4'>
-						<Flex
-							paddingTop='4'
-							paddingBottom='4'
-							paddingLeft='12'
-							paddingRight='12'>
+						<Flex paddingTop='4' paddingBottom='4' paddingLeft='12' paddingRight='12'>
 							<Text size='md' weight='semiBold' color='tertiary'>
 								{`${userStatus.profile.username}의 팀스페이스`}
 							</Text>
@@ -63,9 +61,8 @@ const GNBTeamSpace = () => {
 											? `팀장 - 총 ${teamSpace.numOfParticipants}명의 멤버`
 											: '팀원'
 									}
-									{...(teamSpace.teamspaceId ===
-										userStatus.profile.lastSeenTeamspaceId && {
-										trailingIcon: 'Check',
+									{...(teamSpace.teamspaceId === userStatus.profile.lastSeenTeamspaceId && {
+										trailingIcon: CheckIcon,
 									})}
 									onClick={() => handleTeamChangeClick(teamSpace.teamspaceId)}
 								/>
@@ -75,7 +72,7 @@ const GNBTeamSpace = () => {
 					<Divider size='sm' padding={4} />
 					<Flex paddingLeft='16' paddingRight='16'>
 						<S.FooterContainer onClick={() => navigate(PATH.ENTRY)}>
-							<Icon name='PlusBox' size='sm' color='iSecondary' />
+							<Icon icon={CreateTeamIcon} size='sm' color='iSecondary' />
 							<Text size='md' weight='medium' color='secondary'>
 								새 팀스페이스 생성 또는 참가
 							</Text>

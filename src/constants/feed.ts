@@ -26,11 +26,6 @@ export const EDITOR_IMAGE_ERROR_MESSAGE = {
 	EXCEED_LIMIT: '파일 최대 허용 사이즈를 초과했습니다.',
 };
 
-export const REGEX = {
-	DATA_URL: /<img\s+[^>]*src="data:image\/[^"]*"[^>]*>/g,
-	IMG_SRC: /src="[^"]*"/,
-};
-
 export const PREVIEW_LIMIT = {
 	comments: 1,
 	attachments: 1,

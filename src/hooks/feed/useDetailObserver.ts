@@ -6,17 +6,17 @@ const useDetailObserver = (content?: string) => {
 	const detailRef = useRef<HTMLDivElement | null>(null);
 
 	useEffect(() => {
-		const observer = new ResizeObserver(() => {
-			if (!detailRef.current) return;
+		const detailElement = detailRef.current;
+		const contentElement = detailElement?.firstElementChild;
+		if (!detailElement || !contentElement) return undefined;
 
-			setShowMoreButton(
-				detailRef.current.scrollHeight > FEED_DETAIL_MAX_HEIGHT
-			);
-		});
+		const updateShowMoreButton = () => {
+			setShowMoreButton(detailElement.scrollHeight > FEED_DETAIL_MAX_HEIGHT);
+		};
+		const observer = new ResizeObserver(updateShowMoreButton);
 
-		if (detailRef.current) {
-			observer.observe(detailRef.current);
-		}
+		observer.observe(contentElement);
+		updateShowMoreButton();
 
 		return () => {
 			observer.disconnect();

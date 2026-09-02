@@ -1,11 +1,11 @@
 import Badge from '@components/common/Badge/Badge';
 import Icon from '@components/common/Icon/Icon';
 import Text from '@components/common/Text/Text';
-import type { iconName } from '@type/tokens';
+import type { IconComponent } from '@type/icon';
 import * as S from './MenuItem.styled';
 
 export interface MenuItemProps {
-	leadingIcon: iconName;
+	leadingIcon: IconComponent;
 	title?: string;
 	selected: boolean;
 	number?: number;
@@ -14,24 +14,14 @@ export interface MenuItemProps {
 }
 
 const MenuItem = (props: MenuItemProps) => {
-	const {
-		leadingIcon,
-		title,
-		selected,
-		number,
-		type = 'default',
-		onClick,
-	} = props;
+	const { leadingIcon, title, selected, number, type = 'default', onClick } = props;
 
 	return (
 		<S.MenuItemContainer type={type} selected={selected} onClick={onClick}>
-			<Icon name={leadingIcon} color={selected ? 'brand' : 'primary'} />
+			<Icon icon={leadingIcon} color={selected ? 'brand' : 'primary'} />
 			{type === 'default' && title && (
 				<S.MenuItemTextWrapper>
-					<Text
-						size='md'
-						weight='semiBold'
-						color={selected ? 'info' : 'primary'}>
+					<Text size='md' weight='semiBold' color={selected ? 'info' : 'primary'}>
 						{title}
 					</Text>
 				</S.MenuItemTextWrapper>

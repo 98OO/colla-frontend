@@ -1,8 +1,8 @@
 import { useEffect, useRef } from 'react';
 import { queryClient } from '@hooks/queries/common/queryClient';
-import { StompSubscription } from '@stomp/stompjs';
 import useSocketStore from '@stores/socketStore';
 import { END_POINTS } from '@constants/api';
+import type { StompSubscription } from '@stomp/stompjs';
 import type { Message } from '@type/chat';
 
 export interface useChatSubscriptionProps {

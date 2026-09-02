@@ -1,25 +1,16 @@
 import type { RouteObject } from 'react-router-dom';
 import { RouterProvider, createBrowserRouter } from 'react-router-dom';
+import NavigationLayout from '@layouts/NavigationLayout';
+import PageLayout from '@layouts/PageLayout';
+import RootLayout from '@layouts/RootLayout';
 import AuthGuard from '@components/common/Auth/AuthGuard';
 import GuestOnlyGuard from '@components/common/Auth/GuestOnlyGuard';
 import RoleGuard from '@components/common/Auth/RoleGuard';
-import ChatPage from '@pages/ChatPage/ChatPage';
-import DocumentPage from '@pages/DocumentPage/DocumentPage';
-import EntryPage from '@pages/EntryPage/EntryPage';
 import FeedPage from '@pages/FeedPage/FeedPage';
-import InvitePage from '@pages/InvitePage/InvitePage';
 import LandingPage from '@pages/LandingPage/LandingPage';
-import MyPage from '@pages/MyPage/MyPage';
 import NotFoundPage from '@pages/NotFoundPage/NotFoundPage';
-import PostPage from '@pages/PostPage/PostPage';
-import RedirectPage from '@pages/RedirectPage/RedirectPage';
-import SettingPage from '@pages/SettingPage/SettingPage';
-import SignInPage from '@pages/SignInPage/SignInPage';
-import SignUpPage from '@pages/SignUpPage/SignUpPage';
 import { PATH } from '@constants/path';
-import NavigationLayout from './layouts/NavigationLayout';
-import PageLayout from './layouts/PageLayout';
-import RootLayout from './layouts/RootLayout';
+import { lazyRoutes } from './routes/lazyRoutes';
 
 const appRoutes: RouteObject[] = [
 	{
@@ -34,12 +25,12 @@ const appRoutes: RouteObject[] = [
 						element: <GuestOnlyGuard />,
 						children: [
 							{ path: '', element: <LandingPage /> },
-							{ path: PATH.SIGNIN, element: <SignInPage /> },
-							{ path: PATH.SIGNUP, element: <SignUpPage /> },
+							{ path: PATH.SIGNIN, lazy: lazyRoutes.signIn },
+							{ path: PATH.SIGNUP, lazy: lazyRoutes.signUp },
 						],
 					},
-					{ path: `${PATH.REDIRECT}/:provider`, element: <RedirectPage /> },
-					{ path: PATH.INVITE, element: <InvitePage /> },
+					{ path: `${PATH.REDIRECT}/:provider`, lazy: lazyRoutes.redirect },
+					{ path: PATH.INVITE, lazy: lazyRoutes.invite },
 				],
 			},
 			{
@@ -47,20 +38,20 @@ const appRoutes: RouteObject[] = [
 				children: [
 					{
 						element: <PageLayout />,
-						children: [{ path: PATH.ENTRY, element: <EntryPage /> }],
+						children: [{ path: PATH.ENTRY, lazy: lazyRoutes.entry }],
 					},
 					{
 						element: <NavigationLayout />,
 						children: [
+							{ path: PATH.FEED, element: <FeedPage /> },
 							{
 								element: <RoleGuard requiredRole='LEADER' />,
-								children: [{ path: PATH.SETTING, element: <SettingPage /> }],
+								children: [{ path: PATH.SETTING, lazy: lazyRoutes.setting }],
 							},
-							{ path: PATH.MYPAGE, element: <MyPage /> },
-							{ path: PATH.FEED, element: <FeedPage /> },
-							{ path: PATH.POST, element: <PostPage /> },
-							{ path: PATH.CHAT, element: <ChatPage /> },
-							{ path: PATH.DOCUMENT, element: <DocumentPage /> },
+							{ path: PATH.MYPAGE, lazy: lazyRoutes.myPage },
+							{ path: PATH.POST, lazy: lazyRoutes.post },
+							{ path: PATH.CHAT, lazy: lazyRoutes.chat },
+							{ path: PATH.DOCUMENT, lazy: lazyRoutes.document },
 						],
 					},
 				],

@@ -1,4 +1,6 @@
 import { ReactNode } from 'react';
+import { ReactComponent as AttachmentIcon } from '@assets/svg/attachment.svg';
+import { ReactComponent as CommentIcon } from '@assets/svg/comment.svg';
 import Divider from '@components/common/Divider/Divider';
 import Flex from '@components/common/Flex/Flex';
 import Heading from '@components/common/Heading/Heading';
@@ -40,14 +42,14 @@ const BaseFeed = ({ feedData, children }: BaseFeedProps) => {
 			</S.DividerWrapper>
 			<Flex marginLeft='18' gap='8'>
 				<ActionButton
-					icon='Comment'
+					icon={CommentIcon}
 					count={comments.length}
 					onClick={openDetail}
 					ariaLabel='댓글'
 				/>
 				{attachments.length > 0 && (
 					<ActionButton
-						icon='Attachment'
+						icon={AttachmentIcon}
 						count={attachments.length}
 						onClick={openDetail}
 						ariaLabel='첨부파일'

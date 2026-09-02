@@ -17,7 +17,7 @@ const GlobalStyle = createGlobalStyle`
   select,
   textarea,
   button {
-    font-family: 'Pretendard', system-ui, -apple-system, BlinkMacSystemFont, 'Open Sans', 'Helvetica Neue', sans-serif;
+    font-family: 'Pretendard Variable', Pretendard, system-ui, -apple-system, BlinkMacSystemFont, 'Open Sans', 'Helvetica Neue', sans-serif;
   }
 
   *, *::before, *::after {

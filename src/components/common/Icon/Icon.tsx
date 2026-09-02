@@ -1,10 +1,10 @@
-import * as Icons from '@assets/svg/index';
 import { iconSize } from '@type/size';
-import { iconColor, iconName } from '@type/tokens';
+import { iconColor } from '@type/tokens';
 import theme from '@styles/theme';
+import type { IconComponent } from '@type/icon';
 
 export interface IconProps {
-	name: iconName;
+	icon: IconComponent;
 	color?: iconColor;
 	size?: iconSize;
 }
@@ -16,11 +16,9 @@ const sizeMap = {
 	sm: '16px',
 };
 
-function Icon({ name, color = 'primary', size = 'md' }: IconProps) {
-	const IconComponent = Icons[name];
-
+function Icon({ icon: SvgIcon, color = 'primary', size = 'md' }: IconProps) {
 	return (
-		<IconComponent
+		<SvgIcon
 			viewBox='0 0 24 24'
 			stroke={theme.color.icon[color]}
 			color={theme.color.icon[color]}

@@ -1,4 +1,5 @@
 import { useRef, useState, ChangeEvent, useEffect } from 'react';
+import { ReactComponent as AddIcon } from '@assets/svg/plus.svg';
 import Avatar from '@components/common/Avatar/Avatar';
 import { Button } from '@components/common/Button/Button';
 import Divider from '@components/common/Divider/Divider';
@@ -252,7 +253,7 @@ const SettingPage = () => {
 									label='역할 추가하기'
 									variant='secondary'
 									size='sm'
-									leadingIcon='Plus'
+									leadingIcon={AddIcon}
 									onClick={() => setIsRoleAddModalOpen(true)}
 								/>
 							</Flex>

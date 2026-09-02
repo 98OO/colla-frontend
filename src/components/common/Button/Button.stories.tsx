@@ -45,9 +45,7 @@ const meta = {
 			description: 'Button의 disalbed 여부를 지정합니다.',
 		},
 		leadingIcon: {
-			control: {
-				type: 'select',
-			},
+			control: false,
 			description: 'Button의 text 앞에 나타나는 Icon을 표시합니다.',
 		},
 		onClick: {

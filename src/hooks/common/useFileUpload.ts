@@ -10,6 +10,8 @@ const useFileUpload = () => {
 
 	const uploadFiles = useCallback(
 		async (files: FileList | File[], domainType: 'USER' | 'TEAMSPACE', teamspaceId?: number) => {
+			if (!files.length) return [];
+
 			const fileUploadDtos: UrlRequest[] = Array.from(files).map((file) => ({
 				domainType,
 				teamspaceId,

@@ -9,10 +9,11 @@ import * as S from './NormalFeed.styled';
 
 interface NormalFeedProps {
 	feedData: NormalFeed;
+	prioritizeImage?: boolean;
 }
 
-const NormalFeed = ({ feedData }: NormalFeedProps) => {
-	const { feedId, details } = feedData;
+const NormalFeed = ({ feedData, prioritizeImage = false }: NormalFeedProps) => {
+	const { feedId, details, images } = feedData;
 	const { content } = details;
 	const { showMoreButton, detailRef } = useDetailObserver(content);
 	const openDetail = () => selectFeedDetail(feedId);
@@ -20,8 +21,15 @@ const NormalFeed = ({ feedData }: NormalFeedProps) => {
 	return (
 		<BaseFeed feedData={feedData}>
 			{details && (
-				<S.DetailWrapper ref={detailRef} hasMoreButton={showMoreButton}>
-					<SanitizedHtml html={details.content} />
+				<S.DetailWrapper
+					ref={detailRef}
+					hasMoreButton={showMoreButton}
+					$hasImage={images.length > 0}>
+					<SanitizedHtml
+						html={details.content}
+						optimizeFeedImages
+						prioritizeImage={prioritizeImage}
+					/>
 				</S.DetailWrapper>
 			)}
 			{showMoreButton && (

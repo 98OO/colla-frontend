@@ -31,9 +31,7 @@ const meta = {
 			description: 'Input의 오류 여부를 지정합니다.',
 		},
 		trailingIcon: {
-			control: {
-				type: 'select',
-			},
+			control: false,
 			description: 'Input의 입력 필드 뒤에 나타나는 Icon을 표시합니다.',
 		},
 		trailingIconColor: {

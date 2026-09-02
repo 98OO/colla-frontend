@@ -95,6 +95,11 @@ module.exports = {
 						position: 'after',
 					},
 					{
+						pattern: '@layouts/*',
+						group: 'external',
+						position: 'before',
+					},
+					{
 						pattern: '@pages/*',
 						group: 'internal',
 						position: 'after',

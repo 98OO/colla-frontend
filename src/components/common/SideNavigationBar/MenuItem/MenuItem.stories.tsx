@@ -1,3 +1,4 @@
+import { ReactComponent as HomeIcon } from '@assets/svg/home.svg';
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import MenuItem from './MenuItem';
 
@@ -10,9 +11,7 @@ const meta = {
 	},
 	argTypes: {
 		leadingIcon: {
-			control: {
-				type: 'select',
-			},
+			control: false,
 			description: '메뉴 아이템 앞에 표시되는 아이콘입니다.',
 		},
 		title: {
@@ -52,7 +51,7 @@ type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {
 	args: {
-		leadingIcon: 'Home',
+		leadingIcon: HomeIcon,
 		title: 'Menu Item',
 		selected: false,
 		number: 0,

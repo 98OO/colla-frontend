@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
+import { ReactComponent as Colla } from '@assets/svg/colla.svg';
 import { Button } from '@components/common/Button/Button';
 import Flex from '@components/common/Flex/Flex';
 import Heading from '@components/common/Heading/Heading';
@@ -7,7 +8,6 @@ import useParticipateTeamSpaceMutation from '@hooks/queries/useParticipateTeamSp
 import useAuthStore from '@stores/authStore';
 import { PATH } from '@constants/path';
 import { INVITE_URL_KEY } from '@constants/storage';
-import { Colla } from '@assets/svg';
 
 const InvitePage = () => {
 	const navigate = useNavigate();

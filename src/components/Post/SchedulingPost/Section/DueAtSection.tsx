@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { ReactComponent as ClockIcon } from '@assets/svg/clock.svg';
 import Flex from '@components/common/Flex/Flex';
 import Heading from '@components/common/Heading/Heading';
 import Icon from '@components/common/Icon/Icon';
@@ -34,7 +35,7 @@ const DueAtSection = ({
 	return (
 		<Flex direction='column' gap='20'>
 			<Flex align='center' gap='6'>
-				<Icon name='Clock' />
+				<Icon icon={ClockIcon} />
 				<Heading size='xs' color='secondary'>
 					마감 일시
 				</Heading>

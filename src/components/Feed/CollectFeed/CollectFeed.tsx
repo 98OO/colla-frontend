@@ -1,3 +1,5 @@
+import { ReactComponent as CalendarIcon } from '@assets/svg/calendar.svg';
+import { ReactComponent as ClockIcon } from '@assets/svg/clock.svg';
 import { Button } from '@components/common/Button/Button';
 import Flex from '@components/common/Flex/Flex';
 import Icon from '@components/common/Icon/Icon';
@@ -14,10 +16,11 @@ import * as S from './CollectFeed.styled';
 
 interface CollectFeedProps {
 	feedData: CollectFeed;
+	prioritizeImage?: boolean;
 }
 
-const CollectFeed = ({ feedData }: CollectFeedProps) => {
-	const { feedId, details, createdAt } = feedData;
+const CollectFeed = ({ feedData, prioritizeImage = false }: CollectFeedProps) => {
+	const { feedId, details, createdAt, images } = feedData;
 	const { content } = details;
 	const { showMoreButton, detailRef } = useDetailObserver(content);
 	const openDetail = () => selectFeedDetail(feedId);
@@ -26,20 +29,20 @@ const CollectFeed = ({ feedData }: CollectFeedProps) => {
 		<BaseFeed feedData={feedData}>
 			<Flex direction='column' gap='16'>
 				<Flex align='center' gap='14'>
-					<Icon name='Clock' />
+					<Icon icon={ClockIcon} />
 					<Flex gap='8'>
 						<ProgressChip type='PENDING' status={!details.isClosed} />
 						<ProgressChip type='COMPLETED' status={details.isClosed} />
 					</Flex>
 				</Flex>
 				<Flex align='center' gap='14'>
-					<Icon name='Calendar' />
+					<Icon icon={CalendarIcon} />
 					<Text size='md' weight='regular'>
 						{getFormattedDate(createdAt, 'detail')}
 					</Text>
 				</Flex>
 				<Flex align='center' gap='14'>
-					<Icon name='Calendar' />
+					<Icon icon={CalendarIcon} />
 					{details.dueAt && (
 						<Text size='md' weight='regular'>
 							{`${getFormattedDate(details.dueAt, 'detail')} 까지`}
@@ -47,8 +50,15 @@ const CollectFeed = ({ feedData }: CollectFeedProps) => {
 					)}
 				</Flex>
 				{details && (
-					<S.DetailWrapper ref={detailRef} hasMoreButton={showMoreButton}>
-						<SanitizedHtml html={details.content} />
+					<S.DetailWrapper
+						ref={detailRef}
+						hasMoreButton={showMoreButton}
+						$hasImage={images.length > 0}>
+						<SanitizedHtml
+							html={details.content}
+							optimizeFeedImages
+							prioritizeImage={prioritizeImage}
+						/>
 					</S.DetailWrapper>
 				)}
 				{showMoreButton && (

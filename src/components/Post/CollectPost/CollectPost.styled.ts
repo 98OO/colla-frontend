@@ -16,6 +16,7 @@ export const PostInput = styled.input`
 `;
 
 export const EditorContainer = styled.div`
+	min-height: 278px;
 	max-height: calc(100vh - 500px);
 	overflow-x: hidden;
 `;

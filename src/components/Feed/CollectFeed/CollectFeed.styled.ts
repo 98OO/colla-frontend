@@ -1,6 +1,6 @@
 import { styled } from 'styled-components';
 import { editorStyles } from '@styles/editorStyles';
-import { FEED_DETAIL_MAX_HEIGHT } from '@styles/layout';
+import { FEED_BODY_MIN_HEIGHT, FEED_DETAIL_MAX_HEIGHT } from '@styles/layout';
 import theme from '@styles/theme';
 
 export const FeedContainer = styled.div`
@@ -20,10 +20,10 @@ export const CollectContainer = styled.div`
 	gap: ${theme.units.spacing.space24};
 `;
 
-export const DetailWrapper = styled.div<{ hasMoreButton: boolean }>`
+export const DetailWrapper = styled.div<{ hasMoreButton: boolean; $hasImage: boolean }>`
 	${editorStyles}
 	padding: ${theme.units.spacing.space16} 0;
-	min-height: 150px;
+	min-height: ${({ $hasImage }) => ($hasImage ? FEED_DETAIL_MAX_HEIGHT : FEED_BODY_MIN_HEIGHT)}px;
 	max-height: ${FEED_DETAIL_MAX_HEIGHT}px;
 	position: relative;
 	overflow: hidden;

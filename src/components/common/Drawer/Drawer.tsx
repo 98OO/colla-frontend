@@ -1,5 +1,6 @@
 import { useEffect, type ReactNode } from 'react';
 import { createPortal } from 'react-dom';
+import { ReactComponent as ChevronsRightIcon } from '@assets/svg/chevrons-right.svg';
 import IconButton from '@components/common/IconButton/IconButton';
 import useOutsideClick from '@hooks/common/useOutSideClick';
 import { AnimatePresence, domAnimation, LazyMotion, MotionConfig } from 'motion/react';
@@ -56,7 +57,12 @@ const Drawer = ({ isOpen, onClose, children }: DrawerProps) => {
 							transition={DRAWER_TRANSITION}>
 							<S.DrawerContent>
 								<S.DrawerMenu>
-									<IconButton icon='ChevronsRight' size='lg' ariaLabel='close' onClick={onClose} />
+									<IconButton
+										icon={ChevronsRightIcon}
+										size='lg'
+										ariaLabel='close'
+										onClick={onClose}
+									/>
 								</S.DrawerMenu>
 								{children}
 							</S.DrawerContent>
