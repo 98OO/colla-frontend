@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { ReactComponent as CreatePostIcon } from '@assets/svg/normal.svg';
 import ChatRoom from '@components/Chat/ChatRoom/ChatRoom';
 import ChatRoomCreationModalContent from '@components/Chat/ChatRoom/ChatRoomCreationModal/ChatRoomCreationModalContent';
 import Chatting from '@components/Chat/Chatting/Chatting';
@@ -38,7 +39,7 @@ const ChatPage = () => {
 					</Flex>
 					<Flex align='center'>
 						<IconButton
-							icon='Normal'
+							icon={CreatePostIcon}
 							size='md'
 							color='secondary'
 							ariaLabel='채팅방 생성'

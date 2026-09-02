@@ -7,6 +7,9 @@ import { defineConfig as defineTestConfig, mergeConfig } from 'vitest/config';
 export default mergeConfig(
 	defineConfig({
 		plugins: [react(), svgr(), tsconfigPaths()],
+		build: {
+			assetsInlineLimit: (filePath) => (/\.(avif|webp)$/i.test(filePath) ? false : undefined),
+		},
 		server: {
 			port: 3000,
 		},

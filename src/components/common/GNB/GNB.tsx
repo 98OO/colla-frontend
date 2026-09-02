@@ -1,4 +1,6 @@
-import { useEffect, useLayoutEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
+import { ReactComponent as TeamSwitchIcon } from '@assets/svg/chevrons-updown.svg';
+import { ReactComponent as InviteIcon } from '@assets/svg/user-plus.svg';
 import Avatar from '@components/common/Avatar/Avatar';
 import { Button } from '@components/common/Button/Button';
 import GNBProfile from '@components/common/GNB/GNBMenu/GNBProfile/GNBProfile';
@@ -10,10 +12,10 @@ import Skeleton from '@components/common/Skeleton/Skeleton';
 import useMenu from '@hooks/common/useMenu';
 import useRecordTeamSpace from '@hooks/queries/teamspace/useRecordTeamSpace';
 import useUserStatusQuery from '@hooks/queries/useUserStatusQuery';
-import { StompSubscription } from '@stomp/stompjs';
 import useSocketStore from '@stores/socketStore';
 import { END_POINTS } from '@constants/api';
 import { GNB_PROFILE_WIDTH, GNB_TEAM_INFO_WIDTH } from '@styles/layout';
+import type { StompSubscription } from '@stomp/stompjs';
 import * as S from './GNB.styled';
 
 const GNB = () => {
@@ -30,12 +32,6 @@ const GNB = () => {
 	const { stompClient, stompConnectionVersion, increaseChatMessageCount, setChatChannelList } =
 		useSocketStore();
 	const [position, setPosition] = useState(0);
-
-	const updatePosition = () => {
-		if (baseRef.current) {
-			setPosition(baseRef.current.offsetWidth);
-		}
-	};
 
 	const chatChannelsSubscribeRef = useRef<{
 		chatChannelListSubscribe: StompSubscription | null;
@@ -115,13 +111,19 @@ const GNB = () => {
 			mutateRecordTeamSpace(userStatus.participatedTeamspaces[0].teamspaceId);
 	}, [userStatus]);
 
-	useLayoutEffect(() => {
-		updatePosition();
-		window.addEventListener('resize', updatePosition);
-		return () => {
-			window.removeEventListener('resize', updatePosition);
-		};
-	}, [baseRef.current?.offsetWidth]);
+	useEffect(() => {
+		const baseElement = baseRef.current;
+		if (!baseElement) return undefined;
+
+		const observer = new ResizeObserver(([entry]) => {
+			const width = entry.borderBoxSize[0]?.inlineSize ?? baseElement.offsetWidth;
+			setPosition((currentPosition) => (currentPosition === width ? currentPosition : width));
+		});
+
+		observer.observe(baseElement, { box: 'border-box' });
+
+		return () => observer.disconnect();
+	}, []);
 
 	return (
 		<S.GNBContainer ref={baseRef}>
@@ -149,7 +151,7 @@ const GNB = () => {
 								shape='rect'
 							/>
 							<Heading size='sm'>{lastSeenTeam.name}</Heading>
-							<Icon name='Updown' />
+							<Icon icon={TeamSwitchIcon} />
 						</S.LeftContainer>
 						{chatChannelsSubscribeRef &&
 							showTeamSpace(baseRef, <GNBTeamSpace />, {
@@ -169,7 +171,7 @@ const GNB = () => {
 									label='초대'
 									variant='secondary'
 									size='sm'
-									leadingIcon='User'
+									leadingIcon={InviteIcon}
 									onClick={handleTeamInfo}
 								/>
 								{showTeamInfo(baseRef, <GNBTeamInfo />, {

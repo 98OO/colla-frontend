@@ -8,6 +8,9 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    env:
+      AWS_REGION: ap-northeast-2
+      S3_BUCKET: colla.so
 
     steps:
       - name: Checkout repository
@@ -36,19 +39,45 @@ jobs:
           echo "VITE_NODE_ENV=${{ secrets.VITE_NODE_ENV }}" >> .env.production
           echo "VITE_BASE_URL=${{ secrets.VITE_BASE_URL }}" >> .env.production
           echo "VITE_SOCKET_URL=${{ secrets.VITE_SOCKET_URL }}" >> .env.production
+          echo "VITE_IMAGE_SOURCE_HOSTNAME=${{ secrets.VITE_IMAGE_SOURCE_HOSTNAME }}" >> .env.production
+          echo "VITE_IMAGE_TRANSFORM_BASE_URL=${{ secrets.VITE_IMAGE_TRANSFORM_BASE_URL }}" >> .env.production
 
       - name: Install dependencies and build
         run: |
-          npm install
+          npm ci
           npm run build
 
-      - name: Sync S3 bucket
-        uses: jakejarvis/s3-sync-action@master
+      - name: Exclude MSW worker from production
+        run: rm --force dist/mockServiceWorker.js
+
+      - name: Validate production
+        run: |
+          test -f dist/index.html
+          test -d dist/assets
+          test ! -f dist/mockServiceWorker.js
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v6.2.3
         with:
-          args: --follow-symlinks --delete
-        env:
-          AWS_S3_BUCKET: colla.so
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_IAM_MANAGER_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_IAM_MANAGER_SECRET_ACCESS_KEY }}
-          AWS_REGION: ap-northeast-2
-          SOURCE_DIR: 'dist'
+          aws-access-key-id: ${{ secrets.AWS_IAM_MANAGER_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_IAM_MANAGER_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Upload assets
+        run: |
+          aws s3 sync dist/assets "s3://${S3_BUCKET}/assets" \
+            --cache-control "public,max-age=31536000,immutable"
+
+      - name: Upload static files
+        run: |
+          aws s3 sync dist "s3://${S3_BUCKET}" \
+            --exclude "assets/*" \
+            --exclude "index.html" \
+            --cache-control "no-cache,must-revalidate" \
+            --delete
+
+      - name: Upload index
+        run: |
+          aws s3 cp dist/index.html "s3://${S3_BUCKET}/index.html" \
+            --cache-control "no-cache,must-revalidate" \
+            --content-type "text/html; charset=utf-8"

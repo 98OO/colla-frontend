@@ -8,14 +8,15 @@ import type { FeedData } from '@type/feed';
 interface FeedProps {
 	feedData: FeedData;
 	onSchedulingEditChange?: (feedId: number, isEditing: boolean) => void;
+	prioritizeImage?: boolean;
 }
 
-const Feed = memo(({ feedData, onSchedulingEditChange }: FeedProps) => {
+const Feed = memo(({ feedData, onSchedulingEditChange, prioritizeImage }: FeedProps) => {
 	switch (feedData.feedType) {
 		case 'NORMAL':
-			return <NormalFeed feedData={feedData} />;
+			return <NormalFeed feedData={feedData} prioritizeImage={prioritizeImage} />;
 		case 'COLLECT':
-			return <CollectFeed feedData={feedData} />;
+			return <CollectFeed feedData={feedData} prioritizeImage={prioritizeImage} />;
 		case 'SCHEDULING':
 			return <SchedulingFeed feedData={feedData} onEditChange={onSchedulingEditChange} />;
 		default:

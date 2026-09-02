@@ -16,6 +16,10 @@ export const PostInput = styled.input`
 	outline: none;
 `;
 
+export const EditorContainer = styled.div`
+	min-height: 278px;
+`;
+
 export const DetailWrapper = styled.div`
 	${editorStyles}
 	margin-bottom: ${theme.units.spacing.space48};

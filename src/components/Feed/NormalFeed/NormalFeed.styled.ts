@@ -13,10 +13,10 @@ export const FeedContainer = styled.div`
 	margin-bottom: ${theme.units.spacing.space32};
 `;
 
-export const DetailWrapper = styled.div<{ hasMoreButton: boolean }>`
+export const DetailWrapper = styled.div<{ hasMoreButton: boolean; $hasImage: boolean }>`
 	${editorStyles}
 	padding: ${theme.units.spacing.space16} 0;
-	min-height: ${FEED_BODY_MIN_HEIGHT}px;
+	min-height: ${({ $hasImage }) => ($hasImage ? FEED_DETAIL_MAX_HEIGHT : FEED_BODY_MIN_HEIGHT)}px;
 	max-height: ${FEED_DETAIL_MAX_HEIGHT}px;
 	position: relative;
 	overflow: hidden;

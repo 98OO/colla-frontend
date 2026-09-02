@@ -1,14 +1,15 @@
 import { forwardRef } from 'react';
 import Icon from '@components/common/Icon/Icon';
+import type { IconComponent } from '@type/icon';
 import type { inputSize } from '@type/size';
-import type { iconColor, iconName } from '@type/tokens';
+import type { iconColor } from '@type/tokens';
 import * as S from './Input.styled';
 
 export interface InputContainerProps {
 	size: inputSize;
 	border?: 'default' | 'underLine';
 	isError: boolean;
-	trailingIcon?: iconName;
+	trailingIcon?: IconComponent;
 	trailingIconColor?: iconColor;
 }
 
@@ -21,41 +22,33 @@ export interface InputWrapperProps {
 	onEnterPress?: () => void;
 }
 
-const Input = forwardRef<
-	HTMLInputElement,
-	InputContainerProps & InputWrapperProps
->((props, ref) => {
-	const {
-		size,
-		border = 'default',
-		isError,
-		trailingIcon,
-		trailingIconColor,
-		onEnterPress,
-		onChange,
-		...attributes
-	} = props;
+const Input = forwardRef<HTMLInputElement, InputContainerProps & InputWrapperProps>(
+	(props, ref) => {
+		const {
+			size,
+			border = 'default',
+			isError,
+			trailingIcon,
+			trailingIconColor,
+			onEnterPress,
+			onChange,
+			...attributes
+		} = props;
 
-	const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-		if (e.key === 'Enter' && !e.nativeEvent.isComposing && onEnterPress) {
-			e.preventDefault();
-			onEnterPress();
-		}
-	};
+		const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+			if (e.key === 'Enter' && !e.nativeEvent.isComposing && onEnterPress) {
+				e.preventDefault();
+				onEnterPress();
+			}
+		};
 
-	return (
-		<S.InputContainer size={size} border={border} isError={isError}>
-			<S.InputWrapper
-				ref={ref}
-				onChange={onChange}
-				{...attributes}
-				onKeyDown={handleKeyDown}
-			/>
-			{trailingIcon && (
-				<Icon name={trailingIcon} size={size} color={trailingIconColor} />
-			)}
-		</S.InputContainer>
-	);
-});
+		return (
+			<S.InputContainer size={size} border={border} isError={isError}>
+				<S.InputWrapper ref={ref} onChange={onChange} {...attributes} onKeyDown={handleKeyDown} />
+				{trailingIcon && <Icon icon={trailingIcon} size={size} color={trailingIconColor} />}
+			</S.InputContainer>
+		);
+	}
+);
 
 export default Input;

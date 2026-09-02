@@ -13,12 +13,13 @@ const NormalPost = () => {
 	const {
 		editorRef,
 		attachmentFiles,
+		isSubmitting,
 		appendImageFile,
 		appendAttachmentFile,
 		deleteAttachmentFile,
 		handleDrop,
 		handleDragOver,
-		handleSubmit: submitNormalFeedForm,
+		submitNormalFeed,
 	} = usePostEditor();
 
 	const [title, setTitle] = useState('');
@@ -28,7 +29,7 @@ const NormalPost = () => {
 	};
 
 	const handleSubmit = async () => {
-		await submitNormalFeedForm(title);
+		await submitNormalFeed(title);
 	};
 
 	const handleCancel = () => {
@@ -43,11 +44,7 @@ const NormalPost = () => {
 
 	return (
 		<S.NormalPostContainer>
-			<S.PostInput
-				placeholder='제목을 입력해주세요'
-				value={title}
-				onChange={handleTitleChange}
-			/>
+			<S.PostInput placeholder='제목을 입력해주세요' value={title} onChange={handleTitleChange} />
 			<S.EditorContainer>
 				<Editor editorRef={editorRef} appendImageFile={appendImageFile} />
 			</S.EditorContainer>
@@ -64,13 +61,9 @@ const NormalPost = () => {
 					size='md'
 					variant='primary'
 					onClick={handleSubmit}
+					disabled={isSubmitting}
 				/>
-				<Button
-					label='취소'
-					size='md'
-					variant='secondary'
-					onClick={handleCancel}
-				/>
+				<Button label='취소' size='md' variant='secondary' onClick={handleCancel} />
 			</S.ButtonContainer>
 		</S.NormalPostContainer>
 	);

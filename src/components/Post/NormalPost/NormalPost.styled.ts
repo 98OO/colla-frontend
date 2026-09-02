@@ -9,6 +9,7 @@ export const NormalPostContainer = styled.form`
 `;
 
 export const EditorContainer = styled.div`
+	min-height: 278px;
 	max-height: calc(100vh - 500px);
 	overflow-x: hidden;
 `;

@@ -15,6 +15,9 @@ export const AUTH_API_URL = {
 	NAVER: `https://nid.naver.com/oauth2.0/authorize?response_type=code&client_id=${import.meta.env.VITE_NAVER_CLIENT_ID}&state=${import.meta.env.VITE_NAVER_STATE}&redirect_uri=${import.meta.env.VITE_NAVER_REDIRECT_URL}`,
 };
 
+export const IMAGE_TRANSFORM_BASE_URL = import.meta.env.VITE_IMAGE_TRANSFORM_BASE_URL;
+export const IMAGE_SOURCE_HOSTNAME = import.meta.env.VITE_IMAGE_SOURCE_HOSTNAME;
+
 export const WEBSOCKET_URL = `${import.meta.env.VITE_SOCKET_URL}?accessToken=`;
 
 export const WEBSOCKET_RECONNECT_INITIAL_DELAY = 1_000;

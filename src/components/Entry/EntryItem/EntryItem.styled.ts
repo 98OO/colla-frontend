@@ -28,7 +28,10 @@ export const ImageWrapper = styled.div`
 	width: 100%;
 	height: 216px;
 
+	picture,
 	img {
+		display: block;
 		width: 274px;
+		height: 216px;
 	}
 `;

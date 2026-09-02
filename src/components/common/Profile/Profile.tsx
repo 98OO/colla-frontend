@@ -1,13 +1,14 @@
-import Avatar from '@components/common/Avatar/Avatar';
+import Avatar, { type ResponsiveImage } from '@components/common/Avatar/Avatar';
 import Flex from '@components/common/Flex/Flex';
 import Icon from '@components/common/Icon/Icon';
 import Text from '@components/common/Text/Text';
 import { AvatarSize, fontSize } from '@type/size';
-import { iconName } from '@type/tokens';
+import type { IconComponent } from '@type/icon';
 import * as S from './Profile.styled';
 
 export interface ProfileProps {
 	profile: string | null;
+	responsiveImage?: ResponsiveImage;
 	initial: string;
 	avatarSize?: AvatarSize | 'mlg';
 	avatarShape?: 'circle' | 'rect';
@@ -16,7 +17,7 @@ export interface ProfileProps {
 	titleWeight?: 'regular' | 'medium' | 'semiBold' | 'bold';
 	subTitle?: string;
 	text?: string;
-	trailingIcon?: iconName;
+	trailingIcon?: IconComponent;
 	trailingText?: string;
 	onClick?: (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => void;
 }
@@ -24,6 +25,7 @@ export interface ProfileProps {
 const Profile = (props: ProfileProps) => {
 	const {
 		profile,
+		responsiveImage,
 		initial,
 		avatarSize = 'md',
 		avatarShape = 'circle',
@@ -43,6 +45,7 @@ const Profile = (props: ProfileProps) => {
 				<S.ProfileAvatarContainer>
 					<Avatar
 						profile={profile}
+						responsiveImage={responsiveImage}
 						initial={initial}
 						size={avatarSize}
 						shape={avatarShape}
@@ -67,7 +70,7 @@ const Profile = (props: ProfileProps) => {
 				</Flex>
 			</Flex>
 			<Flex gap='8' align='center'>
-				{trailingIcon && <Icon name={trailingIcon} size='sm' />}
+				{trailingIcon && <Icon icon={trailingIcon} size='sm' />}
 				{trailingText && (
 					<Text size='sm' weight='regular' color='secondary'>
 						{trailingText}

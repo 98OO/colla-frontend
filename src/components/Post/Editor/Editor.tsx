@@ -11,7 +11,7 @@ import * as S from './Editor.styled';
 
 interface EditorProps {
 	editorRef: MutableRefObject<EditorType | null>;
-	appendImageFile: (file: File) => void;
+	appendImageFile: (file: File) => string;
 	heightOffset?: number;
 }
 

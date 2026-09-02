@@ -30,4 +30,8 @@ export const SkeletonBox = styled.div<SkeletonBoxProps>`
 	);
 	background-size: 200% 100%;
 	animation: ${shimmer} 1.5s ease-in-out infinite;
+
+	@media (prefers-reduced-motion: reduce) {
+		animation: none;
+	}
 `;

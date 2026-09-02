@@ -1,4 +1,7 @@
 import { useState } from 'react';
+import { ReactComponent as CalendarIcon } from '@assets/svg/calendar.svg';
+import { ReactComponent as ChevronRightIcon } from '@assets/svg/chevron-right.svg';
+import { ReactComponent as ClockIcon } from '@assets/svg/clock.svg';
 import { Button } from '@components/common/Button/Button';
 import Divider from '@components/common/Divider/Divider';
 import Flex from '@components/common/Flex/Flex';
@@ -37,7 +40,7 @@ const CollectDetail = ({ feedData }: FeedProps) => {
 				/>
 				{selectSubTask && (
 					<Flex align='center' gap='10'>
-						<Icon name='ChevronRight' />
+						<Icon icon={ChevronRightIcon} />
 						<Text size='md' weight='semiBold' color='iSecondary'>
 							{selectSubTask.username}
 						</Text>
@@ -60,20 +63,20 @@ const CollectDetail = ({ feedData }: FeedProps) => {
 						<Divider size='sm' />
 						<Flex direction='column' gap='16' marginBottom='20'>
 							<Flex align='center' gap='14'>
-								<Icon name='Clock' />
+								<Icon icon={ClockIcon} />
 								<Flex gap='8'>
 									<ProgressChip type='PENDING' status={!details.isClosed} />
 									<ProgressChip type='COMPLETED' status={details.isClosed} />
 								</Flex>
 							</Flex>
 							<Flex align='center' gap='14'>
-								<Icon name='Calendar' />
+								<Icon icon={CalendarIcon} />
 								<Text size='md' weight='regular'>
 									{getFormattedDate(createdAt, 'detail')}
 								</Text>
 							</Flex>
 							<Flex align='center' gap='14'>
-								<Icon name='Calendar' />
+								<Icon icon={CalendarIcon} />
 								{details.dueAt && (
 									<Text size='md' weight='regular'>
 										{`${getFormattedDate(details.dueAt, 'detail')} 까지`}

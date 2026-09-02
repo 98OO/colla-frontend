@@ -1,4 +1,6 @@
 import { useCallback, useRef, useState } from 'react';
+import { ReactComponent as FileIcon } from '@assets/svg/file.svg';
+import { ReactComponent as ImageIcon } from '@assets/svg/image.svg';
 import ChatMessageActions from '@components/Chat/ChatMessageActions/ChatMessageActions';
 import LatestMessageBox from '@components/Chat/LatestMessageBox/LatestMessageBox';
 import MyMessageBox from '@components/Chat/MyMessageBox/MyMessageBox';
@@ -179,7 +181,7 @@ const Chatting = ({ selectedChat }: { selectedChat: number }) => {
 				<Flex height='38' paddingLeft='4' paddingRight='4' justify='space-between' align='center'>
 					<Flex paddingLeft='3' paddingRight='3' gap='4'>
 						<IconButton
-							icon='Image'
+							icon={ImageIcon}
 							ariaLabel='image'
 							color='secondary'
 							size='md'
@@ -192,7 +194,7 @@ const Chatting = ({ selectedChat }: { selectedChat: number }) => {
 							ref={inputImageRef}
 						/>
 						<IconButton
-							icon='File'
+							icon={FileIcon}
 							ariaLabel='file'
 							color='secondary'
 							size='md'

@@ -3,8 +3,15 @@ import Text from '@components/common/Text/Text';
 import type { AvatarSize, fontSize, headingSize } from '@type/size';
 import * as S from './Avatar.styled';
 
+export interface ResponsiveImage {
+	srcSet: string;
+	sizes: string;
+	fallbackSrc: string;
+}
+
 export interface AvatarProps {
 	profile: string | null;
+	responsiveImage?: ResponsiveImage;
 	initial: string;
 	size: AvatarSize | 'mlg';
 	shape: 'circle' | 'rect';
@@ -27,18 +34,24 @@ const textMap = {
 		</Heading>
 	),
 	text: (initial: string, size: fontSize) => (
-		<Text
-			size={size}
-			color='iInverse'
-			weight={size === 'md' ? 'medium' : 'regular'}>
+		<Text size={size} color='iInverse' weight={size === 'md' ? 'medium' : 'regular'}>
 			{initial}
 		</Text>
 	),
 };
 
 const Avatar = (props: AvatarProps) => {
-	const { profile, initial, size, shape, onClick } = props;
+	const { profile, responsiveImage, initial, size, shape, onClick } = props;
 	const avatarText = size === 'xl' || size === 'lg' ? 'heading' : 'text';
+
+	const restoreFallbackImage: React.ReactEventHandler<HTMLImageElement> = ({ currentTarget }) => {
+		if (!responsiveImage || currentTarget.getAttribute('src') === responsiveImage.fallbackSrc)
+			return;
+
+		currentTarget.removeAttribute('srcset');
+		currentTarget.removeAttribute('sizes');
+		currentTarget.setAttribute('src', responsiveImage.fallbackSrc);
+	};
 
 	return (
 		<S.AvatarContainer
@@ -48,7 +61,15 @@ const Avatar = (props: AvatarProps) => {
 			onClick={onClick}
 			$seed={initial}>
 			{profile ? (
-				<img src={profile} alt='profile' />
+				<img
+					src={profile}
+					srcSet={responsiveImage?.srcSet}
+					sizes={responsiveImage?.sizes}
+					alt='profile'
+					loading={responsiveImage ? 'lazy' : undefined}
+					decoding={responsiveImage ? 'async' : undefined}
+					onError={restoreFallbackImage}
+				/>
 			) : (
 				textMap[avatarText](initial[0], sizeMap[size] as headingSize & fontSize)
 			)}

@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { ReactComponent as ClockIcon } from '@assets/svg/clock.svg';
 import { Button } from '@components/common/Button/Button';
 import FileUploadBox from '@components/common/FileUploadBox/FileUploadBox';
 import Flex from '@components/common/Flex/Flex';
@@ -22,12 +23,13 @@ const CollectPost = () => {
 	const {
 		editorRef,
 		attachmentFiles,
+		isSubmitting,
 		appendImageFile,
 		appendAttachmentFile,
 		deleteAttachmentFile,
 		handleDrop,
 		handleDragOver,
-		handleSubmit: submitCollectFeedForm,
+		submitCollectFeed,
 	} = usePostEditor();
 
 	const { dueAtDate, dueAtTime } = getDefaultDueAt();
@@ -46,7 +48,7 @@ const CollectPost = () => {
 			return;
 		}
 
-		await submitCollectFeedForm(title, `${selectedDate} ${time}`);
+		await submitCollectFeed(title, `${selectedDate} ${time}`);
 	};
 
 	const handleCancel = () => {
@@ -64,7 +66,7 @@ const CollectPost = () => {
 			<Flex direction='column' gap='12'>
 				<S.PostInput placeholder='제목을 입력해주세요' value={title} onChange={handleTitleChange} />
 				<Flex align='center' gap='14' position='relative'>
-					<Icon name='Clock' />
+					<Icon icon={ClockIcon} />
 					<Text size='md' weight='regular'>
 						마감 일시
 					</Text>
@@ -87,7 +89,13 @@ const CollectPost = () => {
 				handleFileDelete={deleteAttachmentFile}
 			/>
 			<S.ButtonContainer>
-				<Button label='등록' size='md' variant='primary' onClick={handleSubmit} />
+				<Button
+					label='등록'
+					size='md'
+					variant='primary'
+					onClick={handleSubmit}
+					disabled={isSubmitting}
+				/>
 				<Button label='취소' size='md' variant='secondary' onClick={handleCancel} />
 			</S.ButtonContainer>
 		</S.CollectPostContainer>
