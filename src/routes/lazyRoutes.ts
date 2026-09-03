@@ -16,11 +16,13 @@ const createLazyRoute =
 	};
 
 export const lazyRoutes = {
+	landing: createLazyRoute(() => import('@pages/LandingPage/LandingPage')),
 	signIn: createLazyRoute(() => import('@pages/SignInPage/SignInPage')),
 	signUp: createLazyRoute(() => import('@pages/SignUpPage/SignUpPage')),
 	redirect: createLazyRoute(() => import('@pages/RedirectPage/RedirectPage')),
 	invite: createLazyRoute(() => import('@pages/InvitePage/InvitePage')),
 	entry: createLazyRoute(() => import('@pages/EntryPage/EntryPage')),
+	feed: createLazyRoute(() => import('@pages/FeedPage/FeedPage')),
 	setting: createLazyRoute(() => import('@pages/SettingPage/SettingPage')),
 	myPage: createLazyRoute(() => import('@pages/MyPage/MyPage')),
 	post: createLazyRoute(() => import('@pages/PostPage/PostPage')),
