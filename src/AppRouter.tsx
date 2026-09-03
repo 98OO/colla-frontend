@@ -6,8 +6,6 @@ import RootLayout from '@layouts/RootLayout';
 import AuthGuard from '@components/common/Auth/AuthGuard';
 import GuestOnlyGuard from '@components/common/Auth/GuestOnlyGuard';
 import RoleGuard from '@components/common/Auth/RoleGuard';
-import FeedPage from '@pages/FeedPage/FeedPage';
-import LandingPage from '@pages/LandingPage/LandingPage';
 import NotFoundPage from '@pages/NotFoundPage/NotFoundPage';
 import { PATH } from '@constants/path';
 import { lazyRoutes } from './routes/lazyRoutes';
@@ -24,7 +22,7 @@ const appRoutes: RouteObject[] = [
 					{
 						element: <GuestOnlyGuard />,
 						children: [
-							{ path: '', element: <LandingPage /> },
+							{ path: '', lazy: lazyRoutes.landing },
 							{ path: PATH.SIGNIN, lazy: lazyRoutes.signIn },
 							{ path: PATH.SIGNUP, lazy: lazyRoutes.signUp },
 						],
@@ -43,7 +41,7 @@ const appRoutes: RouteObject[] = [
 					{
 						element: <NavigationLayout />,
 						children: [
-							{ path: PATH.FEED, element: <FeedPage /> },
+							{ path: PATH.FEED, lazy: lazyRoutes.feed },
 							{
 								element: <RoleGuard requiredRole='LEADER' />,
 								children: [{ path: PATH.SETTING, lazy: lazyRoutes.setting }],
