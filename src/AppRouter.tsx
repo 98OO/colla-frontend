@@ -1,11 +1,11 @@
 import type { RouteObject } from 'react-router-dom';
 import { RouterProvider, createBrowserRouter } from 'react-router-dom';
-import NavigationLayout from '@layouts/NavigationLayout';
 import PageLayout from '@layouts/PageLayout';
 import RootLayout from '@layouts/RootLayout';
 import AuthGuard from '@components/common/Auth/AuthGuard';
 import GuestOnlyGuard from '@components/common/Auth/GuestOnlyGuard';
 import RoleGuard from '@components/common/Auth/RoleGuard';
+import LandingPage from '@pages/LandingPage/LandingPage';
 import NotFoundPage from '@pages/NotFoundPage/NotFoundPage';
 import { PATH } from '@constants/path';
 import { lazyRoutes } from './routes/lazyRoutes';
@@ -22,7 +22,7 @@ const appRoutes: RouteObject[] = [
 					{
 						element: <GuestOnlyGuard />,
 						children: [
-							{ path: '', lazy: lazyRoutes.landing },
+							{ path: '', element: <LandingPage /> },
 							{ path: PATH.SIGNIN, lazy: lazyRoutes.signIn },
 							{ path: PATH.SIGNUP, lazy: lazyRoutes.signUp },
 						],
@@ -39,7 +39,7 @@ const appRoutes: RouteObject[] = [
 						children: [{ path: PATH.ENTRY, lazy: lazyRoutes.entry }],
 					},
 					{
-						element: <NavigationLayout />,
+						lazy: lazyRoutes.navigationLayout,
 						children: [
 							{ path: PATH.FEED, lazy: lazyRoutes.feed },
 							{
