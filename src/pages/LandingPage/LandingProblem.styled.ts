@@ -22,7 +22,7 @@ export const ProblemSection = styled.section`
 	background-color: ${theme.color.text.primary};
 
 	@media (max-width: 640px) {
-		padding: 88px ${theme.units.spacing.space20} ${theme.units.spacing.space80};
+		padding: ${theme.units.spacing.space72} ${theme.units.spacing.space20};
 	}
 `;
 
@@ -45,6 +45,17 @@ export const ProblemTitle = styled.h2`
 	line-height: 1.12;
 	letter-spacing: -0.04em;
 	word-break: keep-all;
+	text-wrap: balance;
+
+	@media (max-width: 640px) {
+		font-size: clamp(30px, 8.4vw, 36px);
+		line-height: 1.18;
+		letter-spacing: -0.035em;
+
+		br {
+			display: none;
+		}
+	}
 `;
 
 export const ProblemDescription = styled.p`
@@ -56,9 +67,9 @@ export const ProblemDescription = styled.p`
 	word-break: keep-all;
 
 	@media (max-width: 640px) {
-		margin-top: ${theme.units.spacing.space24};
+		margin-top: ${theme.units.spacing.space20};
 		font-size: ${theme.typography.fontSize.body.lg};
-		line-height: 1.7;
+		line-height: 1.65;
 	}
 `;
 
@@ -69,7 +80,7 @@ export const FrictionList = styled.ul`
 	list-style: none;
 
 	@media (max-width: 640px) {
-		margin-top: ${theme.units.spacing.space48};
+		margin-top: ${theme.units.spacing.space40};
 	}
 `;
 
@@ -86,7 +97,7 @@ export const FrictionItem = styled.li<{ $isVisible: boolean; $delay: number }>`
 		grid-template-columns: 44px minmax(0, 1fr);
 		gap: ${theme.units.spacing.space10} ${theme.units.spacing.space12};
 		min-height: 0;
-		padding: ${theme.units.spacing.space24} 0;
+		padding: ${theme.units.spacing.space20} 0;
 	}
 `;
 
@@ -157,6 +168,10 @@ export const Conclusion = styled.div<{ $isVisible: boolean; $delay: number }>`
 	@media (max-width: 860px) {
 		margin-top: ${theme.units.spacing.space48};
 	}
+
+	@media (max-width: 640px) {
+		margin-top: ${theme.units.spacing.space40};
+	}
 `;
 
 export const ConclusionText = styled.p`
@@ -181,4 +196,9 @@ export const Highlight = styled.span`
 	line-height: 1.35;
 	letter-spacing: -0.03em;
 	text-wrap: balance;
+
+	@media (max-width: 640px) {
+		font-size: clamp(27px, 7.6vw, 32px);
+		line-height: 1.4;
+	}
 `;

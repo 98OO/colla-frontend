@@ -28,8 +28,8 @@ export const FlowSection = styled.section`
 	scroll-margin-top: 88px;
 
 	@media (max-width: 640px) {
-		padding: ${theme.units.spacing.space80} ${theme.units.spacing.space20}
-			${theme.units.spacing.space96};
+		padding: ${theme.units.spacing.space72} ${theme.units.spacing.space20}
+			${theme.units.spacing.space80};
 	}
 `;
 
@@ -48,9 +48,14 @@ export const FlowTitle = styled.h2`
 	line-height: 1.15;
 	letter-spacing: -0.04em;
 	word-break: keep-all;
+	text-wrap: balance;
 
 	@media (max-width: 640px) {
-		font-size: 32px;
+		font-size: clamp(28px, 7.8vw, 32px);
+
+		br {
+			display: none;
+		}
 	}
 `;
 
@@ -63,8 +68,8 @@ export const FlowList = styled.ol`
 	list-style: none;
 
 	@media (max-width: 640px) {
-		gap: ${theme.units.spacing.space80};
-		margin-top: ${theme.units.spacing.space72};
+		gap: ${theme.units.spacing.space72};
+		margin-top: ${theme.units.spacing.space64};
 	}
 `;
 
@@ -72,6 +77,10 @@ export const FlowItem = styled.li`
 	display: flex;
 	flex-direction: column;
 	gap: ${theme.units.spacing.space32};
+
+	@media (max-width: 640px) {
+		gap: ${theme.units.spacing.space24};
+	}
 `;
 
 export const StepCopy = styled.div<{ $isVisible: boolean }>`
@@ -88,6 +97,7 @@ export const StepTitle = styled.h3`
 	line-height: 1.3;
 	letter-spacing: -0.035em;
 	word-break: keep-all;
+	text-wrap: balance;
 `;
 
 export const StepDescription = styled.p`
@@ -97,6 +107,11 @@ export const StepDescription = styled.p`
 	font-size: 15px;
 	line-height: 1.65;
 	word-break: keep-all;
+	text-wrap: pretty;
+
+	@media (max-width: 640px) {
+		margin-top: ${theme.units.spacing.space10};
+	}
 `;
 
 type ScreenLayout = 'team' | 'split' | 'chat' | 'feed' | 'collection' | 'wide';
@@ -272,8 +287,16 @@ export const ScreenFrame = styled.div<{ $layout: ScreenLayout; $isVisible: boole
 		`}
 
 	@media (max-width: 640px) {
-		grid-template-columns: ${({ $layout }) =>
-			$layout === 'wide' || $layout === 'collection' ? '1fr' : '1fr 1fr'};
+		grid-template-columns: ${({ $layout }) => {
+			switch ($layout) {
+				case 'team':
+				case 'split':
+				case 'collection':
+					return 'repeat(2, minmax(0, 1fr))';
+				default:
+					return 'minmax(0, 1fr)';
+			}
+		}};
 		grid-template-rows: ${({ $layout }) => {
 			if ($layout === 'team') return 'auto auto';
 			if ($layout === 'collection' || $layout === 'wide') return 'auto';
@@ -383,7 +406,7 @@ export const FinalAction = styled.div<{ $isVisible: boolean }>`
 	@media (max-width: 640px) {
 		align-items: flex-start;
 		flex-direction: column;
-		margin-top: ${theme.units.spacing.space96};
+		margin-top: ${theme.units.spacing.space80};
 		padding: ${theme.units.spacing.space32} ${theme.units.spacing.space24};
 
 		button {

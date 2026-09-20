@@ -26,7 +26,9 @@ export const HeroSection = styled.section`
 
 	@media (max-width: 640px) {
 		align-items: flex-start;
-		padding: ${theme.units.spacing.space64} ${theme.units.spacing.space20};
+		min-height: auto;
+		padding: ${theme.units.spacing.space48} ${theme.units.spacing.space20}
+			${theme.units.spacing.space64};
 	}
 `;
 
@@ -83,8 +85,10 @@ export const HeroTitle = styled.h1`
 		font-size: clamp(31px, 9.2vw, 38px);
 		line-height: 1.08;
 		letter-spacing: -0.035em;
+		text-wrap: balance;
+
 		span {
-			white-space: nowrap;
+			white-space: normal;
 		}
 	}
 `;
@@ -117,8 +121,9 @@ export const HeroDescription = styled.p`
 	}
 
 	@media (max-width: 640px) {
+		margin-top: ${theme.units.spacing.space20};
 		font-size: ${theme.typography.fontSize.body.lg};
-		line-height: 1.7;
+		line-height: 1.65;
 
 		span {
 			white-space: normal;
@@ -158,7 +163,9 @@ export const HeroActions = styled.div`
 
 	@media (max-width: 480px) {
 		flex-direction: column;
+		gap: ${theme.units.spacing.space12};
 		width: 100%;
+		margin-top: ${theme.units.spacing.space32};
 
 		button,
 		a {
