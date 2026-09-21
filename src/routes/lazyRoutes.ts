@@ -16,7 +16,7 @@ const createLazyRoute =
 	};
 
 export const lazyRoutes = {
-	landing: createLazyRoute(() => import('@pages/LandingPage/LandingPage')),
+	navigationLayout: createLazyRoute(() => import('@layouts/NavigationLayout')),
 	signIn: createLazyRoute(() => import('@pages/SignInPage/SignInPage')),
 	signUp: createLazyRoute(() => import('@pages/SignUpPage/SignUpPage')),
 	redirect: createLazyRoute(() => import('@pages/RedirectPage/RedirectPage')),
