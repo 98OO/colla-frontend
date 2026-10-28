@@ -3,6 +3,9 @@
 	"version": "0.0.0",
 	"private": true,
 	"type": "module",
+	"engines": {
+		"node": ">=24.22.1 <25"
+	},
 	"scripts": {
 		"build": "tsc && vite build",
 		"build-storybook": "storybook build",
