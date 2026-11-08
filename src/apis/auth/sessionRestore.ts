@@ -1,10 +1,10 @@
 import { clearClientSession } from '@apis/auth/sessionActions';
 import { refreshAccessToken } from '@apis/auth/tokenRefreshManager';
 import useAuthStore from '@stores/authStore';
-import { AUTH_RESTORE_DISABLED_KEY } from '@constants/storage';
+import { SESSION_RESTORE_ENABLED_KEY } from '@constants/storage';
 
 const shouldSkipSessionRestore = () => {
-	if (window.localStorage.getItem(AUTH_RESTORE_DISABLED_KEY) !== 'true') return false;
+	if (window.localStorage.getItem(SESSION_RESTORE_ENABLED_KEY) === 'true') return false;
 
 	if (useAuthStore.getState().status !== 'guest') clearClientSession();
 
