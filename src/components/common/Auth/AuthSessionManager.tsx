@@ -8,7 +8,7 @@ import useSocketNetworkRecovery from '@hooks/socket/useSocketNetworkRecovery';
 import useAuthStore from '@stores/authStore';
 import useSocketStore from '@stores/socketStore';
 import { PATH } from '@constants/path';
-import { AUTH_RESTORE_DISABLED_KEY } from '@constants/storage';
+import { SESSION_RESTORE_ENABLED_KEY } from '@constants/storage';
 import type { AuthStatus } from '@type/auth';
 
 interface AuthSessionManagerProps {
@@ -30,7 +30,7 @@ const useRestoreSessionOnMount = () => {
 const useSyncSessionAcrossTabs = () => {
 	useEffect(() => {
 		const handleStorage = (event: StorageEvent) => {
-			if (event.key !== AUTH_RESTORE_DISABLED_KEY || event.newValue !== 'true') return;
+			if (event.key !== SESSION_RESTORE_ENABLED_KEY || event.newValue !== null) return;
 
 			clearClientSession();
 		};

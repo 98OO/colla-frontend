@@ -4,16 +4,29 @@ name: 'Chromatic'
 
 on:
   push:
-    branches: ['main']
+    branches: ['main', 'develop']
+  pull_request:
+    branches: ['develop', 'main']
+
+concurrency:
+  group: chromatic-${{ github.ref }}
+  # develop, main 빌드는 비교 기준이 되므로 PR에서만 이전 실행을 취소
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
   chromatic:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version-file: '.nvmrc'
+          cache: 'npm'
 
       - name: Install dependencies
         run: npm ci
@@ -22,3 +35,4 @@ jobs:
         uses: chromaui/action@latest
         with:
           projectToken: ${{ secrets.CHROMATIC_PROJECT_TOKEN }}
+          onlyChanged: true

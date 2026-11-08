@@ -1,7 +1,7 @@
 import { queryClient } from '@hooks/queries/common/queryClient';
 import useAuthStore from '@stores/authStore';
 import { ABNORMAL_TOKEN_CODES } from '@constants/api';
-import { AUTH_RESTORE_DISABLED_KEY } from '@constants/storage';
+import { SESSION_RESTORE_ENABLED_KEY } from '@constants/storage';
 
 export const isCurrentSession = (sessionVersion: number) =>
 	sessionVersion === useAuthStore.getState().sessionVersion;
@@ -27,11 +27,11 @@ export const invalidateSession = (code: number, requestSessionVersion: number) =
 export const signIn = (accessToken: string, hasTeam: boolean) => {
 	clearSessionCache();
 
-	window.localStorage.removeItem(AUTH_RESTORE_DISABLED_KEY);
+	window.localStorage.setItem(SESSION_RESTORE_ENABLED_KEY, 'true');
 	useAuthStore.getState().initializeSession(accessToken, hasTeam);
 };
 
 export const signOut = () => {
-	window.localStorage.setItem(AUTH_RESTORE_DISABLED_KEY, 'true');
+	window.localStorage.removeItem(SESSION_RESTORE_ENABLED_KEY);
 	clearClientSession();
 };
